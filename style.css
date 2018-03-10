@@ -1,0 +1,212 @@
+body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; height:100%; padding:0; background-color:#7EBAFF; }
+
+.fancy { font-size: 62.5%; }
+.fancy label, .fancy input { display:block; }
+.fancy input.text { margin-bottom:12px; width:95%; padding: .4em; font-size:1.5em; }
+.fancy fieldset { padding:0; border:0; margin-top:25px; }
+.ui-dialog .ui-state-error { padding: .3em; }
+	
+.item_button:hover {
+	background-color:#000;
+}
+
+.radio_status {
+	float: left; 
+	clear: none;
+}
+
+.register {
+	color: #fbff5f;
+	font-weight:bold;
+}
+
+.quantity_button {
+	padding:5px 10px;
+	font-weight:bold;
+	cursor:pointer; 
+	font-size:1.1em;
+	border: 3px solid #000;
+	width: 100px;
+}
+
+.quantity_button_remove {
+	margin-right: 10px;
+	background-color:#b93535;
+}
+
+.quantity_button_remove:hover {
+	background-color:#cc6d6d;
+}
+
+.quantity_button_remove_disabled {
+	margin-right: 10px;
+	background-color:#4a2323;
+}
+
+.quantity_button_add {
+	margin-left: 10px;
+	background-color:#45c349;
+}
+
+.quantity_button_add:hover {
+	background-color:#64ef68;
+}
+
+.quantity_button_add_disabled {
+	margin-left: 10px;
+	background-color:#475f47;
+}
+
+.quantity_button_purchase {
+	margin-left: 10px;
+	background-color:#97ad22;
+	width:230px;
+}
+
+.quantity_button_purchase:hover {
+	background-color:#c6d674;
+}
+
+.register:visited {
+	color: #FFF;
+}
+
+.radio_status label {
+	font-size:1.5em;
+	float: left;
+	clear: none;
+	display: block;
+	padding: 2px 1em 0 0;
+}
+
+.radio_status input[type=radio], .radio_status input.radio {
+  float: left;
+  clear: none;
+  margin: 2px 0 0 2px;
+}
+
+.cold_item { 
+	font-size: 1em; 
+	background-color: #6696F7; 
+	border:#3E5C98 dashed 2px;
+	font-weight: bold;
+}
+
+.warm_item { 
+	font-size: 1em; 
+	background-color: #FF6464; 
+	border:#9D3A3A dashed 2px;
+	font-weight: bold;
+}
+
+.no_item {
+	font-size: 1em;
+	color: #FFFFFF;
+	background-color: #2f2f2f; 
+	border:#1d1d1d dashed 2px;
+	font-weight: bold;
+	
+}
+
+.soda_name { font-size: 2em;  }
+.profit { font-size: 20px; padding: 5px 0px; }
+.expenses { font-size: 20px; padding: 5px 0px; color:#000; }
+.income { font-size: 20px; padding: 5px 0px; color:#000; }
+
+.circle { padding:10px; border-radius: 15px; margin-top:30px; margin-bottom:30px; }
+
+.soda_body {
+	background-color:#7EBAFF;
+}
+
+.snack_body {
+	background-color:#d8716c;
+}
+
+.soda_popout {
+	background-color: #55a4ff;
+}
+
+.snack_popout {
+	background-color: #e63f37;
+}
+
+.soda_card {
+	background-color: #001E41;
+}
+
+.soda_card .middle_section {
+	background-color: #052d5a;
+}
+
+.snack_card {
+	background-color: #410000;
+}
+
+.snack_card .middle_section {
+	background-color: #5f0505;
+}
+
+.card {
+	width: 24em;
+	display: inline-block; 
+	vertical-align: top;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	text-align: center;
+	padding: 0px;
+	margin:20px;
+}
+
+#money_container {
+	text-align: justify;
+	padding: 10px;
+}
+
+#money_container > div {
+	width: 20%;
+	display: inline-block;
+	vertical-align: top;
+	
+	/* IE fix. */
+	*display: inline;
+	zoom: 1;
+}
+
+#money_container:after {
+	content: "";
+	width: 100%;
+	display: inline-block;
+}
+
+.money {
+	border: 1px dashed #000; 
+	padding: 5px;
+	text-align:center;
+}
+
+.top_section { padding: 10px; }
+.middle_section { padding: 10px 0px; }
+.bottom_section { padding: 5px 0px; color: #FFF; font-weight:bold; }  
+
+.vcenter{
+	background:#eee;
+	width: 150px;
+	height: 150px;
+}
+.vcenter:before {
+	content: " ";
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+	max-width: 0.001%; /* Just in case the text wrapps, you shouldn't notice it */
+}
+	
+.vcenter :first-child {
+	display:inline-block;
+	vertical-align:middle;
+	max-width: 99.999%;
+}
+
+.container {
+	padding: 10px;
+}
