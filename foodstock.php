@@ -286,6 +286,7 @@ if( !$isMobile) {
 
 	echo "<div class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
 	echo "<ul>";
+	echo "<li><b>Mar 11, 2018:</b> Built Admin, Requests, and Purchase History pages. Added Payments. Display the number of times you bought an item in card. Order cards by the most bought (Favorites - Nick Ask). Added Nav Buttons to top bar: Soda Home, Snack Home, Requests, Purchase History, Admin. Sped up home page by removing forms and many unnecessary SQL queries. Added slack notifications for payments, requests, receipts, restocks - with specific emojis and bot names. Split balances into soda balance and snack balance. Cash only option in cart allows you to decrement the quantity without adding total to your balance because you paid in change/cash (Nick Ask). Added ability to submit requests and view others' requests.</li>";
 	echo "<li><b>Mar 3, 2018:</b> Site was moved to Vultr. Added missing snack and soda images.</li>";
 	echo "<li><b>Mar 2, 2018:</b> Tabs and balances are now online. Items can be purchased through the site. Card UI was improved a little.</li>";
 	echo "<li><b>Feb 16, 2018:</b> Created SnackStock. Storing images and unit names in DB.</li>";
