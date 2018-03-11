@@ -24,23 +24,6 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 		if(isset($_GET['mobile'])) {
 			$isMobile = true;
 		}
-		
-		
-		
-//         //Input variables
-//         if(isset($_POST['login_password']) && !$loggedIn) 
-//         {
-//         	$loginPassword = trim($_POST["login_password"]);
-//         	// Log them in?
-//         	if($loginPassword == "2385")
-//            	{
-//        			$_SESSION[GetSessionKey()] = "admin";
-//           		$loggedIn = true;
-//       		} else {
-//             	$incorrectPassword = true;
-//          	}
-//         }
-        
   	echo "<title>" . $title . " " . date('Y') . "</title>";
   	echo "<link rel='icon' type='image/png' href='" . $favicon . "' />";
 ?>
@@ -55,7 +38,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 <script>
 	var itemsInCart = [];
 	
-	function updateCardArea(itemTypeValue, classNameValue, locationValue, isMobileValue, loggedInValue, loggedInAdminValue, itemSearchValue) {
+	function updateCardArea(itemTypeValue, classNameValue, locationValue, isMobileValue, loggedInValue, loggedInAdminValue, itemSearchValue, userIDValue) {
 		console.log("Updating Card Area with [" + itemSearchValue + "]...");
 		$.post("sodastock_ajax.php", { 
 				type:'CardArea',
@@ -65,7 +48,8 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 				isMobile:isMobileValue,
 				loggedInAdmin:loggedInAdminValue,
 				loggedIn:loggedInValue,
-				itemSearch:itemSearchValue
+				itemSearch:itemSearchValue,
+				userID:userIDValue
 			},function(data) {
 				$('#card_area').html(data);
 		});
@@ -77,7 +61,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 
 		if( quantityBefore == maxQuantity ) {
 			// Prevent out of stock quantities
-			//return;
+			return;
 		}
 		
 		itemsInCart.push(itemID);
@@ -146,6 +130,12 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 				$('#cart_area').html(data);
 		});
 	}
+
+    $( document ).ready( function() {
+		<?php 
+			echo "loadUserModals('" . $loggedInAdmin . "');\n";
+		?>       	
+	});
 </script>
 
 <?php
@@ -157,19 +147,6 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 <link rel="stylesheet" type="text/css" href="colorPicker.css"/>
 <link rel="stylesheet" type="text/css" href="style.css"/>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-
-
- 
-<script type="text/javascript">
-    $( document ).ready( function() {
-                
-		<?php 
-			if(!$isMobile) {
-				echo "loadModals('" . $loggedInAdmin . "','" . $itemType . "');\n";
-			}
-		?>       	
-	});
-</script>
 </head>
 
 
@@ -187,36 +164,15 @@ include("login_bar.php");
 
 date_default_timezone_set('America/New_York');
 
-$statement = "";
 
-/*
-$statement = "UPDATE Item SET TotalExpenses = TotalExpenses - 3.49, BackstockQuantity = BackstockQuantity - 12, TotalCans = TotalCans - 12 where ID = 29";
-
-$statement = "UPDATE ITEM SET Price = 0.40 WHERE name = 'Swiss Miss Dark Chocolate';";
-$statement = "ALTER TABLE ITEM ADD COLUMN ImageURL TEXT;"
-$statement = "ALTER TABLE ITEM ADD COLUMN ThumbURL TEXT;"
-$statement = "ALTER TABLE ITEM ADD COLUMN UnitName TEXT;"
-$statement = "UPDATE ITEM SET Retired = 1 WHERE name = 'Cherry Zero';";
-
-$statement = "CREATE TABLE Item(id integer PRIMARY KEY AUTOINCREMENT, name text, date text, chartcolor text, totalcans integer, backstockquantity integer, shelfquantity integer, price real,  totalincome real, totalexpenses real )";
-$statement = "CREATE TABLE Restock(itemid integer, date text, numberofcans integer, cost real )";
-$statement = "CREATE TABLE Daily_Amount(itemid integer, date text, backstockquantitybefore integer, backstockquantity integer, shelfquantitybefore integer, shelfquantity integer, price real, restock integer )";
-$statement = "DROP TABLE Item;";
-*/
-
-if( $statement != "" ) {
-        echo "Executing......<br>";
-        
-        $db->exec($statement);
-        
-        echo "DONE!<br><br>";
-}
 
 if( !$loggedInAdmin ) {
 	TrackVisit($db, $title, $loggedIn);
 }
 
-include("build_forms.php");
+
+include("exec_sql.php");
+
 
 // ------------------------------------
 // FANCY ITEM TABLE
@@ -224,18 +180,10 @@ include("build_forms.php");
 echo "<div style='margin-bottom:20px;'>";
 
 if( !$isMobile ) {
-	echo "<span><b><a href='http://penguinore.net/sodastock_home/" . $url . "'>Bookmark Us! Tell your friends!</a></b><br><span style='font-size:10px;'>Only the ones at RSA because I'm not selling this anywhere else.</span></span>";
+	echo "<span><b><a href='http://penguinore.net/sodastock.php'>Bookmark Us! Tell your friends!</a></b><br><span style='font-size:10px;'>Only the ones at RSA because I'm not selling this anywhere else.</span></span>";
 }
 
-$otherURL = "sodastock.php";
-$otherTitle = "SodaStock";
 
-if( $title == "SodaStock" ) {
-	$otherURL = "snackstock.php";
-	$otherTitle = "SnackStock";
-}
-
-echo "<span style='float:right; padding:10px;'><b><a href='$otherURL'>Go to $otherTitle >>></a></b></span>";
 echo "</div>";
 
 $user_name = "";
@@ -249,42 +197,35 @@ while ($row = $results->fetchArray()) {
 
 
 
-$results = $db->query("SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired FROM Item WHERE Type ='" . $itemType . "' ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC");
+$results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, FirstDay FROM Information WHERE ItemType ='" . $itemType . "'");
 
 //---------------------------------------
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-	$version = "Version 3.1 (Mar 2nd, 2018)";
+	$version = "Version 4.0 (March 11th, 2018)";
 
 	$total_income = 0;
 	$total_expense = 0;
 
-	while ($row = $results->fetchArray()) {
-		$total_income = $total_income +(($row[4] - ($row[5] + $row[6]) ) * $row[7] );
-		$total_expense = $total_expense + $row[9];
-	}
-
-	// For the lost $3 on the Diet Mountain Dew
-// 	$total_expense = $total_expense + 3;
-
-	$total_profit = $total_income - $total_expense;
+	$row = $results->fetchArray();
+	$total_income = $row['Income'];
+	$total_expense = $row['Expenses'];
+	$total_profit = $row['ProfitExpected'];
+	$total_profit_actual = $row['ProfitActual'];
+	$firstDay = $row['FirstDay'];
+	
 
 	echo "<div style='margin: auto;'>";
 	echo "<span style='color:white; background-color:#800; padding:5px; border: #000 2px dashed; margin-right:5px;'>$version</span>";
 	if( $loggedInAdmin ) {
 		echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income:</b> $". number_format($total_income, 2)."</span>";
 		echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Total Expenses:</b> $". number_format($total_expense, 2)."</span>";
-		echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit:</b> $". number_format($total_profit, 2)."</span>";
+		echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Expected):</b> $". number_format($total_profit, 2)."</span>";
+		echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Actual):</b> $". number_format($total_profit_actual, 2)."</span>";
 	}
 	$dateNow = new DateTime();
-	$firstDay = DateTime::createFromFormat('Y-m-d H:i:s', "1989-07-09 00:00:00");
-	
-	if( $title == "SodaStock" ) {
-		$firstDay = DateTime::createFromFormat('Y-m-d H:i:s', "2014-11-11 00:00:00");
-	} else if( $title == "SnackStock" ) {
-		$firstDay = DateTime::createFromFormat('Y-m-d H:i:s', "2018-02-19 00:00:00");
-	}
+	$firstDay = DateTime::createFromFormat('Y-m-d H:i:s', $row['FirstDay']);
 	
 	$time_since = $dateNow->diff($firstDay);
 	$days_ago = $time_since->format('%a');
@@ -328,9 +269,15 @@ if( !$isMobile && $itemType != "Snack" ) {
 	echo "</div>";
 }
 
-echo "Item Search: <input type='text' style='font-size:2em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', this.value );\"/>";
+$userID = "";
+
+if( isset( $_SESSION['userID'] ) ) {
+	$userID = $_SESSION['userID'];
+}
+
+echo "Item Search: <input type='text' style='font-size:2em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', this.value, '$userID' );\"/>";
 echo "<div id='card_area'>";
-echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', '');</script>";
+echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', '', '$userID');</script>";
 echo "</div>";
 
 if( !$isMobile) {
@@ -356,175 +303,6 @@ if( !$isMobile) {
 	echo "<li><b>Feb 16, 2015:</b> SodaStock&trade; goes live. Legacy SodaStock is <a href='https://docs.google.com/spreadsheets/d/16BSupau6vEIfGY_-mgvz0_dzTeiJPysl3Kt-80fr8Hc/edit?usp=sharing'>here</a>.</li>";
 	echo "<li><b>Nov 11, 2014:</b> Started selling soda at RSA.</li>";
 	echo "</ul>";
-
-	// ------------------------------------
-	// ITEM TABLE
-	// ------------------------------------
-	echo "<div class='" . $className . "_popout' onclick='$(\"#item_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Item Inventory</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
-	echo "<div id='item_all' style='display:none;'>";
-	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-	echo "<thead><tr>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>ID</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Modified</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Chart Color</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Cans</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Backstock Quantity</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Shelf Quantity</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price per Can</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Income</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Expenses</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Discontinued</th>";
-
-	echo "</tr></thead>";
-
-	$results = $db->query("SELECT ID, Name, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Retired FROM Item WHERE Type ='" . $itemType . "' ORDER BY Retired, ID DESC");
-	while ($row = $results->fetchArray()) {
-		echo "<tr>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[1]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[2]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[3] ($row[4])</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[5]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[6]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[7]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[8]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[9]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[10]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$row[11]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>".(($row[12]==1)?("YES"):("NO"))."</td>";
-		echo "</tr>";
-	}
-
-	echo "</table>";
-	echo "</div>";
-
-	// ------------------------------------
-	// RESTOCK TABLE
-	// ------------------------------------
-	echo "<div class='" . $className . "_popout' onclick='$(\"#restock_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Restock Schedule</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
-	echo "<div id='restock_all' style='display:none;'>";
-	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-	echo "<thead><tr>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Number of Cans</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Cost</th>";
-
-	echo "</tr></thead>";
-
-	$results = $db->query('SELECT s.Name, r.ItemID, r.Date, r.NumberOfCans, r.Cost FROM Restock r JOIN Item s ON r.itemID = s.id  ORDER BY r.Date DESC');
-	while ($row = $results->fetchArray()) {
-		echo "<tr>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";
-		$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row[2]);
-		echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[3]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$$row[4]</td>";
-		echo "</tr>";
-	}
-
-	echo "</table>";
-	echo "</div>";
-
-
-	// ------------------------------------
-	// DAILY AMOUNT TABLE
-	// ------------------------------------
-	echo "<div class='" . $className . "_popout' onclick='$(\"#daily_count_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Daily Count</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
-	echo "<div id='daily_count_all' style='display:none;'>";
-	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-	echo "<thead><tr>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Shelf Quantity</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Backstock Quantity</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price</th>";
-
-	echo "</tr></thead>";
-
-	$dailyData = array();
-
-	$results = $db->query('SELECT s.Name, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.Price FROM Daily_Amount r JOIN Item s ON r.itemID = s.id  ORDER BY r.Date DESC');
-	while ($row = $results->fetchArray()) {
-		echo "<tr>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[1]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[3]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[2]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[4]</td>";
-		echo "</tr>";
-
-		//if($dailyData[$row[1]]) {}
-	}
-
-	echo "</table>";
-	echo "</div>";
-
-	if( $loggedInAdmin ) {
-			// ------------------------------------
-			// VISITS TABLE
-			// ------------------------------------
-			echo "<div class='" . $className . "_popout' onclick='$(\"#visits_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Page Visits</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
-			echo "<div id='visits_all' style='display:none;'>";
-			echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-			echo "<thead><tr>";
-			echo "<th style='padding:5px; border:1px #000 solid;' align='left'>IP</th>";
-			echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-			echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Agent</th>";
-			echo "</tr></thead>";
-			
-			$self_count = 0;
-			$self_date = "";
-			$self_agent = "";
-
-			$results = $db->query('SELECT IP, Date, Agent FROM Visits ORDER BY Date DESC');
-			while ($row = $results->fetchArray()) {
-					
-					$ip = $row[0];
-					if( strpos($row[0], '|') !== false ) {
-							$ip_pieces = explode("|", $ip);
-							$ip = trim($ip_pieces[0]);
-					}
-
-
-					$ip = GetNameByIP($ip);
-
-					if($self_count != 0 && $ip != "<span style='color:red;'>Matt Miles</span>") {
-						echo "<tr>";
-						echo "<td style='padding:5px; border:1px #000 solid; font-weight:bold;'><span style='color:red;'>Matt Miles</span> (" . $self_count . " times)</td>";
-						$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $self_date);
-						echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-
-						echo "<td style='padding:5px; border:1px #000 solid;'>$self_agent</td>";
-						echo "</tr>";
-						$self_count = 0;
-					}
-
-					if($ip == "<span style='color:red;'>Matt Miles</span>") {
-						$self_count++;
-						$self_date = $row[1];
-						$self_agent = $row[2];
-					} else {
-
-
-						echo "<tr>";
-						echo "<td style='padding:5px; border:1px #000 solid; font-weight:bold;'>$ip</td>";
-						$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row[1]);
-						echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-
-						echo "<td style='padding:5px; border:1px #000 solid;'>$row[2]</td>";
-						echo "</tr>";
-					}
-					
-
-					
-			}
-			
-			echo "</table>";
-			echo "</div>";
-	}
 }
 
 //include("sodastock_charts.php");

@@ -15,6 +15,50 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
 	clear: none;
 }
 
+.nav_buttons {
+	padding:5px;
+	font-size:0.9 em;
+	margin-right: 5px;
+	border: dashed 2px #000;
+	margin-top:5px;
+	cursor:pointer;
+    color:#FFF;
+    font-weight: bold;
+}
+
+.nav_buttons_soda:hover {
+	background-color: #4fa9de;
+}
+.nav_buttons_soda {
+	background-color: #247eb3;
+}
+
+.nav_buttons_snack:hover {
+    background-color: #dc5c5c;
+}
+.nav_buttons_snack {
+    background-color: #b32424;
+}
+
+.nav_buttons_requests:hover {
+    background-color: #c075ef;
+}
+.nav_buttons_requests {
+    background-color: #7c24b3;
+}
+
+.nav_buttons_admin:hover {
+	background-color: #dadc4b;
+}
+.nav_buttons_admin {
+    background-color: #a4b324;
+}
+
+.nav_buttons a {
+	color:#fff;
+	text-decoration:none;
+}
+
 .register {
 	color: #fbff5f;
 	font-weight:bold;

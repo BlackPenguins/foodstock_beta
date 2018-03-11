@@ -17,13 +17,21 @@
     	$loggedIn = $_POST['loggedIn'];
     	$itemSearch = $_POST['itemSearch'];
     	
+    	$userID = $_POST['userID'];
+    	
     	$nameQuery = "";
     	
     	if( $itemSearch != "" ) {
     		$nameQuery = " AND Name Like '%" . $itemSearch . "%' ";
     	}
     	
-		$results = $db->query("SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC");
+    	$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
+    	
+    	if( $userID != "" ) {
+    		$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $userID . " AND p.ItemID = i.ID) as Frequency FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
+    	}
+    	
+		$results = $db->query($cardQuery);
 		
 		//---------------------------------------
 		// BUILD ITEM CARDS
@@ -109,6 +117,7 @@
     	echo "<input type='hidden' name='items' value='" . json_encode($itemsInCart) . "'/><br>";
     	echo "<input type='hidden' name='Purchase' value='Purchase'/><br>";
     	echo "<button class='quantity_button quantity_button_purchase' title='Purchase'>PURCHASE FOR $" . number_format($totalPrice, 2) . "</button>";
+    	echo "<br><br><input type='checkbox' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px;' for='CashOnly'>Already purchased with cash - don't add this to my balance</label><br>";
     	echo "</form>";
     }
 ?>

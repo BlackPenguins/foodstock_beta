@@ -37,7 +37,7 @@
 	        	if( $userExists ) {
 	        		$userError = "User <b>$username</b> already exists!";
 	        	} else {
-	        		$db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, Balance) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00)");
+	        		$db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00)");
 	        		$userMessage = "Registration complete! User <b>$username</b> has been created.";
 	        	}
         	}

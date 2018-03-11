@@ -1,8 +1,19 @@
 <script type="text/javascript">
-function sendSlackMessageToMatt( slackMessage ) {
-	console.log("slack message [" + slackMessage + "]");
+function sendSlackMessageToMatt( slackMessage, emoji, botName ) {
+	sendSlackMessage( "@mmiles", slackMessage, emoji, botName );
+}
+
+function sendSlackMessageToUser( slackID, slackMessage, emoji, botName ) {
+	sendSlackMessage( "@" + slackID, slackMessage, emoji, botName );
+}
+
+function sendSlackMessageToRandom( slackMessage, emoji, botName ) {
+	sendSlackMessage( "#the_nerd_herd", slackMessage, emoji, botName );
+}
+
+function sendSlackMessage( slackID, slackMessage, emoji, botName ) {
 	$.ajax({
-		data: 'payload=' + JSON.stringify({ "channel":"@mmiles", "icon_emoji":":item:", "username":"SodaStock","text":slackMessage }),
+		data: 'payload=' + JSON.stringify({ "channel":slackID, "icon_emoji":emoji, "username":botName,"text":slackMessage }),
 		dataType: 'json',
 		processData: false,
 		type: 'POST',
@@ -83,13 +94,17 @@ function Login($db) {
 	if( $userExists ) {
 		$firstName = $row['FirstName'];
 		$userID = $row['UserID'];
-		$balance = $row['Balance'];
-		error_log("Logging in with [$username] [$userID] [$balance]");
+		$sodaBalance = $row['SodaBalance'];
+		$snackBalance = $row['SnackBalance'];
+		$slackID = $row['SlackID'];
+		error_log("Logging in with [$username] [$userID] [$sodaBalance][$snackBalance]");
 		$_SESSION['signed_in'] = true;
 		$_SESSION['username'] = $username;
 		$_SESSION['firstname'] = $firstName;
 		$_SESSION['userID'] = $userID;
-		$_SESSION['balance'] = $balance;
+		$_SESSION['SodaBalance'] = $sodaBalance;
+		$_SESSION['SnackBalance'] = $snackBalance;
+		$_SESSION['SlackID'] = $slackID;
 	} else {
 		$_SESSION['signed_in'] = false;
 		$_SESSION['username'] = null;
@@ -131,10 +146,10 @@ function SanitizeForSQL($str)
 
 function TrackVisit($db, $title, $loggedIn)
 {
-        $ip = $_SERVER["REMOTE_ADDR"];
+        $ipAddress = $_SERVER['REMOTE_ADDR'];
         
         if( $loggedIn == true ) {
-        	$ip = $_SESSION["username"];
+        	$ipAddress = $_SESSION['username'];
         }
         
         $date = date('Y-m-d H:i:s', time());
@@ -143,10 +158,10 @@ function TrackVisit($db, $title, $loggedIn)
         if(isset($_SERVER['HTTP_USER_AGENT']) == true)
                 $agent = $_SERVER['HTTP_USER_AGENT'];
         
-        $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ip', '$date', '$agent')");
+        $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ipAddress', '$date', '$agent')");
 		
-		if( $ip != "192.9.200.54" && $ip  != "::1" && ip != "72.225.38.26" ) {
-			echo "<script>sendSlackMessageToMatt('" . $title . " visited by [" . $ip . "] on [" . $agent . "]');</script>";
+		if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
+			echo "<script>sendSlackMessageToMatt('" . $title . " visited by [" . $ipAddress . "] on [" . $agent . "]', ':earth_americas:', 'SodaStock - VISIT');</script>";
 		}
 }
 
@@ -328,8 +343,8 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
 	$cold_item = $row[6];
 	
 	if( !$isMobile ) {
-		$income = (($row[4] - ($row[5] + $row[6]) ) * $row[7] );
-		$expense = $row[9];
+		$income = $row['TotalIncome'];
+		$expense = $row['TotalExpenses'];
 		
 		
 		$profit = number_format(($income-$expense), 2);
@@ -423,6 +438,10 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
 		}
 		
 		echo "</div>";
+		
+		if( isset( $row['Frequency'] ) ) {
+			echo "<div style='padding:20px 0px 0px 0px; color:#00ff39; font-weight:bold;' >You have bought this ". $row['Frequency'] ." times.</div>";
+		}
 	}
 }
 

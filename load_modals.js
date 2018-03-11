@@ -1,176 +1,120 @@
-function loadModals(isLoggedIn, type) {
-
-	// Load the Coke Zero info on load
-	/*
-	var id = $("select#DailyAmountDropdown option:selected").attr('value');
-	$.post("itemstock_ajax.php", {item_id:id},function(data) {
-					var itemInfo = jQuery.parseJSON(data);
-					$('#BackstockQuantity').val(itemInfo['Backstock']);
-					$('#ShelfQuantity').val(itemInfo['Shelf']);
-					originalShelf = itemInfo['Shelf'];
-					$('#CurrentPrice').val(itemInfo['Price']);
-
-					
-	});
-*/
-
-	
-
+function loadItemModals(isLoggedIn, type) {
 	// Open modals with buttons
-	$("#add_item_button").click( function() {
-			$('#add_item').dialog('open');
+	$("#add_item_" + type + "_button").click( function() {
+			$('#add_item_' + type).dialog('open');
 			 return false;
 	});
 	
-	$("#edit_item_button").click( function() {
-			$('#edit_item').dialog('open');
+	$("#edit_item_" + type + "_button").click( function() {
+			$('#edit_item_' + type).dialog('open');
 			 return false;
 	});
 	
-	$("#restock_item_button").click( function() {
-			$('#restock_item').dialog('open');
+	$("#restock_item_" + type + "_button").click( function() {
+			$('#restock_item_' + type).dialog('open');
 			 return false;
 	});
 	
-	$("#daily_amount_button").click( function() {
-			$('#daily_amount').dialog('open');
-			 return false;
-	});
-
-	$("#send_email_button").click( function() {
-			$("#send_email_form").submit();
-			 return false;
-	});
-
 	
-				
-	/*    
-	// Change the item info on change
-	$("select#DailyAmountDropdown").change(function () {
-			var id = $("select#DailyAmountDropdown option:selected").attr('value');
-			$.post("itemstock_ajax.php", {item_id:id},function(data) {
-					var itemInfo = jQuery.parseJSON(data);
-					$('#BackstockQuantity').val(itemInfo['Backstock']);
-					$('#ShelfQuantity').val(itemInfo['Shelf']);
-					originalShelf = itemInfo['Shelf'];
-					$('#CurrentPrice').val(itemInfo['Price']);
-
-					
-			});
+	
+	$("#inventory_" + type + "_button").click( function() {
+			$('#inventory_' + type).dialog('open');
+			 return false;
 	});
-
-	$("#ShelfQuantity").change(function () {
-			var newValue = $("#ShelfQuantity").val();
-			if(newValue > originalShelf) {
-				var takenFromBackstock = (newValue - originalShelf);
-				var backStockQuantity = $("#BackstockQuantity").val();
-				var newBackstockQuantity = backStockQuantity - takenFromBackstock;
-
-				if(newBackstockQuantity >= 0 && takenFromBackstock > 0) {
-					$("#BackstockQuantity").val(newBackstockQuantity);
-					$("#BackStockUpdate").html(" (Removed <b>" + takenFromBackstock + "</b> from Backstock)");
-					$("#BackStockUpdate").css("color", "green");
-					originalShelf = newValue;
-				} else {
-					$("#ShelfQuantity").val(originalShelf);
-					$("#BackStockUpdate").html(" (Not enough backstock to remove " + takenFromBackstock + " cans!)");
-					$("#BackStockUpdate").css("color", "red");
-				}
-			}
-	});
-	*/
 
 	// Build forms
-	$( "#add_item" ).dialog( {
+	$( "#add_item_" + type ).dialog( {
 			autoOpen: false,
 			width: 500,
 			modal: true,
 			buttons: [
 						{
-							id: "Add_Item_Cancel",
+							id: "Add_Item_" + type + "_Cancel",
 							text: "Cancel",
 							click: function() {
 								$(this).dialog("close");
 							} 
 						},
 						{
-							id:"Add_Food_Submit",
+							id:"Add_Food_" + type + "_Submit",
 							text: "Add " + type,
 							click: function() { 
 								if(isLoggedIn) {
-									$("#add_item_form").submit();
+									$("#add_item_" + type + "_form").submit();
 								}
 							}
 						}
 					]
 	});    
 	
-	$( "#edit_item" ).dialog( {
+	$( "#edit_item_" + type ).dialog( {
 			autoOpen: false,
 			width: 500,
 			modal: true,
 			buttons: [
 						{
-							id: "Edit_Item_Cancel",
+							id: "Edit_Item_" + type + "_Cancel",
 							text: "Cancel",
 							click: function() {
 								$(this).dialog("close");
 							} 
 						},
 						{
-							id:"Edit_Item_Submit",
+							id:"Edit_Item_" + type + "_Submit",
 							text: "Edit " + type,
 							click: function() { 
 								if(isLoggedIn) {
-									$("#edit_item_form").submit();
+									$("#edit_item_" + type + "_form").submit();
 								}
 							}
 						}
 					]
 	});    
 	
-	$( "#restock_item" ).dialog( {
+	$( "#restock_item_" + type ).dialog( {
 			autoOpen: false, 
 			width: 500,
 			modal: true,
 			buttons: [
 						{
-							id: "Restock_Item_Cancel",
+							id: "Restock_Item_" + type + "_Cancel",
 							text: "Cancel",
 							click: function() {
 								$(this).dialog("close");
 							} 
 						},
 						{
-							id:"Restock_Item_Submit",
+							id:"Restock_Item_" + type + "_Submit",
 							text: "Restock " + type,
 							click: function() { 
 								if(isLoggedIn) {
-									$("#restock_item_form").submit();
+									$("#restock_item_" + type + "_form").submit();
 								}
 							}
 						}
 					]
 	});
 	
-	$( "#daily_amount" ).dialog( {
+	
+	
+	$( "#inventory_" + type ).dialog( {
 			autoOpen: false, 
 			width: 800,
 			modal: true,
 			buttons: [
 						{
-							id: "Update_Item_Cancel",
+							id: "Update_Item_" + type + "_Cancel",
 							text: "Cancel",
 							click: function() {
 								$(this).dialog("close");
 							} 
 						},
 						{
-							id:"Update_Item_Submit",
+							id:"Update_Item_" + type + "_Submit",
 							text: "Update " + type,
 							click: function() { 
 								if(isLoggedIn) {
-									$("#daily_amount_form").submit();
+									$("#inventory_" + type + "_form").submit();
 								}
 							}
 						}
@@ -178,5 +122,69 @@ function loadModals(isLoggedIn, type) {
 	});
 }
 
+function loadSingleModals( isLoggedIn ) {
+	$("#payment_button").click( function() {
+		$('#payment').dialog('open');
+		 return false;
+	});
+	
+	$( "#payment" ).dialog( {
+		autoOpen: false, 
+		width: 500,
+		modal: true,
+		buttons: [
+					{
+						id: "Payment_Cancel",
+						text: "Cancel",
+						click: function() {
+							$(this).dialog("close");
+						} 
+					},
+					{
+						id:"Payment_Submit",
+						text: "Add Payment",
+						click: function() { 
+							if(isLoggedIn) {
+								$("#payment_form").submit();
+							}
+						}
+					}
+				]
+	});
+}
+
+function loadUserModals( isLoggedIn ) {
+	$("#request_button").click( function() {
+		$('#request').dialog('open');
+		 return false;
+	});
+	
+	$( "#request" ).dialog( {
+		autoOpen: false, 
+		width: 500,
+		modal: true,
+		buttons: [
+					{
+						id: "Request_Cancel",
+						text: "Cancel",
+						click: function() {
+							$(this).dialog("close");
+						} 
+					},
+					{
+						id:"Request_Submit",
+						text: "Submit Request",
+						click: function() { 
+							if(isLoggedIn) {
+								$("#request_form").submit();
+							}
+						}
+					}
+				]
+	});
+}
+
 //Put the function at a global level so it can be accessed from diff files
-window.loadModals = loadModals;
+window.loadItemModals = loadItemModals;
+window.loadSingleModals = loadSingleModals;
+window.loadUserModals = loadUserModals;

@@ -1,35 +1,29 @@
 <?php 
-	echo "<div style='color:#FFF; background-color:#46465f;  border-bottom: 3px solid #000; width:100%; height:26px; padding: 5px 0px;'>";
+	echo "<div style='color:#FFF; background-color:#46465f;  border-bottom: 3px solid #000; width:100%;  padding: 5px 0px;'>";
+	echo "<div id='container_top' style='margin:10px;'>";
 
 	if( $isMobile ) {
-		if( $loggedInAdmin ) {
-			echo "<table style='width:97%;'>";
-			echo "<tr>";
-			echo "<td><button onclick='showAddItem();' style='padding:5px; margin:0px 5px; width:100%; height:4em;' id='add_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Add" . $itemType . "</button></td>";
-			echo "<td><button onclick='showEditItem();' style='padding:5px; margin:0px 5px; width:100%; height:4em;' id='edit_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Edit " . $itemType . "</button></td>";
-			echo "<td><button onclick='showRestockItem();' style='padding:5px; margin:0px 5px; width:100%; height:4em;' id='restock_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Restock " . $itemType . "</button></td>";
-			echo "<td><button onclick='showDailyAmount();' style='padding:5px; margin:0px 5px; width:100%; height:4em;' id='daily_amount_button' class='item_button ui-button ui-widget-content ui-corner-all'>Enter Daily Amount</button></td>";
-			echo "</tr>";
-			echo "</table>";
-		}
 		echo "<span style='float:right; padding:0px 5px; display:inline-block'>";
 		DisplayLoggedInUser($loggedIn, $loggedInAdmin, $loginPassword, $url);
 		echo "</span>";
 		echo "<div style='clear: both;'></div>";
 	} else {
-		if( $loggedInAdmin ) {
-			echo "<button style='padding:5px; margin:0px 5px;' id='add_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Add " . $itemType . "</button>";
-			echo "<button style='padding:5px; margin:0px 5px;' id='edit_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Edit " . $itemType . "</button>";
-			echo "&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;";
-			echo "<button style='padding:5px; margin:0px 5px;' id='restock_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Restock " . $itemType . "</button>";
-			echo "&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;";
-			echo "<button style='padding:5px; margin:0px 5px;' id='daily_amount_button' class='item_button ui-button ui-widget-content ui-corner-all'>Enter Daily Amount</button>";
-		}
-		
 		if(!$loggedIn) {
-			echo "<span style='height:100%; float:left; margin:5px 10px;'><a class='register' href='register.php'>Register for a Discount!<a/></span>";
+			echo "<span style='padding:5px;'><a class='register' href='register.php'>Register for a Discount!<a/></span>";
 		} else {
-			echo "Balance: $" .  number_format($_SESSION['balance'], 2);
+			echo "<a style='text-decoration:none;' href='sodastock.php'><span class='nav_buttons nav_buttons_soda'>Soda Home</span></a>";
+			echo "<a style='text-decoration:none;' href='snackstock.php'><span class='nav_buttons nav_buttons_snack'>Snack Home</span></a>";
+			echo "<a style='text-decoration:none;' href='requests.php'><span class='nav_buttons nav_buttons_requests'>Requests</span></a>";
+			
+			if( $loggedInAdmin ) {
+				echo "<a style='text-decoration:none;' href='admin_x25.php'><span class='nav_buttons nav_buttons_admin'>Administration</span></a>";
+			}
+			echo "<span style='margin-left:25px;'>";
+			echo "<a href='purchase_history.php?type=Soda'><span class='nav_buttons nav_buttons_soda'>Soda Balance: $" .  number_format($_SESSION['SodaBalance'], 2) . "</span></a>";
+			echo "&nbsp;";
+			echo "<a href='purchase_history.php?type=Snack'><span class='nav_buttons nav_buttons_snack'>Snack Balance: $" .  number_format($_SESSION['SnackBalance'], 2) . "</span></a>";
+			echo "</span>";
+			
 		}
 		
 		echo "<span style='float:right;'>";
@@ -37,6 +31,7 @@
 		echo "</span>";
 	}
 
+	echo "</div>";
 	echo "</div>";
 
 	function DisplayLoggedInUser($loggedIn, $loggedInAdmin, $loginPassword, $url) {
@@ -71,33 +66,3 @@
 		}
 	}
 ?>
-
-<script type="text/javascript">
-    function showAddItem() {
-		$('#add_item').show();
-		$('#edit_item').hide();
-		$('#restock_item').hide();
-		$('#daily_amount').hide();
-	}
-	
-	function showEditItem() {
-		$('#add_item').hide();
-		$('#edit_item').show();
-		$('#restock_item').hide();
-		$('#daily_amount').hide();
-	}
-	
-	function showRestockItem() {
-		$('#add_item').hide();
-		$('#edit_item').hide();
-		$('#restock_item').show();
-		$('#daily_amount').hide();
-	}
-	
-	function showDailyAmount() {
-		$('#add_item').hide();
-		$('#edit_item').hide();
-		$('#restock_item').hide();
-		$('#daily_amount').show();
-	}
-</script>
