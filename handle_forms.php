@@ -31,6 +31,7 @@ else if(isset($_POST['EditItem']))
 	        $name = trim($_POST["EditItemName" . $itemType]);
 	        $chartColor = trim($_POST["EditChartColor" . $itemType]); 
 	        $price = trim($_POST["EditPrice" . $itemType]); 
+	        $discountPrice = trim($_POST["EditDiscountPrice" . $itemType]); 
 	        $imageURL = trim($_POST["EditImageURL" . $itemType]); 
 	        $thumbURL = trim($_POST["EditThumbURL" . $itemType]); 
 	        $unitName = trim($_POST["EditUnitName" . $itemType]); 
@@ -40,7 +41,7 @@ else if(isset($_POST['EditItem']))
 			$retired = $status == "active" ? 0 : 1;
 			
 			 error_log("StatusRR: " . $retired );
-	        $db->exec("UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName'  where ID = $id");
+	        $db->exec("UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName'  where ID = $id");
 
 	        echo "Item edited successfully.<br>";
     	} else  {
@@ -198,8 +199,8 @@ else if(isset($_POST['Request']))
 {
 	$itemType = trim($_POST["ItemTypeDropdown_Request"]);
 	$date = date('Y-m-d H:i:s');
-	$itemName = trim($_POST["ItemName_Request"]);
-	$note = trim($_POST["Note_Request"]);
+	$itemName = $db->escapeString(trim($_POST["ItemName_Request"]));
+	$note = $db->escapeString(trim($_POST["Note_Request"]));
 	$userID = $_SESSION['userID'];
 	$username = $_SESSION['username'];
 	$slackID = $_SESSION['SlackID'];

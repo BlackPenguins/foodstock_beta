@@ -212,18 +212,20 @@ if(!$isMobile) {
 	$total_income = $row['Income'];
 	$total_expense = $row['Expenses'];
 	$total_profit = $row['ProfitExpected'];
-	$total_profit_actual = $row['ProfitActual'];
+	$total_income_actual = $row['ProfitActual'];
 	$firstDay = $row['FirstDay'];
 	
 
 	echo "<div style='margin: auto;'>";
-	echo "<span style='color:white; background-color:#800; padding:5px; border: #000 2px dashed; margin-right:5px;'>$version</span>";
+	echo "<div>";
+	echo "<span style='color:white; background-color:#800; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span>";
 	if( $loggedInAdmin ) {
-		echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income:</b> $". number_format($total_income, 2)."</span>";
+		echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Expected):</b> $". number_format($total_income, 2)."</span>";
 		echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Total Expenses:</b> $". number_format($total_expense, 2)."</span>";
 		echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Expected):</b> $". number_format($total_profit, 2)."</span>";
-		echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Actual):</b> $". number_format($total_profit_actual, 2)."</span>";
+		
 	}
+	
 	$dateNow = new DateTime();
 	$firstDay = DateTime::createFromFormat('Y-m-d H:i:s', $row['FirstDay']);
 	
@@ -233,6 +235,17 @@ if(!$isMobile) {
 	$profitPerDay = $total_profit / $days_ago;
 	echo "<span style='color:black; background-color:#FFF; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit / Day:</b> $". number_format($profitPerDay, 2)."</span>";
 	echo "<span style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px dashed;'><b>Days Active: </b>". $days_ago ." days</span>";
+	echo "</div>";
+	
+	echo "<div style='margin-left:269px; margin-top:12px;'>";
+	
+	if( $loggedInAdmin ) {
+		echo "<span style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Actual):</b> $". number_format($total_income_actual, 2)."</span>";
+		$actualProfit = $total_income_actual - $total_expense;
+		echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Actual):</b> $". number_format($actualProfit, 2)."</span>";
+	}
+	echo "</div>";
+	
 	echo "<div></div>";
 }
 

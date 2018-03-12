@@ -19,14 +19,14 @@
         	if( $_POST['UserName'] == "" || $_POST['Password'] == "" || $_POST['FirstName'] == "" || $_POST['LastName'] == "" ) {
         		$userError = "You must provide User Name, Password, First Name, and Last Name.";
         	} else {
-	        	$username = trim($_POST["UserName"]);
+	        	$username = $db->escapeString(trim($_POST["UserName"]));
 	        	$password_sha1 = sha1($_POST["Password"]);
-	        	$firstName = $_POST["FirstName"];
-	        	$lastName = $_POST["LastName"];
+	        	$firstName = $db->escapeString($_POST["FirstName"]);
+	        	$lastName = $db->escapeString($_POST["LastName"]);
 	        	$phoneNumber = "";
 	        	
 	        	if( isset( $_POST['PhoneNumber'] ) ) {
-	        		$phoneNumber = $_POST["PhoneNumber"];
+	        		$phoneNumber = $db->escapeString($_POST["PhoneNumber"]);
 	        	}
 	        	$date = date('Y-m-d H:i:s');
 	        	 

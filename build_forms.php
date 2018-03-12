@@ -58,7 +58,7 @@
         
         function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
         	// Build Item Dropdown
-        	$results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName FROM Item WHERE Type ='" . $itemType . "' order by name asc");
+        	$results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, DiscountPrice FROM Item WHERE Type ='" . $itemType . "' order by name asc");
         	$item_options = "";
         	$item_options_no_discontinued = "";
         	$item_info = "";
@@ -66,6 +66,7 @@
         		$item_id = $row[0];
         		$item_name = $row[1];
         		$item_price = $row[2];
+        		$item_discount_price = $row[8];
         		$item_retired = $row[3];
         		$item_chart_color = $row[4];
         		$item_imageURL = $row[5];
@@ -84,6 +85,7 @@
         	
         		$item_info = $item_info . "<input type='hidden' id='Item_" . $itemType . "_Name_$item_id' value='$item_name'/>" .
         		"<input type='hidden' id='Item_" . $itemType . "_Price_$item_id' value='$item_price'/>" .
+        		"<input type='hidden' id='Item_" . $itemType . "_DiscountPrice_$item_id' value='$item_discount_price'/>" .
         		"<input type='hidden' id='Item_" . $itemType . "_ImageURL_$item_id' value='$item_imageURL'/>" .
         		"<input type='hidden' id='Item_" . $itemType . "_ThumbURL_$item_id' value='$item_thumbURL'/>" .
         		"<input type='hidden' id='Item_" . $itemType . "_UnitName_$item_id' value='$item_unit_name'/>" .
@@ -126,6 +128,7 @@
         	$editNameID = "EditItemName" . $itemType;
         	$editChartColorID = "EditChartColor" . $itemType;
         	$editPriceID = "EditPrice" . $itemType;
+        	$editDiscountPriceID = "EditDiscountPrice" . $itemType;
         	$editImageURLID = "EditImageURL" . $itemType;
         	$editThumbURLID = "EditThumbURL" . $itemType;
         	$editUnitNameID = "EditUnitName" . $itemType;
@@ -142,8 +145,10 @@
         	echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='30'; id='$editNameID' name='$editNameID' class='text ui-widget-content ui-corner-all'>";
         	echo "<label style='padding:5px 0px;' for='ChartColor'>Color</label>";
         	echo "<input id='$editChartColorID' name='$editChartColorID' class='color text ui-widget-content ui-corner-all'>";
-        	echo "<label style='padding:5px 0px;' for='CurrentPrice'>Price of Can</label>";
+        	echo "<label style='padding:5px 0px;' for='CurrentPrice'>Price</label>";
         	echo "<input type='tel' id='$editPriceID' name='$editPriceID' class='text ui-widget-content ui-corner-all'/>";
+        	echo "<label style='padding:5px 0px;' for='CurrentPrice'>Discount Price</label>";
+        	echo "<input type='tel' id='$editDiscountPriceID' name='$editDiscountPriceID' class='text ui-widget-content ui-corner-all'/>";
         	echo "<label style='padding:5px 0px;' for='ImageURL'>Image URL</label>";
         	echo "<input id='$editImageURLID' name='$editImageURLID' class='text ui-widget-content ui-corner-all'>";
         	echo "<label style='padding:5px 0px;' for='ThumbURL'>Thumb URL</label>";
@@ -292,6 +297,7 @@ function setItemInfo( type ) {
 	var itemID = parseInt($('#Edit' + type + 'Dropdown').val());
 	var itemName = $('#Item_' + type + '_Name_' + itemID).val();
 	var itemPrice = $('#Item_' + type + '_Price_' + itemID).val();
+	var itemDiscountPrice = $('#Item_' + type + '_DiscountPrice_' + itemID).val();
 	var itemImageURL = $('#Item_' + type + '_ImageURL_' + itemID).val();
 	var itemUnitName = $('#Item_' + type + '_UnitName_' + itemID).val();
 	var itemThumbURL = $('#Item_' + type + '_ThumbURL_' + itemID).val();
@@ -301,6 +307,7 @@ function setItemInfo( type ) {
 	
 	$("#EditItemName" + type).val(itemName);
 	$("#EditPrice" + type).val(itemPrice);
+	$("#EditDiscountPrice" + type).val(itemDiscountPrice);
 	$("#EditImageURL" + type).val(itemImageURL);
 	$("#EditThumbURL" + type).val(itemThumbURL);
 	$("#EditUnitName" + type).val(itemUnitName);
