@@ -47,6 +47,13 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
     background-color: #7c24b3;
 }
 
+.nav_buttons_billing:hover {
+    background-color: #70d682;
+}
+.nav_buttons_billing {
+    background-color: #1f9a34;
+}
+
 .nav_buttons_admin:hover {
 	background-color: #dadc4b;
 }
@@ -253,4 +260,36 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
 
 .container {
 	padding: 10px;
+}
+
+.table_header {
+	background-color: #7a8020;
+	font-weight:bold;
+}
+
+
+.discontinued_row {
+    background-color: #8a3535;
+}
+
+.odd {
+	background-color: #358a37;
+}
+
+.billing_row {
+    background-color: #64af82;
+}
+
+.payment_row {
+    background-color: #a067b7;
+}
+
+.even {
+    background-color: #49bb4c;
+}
+
+.red_price {
+    color:#b50505;
+    text-decoration:line-through;
+    margin-right:5px;
 }

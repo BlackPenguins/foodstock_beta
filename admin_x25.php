@@ -72,7 +72,6 @@
 		echo "<body class='soda_body'>";
 	}
 	
-	include("handle_forms.php");
 	include("build_forms.php");
 	include("login_bar.php");
 	
@@ -119,10 +118,11 @@
 	// ------------------------------------
 	echo "<div class='soda_popout'  style='margin:10px; padding:5px;'><span style='font-size:26px;'>Users</span> <span style='font-size:0.8em;'></span></div>";
 	echo "<div id='users'>";
-	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-	echo "<thead><tr>";
+	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:98%'>";
+	echo "<thead><tr class='table_header'>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>UserName</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
+	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Slack ID</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Phone Number</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Created</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Soda Balance</th>";
@@ -130,20 +130,26 @@
 	
 	echo "</tr></thead>";
 	
-	$results = $db->query('SELECT u.UserID, u.UserName, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated FROM User u ORDER BY u.DateCreated DESC');
+	$rowClass = "odd";
+	
+	$results = $db->query('SELECT u.UserID, u.UserName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated FROM User u ORDER BY u.DateCreated DESC');
 	while ($row = $results->fetchArray()) {
-		echo "<tr>";
+		echo "<tr class='$rowClass'>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['UserName'] . "</td>";
 		$fullName = $row['FirstName'] . " " . $row['LastName'];
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
+		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['SlackID'] . "</td>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['PhoneNumber'] . "</td>";
 		$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateCreated']);
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "</td>";
 		$purchaseHistorySodaURL = "<a href='purchase_history.php?type=Soda&name=" . $fullName . "&userid=" . $row['UserID'] . "'>$" . number_format($row['SodaBalance'], 2) . "</a>";
 		$purchaseHistorySnackURL = "<a href='purchase_history.php?type=Snack&name=" . $fullName . "&userid=" . $row['UserID'] . "'>$" . number_format($row['SnackBalance'], 2) . "</a>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>" . $purchaseHistorySodaURL .  "</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>" . $purchaseHistorySnackURL .  "</td>";
+		$billingSodaURL = "<a href='billing.php?type=Soda&name=" . $fullName . "&userid=" . $row['UserID'] . "'>Billing</a>";
+		$billingSnackURL = "<a href='billing.php?type=Snack&name=" . $fullName . "&userid=" . $row['UserID'] . "'>Billing</a>";
+		echo "<td style='padding:5px; border:1px #000 solid;'>" . $purchaseHistorySodaURL . " (" . $billingSodaURL . ")</td>";
+		echo "<td style='padding:5px; border:1px #000 solid;'>" . $purchaseHistorySnackURL . " (" . $billingSnackURL . ")</td>";
 		echo "</tr>";
+		if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
 	}
 	
 		echo "</table>";
@@ -154,8 +160,8 @@
 	// ------------------------------------
 	echo "<div class='soda_popout' onclick='$(\"#item_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Item Inventory</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
 	echo "<div id='item_all' style='display:none;'>";
-	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-	echo "<thead><tr>";
+	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:98%'>";
+	echo "<thead><tr class='table_header'>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>ID</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
@@ -171,9 +177,11 @@
 	
 	echo "</tr></thead>";
 	
-	$results = $db->query("SELECT ID, Name, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Retired FROM Item WHERE Type ='" . $itemType . "' ORDER BY Retired, ID DESC");
+	$rowClass = "odd";
+	
+	$results = $db->query("SELECT ID, Name, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Retired FROM Item  ORDER BY Retired, Type DESC, ID DESC");
 	while ($row = $results->fetchArray()) {
-		echo "<tr>";
+		echo "<tr class='$rowClass'>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>$row[1]</td>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>$row[2]</td>";
@@ -187,6 +195,7 @@
 		echo "<td style='padding:5px; border:1px #000 solid;'>$row[11]</td>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>".(($row[12]==1)?("YES"):("NO"))."</td>";
 		echo "</tr>";
+		if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
 	}
 	
 	echo "</table>";
@@ -197,122 +206,54 @@
 	// ------------------------------------
 	echo "<div class='soda_popout' onclick='$(\"#restock_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Restock Schedule</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
 	echo "<div id='restock_all' style='display:none;'>";
-	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-	echo "<thead><tr>";
+	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:98%'>";
+	echo "<thead><tr class='table_header'>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Number of Units</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Cost</th>";
+	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Cost</th>";
+	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Cost Each</th>";
+	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Current Price</th>";
+	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Discount Price</th>";
 	
 	echo "</tr></thead>";
 	
-	$results = $db->query('SELECT s.Name, r.ItemID, r.Date, r.NumberOfCans, r.Cost FROM Restock r JOIN Item s ON r.itemID = s.id  ORDER BY r.Date DESC');
+	$rowClass = "odd";
+	$previousItem = "";
+	
+	$results = $db->query("SELECT s.Name, r.ItemID, r.Date, r.NumberOfCans, r.Cost, (r.Cost/r.NumberOfCans) as 'CostEach', s.Price, s.DiscountPrice, s.Retired FROM Restock r JOIN Item s ON r.itemID = s.id  ORDER BY s.Type DESC, s.Retired ASC, s.Name, CostEach DESC, r.Date DESC");
 	while ($row = $results->fetchArray()) {
-		echo "<tr>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";
-		$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row[2]);
-		echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[3]</td>";
-			echo "<td style='padding:5px; border:1px #000 solid;'>$$row[4]</td>";
-			echo "</tr>";
-	}
-	
-	echo "</table>";
-	echo "</div>";
-	
-	
-	// ------------------------------------
-	// INVENTORY TABLE
-	// ------------------------------------
-	echo "<div class='soda_popout' onclick='$(\"#daily_count_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Daily Count</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
-	echo "<div id='daily_count_all' style='display:none;'>";
-	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-	echo "<thead><tr>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Shelf Quantity</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Backstock Quantity</th>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price</th>";
-	
-	echo "</tr></thead>";
-	
-	$dailyData = array();
-	
-	$results = $db->query('SELECT s.Name, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.Price FROM Daily_Amount r JOIN Item s ON r.itemID = s.id  ORDER BY r.Date DESC');
-	while ($row = $results->fetchArray()) {
-		echo "<tr>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[1]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[3]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[2]</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>$row[4]</td>";
-		echo "</tr>";
-	}
-	
-	echo "</table>";
-	echo "</div>";
-	
-	// ------------------------------------
-		// VISITS TABLE
-	// ------------------------------------
-	echo "<div class='soda_popout' onclick='$(\"#visits_all\").toggle();' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Page Visits</span> <span style='font-size:0.8em;'>(show/hide)</span></div>";
-		echo "<div id='visits_all' style='display:none;'>";
-			echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:100%'>";
-		echo "<thead><tr>";
-		echo "<th style='padding:5px; border:1px #000 solid;' align='left'>IP</th>";
-		echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-		echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Agent</th>";
-		echo "</tr></thead>";
-	
-		$self_count = 0;
-	$self_date = "";
-			$self_agent = "";
-
-			$results = $db->query('SELECT IP, Date, Agent FROM Visits ORDER BY Date DESC');
-		while ($row = $results->fetchArray()) {
+		$maxCostEach = "";
+		if( $previousItem != "" && $previousItem != $row['Name'] ) {
+			if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
+			$maxCostEach = "font-weight:bold; font-size:1.1em;";
+		}
 		
-			$ip = $row[0];
-			if( strpos($row[0], '|') !== false ) {
-			$ip_pieces = explode("|", $ip);
-			$ip = trim($ip_pieces[0]);
-			}
-
-
-			$ip = GetNameByIP($ip);
-
-			if($self_count != 0 && $ip != "<span style='color:red;'>Matt Miles</span>") {
-			echo "<tr>";
-			echo "<td style='padding:5px; border:1px #000 solid; font-weight:bold;'><span style='color:red;'>Matt Miles</span> (" . $self_count . " times)</td>";
-					$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $self_date);
-			echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-
-					echo "<td style='padding:5px; border:1px #000 solid;'>$self_agent</td>";
-			echo "</tr>";
-			$self_count = 0;
-			}
-
-			if($ip == "<span style='color:red;'>Matt Miles</span>") {
-			$self_count++;
-			$self_date = $row[1];
-					$self_agent = $row[2];
-				} else {
-
-
-					echo "<tr>";
-					echo "<td style='padding:5px; border:1px #000 solid; font-weight:bold;'>$ip</td>";
-							$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row[1]);
-							echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-
-					echo "<td style='padding:5px; border:1px #000 solid;'>$row[2]</td>";
-								echo "</tr>";
-					}
-						
-
-						
-					}
-						
-					echo "</table>";
-					echo "</div>";
+		if( $row['Retired'] == 1) {
+			$rowClass = "discontinued_row";
+		}
+		
+		echo "<tr class='$rowClass'>";
+		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
+		$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
+		echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['NumberOfCans'] . "</td>";
+		echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $row['Cost'], 2) . "</td>";
+		$costEach = $row['CostEach'];
+		
+		
+		echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $costEach, 2 )  . "</td>";
+		echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $row['Price'], 2 )  . "</td>";
+		echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $row['DiscountPrice'], 2 )  . "</td>";
+		echo "</tr>";
+		
+		$previousItem = $row['Name'];
+	}
+	
+	echo "</table>";
+	echo "</div>";
+	
+	
 ?>
 
 </body>

@@ -1,28 +1,48 @@
-<script type="text/javascript">
-function sendSlackMessageToMatt( slackMessage, emoji, botName ) {
-	sendSlackMessage( "@mmiles", slackMessage, emoji, botName );
-}
-
-function sendSlackMessageToUser( slackID, slackMessage, emoji, botName ) {
-	sendSlackMessage( "@" + slackID, slackMessage, emoji, botName );
-}
-
-function sendSlackMessageToRandom( slackMessage, emoji, botName ) {
-	sendSlackMessage( "#the_nerd_herd", slackMessage, emoji, botName );
-}
-
-function sendSlackMessage( slackID, slackMessage, emoji, botName ) {
-	$.ajax({
-		data: 'payload=' + JSON.stringify({ "channel":slackID, "icon_emoji":emoji, "username":botName,"text":slackMessage }),
-		dataType: 'json',
-		processData: false,
-		type: 'POST',
-		url: 'https://hooks.slack.com/services/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'
-	});
-}
-</script>
-
 <?php
+
+function sendSlackMessageToMatt( $slackMessage, $emoji, $botName ) {
+	sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
+}
+
+function sendSlackMessageToUser( $slackID, $slackMessage, $emoji, $botName ) {
+	sendSlackMessagePOST( "@" . $slackID, $emoji, $botName, $slackMessage );
+}
+
+function sendSlackMessageToRandom( $slackMessage, $emoji, $botName ) {
+	sendSlackMessagePOST( "#random", $emoji, $botName, $slackMessage );
+}
+
+function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
+	error_log("Sending Slack Message:\nSlack ID: [" . $slackID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $slackMessage . "]" );
+	$params = array( "channel" => $slackID, "icon_emoji" => $emoji , "username" => $botName, "text" => $slackMessage);
+
+	$url = 'https://hooks.slack.com/services/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';
+	
+	$fields = array(
+		'payload' => json_encode($params)
+	);
+	
+	// build the urlencoded data
+	$postvars = http_build_query($fields);
+	
+	// open connection
+	$ch = curl_init();
+	
+	// set the url, number of POST vars, POST data
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_POST, count($fields));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	
+	// execute post
+	$result = curl_exec($ch);
+	
+	if( $result != "ok" ) {
+		error_log("There was an error connecting to slack!! [" . $result . "]" );
+	}
+	// close connection
+	curl_close($ch);
+}
 function GetNameByIP($ip)
 {
     if($ip == "192.9.200.54") {
@@ -70,6 +90,12 @@ function Login($db) {
 	
 	if( isset( $_SESSION['signed_in'] ) && $_SESSION['signed_in'] == true ) {
 		// Already logged in
+		$results = $db->query("SELECT * FROM User WHERE UserName = '" . $_SESSION['username'] . "'");
+		$row = $results->fetchArray();
+		$_SESSION['SlackID'] = $row['SlackID'];
+		$_SESSION['SodaBalance'] = $row['SodaBalance'];
+		$_SESSION['SnackBalance'] = $row['SnackBalance'];
+		error_log( "Recached SlackID [" . $_SESSION['SlackID'] . "] for [" . $_SESSION['username'] . "]" );
 		return;
 	}
 
@@ -161,7 +187,7 @@ function TrackVisit($db, $title, $loggedIn)
         $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ipAddress', '$date', '$agent')");
 		
 		if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
-			echo "<script>sendSlackMessageToMatt('" . $title . " visited by [" . $ipAddress . "] on [" . $agent . "]', ':earth_americas:', 'SodaStock - VISIT');</script>";
+			sendSlackMessageToMatt($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SodaStock - VISIT NEW" );
 		}
 }
 
@@ -259,12 +285,20 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
         return $ago_text;
 }
 
-function buildTopSection( $row, $containerType, $location, $isMobile ) {
+function buildTopSection( $row, $containerType, $location, $loggedIn, $isMobile ) {
 	$retired_label = "<span style='color:#FF6464; border: #9D3A3A 2px dashed; padding:10px; font-weight:bold;'>DISCONTINUED</span>";
 	
 	$item_id = $row[0];
 	$item_name = $row[1];
 	$price = $row[7];
+	$originalPrice = $price;
+	$discountPrice = $row['DiscountPrice'];
+	$hasDiscount = false;
+	
+	if( $loggedIn && $discountPrice != "" ) {
+		$price = $discountPrice;
+		$hasDiscount = true;
+	}
 
 	$price_color = "#FFFFFF";
 	$price_background_color = "#025F00";
@@ -279,21 +313,19 @@ function buildTopSection( $row, $containerType, $location, $isMobile ) {
 		$price_background_color = "#5f0000";
 	}
 
-	if($item_name == "Diet Mountain Dew") {
-		$price = "FREE";
-	} else if( $price >= 1.00 ) {
-		$price = "$" . $price;
-	} else {
-		$price = $price * 100;
-		$price = $price . "&cent;";
-	}
-
 	$retired_item = $row[12];
 	$cold_item = $row[6];
 	$warm_item = $row[5];
 
+	$priceDisplay = "";
+	
+	if( $loggedIn && $hasDiscount == true ) {
+		$priceDisplay = "<span style='font-size:19px; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>".getPriceDisplay ( $discountPrice )."</span><span style='font-size:19px; color:#FFFFFF; padding:5px; font-weight:bold; background-color:#151515; text-decoration:line-through; margin-right:5px; border: 2px solid #6b6b6b; float:right;'>". getPriceDisplay( $originalPrice ) ."</span>";
+	} else {
+		$priceDisplay = "<span style='font-size:19px; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>". getPriceDisplay( $price ) ."</span>";
+	}
     echo "<div style='height:200px;'>";
-    echo "<span style='font-size:19px; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>".$price."</span>";
+    echo $priceDisplay;
 
     echo "<div style='width:40%; float:left;'>";
     DisplayCan($row[1], ($cold_item + $warm_item == 0), $row[13] );
@@ -338,6 +370,16 @@ function buildTopSection( $row, $containerType, $location, $isMobile ) {
     echo "</div>";
 }
 
+function getPriceDisplay($price) {
+	if( $price >= 1.00 ) {
+		$price = "$" . number_format($price,2);
+	} else {
+		$price = $price * 100;
+		$price = $price . "&cent;";
+	}
+	
+	return $price;
+}
 function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
 	
 	$cold_item = $row[6];

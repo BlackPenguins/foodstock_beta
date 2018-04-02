@@ -34,7 +34,7 @@
         // PAYMENT MODAL
         // ------------------------------------
         echo "<div id='payment' title='Add Payment' $hideForms>";
-        echo "<form id='payment_form' class='fancy' enctype='multipart/form-data' action='admin_x25.php' method='POST'>";
+        echo "<form id='payment_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         echo "<fieldset>";
         echo "<label style='padding:5px 0px;' for='ItemTypeDropdown'>Type</label>";
         echo $itemType_dropdown;
@@ -49,6 +49,7 @@
         
         echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
         echo "<input type='hidden' name='Payment' value='Payment'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
         
         echo "</fieldset>";
         echo "</form>";
@@ -72,10 +73,14 @@
         		$item_imageURL = $row[5];
         		$item_thumbURL = $row[6];
         		$item_unit_name = $row[7];
-        		if(strlen($item_name) > 30)
-        		{
+        		if(strlen($item_name) > 30) {
         			$item_name = substr($item_name, 0, 30)."...";
         		}
+        		
+        		if( $item_discount_price == "" ) {
+        			$item_discount_price = 0.0;
+        		}
+        		
         		$strikethrough = ( $item_retired == "0" ? "" : " style='font-weight:bold; color:#9b0909'");
         		$item_options = $item_options . "<option $strikethrough value='$row[0]'>$item_name</option>";
         	
@@ -102,7 +107,7 @@
         	// ADD ITEM MODAL
         	// ------------------------------------
         	echo "<div id='add_item_" . $itemType . "' class='fancy' title='Add " . $itemType . "' $hideForms>";
-        	echo "<form id='add_item_" . $itemType . "_form' enctype='multipart/form-data' action='admin_x25.php' method='POST'>";
+        	echo "<form id='add_item_" . $itemType . "_form' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         	echo "<fieldset>";
         	echo "<label style='padding:5px 0px;' for='ItemName'>Name</label>";
         	echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='40'; name='ItemName' class='text ui-widget-content ui-corner-all'>";
@@ -114,6 +119,7 @@
         	echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
         	echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
         	echo "<input type='hidden' name='AddItem' value='AddItem'/><br>";
+        	echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
         	
         	if( $isMobile) {
         		echo "<input class='ui-button' style='padding:10px;' type='submit' name='Add_Food_" . $itemType .  "_Submit' value='Add " . $itemType . "'/><br>";
@@ -137,7 +143,7 @@
         	$editStatusID = "EditStatus" . $itemType;
         	
         	echo "<div id='edit_item_" . $itemType . "' class='fancy' title='Edit " . $itemType . "' $hideForms>";
-        	echo "<form id='edit_item_" . $itemType . "_form' enctype='multipart/form-data' action='admin_x25.php' method='POST'>";
+        	echo "<form id='edit_item_" . $itemType . "_form' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         	echo "<fieldset>";
         	echo "<label style='padding:5px 0px;' for='ItemNameDropdown'>" . $itemType . "</label>";
         	echo $edit_dropdown;
@@ -166,6 +172,7 @@
         	echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
         	echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
         	echo "<input type='hidden' name='EditItem' value='EditItem'/><br>";
+        	echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
         	
         	if( $isMobile) {
         		echo "<input class='ui-button' style='padding:10px;' type='submit' name='Edit_Item_" . $itemType .  "_Submit' value='Edit " . $itemType . "'/><br>";
@@ -178,7 +185,7 @@
         	// RESTOCK ITEM MODAL
         	// ------------------------------------
         	echo "<div id='restock_item_" . $itemType . "' title='Restock " . $itemType . "' $hideForms>";
-        	echo "<form id='restock_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='admin_x25.php' method='POST'>";
+        	echo "<form id='restock_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         	echo "<fieldset>";
         	echo "<label style='padding:5px 0px;' for='ItemNameDropdown'>" . $itemType . "</label>";
         	echo $restock_dropdown;
@@ -190,6 +197,7 @@
         	echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
         	echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/><br>";
         	echo "<input type='hidden' name='Restock' value='Restock'/><br>";
+        	echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
         	
         	if( $isMobile) {
         		echo "<input style='padding:10px;' type='submit' name='Restock_Item_" . $itemType .  "_Submit' value='Restock " . $itemType . "'/><br>";
@@ -202,7 +210,7 @@
         	// INVENTORY MODAL - ALL ITEMS
         	// ------------------------------------
         	echo "<div id='inventory_" . $itemType . "' title='Enter Inventory' $hideForms>";
-        	echo "<form id='inventory_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='admin_x25.php' method='POST'>";
+        	echo "<form id='inventory_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         	
 	        echo "<table>";
 	        	echo "<tr><th>" . $itemType . "</th><th>Shelf Quantity</th><th>Backstock Quantity</th>";
@@ -269,6 +277,7 @@
 	        	
 	        			echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
 	       	echo "<input type='hidden' name='Inventory' value='Inventory'/><br>";
+	       	echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
 	        	
 	        	
 			if( $isMobile) {

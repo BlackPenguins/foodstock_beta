@@ -25,10 +25,10 @@
     		$nameQuery = " AND Name Like '%" . $itemSearch . "%' ";
     	}
     	
-    	$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
+    	$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, DiscountPrice FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
     	
     	if( $userID != "" ) {
-    		$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $userID . " AND p.ItemID = i.ID) as Frequency FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
+    		$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $userID . " AND p.ItemID = i.ID) as Frequency, DiscountPrice FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
     	}
     	
 		$results = $db->query($cardQuery);
@@ -54,7 +54,7 @@
 			}
 		
 			echo "<div class='top_section'>";
-			buildTopSection($row, $containerType, $location, $isMobile);
+			buildTopSection($row, $containerType, $location, $loggedIn, $isMobile);
 			echo "</div>";
 		
 			echo "<div class='middle_section'>";
@@ -71,10 +71,22 @@
 		
 		}
     } 
+    else if( $type == "ToggleRequestCompleted" ) {
+    	$requestID = $_POST['id'];
+    	$results = $db->query("SELECT Completed FROM Requests WHERE ID =" . $requestID );
+    	$row = $results->fetchArray();
+    	
+    	if( $row['Completed'] == 1 ) {
+    		$db->exec( "UPDATE Requests set Completed = 0 WHERE ID = " . $requestID );
+    	} else {
+    		$db->exec( "UPDATE Requests set Completed = 1 WHERE ID = " . $requestID );
+    	}
+    }
     else if($type == "DrawCart" )
     {
     	$itemQuantities = array();
     	$itemPrices = array();
+    	$itemDiscountPrices = array();
     	$itemNames = array();
     	
     	$itemsInCart = json_decode($_POST['items']);
@@ -86,38 +98,53 @@
     			$row = $results->fetchArray();
     			$itemName = $row['Name'];
     			$itemPrice = $row['Price'];
+    			$itemDiscountPrice = $row['DiscountPrice'];
     			
     			$itemQuantities[$itemID] = 1;
     			$itemNames[$itemID] = $itemName;
     			$itemPrices[$itemID] = $itemPrice;
+    			$itemDiscountPrices[$itemID] = $itemDiscountPrice;
     		} else {
     			$itemQuantities[$itemID] = $itemQuantities[$itemID] + 1;
     		}
     	}
     	
     	$totalPrice = 0.0;
+    	$totalSavings = 0.0;
     	
     	echo "<table style='border-collapse:collapse;'>";
     	echo "<tr><th style='color:#FFFFFF;'>Item</th><th style='color:#FFFFFF;'>Price</th></tr>";
     	foreach( $itemQuantities as $itemID => $itemQuantity ) {
     		$itemName = $itemNames[$itemID];
     		$itemPrice = $itemPrices[$itemID];
+    		$itemDiscountPrice = $itemDiscountPrices[$itemID];
+    		$costDisplay = "";
     		
-    		$totalPriceForItem = ( $itemPrice * $itemQuantity);
+    		if( $itemDiscountPrice != "" ) {
+    			$costDisplay = "<span class='red_price'>$" . number_format($itemPrice, 2) . "</span> $" . number_format($itemDiscountPrice,2);
+    			$totalPriceForItem = ( $itemDiscountPrice * $itemQuantity);
+    			$totalSavings += ( $itemPrice - $itemDiscountPrice ) * $itemQuantity;
+    		} else {
+    			$costDisplay = number_format($itemPrice, 2);
+    			$totalPriceForItem = ( $itemPrice * $itemQuantity);
+    		}
+    		
     		$totalPrice += $totalPriceForItem;
     		
-    		echo "<tr><td style='color:#FFFFFF; padding: 5px 0px;'>" . $itemName . ( $itemQuantity > 1 ? " (x" . $itemQuantity . ")" : "" ) . "</td><td style='color:#FFFFFF; padding-left:15px;'>$" . number_format($totalPriceForItem, 2) . "</td></tr>";
+    		echo "<tr><td style='color:#FFFFFF; padding: 5px 0px;'>" . $itemName . ( $itemQuantity > 1 ? " (x" . $itemQuantity . ")" : "" ) . "</td><td style='color:#FFFFFF; padding-left:15px;'>" . $costDisplay . "</td></tr>";
     		//echo "<div style='padding:10px;'>" . $itemName . ( $itemQuantity > 1 ? " (x" . $itemQuantity . ")" : "" ) . " = " .  '$' . number_format($totalPriceForItem, 2) . "</div>";
     	}
     	
     	echo "<tr><td style='color:#FFFFFF; padding-top:15px; border-top: 1px solid #FFF;'>TOTAL PRICE:</td><td style='color:#FFFFFF; font-weight:bold; padding-left:15px; padding-top:15px; border-top: 1px solid #FFF;'>" . '$' . number_format($totalPrice, 2) ."</td>";
+    	echo "<tr><td style='color:#49c533; padding-top:5px;'>TOTAL SAVINGS:</td><td style='color:#49c533; font-weight:bold; padding-left:15px; padding-top:5px;'>" . '$' . number_format($totalSavings, 2) ."</td>";
     	echo "</table>";
     	
-    	echo "<form id='add_item_form' enctype='multipart/form-data' action='$url' method='POST'>";
+    	echo "<form id='add_item_form' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
     	echo "<input type='hidden' name='items' value='" . json_encode($itemsInCart) . "'/><br>";
     	echo "<input type='hidden' name='Purchase' value='Purchase'/><br>";
+    	echo "<input type='hidden' name='redirectURL' value='$url'/><br>";
     	echo "<button class='quantity_button quantity_button_purchase' title='Purchase'>PURCHASE FOR $" . number_format($totalPrice, 2) . "</button>";
-    	echo "<br><br><input type='checkbox' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px;' for='CashOnly'>Already purchased with cash - don't add this to my balance</label><br>";
+    	echo "<br><br><input type='checkbox' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px;' for='CashOnly'>Already purchased with cash - don't add this to my balance (DISCOUNT PRICES DO NOT APPLY)</label><br>";
     	echo "</form>";
     }
 ?>

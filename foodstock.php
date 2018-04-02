@@ -159,7 +159,6 @@ if( $isMobile ) {
 	echo "<body class='" . $className . "_body'>";
 }
 
-include("handle_forms.php");
 include("login_bar.php");
 
 date_default_timezone_set('America/New_York');
@@ -203,7 +202,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-	$version = "Version 4.0 (March 11th, 2018)";
+	$version = "Version 4.2 (March 28th, 2018)";
 
 	$total_income = 0;
 	$total_expense = 0;
@@ -218,7 +217,7 @@ if(!$isMobile) {
 
 	echo "<div style='margin: auto;'>";
 	echo "<div>";
-	echo "<span style='color:white; background-color:#800; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span>";
+	echo "<span style='color:white; background-color:#00881d; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span>";
 	if( $loggedInAdmin ) {
 		echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Expected):</b> $". number_format($total_income, 2)."</span>";
 		echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Total Expenses:</b> $". number_format($total_expense, 2)."</span>";
@@ -250,7 +249,7 @@ if(!$isMobile) {
 }
 
 	echo "<div id='cart_area' style='margin:20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
-	echo "Tabs and balances are now online! Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid 'concurrency issues'. There will soon be discounted prices for registered users once I figure out what prices I can set.";
+	echo "Tabs and balances are now online! Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid 'concurrency issues'. Discounted prices are also now in place. Order through the site to get them.";
 	echo "</div>";
 	
 if( !$isMobile && $itemType != "Snack" ) {
@@ -288,7 +287,7 @@ if( isset( $_SESSION['userID'] ) ) {
 	$userID = $_SESSION['userID'];
 }
 
-echo "Item Search: <input type='text' style='font-size:2em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', this.value, '$userID' );\"/>";
+echo "<div style='font-size:1.6em; font-weight:bold; margin:3px;'>Search: <input autofocus type='text' style='font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', this.value, '$userID' );\"/></div>";
 echo "<div id='card_area'>";
 echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', '', '$userID');</script>";
 echo "</div>";
@@ -299,6 +298,8 @@ if( !$isMobile) {
 
 	echo "<div class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
 	echo "<ul>";
+	echo "<li><b>Mar 28, 2018:</b> Added 'Feature' and 'Bug' request types. Divided Feature, Bug, and Requests into different sections. Ability to mark requests as completed.</li>";
+	echo "<li><b>Mar 22, 2018:</b> Added discount prices - shown in the page, the purchase history, and the cart. Show total savings and spent in purchase history. Show total savings across all users in register link. Striped tables (might need better colors). Added password confirmation to register page.</li>";
 	echo "<li><b>Mar 11, 2018:</b> Built Admin, Requests, and Purchase History pages. Added Payments. Display the number of times you bought an item in card. Order cards by the most bought (Favorites - Nick Ask). Added Nav Buttons to top bar: Soda Home, Snack Home, Requests, Purchase History, Admin. Sped up home page by removing forms and many unnecessary SQL queries. Added slack notifications for payments, requests, receipts, restocks - with specific emojis and bot names. Split balances into soda balance and snack balance. Cash only option in cart allows you to decrement the quantity without adding total to your balance because you paid in change/cash (Nick Ask). Added ability to submit requests and view others' requests.</li>";
 	echo "<li><b>Mar 3, 2018:</b> Site was moved to Vultr. Added missing snack and soda images.</li>";
 	echo "<li><b>Mar 2, 2018:</b> Tabs and balances are now online. Items can be purchased through the site. Card UI was improved a little.</li>";

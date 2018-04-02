@@ -16,11 +16,14 @@
         
         if( isset( $_POST['register_user'] ) ) {
         	
-        	if( $_POST['UserName'] == "" || $_POST['Password'] == "" || $_POST['FirstName'] == "" || $_POST['LastName'] == "" ) {
+        	if( $_POST['UserName'] == "" || $_POST['Password'] == "" || $_POST['PasswordAgain'] == "" || $_POST['FirstName'] == "" || $_POST['LastName'] == "" ) {
         		$userError = "You must provide User Name, Password, First Name, and Last Name.";
+        	} else if( $_POST['Password'] != $_POST['PasswordAgain'] ) {
+        		$userError = "Passwords did not match.";
         	} else {
 	        	$username = $db->escapeString(trim($_POST["UserName"]));
 	        	$password_sha1 = sha1($_POST["Password"]);
+	        	$password_sha1 = sha1($_POST["PasswordAgain"]);
 	        	$firstName = $db->escapeString($_POST["FirstName"]);
 	        	$lastName = $db->escapeString($_POST["LastName"]);
 	        	$phoneNumber = "";
@@ -37,7 +40,7 @@
 	        	if( $userExists ) {
 	        		$userError = "User <b>$username</b> already exists!";
 	        	} else {
-	        		$db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00)");
+	        		$db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance, SodaSavings, SnackSavings) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00, 0.00, 0.00)");
 	        		$userMessage = "Registration complete! User <b>$username</b> has been created.";
 	        	}
         	}
@@ -62,8 +65,11 @@
         echo "<span style='font-size:0.9em; color:#e9ef00; line-height:15px;'>If you are a co-op <u>do not use your co-op account</u>, like 'qacoop2'. You will not be sharing balances with other future co-ops. Create an account with your name, like 'mmiles'.</span>";
         
         echo "<div style='margin: 20px 0px 2px 0px;'><label style='padding:5px 0px;' for='Password'>Password*</label></div>";
-        echo "<div><input style='width:270px;' type='text' autocorrect='off' autocapitalize='off' maxlength='40'; name='Password'></div>";
+        echo "<div><input style='width:270px;' type='password' autocorrect='off' autocapitalize='off' maxlength='40'; name='Password'></div>";
         echo "<span style='font-size:0.9em; color:#e9ef00; line-height:15px;'>Passwords are NOT stored in plain-text in the database. They are encrypted on account creation.</span>";
+        
+        echo "<div style='margin: 20px 0px 2px 0px;'><label style='padding:5px 0px;' for='PasswordAgain'>Confirm Password*</label></div>";
+        echo "<div><input style='width:270px;' type='password' autocorrect='off' autocapitalize='off' maxlength='40'; name='PasswordAgain'></div>";
         
         echo "<div style='margin: 20px 0px 2px 0px;'><label style='padding:5px 0px;' for='FirstName'>First Name*</label></div>";
         echo "<div><input style='width:270px;' type='text' autocorrect='off' autocapitalize='off' maxlength='20'; name='FirstName'></div>";

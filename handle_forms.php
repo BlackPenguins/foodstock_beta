@@ -1,4 +1,12 @@
 <?php
+$db = new SQLite3("db/item.db");
+if (!$db) die ($error);
+
+include("foodstock_functions.php");
+date_default_timezone_set('America/New_York');
+
+Login($db);
+
 // ------------------------------------
 // HANDLE QUERIES
 // ------------------------------------
@@ -40,8 +48,9 @@ else if(isset($_POST['EditItem']))
 	        error_log("Status: " . $status );
 			$retired = $status == "active" ? 0 : 1;
 			
-			 error_log("StatusRR: " . $retired );
-	        $db->exec("UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName'  where ID = $id");
+			$editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName'  where ID = $id";
+			error_log("Edit Item Query: [" . $editItemQuery . "]" );
+	        $db->exec( $editItemQuery );
 
 	        echo "Item edited successfully.<br>";
     	} else  {
@@ -51,10 +60,13 @@ else if(isset($_POST['EditItem']))
 
 else if(isset($_POST['Purchase']))
 {
+	
+	
 		$itemsInCart = json_decode($_POST['items']);
 		$cashOnly = isset( $_POST['CashOnly'] );
 		
 		$totalPrice = 0.0;
+		$totalSavings = 0.0;
 		
 		$errors = "";
 		$purchaseMessage = "";
@@ -64,6 +76,19 @@ else if(isset($_POST['Purchase']))
     		$results = $db->query("SELECT * FROM Item WHERE ID =" . $itemID );
     		$row = $results->fetchArray();
     		$itemPrice = $row['Price'];
+    		$originalItemPrice = $itemPrice;
+    		$discountItemPrice = $row['DiscountPrice'];
+    		
+    		// Apply the discount
+    		if( $discountItemPrice != "" && $discountItemPrice != 0 ) {
+    			$totalSavings += ( $itemPrice - $discountItemPrice );
+    			$itemPrice = $discountItemPrice;
+    		}
+    		
+    		if( $discountItemPrice == "" ) {
+    			$discountItemPrice = 0;
+    		}
+    		
     		$itemName = $row['Name'];
     		$shelfQuantity = $row['ShelfQuantity'];
     		$backstockQuantity = $row['BackstockQuantity'];
@@ -75,7 +100,8 @@ else if(isset($_POST['Purchase']))
 	    		$date = date('Y-m-d H:i:s', time());
 	    		$totalPrice += $itemPrice;
 	    		
-	    		$purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, Date ) VALUES (" . $_SESSION['userID'] . "," . $itemID . "," . $itemPrice . ",'" . $date . "')";
+	    		
+	    		$purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date ) VALUES (" . $_SESSION['userID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "')";
 	    		$itemQuery = "UPDATE Item SET TotalIncome = TotalIncome + $itemPrice, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['userID'] . "' where ID = $itemID";
 	    		$itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 where ID = $itemID";
 	    		$informationQuery = "UPDATE Information SET Income = Income + $itemPrice where ItemType = '$itemType'";
@@ -89,39 +115,44 @@ else if(isset($_POST['Purchase']))
     			$db->exec( $informationQuery );
 	    		
 	    		
-	    		$purchaseMessage = $purchaseMessage . "- " . $itemName . " ($" . number_format($itemPrice, 2) . ")\\n";
+	    		$purchaseMessage = $purchaseMessage . "- " . $itemName . " ($" . number_format($itemPrice, 2) . ")\n";
     		}
     	}
     	
     	if( !$cashOnly ) {
 	    	$typeOfBalance = $itemType . "Balance";
+	    	$typeOfSavings = $itemType . "Savings";
 	    	
-	    	$balanceUpdateQuery = "UPDATE User SET " . $typeOfBalance . " = " . $typeOfBalance . " + $totalPrice where UserID = " . $_SESSION['userID'];
+	    	$balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $typeOfBalance + $totalPrice , $typeOfSavings = $typeOfSavings + $totalSavings where UserID = " . $_SESSION['userID'];
+	    	error_log("Balance Update [" . $balanceUpdateQuery . "]" );
 	    	$db->exec( $balanceUpdateQuery );
 	    	
 	    	$_SESSION[$typeOfBalance] = $_SESSION[$typeOfBalance] + $totalPrice;
     	}
     	
-    	$purchaseMessage = $purchaseMessage . "*Total Price:* $" . number_format($totalPrice, 2) . "\\n";
+    	$purchaseMessage = $purchaseMessage . "*Total Price:* $" . number_format($totalPrice, 2) . "\n";
     	
     	if( !$cashOnly ) {
-    		$purchaseMessage = $purchaseMessage . "*Your " . $itemType . " Balance:* $" . number_format($_SESSION[$typeOfBalance],2) . "\\n";
+    		$purchaseMessage = $purchaseMessage . "*Your " . $itemType . " Balance:* $" . number_format($_SESSION[$typeOfBalance],2) . "\n";
     	} else {
-    		$purchaseMessage = $purchaseMessage . "*THIS PURCHASE WAS CASH-ONLY*\\n";
+    		$purchaseMessage = $purchaseMessage . "*THIS PURCHASE WAS CASH-ONLY*\n";
     	}
     	
     	if( $_SESSION["SlackID"] == "" ) {
-    		echo "<script>sendSlackMessageToMatt( 'Failed to send notification for " . $_SESSION['username'] . ". Create a SlackID!', ':no_entry:', '" . $itemType . "Stock - ERROR!!' );</script>";
+    		sendSlackMessageToMatt( "Failed to send notification for " . $_SESSION['username'] . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!" );
     	} else {
-    		echo "<script>sendSlackMessageToUser( '" . $_SESSION["SlackID"] . "',  '$purchaseMessage',':shopping_trolley:', '" . $itemType . "Stock - RECEIPT' );</script>";
+    		sendSlackMessageToUser( $_SESSION["SlackID"],  $purchaseMessage , ":shopping_trolley:" , $itemType . "Stock - RECEIPT" );
     	}
     	
-    	echo "<script>sendSlackMessageToMatt( '*(" . strtoupper($_SESSION['username']) . ")*\\n$purchaseMessage', ':shopping_trolley:', '" . $itemType . "Stock - RECEIPT' );</script>";
+    	sendSlackMessageToMatt( "*(" . strtoupper($_SESSION['username']) . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT" );
     	
     	if( $errors != "" ) {
     		error_log( "ERROR: [" . $_SESSION['userID'] . "]" . $errors );
-			echo "<script>alert('Something went wrong - contact Matt!!\\n" . $errors . "'); console.log('" . $errors  . "'); sendSlackMessageToMatt( 'Errors: $errors', ':no_entry:', '" . $itemType . "Stock - ERROR!!' );</script>";
+			echo "<script>alert('Something went wrong - contact Matt!!\n" . $errors . "'); console.log('" . $errors  . "');</script>";
+			sendSlackMessageToMatt( "Errors: " . $errors, ":no_entry:", $itemType . "Stock - ERROR!!" );
     	}
+    	
+    	
 }
 
 else if(isset($_POST['Restock'])) 
@@ -171,12 +202,12 @@ else if(isset($_POST['Payment']))
 			} else {
 				$newBalance = $balance - $amount;
 				if( $slackID == "" ) {
-					echo "<script>sendSlackMessageToMatt( 'Failed to send notification for " . $username . ". Create a SlackID!', ':no_entry:', '" . $itemType . "Stock - ERROR!!'  );</script>";
+					sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!");
 				} else {
-					echo "<script>sendSlackMessageToUser( '" . $slackID . "',  'Payment: *$" . number_format($amount,2) . "*\\nYour Current " . $itemType ." Balance: *$" . number_format($newBalance,2) . "*', ':dollar:', '" . $itemType . "Stock - PAYMENT RECEIVED' );</script>";
+					sendSlackMessageToUser( $slackID,  "Payment: *$" . number_format($amount,2) . "*\nYour Current " . $itemType ." Balance: *$" . number_format($newBalance,2) . "*", ":dollar:", $itemType . "Stock - PAYMENT RECEIVED" );
 				}
 				
-				echo "<script>sendSlackMessageToMatt( '*(" . strtoupper($username) . ")*\\n Payment: *$" . number_format($amount,2) . "*\\nTheir Current " . $itemType ." Balance: *$" . number_format($newBalance,2) . "*', ':dollar:', '" . $itemType . "Stock - PAYMENT RECEIVED' );</script>";
+				sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n Payment: *$" . number_format($amount,2) . "*\nTheir Current " . $itemType ." Balance: *$" . number_format($newBalance,2) . "*", ":dollar:", $itemType . "Stock - PAYMENT RECEIVED" );
 			}
 		}
 		
@@ -206,12 +237,12 @@ else if(isset($_POST['Request']))
 	$slackID = $_SESSION['SlackID'];
 		
 	if( $slackID == "" ) {
-		echo "<script>sendSlackMessageToMatt( 'Failed to send notification for " . $username . ". Create a SlackID!', ':no_entry:', '" . $itemType . "Stock - ERROR!!'  );</script>";
+		sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!"  );
 	} else {
-		echo "<script>sendSlackMessageToUser( '" . $slackID . "',  '*Item Name:* " . $itemName . "\\n*Notes:* " . $note ."', ':ballot_box_with_ballot:', 'REQUEST RECEIVED' );</script>";
+		sendSlackMessageToUser( $slackID,  "*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED" );
 	}
 
-	echo "<script>sendSlackMessageToMatt( '*(" . strtoupper($username) . ")*\\n*Item Name:* " . $itemName . "\\n*Notes:* " . $note ."', ':ballot_box_with_ballot:', 'REQUEST RECEIVED' );</script>";
+	sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED" );
 
 	$db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType) VALUES($userID, '$itemName', '$date', '$note', '$itemType')");
 
@@ -270,7 +301,7 @@ else if(isset($_POST['Inventory']))
 				
 				if( $shelfQuantity > $shelfQuantityBefore ) {
 					//New item was added to the fridge
-					$slackMessageItems = $slackMessageItems . "*" . $itemName . ":* " . $shelfQuantityBefore . " " . $itemUnits ."s --> *" . $shelfQuantity . " " . $itemUnits ."s*\\n";
+					$slackMessageItems = $slackMessageItems . "*" . $itemName . ":* " . $shelfQuantityBefore . " " . $itemUnits ."s --> *" . $shelfQuantity . " " . $itemUnits ."s*\n";
 				}				
 		        $totalCansBefore = $backstockQuantityBefore + $shelfQuantityBefore;
 		        $totalCans = $backstockQuantity + $shelfQuantity;
@@ -294,14 +325,19 @@ else if(isset($_POST['Inventory']))
 		    	$location = "cabinet";
 		    }
 			if( $slackMessageItems != "" && $sendToSlack == true) {
-				$slackMessage = $slackMessageItems ."\\n\\nWant to see what\'s in the $location, the prices, what has been discontinued, the trends of different items being bought, or just general statistics? View the NEW <http://penguinore.net/$url>";
+				$slackMessage = $slackMessageItems ."\n\nWant to see what\'s in the $location, the prices, what has been discontinued, the trends of different items being bought, or just general statistics? View the NEW <http://penguinore.net/$url>";
 				
-				echo "<script type='text/javascript'>sendSlackMessageToRandom('$slackMessage', '$emoji', '" . $itemType. "Stock - REFILL');</script>";
+				sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - REFILL" );
 			}
 		
 			
 		} else  {
 			echo "YOU ARE NOT LOGGED IN!<br>";
 		}
+}
+
+if( isset( $_POST['redirectURL'] ) ) {
+	// Redirect to page
+	header( "Location:" . $_POST['redirectURL'] );
 }
 ?>

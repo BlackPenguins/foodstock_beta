@@ -8,11 +8,20 @@
 		echo "</span>";
 		echo "<div style='clear: both;'></div>";
 	} else {
+		echo "<a style='text-decoration:none;' href='sodastock.php'><span class='nav_buttons nav_buttons_soda'>Soda Home</span></a>";
+		echo "<a style='text-decoration:none;' href='snackstock.php'><span class='nav_buttons nav_buttons_snack'>Snack Home</span></a>";
+		
 		if(!$loggedIn) {
-			echo "<span style='padding:5px;'><a class='register' href='register.php'>Register for a Discount!<a/></span>";
+			$results = $db->query("SELECT Count(*) as Active, Sum(SnackSavings) as TotalSnackSavings, Sum(SodaSavings) as TotalSodaSavings FROM User WHERE SnackBalance != 0.0 OR SodaBalance != 0");
+			$row = $results->fetchArray();
+			$totalActiveUsers = $row['Active'];
+			$totalSnackSavings = $row['TotalSnackSavings'];
+			$totalSodaSavings = $row['TotalSodaSavings'];
+			$totalSavings = $totalSnackSavings + $totalSodaSavings;
+			
+			echo "<span style='padding:5px;'><a class='register' href='register.php'>Register for a Discount!<a/> (We have $totalActiveUsers active users with a total of $" . number_format($totalSavings, 2) . " in savings)</span>";
 		} else {
-			echo "<a style='text-decoration:none;' href='sodastock.php'><span class='nav_buttons nav_buttons_soda'>Soda Home</span></a>";
-			echo "<a style='text-decoration:none;' href='snackstock.php'><span class='nav_buttons nav_buttons_snack'>Snack Home</span></a>";
+			
 			echo "<a style='text-decoration:none;' href='requests.php'><span class='nav_buttons nav_buttons_requests'>Requests</span></a>";
 			
 			if( $loggedInAdmin ) {
@@ -38,7 +47,7 @@
 		if($loggedIn)
 		{	
 			echo "Logged in: <b><font color ='#FFFF00'>[" . $_SESSION['username'] . "]" . ( $loggedInAdmin ? " - Administrator" : "" ) . "</font></b>";
-			echo "<span style='padding:0px 10px 0px 10px;'>";
+			echo "<span title='" . $_SESSION['SlackID'] . "' style='padding:0px 10px 0px 10px;'>";
 			echo "<b><a style='color:white;' href='logout.php'>[Logout]</a></b>";
 			echo "</span>";
 			echo "</span>";
