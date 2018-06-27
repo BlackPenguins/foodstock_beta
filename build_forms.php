@@ -59,7 +59,7 @@
         
         function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
         	// Build Item Dropdown
-        	$results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, DiscountPrice FROM Item WHERE Type ='" . $itemType . "' order by name asc");
+        	$results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, DiscountPrice FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
         	$item_options = "";
         	$item_options_no_discontinued = "";
         	$item_info = "";
@@ -221,7 +221,7 @@
 	        	
 			echo "</tr>";
 	        	
-	        	$results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, Price, ID FROM Item WHERE NOT Retired = 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY Name asc, Retired");
+	        	$results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, Price, ID FROM Item WHERE NOT Retired = 1 AND Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY Name asc, Retired");
 			$tabIndex = 1;
 			while ($row = $results->fetchArray()) {
 	        			$item_name = $row[0];

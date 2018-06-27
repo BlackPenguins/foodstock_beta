@@ -4,13 +4,9 @@
 		<title>Another SSD VPS from Vultr.com!</title>
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 		<style>
-			a,
-			a:link,
-			a:visited,
-			a:active,
-			a:hover {
+			.link:hover {
 				text-decoration: none;
-				color:#ffd333;
+                                color:#f7ff03;
 			}
 		</style>
 	</head>
@@ -18,9 +14,16 @@
 		<div style="position: absolute; top: 0px; left: 0px; width: 100%; min-height: 100%; background: linear-gradient(0deg, #0b4182 1%, #1e88e5 100%);">
 
 			<div style="margin-top: 150px; text-align: center;">
-					<img src="logo.png" alt="VULTR™" style="width: 100%; min-width: 100px; max-width: 502px; height: auto; padding: 16px; box-sizing: border-box;"/><br/>
-					<span style="text-decoration: none; color: #ffffff; font-size: 24px;">We are now hosted by Vultr.com!</span><br>
-					<span style="text-decoration: none; color: #ffffff; font-size: 24px;">Find the new site here: <a href='http://penguinore.net/sodastock.php'>http://penguinore.net/sodastock.php</a></span>
+				<div class='link' style='margin:30px;'>
+                                <a href="http://penguinore.net/sodastock.php">
+					<span style="text-decoration: none; color: #ffffff; font-size: 50px;">Go to SodaStock &gt;&gt;</span>
+				</a>
+                                </div>
+                                <div class='link' style='margin:30px;'>
+                                <a href="http://penguinore.net/snackstock.php">
+                                        <span style="text-decoration: none; color: #ffffff; font-size: 50px;">Go to SnackStock &gt;&gt;</span>
+                                </a>
+                                </div>
 			</div>
 
 		</div>

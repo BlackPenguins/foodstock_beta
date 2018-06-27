@@ -98,8 +98,7 @@
 	echo "</div>";
 	
 	echo "<div style='margin:10px; padding:5px;'>";
-	
-	echo "<span style='float:left;'>Supported Payment Methods: <img width='32px' src='paypal.png'/><img width='32px' src='venmo.png'/><img width='32px' src='square_cash.png'/><img width='32px' src='facebook.png'/></span>";
+	echo "View monthly statements in the <b>Billing</b> section.";
 	echo "<span style='float:right;'><a style='text-decoration:none;' href='billing.php?type=" . $itemType . "'><span class='nav_buttons nav_buttons_billing'>Billing</span></a></span>";
 	
 	echo "</div>";

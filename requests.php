@@ -79,7 +79,7 @@
 // 	}
 	
 		echo "<div style='padding: 10px; background-color:#d03030; border-bottom: 3px solid #000;'>";
-		echo "<button style='padding:5px; margin:0px 5px;' id='request_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack/Soda</button>";
+		echo "<button style='padding:5px; margin:0px 5px;' id='request_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack & Soda  &nbsp;&nbsp;|&nbsp;&nbsp;  Request Feature  &nbsp;&nbsp;|&nbsp;&nbsp;  Report Bug</button>";
 		echo "</div>";
 		
 		// ------------------------------------

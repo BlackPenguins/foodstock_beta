@@ -82,8 +82,10 @@ function GetNameByIP($ip)
     }
 }
 
-function BuildCardArea($db, $itemType, $className, $location, $isMobile, $loggedInAdmin) {
-	
+function DisplayPaymentMethods() {
+	echo "<div style='margin:10px; padding:5px;'>";
+	echo "<span style='float:left; '><span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span> <img style='width:34px; margin-right:5px;' title='Square Cash App' src='square_cash.png'/><img style='width:35px; margin-right:5px;' title='Venmo App' src='venmo.png'/><img style='width:37px; margin-right:5px;' title=\"Seriously needed a hover-text for this?  It's PayPal.\" src='paypal.png'/><img style='width:30px; margin-right:5px;' title='Send through Facebook' src='facebook.png'/> <span style='font-size:0.8em; vertical-align:super;'>(or suggest something else)</span></span>";
+	echo "</div>";
 }
 function Login($db) {
 	session_start();
@@ -394,11 +396,11 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
 		$backgroundColor = "#EBEB59";
 	
 		if($profit < 0) {
-				$profit = "<div style='font-weight:bold;'>Debt" . ( $loggedInAdmin ? ":" : "" ) . "</div>" . ( $loggedInAdmin ? "<div>$" . abs($profit) . "</div>" : "" );
+				$profit = "<div style='font-weight:bold;'>Debt" . ( $loggedInAdmin ? ":" : "" ) . "</div>" . ( $loggedInAdmin ? "<div>$" .  number_format( abs($profit), 2 ) . "</div>" : "" );
 				$border = "3px solid #C60000";
 				$backgroundColor = "#E25353";
 		} else {
-				$profit = "<div style='font-weight:bold;'>Profit" . ( $loggedInAdmin ? ":" : "" ) . "</div>". ($loggedInAdmin ? "<div>$" . $profit . "</div>" : "" );
+				$profit = "<div style='font-weight:bold;'>Profit" . ( $loggedInAdmin ? ":" : "" ) . "</div>". ($loggedInAdmin ? "<div>$" .  number_format($profit, 2) . "</div>" : "" );
 		}
 	
 	    $total_can = $row[4];

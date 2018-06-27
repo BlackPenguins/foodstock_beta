@@ -120,34 +120,53 @@
 	echo "<div id='users'>";
 	echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:98%'>";
 	echo "<thead><tr class='table_header'>";
-	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>UserName</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
+	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>UserName</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Slack ID</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Phone Number</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Created</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Soda Balance</th>";
 	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Snack Balance</th>";
+	echo "<th style='padding:5px; border:1px #000 solid;' align='left'>TOTAL</th>";
 	
 	echo "</tr></thead>";
 	
 	$rowClass = "odd";
 	
-	$results = $db->query('SELECT u.UserID, u.UserName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated FROM User u ORDER BY u.DateCreated DESC');
+	$results = $db->query('SELECT u.UserID, u.UserName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated FROM User u ORDER BY lower(u.FirstName) ASC');
 	while ($row = $results->fetchArray()) {
 		echo "<tr class='$rowClass'>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['UserName'] . "</td>";
 		$fullName = $row['FirstName'] . " " . $row['LastName'];
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
+		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['UserName'] . "</td>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['SlackID'] . "</td>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['PhoneNumber'] . "</td>";
 		$date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateCreated']);
 		echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "</td>";
-		$purchaseHistorySodaURL = "<a href='purchase_history.php?type=Soda&name=" . $fullName . "&userid=" . $row['UserID'] . "'>$" . number_format($row['SodaBalance'], 2) . "</a>";
-		$purchaseHistorySnackURL = "<a href='purchase_history.php?type=Snack&name=" . $fullName . "&userid=" . $row['UserID'] . "'>$" . number_format($row['SnackBalance'], 2) . "</a>";
+		$sodaBalance = number_format($row['SodaBalance'], 2);
+		$snackBalance = number_format($row['SnackBalance'], 2);
+		$totalBalance =  $sodaBalance + $snackBalance;
+		
+		$purchaseHistorySodaURL = "<a href='purchase_history.php?type=Soda&name=" . $fullName . "&userid=" . $row['UserID'] . "'>$" . $sodaBalance . "</a>";
+		$purchaseHistorySnackURL = "<a href='purchase_history.php?type=Snack&name=" . $fullName . "&userid=" . $row['UserID'] . "'>$" . $snackBalance . "</a>";
 		$billingSodaURL = "<a href='billing.php?type=Soda&name=" . $fullName . "&userid=" . $row['UserID'] . "'>Billing</a>";
 		$billingSnackURL = "<a href='billing.php?type=Snack&name=" . $fullName . "&userid=" . $row['UserID'] . "'>Billing</a>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>" . $purchaseHistorySodaURL . " (" . $billingSodaURL . ")</td>";
-		echo "<td style='padding:5px; border:1px #000 solid;'>" . $purchaseHistorySnackURL . " (" . $billingSnackURL . ")</td>";
+		$sodaBalanceColor = "";
+		$snackBalanceColor = "";
+		$totalBalanceColor = "";
+		
+		if( $snackBalance > 0 ) {
+			$snackBalanceColor = "background-color:#fdff7a;";
+			$totalBalanceColor = "background-color:#fdff7a;";
+		}
+		
+		if( $sodaBalance > 0 ) {
+			$sodaBalanceColor = "background-color:#fdff7a;";
+			$totalBalanceColor = "background-color:#fdff7a;";
+		}
+		echo "<td style='padding:5px; $sodaBalanceColor border:1px #000 solid;'>" . $purchaseHistorySodaURL . " (" . $billingSodaURL . ")</td>";
+		echo "<td style='padding:5px; $snackBalanceColor border:1px #000 solid;'>" . $purchaseHistorySnackURL . " (" . $billingSnackURL . ")</td>";
+		echo "<td style='padding:5px; $totalBalanceColor border:1px #000 solid;'>$" . number_format($totalBalance,2) . "</td>";
 		echo "</tr>";
 		if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
 	}
@@ -179,7 +198,7 @@
 	
 	$rowClass = "odd";
 	
-	$results = $db->query("SELECT ID, Name, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Retired FROM Item  ORDER BY Retired, Type DESC, ID DESC");
+	$results = $db->query("SELECT ID, Name, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Retired, Hidden FROM Item WHERE Hidden != 1 ORDER BY Retired, Type DESC, ID DESC");
 	while ($row = $results->fetchArray()) {
 		echo "<tr class='$rowClass'>";
 		echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";

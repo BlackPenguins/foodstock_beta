@@ -19,7 +19,11 @@
 			$totalSodaSavings = $row['TotalSodaSavings'];
 			$totalSavings = $totalSnackSavings + $totalSodaSavings;
 			
-			echo "<span style='padding:5px;'><a class='register' href='register.php'>Register for a Discount!<a/> (We have $totalActiveUsers active users with a total of $" . number_format($totalSavings, 2) . " in savings)</span>";
+			$results = $db->query("SELECT Count(*) as Total FROM Purchase_History");
+			$row = $results->fetchArray();
+			$totalPurchases = $row['Total'];
+			
+			echo "<span style='padding:5px;'><a class='register' href='register.php'>Register for a Discount!<a/> (We have $totalActiveUsers active users with a total of $" . number_format($totalSavings, 2) . " in savings and " . $totalPurchases . " total purchases)</span>";
 		} else {
 			
 			echo "<a style='text-decoration:none;' href='requests.php'><span class='nav_buttons nav_buttons_requests'>Requests</span></a>";

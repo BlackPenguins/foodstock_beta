@@ -77,9 +77,7 @@
 	// ------------------------------------
 	echo "<div class='soda_popout'  style='margin:10px; padding:5px;'><span style='font-size:26px;'>Billing for '$name'</span></div>";
 	
-	echo "<div style='margin:10px; padding:5px;'>";
-	echo "<span style='float:left;'>Supported Payment Methods: <img width='32px' src='paypal.png'/><img width='32px' src='venmo.png'/><img width='32px' src='square_cash.png'/><img width='32px' src='facebook.png'/></span>";
-	echo "</div>";
+	displayPaymentMethods();
 	
 	echo "<div id='restock_all'>";
 	echo "<table style='font-size:12; border: 3px solid; border-collapse:collapse; margin:10px; width:98%'>";

@@ -176,8 +176,10 @@ else if(isset($_POST['Restock']))
 }
 else if(isset($_POST['Payment']))
 {
+	error_log( "Payment start." );
 	$auth = trim($_POST["AuthPass517"]);
 	if($auth == "2385") {
+		error_log( "Incoming payment." );
 		$userID = trim($_POST["UserDropdown"]);
 		$itemType = trim($_POST["ItemTypeDropdown"]);
 		$date = date('Y-m-d H:i:s');
@@ -189,18 +191,21 @@ else if(isset($_POST['Payment']))
 		$isBalanceValid = true;
 		
 		if( $isUserPayment ) {
+			error_log( "User payment found." );
 			$typeOfBalance = $itemType . "Balance";
 			$results = $db->query("SELECT $typeOfBalance, SlackID, UserName From User where UserID = $userID");
 			$row = $results->fetchArray();
-			$balance = $row[$typeOfBalance];
+			$balance = round($row[$typeOfBalance], 2);
 			$slackID = $row['SlackID'];
 			$username = $row['UserName'];
 			
 			if( $amount > $balance ) {
 				$isBalanceValid = false;
+				error_log( "Bad balance. Amount: [" . $amount . "] Balance: [" . $balance . "]" );
 				echo "This payment [$" . number_format($amount, 2) . "] is larger than the user's $typeOfBalance of [$" . number_format($balance,2) . "]. Payment denied!<br>";
 			} else {
 				$newBalance = $balance - $amount;
+				error_log( "Reduced balance [" . $newBalance . "] is [" . $balance . " - " . $amount . "]" );
 				if( $slackID == "" ) {
 					sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!");
 				} else {

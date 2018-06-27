@@ -23,7 +23,7 @@ if(isset($_POST['token']))
 
 		$slackMessageItems = "";
 		
-		$results = $db->query("SELECT ID, BackStockQuantity, ShelfQuantity, Price, Name FROM Item WHERE Retired = 0 AND (BackstockQuantity != 0 OR ShelfQuantity != 0) Order By Name");
+		$results = $db->query("SELECT ID, BackStockQuantity, ShelfQuantity, Price, Name FROM Item WHERE Retired = 0 AND Hidden != 1 AND (BackstockQuantity != 0 OR ShelfQuantity != 0) Order By Name");
 		while ($row = $results->fetchArray()) {
 			$backstockQuantity = $row[1];
 			$shelfQuantity = $row[2];

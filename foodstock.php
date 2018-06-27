@@ -202,7 +202,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-	$version = "Version 4.2 (March 28th, 2018)";
+	$version = "Version 4.3 (April 1st, 2018)";
 
 	$total_income = 0;
 	$total_expense = 0;
@@ -217,7 +217,7 @@ if(!$isMobile) {
 
 	echo "<div style='margin: auto;'>";
 	echo "<div>";
-	echo "<span style='color:white; background-color:#00881d; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span>";
+	echo "<a href='#change_log'><span style='color:white; background-color:#730088; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
 	if( $loggedInAdmin ) {
 		echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Expected):</b> $". number_format($total_income, 2)."</span>";
 		echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Total Expenses:</b> $". number_format($total_expense, 2)."</span>";
@@ -253,7 +253,7 @@ if(!$isMobile) {
 	echo "</div>";
 	
 if( !$isMobile && $itemType != "Snack" ) {
-	$results = $db->query("SELECT ID, Name, ShelfQuantity, DateModified, ThumbURL FROM Item WHERE Type ='" . $itemType . "' ORDER BY DateModified DESC");
+	$results = $db->query("SELECT ID, Name, ShelfQuantity, DateModified, ThumbURL, Hidden FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 ORDER BY DateModified DESC");
 	
 	echo "<div style='margin:20px; padding:10px; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
 	echo "<div style='color:#8e8b8b; font-weight:bold; padding-bottom:10px;'>The Shelf <span style='font-size:0.7em;'>(currently in the $location)</span></div>";
@@ -296,8 +296,9 @@ if( !$isMobile) {
 	echo "<div style='clear:both;'></div>";
 
 
-	echo "<div class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
+	echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
 	echo "<ul>";
+	echo "<li><b>Apr 1, 2018:</b> Added Billing section (in Purchase History) for monthly statements and records of payments. Added 'total purchases' statistic to the Register Link. Clicking the Version at the top now jumps you to the change log.</li>";
 	echo "<li><b>Mar 28, 2018:</b> Added 'Feature' and 'Bug' request types. Divided Feature, Bug, and Requests into different sections. Ability to mark requests as completed.</li>";
 	echo "<li><b>Mar 22, 2018:</b> Added discount prices - shown in the page, the purchase history, and the cart. Show total savings and spent in purchase history. Show total savings across all users in register link. Striped tables (might need better colors). Added password confirmation to register page.</li>";
 	echo "<li><b>Mar 11, 2018:</b> Built Admin, Requests, and Purchase History pages. Added Payments. Display the number of times you bought an item in card. Order cards by the most bought (Favorites - Nick Ask). Added Nav Buttons to top bar: Soda Home, Snack Home, Requests, Purchase History, Admin. Sped up home page by removing forms and many unnecessary SQL queries. Added slack notifications for payments, requests, receipts, restocks - with specific emojis and bot names. Split balances into soda balance and snack balance. Cash only option in cart allows you to decrement the quantity without adding total to your balance because you paid in change/cash (Nick Ask). Added ability to submit requests and view others' requests.</li>";
