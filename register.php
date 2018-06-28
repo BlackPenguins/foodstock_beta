@@ -15,43 +15,43 @@
         $userError = "";
         
         if( isset( $_POST['register_user'] ) ) {
-        	
-        	if( $_POST['UserName'] == "" || $_POST['Password'] == "" || $_POST['PasswordAgain'] == "" || $_POST['FirstName'] == "" || $_POST['LastName'] == "" ) {
-        		$userError = "You must provide User Name, Password, First Name, and Last Name.";
-        	} else if( $_POST['Password'] != $_POST['PasswordAgain'] ) {
-        		$userError = "Passwords did not match.";
-        	} else {
-	        	$username = $db->escapeString(trim($_POST["UserName"]));
-	        	$password_sha1 = sha1($_POST["Password"]);
-	        	$password_sha1 = sha1($_POST["PasswordAgain"]);
-	        	$firstName = $db->escapeString($_POST["FirstName"]);
-	        	$lastName = $db->escapeString($_POST["LastName"]);
-	        	$phoneNumber = "";
-	        	
-	        	if( isset( $_POST['PhoneNumber'] ) ) {
-	        		$phoneNumber = $db->escapeString($_POST["PhoneNumber"]);
-	        	}
-	        	$date = date('Y-m-d H:i:s');
-	        	 
-	        	$results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "'");
-	        	
-	        	$userExists = $results->fetchArray() != false;
-	        	
-	        	if( $userExists ) {
-	        		$userError = "User <b>$username</b> already exists!";
-	        	} else {
-	        		$db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance, SodaSavings, SnackSavings) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00, 0.00, 0.00)");
-	        		$userMessage = "Registration complete! User <b>$username</b> has been created.";
-	        	}
-        	}
+            
+            if( $_POST['UserName'] == "" || $_POST['Password'] == "" || $_POST['PasswordAgain'] == "" || $_POST['FirstName'] == "" || $_POST['LastName'] == "" ) {
+                $userError = "You must provide User Name, Password, First Name, and Last Name.";
+            } else if( $_POST['Password'] != $_POST['PasswordAgain'] ) {
+                $userError = "Passwords did not match.";
+            } else {
+                $username = $db->escapeString(trim($_POST["UserName"]));
+                $password_sha1 = sha1($_POST["Password"]);
+                $password_sha1 = sha1($_POST["PasswordAgain"]);
+                $firstName = $db->escapeString($_POST["FirstName"]);
+                $lastName = $db->escapeString($_POST["LastName"]);
+                $phoneNumber = "";
+                
+                if( isset( $_POST['PhoneNumber'] ) ) {
+                    $phoneNumber = $db->escapeString($_POST["PhoneNumber"]);
+                }
+                $date = date('Y-m-d H:i:s');
+                 
+                $results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "'");
+                
+                $userExists = $results->fetchArray() != false;
+                
+                if( $userExists ) {
+                    $userError = "User <b>$username</b> already exists!";
+                } else {
+                    $db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance, SodaSavings, SnackSavings) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00, 0.00, 0.00)");
+                    $userMessage = "Registration complete! User <b>$username</b> has been created.";
+                }
+            }
         }
         
         if( $userError != "" ) {
-       		echo "<div style='text-align:center; padding:20px; font-size:1.2em; color:#FFF; border:3px solid #c71d1d; background-color:#de2c2c;'><span>$userError</span></div>";
+               echo "<div style='text-align:center; padding:20px; font-size:1.2em; color:#FFF; border:3px solid #c71d1d; background-color:#de2c2c;'><span>$userError</span></div>";
         }
         
         if( $userMessage != "" ) {
-        	echo "<div style='text-align:center; padding:20px; font-size:1.2em; color:#FFF; border:3px solid #1dc73a; background-color:#2cde5b;'><span>$userMessage</span></div>";
+            echo "<div style='text-align:center; padding:20px; font-size:1.2em; color:#FFF; border:3px solid #1dc73a; background-color:#2cde5b;'><span>$userMessage</span></div>";
         }
         
         echo "<div style='margin: 0 auto;' class='fancy'>";
@@ -91,6 +91,6 @@
         echo "<div style='width:300px; margin: 0 auto; padding:10px; text-align:center;'><b><a href='sodastock.php'>Return to Sodastock</a></b></div>";
         
         echo "</div>";
-    	$db->close();
+        $db->close();
 ?>
 </body>

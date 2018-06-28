@@ -1,26 +1,26 @@
 <?php
-	$statement = "";
-	
-	// Add Completed and ID to Requests
-	
-	/*
-	 	$statement = "UPDATE Item SET TotalExpenses = TotalExpenses - 3.49, BackstockQuantity = BackstockQuantity - 12, TotalCans = TotalCans - 12 where ID = 29";
-		
-		$statement = "UPDATE ITEM SET Price = 0.40 WHERE name = 'Swiss Miss Dark Chocolate';";
-		$statement = "ALTER TABLE ITEM ADD COLUMN ImageURL TEXT;"
-		$statement = "ALTER TABLE ITEM ADD COLUMN ThumbURL TEXT;"
-		$statement = "ALTER TABLE ITEM ADD COLUMN UnitName TEXT;"
-		$statement = "UPDATE ITEM SET Retired = 1 WHERE name = 'Cherry Zero';";
-		
-		$statement = "CREATE TABLE Item(id integer PRIMARY KEY AUTOINCREMENT, name text, date text, chartcolor text, totalcans integer, backstockquantity integer, shelfquantity integer, price real,  totalincome real, totalexpenses real )";
-		$statement = "CREATE TABLE Restock(itemid integer, date text, numberofcans integer, cost real )";
-		$statement = "CREATE TABLE Daily_Amount(itemid integer, date text, backstockquantitybefore integer, backstockquantity integer, shelfquantitybefore integer, shelfquantity integer, price real, restock integer )";
-		$statement = "DROP TABLE Item;";
-		
-		
-		
-		function slackPrivate() {
-	// Find the slack user ID
+    $statement = "";
+    
+    // Add Completed and ID to Requests
+    
+    /*
+         $statement = "UPDATE Item SET TotalExpenses = TotalExpenses - 3.49, BackstockQuantity = BackstockQuantity - 12, TotalCans = TotalCans - 12 where ID = 29";
+        
+        $statement = "UPDATE ITEM SET Price = 0.40 WHERE name = 'Swiss Miss Dark Chocolate';";
+        $statement = "ALTER TABLE ITEM ADD COLUMN ImageURL TEXT;"
+        $statement = "ALTER TABLE ITEM ADD COLUMN ThumbURL TEXT;"
+        $statement = "ALTER TABLE ITEM ADD COLUMN UnitName TEXT;"
+        $statement = "UPDATE ITEM SET Retired = 1 WHERE name = 'Cherry Zero';";
+        
+        $statement = "CREATE TABLE Item(id integer PRIMARY KEY AUTOINCREMENT, name text, date text, chartcolor text, totalcans integer, backstockquantity integer, shelfquantity integer, price real,  totalincome real, totalexpenses real )";
+        $statement = "CREATE TABLE Restock(itemid integer, date text, numberofcans integer, cost real )";
+        $statement = "CREATE TABLE Daily_Amount(itemid integer, date text, backstockquantitybefore integer, backstockquantity integer, shelfquantitybefore integer, shelfquantity integer, price real, restock integer )";
+        $statement = "DROP TABLE Item;";
+        
+        
+        
+        function slackPrivate() {
+    // Find the slack user ID
     String slackUserIDQuery = "select slack_id from users where username =  '" + slackUserName + "'";
     String slackID = null;
     
@@ -89,13 +89,13 @@
         }
     }
 }
-	*/
-	
-	if( $statement != "" ) {
-		echo "Executing......<br>";
-	
-		$db->exec($statement);
-	
-		echo "DONE!<br><br>";
-	}
+    */
+    
+    if( $statement != "" ) {
+        echo "Executing......<br>";
+    
+        $db->exec($statement);
+    
+        echo "DONE!<br><br>";
+    }
 ?>
