@@ -267,7 +267,7 @@ if(!$isMobile) {
 }
 
 	echo "<div id='cart_area' style='margin:20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
-	echo "Tabs and balances are now online! Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid 'concurrency issues'. Discounted prices are also now in place. Order through the site to get them.";
+	echo "Remember to <u>pick up your product first</u> and have it physically in your hand before you buy on the website to avoid 'concurrency issues'.<br>Discounted prices are only available when you buy through the site.";
 	echo "</div>";
 	
 if( !$isMobile && $itemType != "Snack" ) {

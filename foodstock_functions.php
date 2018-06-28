@@ -332,7 +332,7 @@ function buildTopSection( $row, $containerType, $location, $userName, $loggedIn,
     echo "<div style='height:200px;'>";
     echo $priceDisplay;
     
-    if( $outOfStock != "1" ) {
+    if( $loggedIn && $outOfStock != "1" ) {
     	echo "<span style='float:right; padding-right:10px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\",$row[0],\"$row[1]\")'><img src='flag.png' title='Report Item Out of Stock'/></span>&nbsp;";
     }
     
