@@ -121,6 +121,7 @@ function Login($db) {
 	
 	if( $userExists ) {
 		$firstName = $row['FirstName'];
+		$lastName = $row['LastName'];
 		$userID = $row['UserID'];
 		$sodaBalance = $row['SodaBalance'];
 		$snackBalance = $row['SnackBalance'];
@@ -129,6 +130,7 @@ function Login($db) {
 		$_SESSION['signed_in'] = true;
 		$_SESSION['username'] = $username;
 		$_SESSION['firstname'] = $firstName;
+		$_SESSION['lastname'] = $lastName;
 		$_SESSION['userID'] = $userID;
 		$_SESSION['SodaBalance'] = $sodaBalance;
 		$_SESSION['SnackBalance'] = $snackBalance;
@@ -287,9 +289,10 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
         return $ago_text;
 }
 
-function buildTopSection( $row, $containerType, $location, $loggedIn, $isMobile ) {
+function buildTopSection( $row, $containerType, $location, $userName, $loggedIn, $isMobile ) {
 	$retired_label = "<span style='color:#FF6464; border: #9D3A3A 2px dashed; padding:10px; font-weight:bold;'>DISCONTINUED</span>";
 	
+	$outOfStock = $row['OutOfStock'];
 	$item_id = $row[0];
 	$item_name = $row[1];
 	$price = $row[7];
@@ -320,7 +323,7 @@ function buildTopSection( $row, $containerType, $location, $loggedIn, $isMobile 
 	$warm_item = $row[5];
 
 	$priceDisplay = "";
-	
+
 	if( $loggedIn && $hasDiscount == true ) {
 		$priceDisplay = "<span style='font-size:19px; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>".getPriceDisplay ( $discountPrice )."</span><span style='font-size:19px; color:#FFFFFF; padding:5px; font-weight:bold; background-color:#151515; text-decoration:line-through; margin-right:5px; border: 2px solid #6b6b6b; float:right;'>". getPriceDisplay( $originalPrice ) ."</span>";
 	} else {
@@ -328,7 +331,11 @@ function buildTopSection( $row, $containerType, $location, $loggedIn, $isMobile 
 	}
     echo "<div style='height:200px;'>";
     echo $priceDisplay;
-
+    
+    if( $outOfStock != "1" ) {
+    	echo "<span style='float:right; padding-right:10px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\",$row[0],\"$row[1]\")'><img src='flag.png' title='Report Item Out of Stock'/></span>&nbsp;";
+    }
+    
     echo "<div style='width:40%; float:left;'>";
     DisplayCan($row[1], ($cold_item + $warm_item == 0), $row[13] );
     echo "</div>";
@@ -385,10 +392,13 @@ function getPriceDisplay($price) {
 function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
 	
 	$cold_item = $row[6];
+	$outOfStock = $row['OutOfStock'];
+	$outOfStockReporter = $row['OutOfStockReporter'];
 	
 	if( !$isMobile ) {
 		$income = $row['TotalIncome'];
 		$expense = $row['TotalExpenses'];
+		
 		
 		
 		$profit = number_format(($income-$expense), 2);
@@ -426,33 +436,6 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
 	    }
 	
 	    echo "<div style='clear:both;'></div>";
-		
-		$resultsPopularity = $db->query('SELECT ItemID, Date FROM Restock where ItemID = ' . $row[0] . ' ORDER BY Date DESC');
-	    $firstDate = "";
-	    $lastDate = "";
-	    $totalPurchases = 0;
-	    while ($rowPopularity = $resultsPopularity->fetchArray()) {
-	        if( $firstDate == "") {
-	            $firstDate = $rowPopularity[1];
-	        }
-	        $lastDate = $rowPopularity[1];
-	        $totalPurchases++;
-	    }
-	
-	    $date_before = DateTime::createFromFormat('Y-m-d H:i:s', $firstDate);
-	    $date_after = DateTime::createFromFormat('Y-m-d H:i:s', $lastDate);
-	
-		$days_ago = 0;
-		
-		if( $firstDate != "" && $lastDate != "" ) {
-			if( $firstDate == $lastDate) {
-				$date_after = new DateTime();
-			}
-	
-			$time_since = $date_before->diff($date_after);
-			
-			$days_ago = $time_since->format('%a');  
-		}
 	}
 	
 	if( $loggedIn ) {
@@ -469,31 +452,71 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
 		echo "</div>";
 	}
 	
+	if( $outOfStock == "1" ) {
+		echo "<div style='color:#000000; padding:5px 0px; border-top: 2px solid #000; border-bottom: 2px solid #000; font-weight:bold; font-size:0.8em; background-color: #f6ff72;'><img style='vertical-align:bottom' width='20px' src='caution.png'/> This item has been reported as out of stock by " . $outOfStockReporter . "!</div>";
+	}
 	
+	/*
 	if( !$isMobile ) {
 		echo "<div>";
 		
 		if( !$loggedInAdmin ) {
-			echo "<span class='money' style='display:inline-block; background-color:$backgroundColor; border: $border' >" . $profit . "</span>";
+			echo "<div class='money' style='font-size:0.5em; background-color:$backgroundColor;'>" . $profit . "</div>";
+		}
+		echo "</div>";
+	}
+	*/
+}
+
+function buildBottomSection($db, $row, $containerType, $isMobile) {
+	if( !$isMobile ) {
+		
+		$resultsPopularity = $db->query('SELECT ItemID, Date FROM Restock where ItemID = ' . $row[0] . ' ORDER BY Date DESC');
+		$firstDate = "";
+		$lastDate = "";
+		$totalPurchases = 0;
+		while ($rowPopularity = $resultsPopularity->fetchArray()) {
+			if( $firstDate == "") {
+				$firstDate = $rowPopularity[1];
+			}
+			$lastDate = $rowPopularity[1];
+			$totalPurchases++;
+		}
+		
+		$date_before = DateTime::createFromFormat('Y-m-d H:i:s', $firstDate);
+		$date_after = DateTime::createFromFormat('Y-m-d H:i:s', $lastDate);
+		
+		$days_ago = 0;
+		
+		if( $firstDate != "" && $lastDate != "" ) {
+			if( $firstDate == $lastDate) {
+				$date_after = new DateTime();
+			}
+		
+			$time_since = $date_before->diff($date_after);
+				
+			$days_ago = $time_since->format('%a');
+		}
+		
+		echo "<div>";
+		
+		if( isset( $row['Frequency'] ) ) {
+			$frequencyBought = $row['Frequency'];
+			echo "<span title='You have bought this ". $frequencyBought ." times.' style='padding:10px; color:#00ff39; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='credit_card.png'/>&nbsp;&nbsp;"  . $frequencyBought . " times</span>";
 		}
 		
 		if( $totalPurchases > 0 ) {
-	    	echo "<span style='padding:20px; color:#f9ff00; font-weight:bold;' >Bought every ".round($days_ago / $totalPurchases)." days...</span>";
+			$purchaseDayInterval = round($days_ago / $totalPurchases);
+			echo "<span title='Restocked every " . $purchaseDayInterval ." days.' style='padding:10px; color:#f9ff00; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='dolly.png'/>&nbsp;&nbsp;"  . $purchaseDayInterval . " days</span>";
 		}
+		
+		$total_can_sold = $row[4] - ($row[5] + $row[6]);
+		
+		echo "<span title='" . $total_can_sold ." total sold.' style='padding:10px; color:#ffffff; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='trends.png'/>&nbsp;&nbsp;"  . $total_can_sold . " sold</span>";
 		
 		echo "</div>";
-		
-		if( isset( $row['Frequency'] ) ) {
-			echo "<div style='padding:20px 0px 0px 0px; color:#00ff39; font-weight:bold;' >You have bought this ". $row['Frequency'] ." times.</div>";
-		}
 	}
-}
-
-function buildBottomSection($row, $containerType) {
-
-	$total_can_sold = $row[4] - ($row[5] + $row[6]);
-
-    echo "<div style='padding:5px;'>" . $total_can_sold . " TOTAL " . strtoupper( $containerType ) . ( $total_can_sold > 1 ? "S" : "" ) . " SOLD</div>";
+	
 }
 function DisplayCan($item_name, $soldOut, $imageURL)
 {

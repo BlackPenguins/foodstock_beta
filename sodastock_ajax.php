@@ -18,6 +18,7 @@
     	$itemSearch = $_POST['itemSearch'];
     	
     	$userID = $_POST['userID'];
+    	$userName = $_POST['userName'];
     	
     	$nameQuery = "";
     	
@@ -25,10 +26,10 @@
     		$nameQuery = " AND Name Like '%" . $itemSearch . "%' ";
     	}
     	
-    	$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, DiscountPrice FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
+    	$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
     	
     	if( $userID != "" ) {
-    		$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $userID . " AND p.ItemID = i.ID) as Frequency, DiscountPrice FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
+    		$cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $userID . " AND p.ItemID = i.ID) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
     	}
     	
 		$results = $db->query($cardQuery);
@@ -54,7 +55,7 @@
 			}
 		
 			echo "<div class='top_section'>";
-			buildTopSection($row, $containerType, $location, $loggedIn, $isMobile);
+			buildTopSection($row, $containerType, $location, $userName, $loggedIn, $isMobile);
 			echo "</div>";
 		
 			echo "<div class='middle_section'>";
@@ -63,7 +64,7 @@
 			
 			if( !$isMobile) {
 				echo "<div class='bottom_section'>";
-				buildBottomSection($row, $containerType);
+				buildBottomSection($db, $row, $containerType, $isMobile);
 				echo "</div>";
 			}
 		
@@ -81,6 +82,12 @@
     	} else {
     		$db->exec( "UPDATE Requests set Completed = 1 WHERE ID = " . $requestID );
     	}
+    }
+    else if( $type == "OutOfStockRequest" ) {
+    	$itemID = $_POST['itemID'];
+    	$reporter = $_POST['reporter'];
+    	$date = date('Y-m-d H:i:s', time());
+    	$db->exec( "UPDATE Item set OutOfStock = 1, OutOfStockDate = '$date', OutOfStockReporter = '$reporter' WHERE ID = $itemID" );
     }
     else if($type == "DrawCart" )
     {

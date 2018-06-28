@@ -38,7 +38,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 <script>
 	var itemsInCart = [];
 	
-	function updateCardArea(itemTypeValue, classNameValue, locationValue, isMobileValue, loggedInValue, loggedInAdminValue, itemSearchValue, userIDValue) {
+	function updateCardArea(itemTypeValue, classNameValue, locationValue, isMobileValue, loggedInValue, loggedInAdminValue, itemSearchValue, userIDValue, userNameValue) {
 		console.log("Updating Card Area with [" + itemSearchValue + "]...");
 		$.post("sodastock_ajax.php", { 
 				type:'CardArea',
@@ -49,12 +49,29 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 				loggedInAdmin:loggedInAdminValue,
 				loggedIn:loggedInValue,
 				itemSearch:itemSearchValue,
-				userID:userIDValue
+				userID:userIDValue,
+				userName:userNameValue
 			},function(data) {
 				$('#card_area').html(data);
 		});
 	}
 
+	function reportItemOutOfStock(user, itemID, itemName) {
+		$isOutOfStock = confirm('Are you sure that you, ' + user + ', want to report "' + itemName + '" as out of stock?');
+		
+		if ( $isOutOfStock ) {
+			alert("Thank you. Matt Miles has been notified about " + itemName + ".");
+
+			$.post("sodastock_ajax.php", { 
+				type:'OutOfStockRequest',
+				reporter:user,
+				itemID:itemID
+			},function(data) {
+				// Do nothing right now
+			});
+		}
+	}
+	
 	function addItemToCart(itemID) {
 		var quantityBefore = parseInt( $('#quantity_holder_' + itemID).html() );
 		var maxQuantity = parseInt( $('#shelf_quantity_' + itemID).val() );
@@ -147,6 +164,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 <link rel="stylesheet" type="text/css" href="colorPicker.css"/>
 <link rel="stylesheet" type="text/css" href="style.css"/>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
 </head>
 
 
@@ -202,7 +220,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-	$version = "Version 4.3 (April 1st, 2018)";
+	$version = "Version 4.4 (June 28th, 2018)";
 
 	$total_income = 0;
 	$total_expense = 0;
@@ -217,7 +235,7 @@ if(!$isMobile) {
 
 	echo "<div style='margin: auto;'>";
 	echo "<div>";
-	echo "<a href='#change_log'><span style='color:white; background-color:#730088; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
+	echo "<a href='#change_log'><span style='color:#000000; background-color:#ffc782; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
 	if( $loggedInAdmin ) {
 		echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Expected):</b> $". number_format($total_income, 2)."</span>";
 		echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Total Expenses:</b> $". number_format($total_expense, 2)."</span>";
@@ -282,14 +300,25 @@ if( !$isMobile && $itemType != "Snack" ) {
 }
 
 $userID = "";
+$userName = "";
 
 if( isset( $_SESSION['userID'] ) ) {
 	$userID = $_SESSION['userID'];
 }
 
-echo "<div style='font-size:1.6em; font-weight:bold; margin:3px;'>Search: <input autofocus type='text' style='font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', this.value, '$userID' );\"/></div>";
+if( isset( $_SESSION['firstname'] ) ) {
+	$userName = $_SESSION['firstname'];
+	
+	if( isset( $_SESSION['lastname'] ) ) {
+		$userName = $userName . " " . $_SESSION['lastname'];
+	}
+}
+
+
+
+echo "<div style='font-size:1.6em; font-weight:bold; margin:3px;'>Search: <input autofocus type='text' style='font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', this.value, '$userID', '$userName' );\"/></div>";
 echo "<div id='card_area'>";
-echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', '', '$userID');</script>";
+echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', '', '$userID', '$userName' );</script>";
 echo "</div>";
 
 if( !$isMobile) {
@@ -298,6 +327,7 @@ if( !$isMobile) {
 
 	echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
 	echo "<ul>";
+	echo "<li><b>Jun 28, 2018:</b> Added 'Report Out of Stock' button (Nick C request). Saved space on cards by making statistics into icons.</li>";
 	echo "<li><b>Apr 1, 2018:</b> Added Billing section (in Purchase History) for monthly statements and records of payments. Added 'total purchases' statistic to the Register Link. Clicking the Version at the top now jumps you to the change log.</li>";
 	echo "<li><b>Mar 28, 2018:</b> Added 'Feature' and 'Bug' request types. Divided Feature, Bug, and Requests into different sections. Ability to mark requests as completed.</li>";
 	echo "<li><b>Mar 22, 2018:</b> Added discount prices - shown in the page, the purchase history, and the cart. Show total savings and spent in purchase history. Show total savings across all users in register link. Striped tables (might need better colors). Added password confirmation to register page.</li>";

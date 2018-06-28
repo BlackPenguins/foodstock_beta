@@ -317,7 +317,7 @@ else if(isset($_POST['Inventory']))
 		        $db->exec("INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked)");
 				error_log("SQ2:" . "UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id" );
 		        $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
-		        $db->exec("UPDATE Item SET TotalIncome = TotalIncome + $income, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, DateModified = '$date', ModifyType = 'Counted' where ID = $id");
+		        $db->exec("UPDATE Item SET TotalIncome = TotalIncome + $income, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, OutOfStock = '', DateModified = '$date', ModifyType = 'Counted' where ID = $id");
 		        $db->exec("UPDATE Information SET Income = Income + $income where ItemType = '$itemType'");
 		        echo "Daily_Amount added successfully for Item #$id.<br>";
 		    }
