@@ -349,26 +349,26 @@ function buildTopSection( $row, $containerType, $location, $userName, $loggedIn,
     
 
         if($cold_item == 0 && $warm_item == 0) {
-            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item running low...'/>&nbsp;SOLD OUT</div>";
-            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item running low...'/>&nbsp;SOLD OUT</div>"; 
+            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
+            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>"; 
         } else {
             if($cold_item == 0) 
             { 
-                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item running low...'/>&nbsp;0 $containerType in $location</div>"; 
+                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $containerType in $location</div>"; 
             } 
             else 
             { 
-                echo "<div title='Cold Cans in the Fridge' class='cold_item circle' style='padding:10px;'>".(($cold_item < 5)?("<img src='./warning.png' title='Item running low...'/>&nbsp;"):(""))."$cold_item $containerType" . ( $cold_item > 1 ? "s" : "" ) . " in $location</div>"; 
+                echo "<div title='Cold Cans in the Fridge' class='cold_item circle' style='padding:10px;'>".(($outOfStock == "1")?("<img src='./warning.png' title='Item reported as sold out by another user!'/>&nbsp;"):(""))."$cold_item $containerType" . ( $cold_item > 1 ? "s" : "" ) . " in $location</div>"; 
             }
 
             
             if($warm_item == 0) 
             { 
-                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item running low...'/>&nbsp;0 $containerType at desk</div>"; 
+                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $containerType at desk</div>"; 
             } 
             else 
             { 
-                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($warm_item < 5)?("<img src='./warning.png' title='Item running low...'/>&nbsp;"):(""))."$warm_item $containerType" . ( $warm_item > 1 ? "s" : "" ) . " at desk</div>"; 
+                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($outOfStock == "1")?("<img src='./warning.png' title='Item reported as sold out by another user!'/>&nbsp;"):(""))."$warm_item $containerType" . ( $warm_item > 1 ? "s" : "" ) . " at desk</div>"; 
             }
         }
         
