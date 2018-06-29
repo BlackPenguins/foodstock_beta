@@ -7,6 +7,8 @@ date_default_timezone_set('America/New_York');
 
 Login($db);
 
+$userMessage = "";
+
 // ------------------------------------
 // HANDLE QUERIES
 // ------------------------------------
@@ -23,9 +25,9 @@ if(isset($_POST['AddItem']))
             $addItemQuery = "INSERT INTO Item (Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Type) VALUES( '$name', '$date', '$chartColor', 0, 0, 0, $price, 0.00, 0.00, '$itemType')";
             $db->exec( $addItemQuery );
 
-            echo "Item added successfully.<br>";
+            $userMessage = "Item \"$name\" added successfully.";
         } else  {
-            echo "YOU ARE NOT LOGGED IN!<br>";
+            $userMessage = "YOU ARE NOT LOGGED IN!";
         }
 }
 
@@ -52,10 +54,47 @@ else if(isset($_POST['EditItem']))
             error_log("Edit Item Query: [" . $editItemQuery . "]" );
             $db->exec( $editItemQuery );
 
-            echo "Item edited successfully.<br>";
+            $userMessage = "Item \"$name\" edited successfully.";
         } else  {
-            echo "YOU ARE NOT LOGGED IN!<br>";
+            $userMessage = "YOU ARE NOT LOGGED IN!";
         }
+}
+
+else if(isset($_POST['EditUser']))
+{
+    $auth = trim($_POST["AuthPass517"]);
+    if($auth == "2385") {
+        $id = trim($_POST["EditUserDropdown"]);
+        $slackID = trim($_POST["SlackID"]);
+        
+        $inactive = 0;
+        $resetPassword = false;
+        
+        if( isset($_POST["Inactive"]) ) {
+            $inactive = 1;
+        }
+
+        if( isset($_POST["ResetPassword"]) ) {
+            $resetPassword = true;
+        }
+        
+        $uniqueID = uniqid();
+        $resetPasswordQuery = "";
+        
+        if( $resetPassword == true ) {
+            error_log("restting");
+            $resetPasswordQuery = " Password='" . sha1($uniqueID) . "',";
+            $userMessage = $userMessage . "Password for user was reset to \"$uniqueID\". ";
+        }
+        
+        $editItemQuery = "UPDATE User SET SlackID='$slackID', $resetPasswordQuery Inactive = $inactive where UserID = $id";
+        error_log("Edit User Query: [" . $editItemQuery . "]" );
+        $db->exec( $editItemQuery );
+        
+        $userMessage = $userMessage . "User edited successfully.";
+    } else  {
+        $userMessage = "YOU ARE NOT LOGGED IN!";
+    }
 }
 
 else if(isset($_POST['Purchase']))
@@ -148,7 +187,7 @@ else if(isset($_POST['Purchase']))
         
         if( $errors != "" ) {
             error_log( "ERROR: [" . $_SESSION['userID'] . "]" . $errors );
-            echo "<script>alert('Something went wrong - contact Matt!!\n" . $errors . "'); console.log('" . $errors  . "');</script>";
+            $userMessage = "Something went wrong - contact Matt!! " . $errors;
             sendSlackMessageToMatt( "Errors: " . $errors, ":no_entry:", $itemType . "Stock - ERROR!!" );
         }
         
@@ -169,9 +208,9 @@ else if(isset($_POST['Restock']))
             $db->exec("UPDATE Item SET TotalExpenses = TotalExpenses + $cost, BackstockQuantity = BackstockQuantity + $numberOfCans, TotalCans = TotalCans + $numberOfCans where ID = $id");
             $db->exec("UPDATE Information SET Expenses = Expenses + $cost where ItemType = '$itemType'");
 
-            echo "Restock added successfully.<br>";
+            $userMessage = "Restocked successfully.";
         } else  {
-            echo "YOU ARE NOT LOGGED IN!<br>";
+            $userMessage = "YOU ARE NOT LOGGED IN!";
         }
 }
 else if(isset($_POST['Payment']))
@@ -202,7 +241,7 @@ else if(isset($_POST['Payment']))
             if( $amount > $balance ) {
                 $isBalanceValid = false;
                 error_log( "Bad balance. Amount: [" . $amount . "] Balance: [" . $balance . "]" );
-                echo "This payment [$" . number_format($amount, 2) . "] is larger than the user's $typeOfBalance of [$" . number_format($balance,2) . "]. Payment denied!<br>";
+                $userMessage = "This payment [$" . number_format($amount, 2) . "] is larger than the user\"s $typeOfBalance of [$" . number_format($balance,2) . "]. Payment denied!";
             } else {
                 $newBalance = $balance - $amount;
                 error_log( "Reduced balance [" . $newBalance . "] is [" . $balance . " - " . $amount . "]" );
@@ -225,10 +264,10 @@ else if(isset($_POST['Payment']))
             
             $db->exec("UPDATE Information SET ProfitActual = ProfitActual + $amount where ItemType = '$itemType'");
             
-            echo "Payment added successfully.<br>";
+            $userMessage = "Payment added successfully.";
         }
     } else  {
-        echo "YOU ARE NOT LOGGED IN!<br>";
+        $userMessage = "YOU ARE NOT LOGGED IN!";
     }
 }
 else if(isset($_POST['Request']))
@@ -251,7 +290,7 @@ else if(isset($_POST['Request']))
 
     $db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType) VALUES($userID, '$itemName', '$date', '$note', '$itemType')");
 
-    echo "Request submitted successfully.<br>";
+    $userMessage = "Request submitted successfully.";
 }
 else if(isset($_POST['Inventory'])) 
 {
@@ -319,8 +358,10 @@ else if(isset($_POST['Inventory']))
                 $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
                 $db->exec("UPDATE Item SET TotalIncome = TotalIncome + $income, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, OutOfStock = '', DateModified = '$date', ModifyType = 'Counted' where ID = $id");
                 $db->exec("UPDATE Information SET Income = Income + $income where ItemType = '$itemType'");
-                echo "Daily_Amount added successfully for Item #$id.<br>";
+                
             }
+            
+            $userMessage = "Inventory was successful for " . count($id_all) . " items.";
             
             $emoji = ":soda:";
             $location = "fridge";
@@ -337,11 +378,16 @@ else if(isset($_POST['Inventory']))
         
             
         } else  {
-            echo "YOU ARE NOT LOGGED IN!<br>";
+            $userMessage = "YOU ARE NOT LOGGED IN!";
         }
 }
 
 if( isset( $_POST['redirectURL'] ) ) {
+    
+    if( $userMessage != "" ) {
+        $_SESSION['user_message'] = $userMessage;
+    }
+    
     // Redirect to page
     header( "Location:" . $_POST['redirectURL'] );
 }

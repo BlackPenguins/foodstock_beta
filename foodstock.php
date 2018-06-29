@@ -220,7 +220,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 4.4 (June 28th, 2018)";
+    $version = "Version 4.5 (June 29th, 2018)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -327,6 +327,7 @@ if( !$isMobile) {
 
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
+    echo "<li><b>Jun 29, 2018:</b> Admin Changes: Message feedback, side bar for navigation. Added edit user: change slackID, set inactive, reset password.</li>";
     echo "<li><b>Jun 28, 2018:</b> Added 'Report Out of Stock' button (Nick C request). Saved space on cards by making statistics into icons.</li>";
     echo "<li><b>Apr 1, 2018:</b> Added Billing section (in Purchase History) for monthly statements and records of payments. Added 'total purchases' statistic to the Register Link. Clicking the Version at the top now jumps you to the change log.</li>";
     echo "<li><b>Mar 28, 2018:</b> Added 'Feature' and 'Bug' request types. Divided Feature, Bug, and Requests into different sections. Ability to mark requests as completed.</li>";

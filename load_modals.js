@@ -151,6 +151,35 @@ function loadSingleModals( isLoggedIn ) {
                     }
                 ]
     });
+    
+    $("#edit_user_button").click( function() {
+        $('#edit_user').dialog('open');
+         return false;
+    });
+    
+    $( "#edit_user" ).dialog( {
+        autoOpen: false, 
+        width: 500,
+        modal: true,
+        buttons: [
+                    {
+                        id: "Edit_User_Cancel",
+                        text: "Cancel",
+                        click: function() {
+                            $(this).dialog("close");
+                        } 
+                    },
+                    {
+                        id:"Edit_User_Submit",
+                        text: "Save",
+                        click: function() { 
+                            if(isLoggedIn) {
+                                $("#edit_user_form").submit();
+                            }
+                        }
+                    }
+                ]
+    });
 }
 
 function loadUserModals( isLoggedIn ) {

@@ -8,19 +8,27 @@
         if( !$isMobile ) {
                 $hideForms = "";
         }
-        
-        $results = $db->query("SELECT FirstName, LastName, UserID From User Order By FirstName Asc");
+
+        $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive From User Order By FirstName Asc");
         $user_options = "";
-         
-        $user_options = $user_options . "<option value='0'>(Manual Count)</option>";
+        $user_info = "";
+        
+        $user_options = "";
          
         while ($row = $results->fetchArray()) {
             $fullName = $row['FirstName'] . " " . $row['LastName'];
             $userID = $row['UserID'];
+            $slackID = $row['SlackID'];
+            $inactive = $row['Inactive'];
             $user_options = $user_options . "<option value='$userID'>$fullName</option>";
+            
+            $user_info = $user_info .
+            "<input type='hidden' id='User_SlackID_$userID' value='$slackID'/>" . 
+            "<input type='hidden' id='User_Inactive_$userID' value='$inactive'/>";
         }
          
-        $user_dropdown = "<select id='UserDropdown' name='UserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$user_options</select>";
+        $user_dropdown = "<select id='UserDropdown' name='UserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'><option value='0'>(Manual Count)</option>$user_options</select>";
+        $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$user_options</select>";
          
         $itemType_options = "";
         $itemType_options = $itemType_options . "<option value='Soda'>Soda</option>";
@@ -47,8 +55,37 @@
         echo "<label style='padding:5px 0px;' for='Note'>Note</label>";
         echo "<input type='text' name='Note' class='text ui-widget-content ui-corner-all'/>";
         
+        echo $user_info;
         echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
         echo "<input type='hidden' name='Payment' value='Payment'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
+        
+        echo "</fieldset>";
+        echo "</form>";
+        echo "</div>";
+        
+        // ------------------------------------
+        // EDIT USER MODAL
+        // ------------------------------------
+        echo "<div id='edit_user' title='Edit User' $hideForms>";
+        echo "<form id='edit_user_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
+        echo "<label style='padding:5px 0px;' for='EditUserDropdown'>User</label>";
+        echo $edit_user_dropdown;
+        echo "<label style='padding:5px 0px;' for='SlackID'>Slack ID</label>";
+        echo "<input type='text' id='SlackID' name='SlackID' class='text ui-widget-content ui-corner-all'/>";
+        
+        echo "<div style='padding:5px 0px;'>";
+            echo "<label style='display:inline;' for='Inactive'>Inactive:</label>";
+            echo "<input style='display:inline;' type='checkbox' id='Inactive' name='Inactive'/>";
+        echo "</div>";
+        
+        echo "<div style='padding:5px 0px;'>";
+            echo "<label style='padding:5px 0px; display:inline;' for='ResetPassword'>Reset Password?</label>";
+            echo "<input style='display:inline;' type='checkbox' name='ResetPassword'/>";
+        echo "</div>";
+        
+        echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
+        echo "<input type='hidden' name='EditUser' value='EditUser'/><br>";
         echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
         
         echo "</fieldset>";
@@ -297,9 +334,14 @@ $( document ).ready( function() {
     $('#EditSodaDropdown').change(function () {
         setItemInfo('Soda');
     });
+
+    $('#EditUserDropdown').change(function () {
+        setUserInfo();
+    });
     
     setItemInfo('Soda');
     setItemInfo('Snack');
+    setUserInfo();
 });
 
 function setItemInfo( type ) {
@@ -328,6 +370,20 @@ function setItemInfo( type ) {
     } else {
         $("#EditStatusActive" + type).prop("checked", false);
         $("#EditStatusDiscontinued" + type).prop("checked", true);
+    }
+}
+
+function setUserInfo() {
+    var userID = parseInt($('#EditUserDropdown').val());
+    var slackID = $('#User_SlackID_' + userID).val();
+    var inactive = $('#User_Inactive_' + userID).val();
+    
+    $("#SlackID").val(slackID);
+    
+    if( inactive == 0 ) {
+        $("#Inactive").prop("checked", false);
+    } else {
+        $("#Inactive").prop("checked", true);
     }
 }
 </script>
