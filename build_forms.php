@@ -35,12 +35,39 @@
         $itemType_options = $itemType_options . "<option value='Snack'>Snack</option>";
         $itemType_dropdown = "<select id='ItemTypeDropdown' name='ItemTypeDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$itemType_options</select>";
         
+        $method_dropdown = "<select id='MethodDropdown' name='MethodDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>" .
+                "<option value='None'>None</option>" .
+                "<option value='Venmo'>Venmo</option>" .
+                "<option value='Square Cash'>Square Cash</option>" .
+                "<option value='PayPal'>PayPal</option>" .
+                "<option value='Cash'>Cash</option>" .
+                "<option value='Refund'>Refund</option>" .
+                "<option value='Other'>Other</option>" .
+                "</select>";
+        
         buildModalsForType($db, "Soda", $hideForms, $isMobile );
         buildModalsForType($db, "Snack", $hideForms, $isMobile );
         
         // ------------------------------------
         // PAYMENT MODAL
         // ------------------------------------
+//         $dateObject = DateTime::createFromFormat( 'Y-m-d H:i:s', time() );
+//         $monthLabel = $dateObject->format('F Y');
+        
+        
+        $paymentMonth_options = "";
+        $monthLabel = "";
+        $monthsAgo = 0;
+        
+        while ($monthLabel != "March 2018" ) {
+            $firstOfMonth = mktime(0, 0, 0, date("m") - $monthsAgo, 1, date("Y") );
+            $monthLabel = date('F Y', $firstOfMonth);
+            $paymentMonth_options = $paymentMonth_options . "<option value='$monthLabel'>$monthLabel</option>";
+            $monthsAgo++;
+        }
+        
+        $paymentMonth_dropdown = "<select id='MonthDropdown' name='MonthDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$paymentMonth_options</select>";
+        
         echo "<div id='payment' title='Add Payment' $hideForms>";
         echo "<form id='payment_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         echo "<fieldset>";
@@ -48,8 +75,10 @@
         echo $itemType_dropdown;
         echo "<label style='padding:5px 0px;' for='UserDropdown'>User</label>";
         echo $user_dropdown;
+        echo "<label style='padding:5px 0px;' for='MonthDropdown'>Payment Month</label>";
+        echo $paymentMonth_dropdown;
         echo "<label style='padding:5px 0px;' for='Method'>Method</label>";
-        echo "<input type='text' name='Method' class='text ui-widget-content ui-corner-all'/>";
+        echo $method_dropdown;
         echo "<label style='padding:5px 0px;' for='Amount'>Amount</label>";
         echo "<input type='tel' name='Amount' class='text ui-widget-content ui-corner-all'/>";
         echo "<label style='padding:5px 0px;' for='Note'>Note</label>";

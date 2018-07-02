@@ -98,8 +98,7 @@
     echo "</div>";
     
     echo "<div style='margin:10px; padding:5px;'>";
-    echo "View monthly statements in the <b>Billing</b> section.";
-    echo "<span style='float:right;'><a style='text-decoration:none;' href='billing.php?type=" . $itemType . "'><span class='nav_buttons nav_buttons_billing'>Billing</span></a></span>";
+    echo "View monthly statements in the <b>Billing</b> section (now at the top).";
     
     echo "</div>";
     echo "<div id='restock_all'>";
@@ -113,8 +112,29 @@
     
     $rowClass = "odd";
     
-    $results = $db->query("SELECT i.Name, p.Cost, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND i.Type='$itemType' ORDER BY p.Date DESC");
+    $results = $db->query("SELECT i.Name, p.Cost, p.DiscountCost, p.Date, p.UserID, p.CashOnly FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND i.Type='$itemType' ORDER BY p.Date DESC");
+    $currentWeek = "";
     while ($row = $results->fetchArray()) {
+        $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
+        
+        $weekOfPurchase = $date_object->format('W');
+        
+        if( $currentWeek == "" ) {
+            $currentWeek = $weekOfPurchase;
+        } else {
+            if( $currentWeek != $weekOfPurchase ) {
+                // New week
+                echo "<tr>";
+                echo "<td style='padding:5px; font-style:italic; padding-left: 20px; border:1px #000 solid; background-color:#7a8020;' colspan='3'>";
+                echo "Week " . $weekOfPurchase;
+                echo "</td>";
+                echo "</tr>";
+            
+                $currentWeek = $weekOfPurchase;
+            }
+        }
+        
+        
         echo "<tr class='$rowClass'>";
         echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
         
@@ -125,9 +145,13 @@
         } else {
             $costDisplay = "$" . number_format($row['Cost'], 2);
         }
+        
+        if( $row['CashOnly'] == 1 ) {
+            $costDisplay = $costDisplay . "<span style='float:right; font-weight: bold; color:#023e0c;'>(CASH - ONLY)</span>";
+        }
+        
         echo "<td style='padding:5px; border:1px #000 solid;'>" . $costDisplay ."</td>";
-        $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-        echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "</td>";
+        echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('l m/d/Y  [h:i:s A]') . "</td>";
         echo "</tr>";
         
         if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }

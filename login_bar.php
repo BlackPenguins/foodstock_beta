@@ -35,8 +35,9 @@
             echo "<a href='purchase_history.php?type=Soda'><span class='nav_buttons nav_buttons_soda'>Soda Balance: $" .  number_format($_SESSION['SodaBalance'], 2) . "</span></a>";
             echo "&nbsp;";
             echo "<a href='purchase_history.php?type=Snack'><span class='nav_buttons nav_buttons_snack'>Snack Balance: $" .  number_format($_SESSION['SnackBalance'], 2) . "</span></a>";
+            echo "&nbsp;";
+            echo "<a href='billing.php?type=Snack'><span class='nav_buttons nav_buttons_billing'>Billing</span></a>";
             echo "</span>";
-            
         }
         
         echo "<span style='float:right;'>";

@@ -79,132 +79,172 @@
     
     displayPaymentMethods();
     
-    echo "<div id='restock_all'>";
-    echo "<table style='font-size:12; border: 3px solid; border-collapse:collapse; margin:10px; width:98%'>";
+    echo "<div id='billing' style='margin-top:50px;'>";
+
     
-    echo "<thead><tr style='background-color: #1f7943; border-top: 3px solid; border-right: 3px solid; border-left: 3px solid; border-bottom: none;'>";
-    echo "<th style='padding:5px; border-right:1px #000 solid;' align='left'>Billing Month</th>";
-    echo "<th style='padding:5px; border-right:1px #000 solid;' align='left'>Total Owed</th>";
-    echo "<th style='padding:5px; border-right:1px #000 solid;' align='left'>Amount Unpaid</th>";
-    echo "</tr></thead>";
-    
-    echo "<thead><tr style='background-color: #742a92; border-top: none; border-right: 3px solid; border-left: 3px solid; border-bottom: 3px solid;'>";
-    echo "<th style='padding:5px; border-right:1px #000 solid; text-align:right;' align='left'>Payment Date</th>";
-    echo "<th style='padding:5px; border-right:1px #000 solid; text-align:right;' align='left'>Amount</th>";
-    echo "<th style='padding:5px; border-right:1px #000 solid; text-align:right;' align='left'>Method</th>";
-    echo "</tr></thead>";
-    
-    $rowClass = "odd";
-    
-    $results = $db->query("SELECT Sum(Amount) as Total FROM Payments WHERE ItemType='$itemType' AND UserID = $userID");
-    $totalPayments = $results->fetchArray()['Total'];
     $currentMonthLabel = "";
-    $currentMonthTotal = 0;
+    $currentMonthSodaTotal = 0.0;
+    $currentMonthSnackTotal = 0.0;
+    $currentMonthSodaCashOnlyTotal = 0.0;
+    $currentMonthSnackCashOnlyTotal = 0.0;
+    
+    $currentMonthSodaCount = 0;
+    $currentMonthSnackCount = 0;
+    $currentMonthSodaCashOnlyCount = 0;
+    $currentMonthSnackCashOnlyCount = 0;
     
     $currentMonth = 0;
     $currentYear = 0;
     
-    $results = $db->query("SELECT i.Name, p.Cost, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND i.Type='$itemType' ORDER BY p.Date ASC");
+    $results = $db->query("SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID ORDER BY p.Date DESC");
     while ($row = $results->fetchArray()) {
-        $date_object = DateTime::createFromFormat( 'Y-m-d H:i:s', $row['Date'] );
-        $purchaseMonth = $date_object->format('F Y');
+        $purchaseDateObject = DateTime::createFromFormat( 'Y-m-d H:i:s', $row['Date'] );
+        $purchaseMonthLabel = $purchaseDateObject->format('F Y');
         
+        // First month
         if( $currentMonthLabel == "" ) {
-            $currentMonthLabel = $purchaseMonth;
-            $currentMonth = $date_object->format('m');
-            $currentYear = $date_object->format('Y');
-            
-            // PRINT ANY PAYMENTS THIS MONTH OR BEFORE
-            
+            $currentMonthLabel = $purchaseMonthLabel;
+            $currentMonth = $purchaseDateObject->format('m');
+            $currentYear = $purchaseDateObject->format('Y');
         }
 
-        if( $purchaseMonth != $currentMonthLabel ) {
+        // New Month
+        if( $purchaseMonthLabel != $currentMonthLabel ) {
+
+            // Print the last month
+            printNewBillMonth( $db, $itemType, $userID, $currentMonthLabel,
+                $currentMonthSodaTotal, $currentMonthSnackTotal, $currentMonthSodaCashOnlyTotal, $currentMonthSnackCashOnlyTotal,
+                $currentMonthSodaCount, $currentMonthSnackCount, $currentMonthSodaCashOnlyCount, $currentMonthSnackCashOnlyCount );
             
-            $currentMonth = $date_object->format('m');
-            $currentYear = $date_object->format('Y');
+            $currentMonthLabel = $purchaseMonthLabel;
+            $currentMonth = $purchaseDateObject->format('m');
+            $currentYear = $purchaseDateObject->format('Y');
             
-            $totalPayments = printBillMonth( $db, $itemType, $userID, $currentMonthLabel, $currentMonthTotal, $currentMonth, $currentYear, $totalPayments, false );
+            $currentMonthSodaTotal = 0.0;
+            $currentMonthSnackTotal = 0.0;
+            $currentMonthSodaCashOnlyTotal = 0.0;
+            $currentMonthSnackCashOnlyTotal = 0.0;
             
-            $currentMonthLabel = $purchaseMonth;
-            
-            $currentMonthTotal = 0;
+            $currentMonthSodaCount = 0;
+            $currentMonthSnackCount = 0;
+            $currentMonthSodaCashOnlyCount = 0;
+            $currentMonthSnackCashOnlyCount = 0;
         }
         
-        if( $row['DiscountCost'] != "" ) {
-            $currentMonthTotal += $row['DiscountCost'];
+        $cost = 0.0;
+        if( $row['DiscountCost'] != "" && $row['DiscountCost'] != 0 ) {
+            $cost = $row['DiscountCost'];
         } else {
-            $currentMonthTotal += $row['Cost'];
+            $cost = $row['Cost'];
+        }
+        
+        // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
+        if( $row['CashOnly'] != 1 ) {
+            if( $row['Type'] == "Snack" ) {
+                $currentMonthSnackTotal += $cost;
+                $currentMonthSnackCount++;
+            } else if( $row['Type'] == "Soda" ) {
+                $currentMonthSodaTotal += $cost;
+                $currentMonthSodaCount++;
+            }
+        } else {
+            if( $row['Type'] == "Snack" ) {
+                $currentMonthSnackCashOnlyTotal += $cost;
+                $currentMonthSnackCashOnlyCount++;
+            } else if( $row['Type'] == "Soda" ) {
+                $currentMonthSodaCashOnlyTotal += $cost;
+                $currentMonthSodaCashOnlyCount++;
+            }
         }
     }
-    $totalPayments = printBillMonth( $db, $itemType, $userID, $currentMonthLabel, $currentMonthTotal, $currentMonth, $currentYear, $totalPayments, true );
     
-        echo "</table>";
+    // Print the last month (usually the current one)
+    printNewBillMonth( $db, $itemType, $userID, $currentMonthLabel,
+                $currentMonthSodaTotal, $currentMonthSnackTotal, $currentMonthSodaCashOnlyTotal, $currentMonthSnackCashOnlyTotal,
+                $currentMonthSodaCount, $currentMonthSnackCount, $currentMonthSodaCashOnlyCount, $currentMonthSnackCashOnlyCount );
+    
     echo "</div>";
     
-    function printBillMonth( $db, $itemType, $userID, $currentMonthLabel, $currentMonthTotal, $currentMonth, $currentYear, $totalPayments, $restOfPayments ) {
-        // We're in a new month, print our totals
+    function printNewBillMonth( $db, $itemType, $userID, $currentMonthLabel,
+                $currentMonthSodaTotal, $currentMonthSnackTotal, $currentMonthSodaCashOnlyTotal, $currentMonthSnackCashOnlyTotal,
+                $currentMonthSodaCount, $currentMonthSnackCount, $currentMonthSodaCashOnlyCount, $currentMonthSnackCashOnlyCount ) {
         
-        $paymentStartMonth = $currentYear . "-" . $currentMonth . "-01";
-        $paymentsWhere = "";
-        
-        if( $restOfPayments ) {
-            $paymentMonthStart = $currentMonth + 1;
-            $paymentYearStart = $currentYear;
-                
-            if( $paymentMonthStart > 12 ) {
-                $paymentMonthStart = 1;
-                $paymentYearStart = $paymentYearEnd + 1;
-            }
-            
-            if( $paymentMonthStart < 10 ) {
-                $paymentMonthStart = 0 . $paymentMonthStart;
-            }
-            
-            $paymentsWhere = " Date >= '$paymentYearStart-$paymentMonthStart-01'";
-        } else {
-            $paymentMonthEnd = $currentMonth + 1;
-            $paymentYearEnd = $currentYear;
-            
-            if( $paymentMonthEnd > 12 ) {
-                $paymentMonthEnd = 1;
-                $paymentYearEnd = $paymentYearEnd + 1;
-            }
-            
-            if( $paymentMonthEnd < 10 ) {
-                $paymentMonthEnd = 0 . $paymentMonthEnd;
-            }
-            
-            $paymentsWhere = " Date between '$paymentStartMonth' AND '$paymentYearEnd-$paymentMonthEnd-01'";
-        }
-        
-        
-        echo "<tr class='billing_row'>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>" . $currentMonthLabel . "</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $currentMonthTotal, 2 ) . "</td>";
-        
-        if( $currentMonthTotal > $totalPayments ) {
-        $amountNotPaid = $currentMonthTotal - $totalPayments;
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $amountNotPaid, 2) . "</td>";
-            $totalPayments = 0;
-        } else {
-        echo "<td style='padding:5px; border:1px #000 solid; font-weight: bold;'>ALL PAID</td>";
-            $totalPayments = $totalPayments - $currentMonthTotal;
-        }
+        echo "<table style='width: 95%; border: #000 solid 3px; margin: 10px 20px; border-collapse: collapse;'>";
+        echo "<tr style='font-weight:bold; background-color: #98941a; border-bottom: 2px dashed #000;'>";
+        echo "<td colspan='2' style='padding:5px;'>";
+        echo $currentMonthLabel;
+        echo "</td>";
         echo "</tr>";
         
-        // But now let's print any payments made in this current month, that are paying off last month
-        $paymentResults = $db->query("SELECT Date, Amount, Method FROM Payments WHERE $paymentsWhere AND ItemType='$itemType' AND UserID = $userID");
-        while ($paymentRow = $paymentResults->fetchArray()) {
-            $paymentDate = DateTime::createFromFormat( 'Y-m-d H:i:s', $paymentRow['Date'] );
-
-            echo "<tr class='payment_row'>";
-            echo "<td style='padding:5px; border:1px #000 solid; text-align:right;'>" . $paymentDate->format('F j, Y') . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; text-align:right;'>$" . number_format( $paymentRow['Amount'], 2 ) . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; text-align:right;'>" . $paymentRow['Method'] . "</td>";
-            echo "</tr>";
+        echo "<tr>";
+        echo "<td style='padding:5px; background-color: #1f7943; font-weight:bold;'>Purchases</td>";
+        echo "<td style='padding:5px; background-color: #742a92; font-weight:bold;'>Payments</td>";
+        echo "</tr>";
+        
+        echo "<tr>";
+        
+        echo "<td style='background-color: #39ad67; width:50%; vertical-align: top;'>";
+        
+        if( $currentMonthSodaCount > 0 ) {
+            echo "<div style='padding:10px;'><b>Site Purchased Soda ($currentMonthSodaCount items):</b> $" . number_format($currentMonthSodaTotal, 2) . "</div>";
         }
         
-        return $totalPayments;
+        if( $currentMonthSnackCount > 0 ) {
+            echo "<div style='padding:10px;'><b>Site Purchased Snacks ($currentMonthSnackCount items):</b> $" . number_format($currentMonthSnackTotal, 2) . "</div>";
+        }
+        
+        if( $currentMonthSodaCashOnlyCount > 0 ) {
+            echo "<div style='padding:10px;'><b>Cash-Only Soda ($currentMonthSodaCashOnlyCount items):</b> $" . number_format($currentMonthSodaCashOnlyTotal, 2) . " (already paid)</div>";
+        }
+        
+        if( $currentMonthSnackCashOnlyCount > 0 ) {
+            echo "<div style='padding:10px;'><b>Cash-Only Snacks ($currentMonthSnackCashOnlyCount items):</b> $" . number_format($currentMonthSnackCashOnlyTotal, 2) . " (already paid)</div>";
+        }
+        
+        $totalPurchased = $currentMonthSodaTotal + $currentMonthSnackTotal;
+        
+        echo "<div style='margin-top:20px; padding:5px; font-size:1.1em;'><b>Total Balance:</b> $" . number_format($totalPurchased, 2) . "</div>";
+        
+        echo "</td>";
+        
+        echo "<td style='background-color: #a359c1; width:50%; vertical-align: top;'>";
+        
+        $results = $db->query("SELECT Amount, Date, ItemType FROM Payments WHERE UserID = $userID AND MonthForPayment = '$currentMonthLabel'");
+        
+        $totalPaid = 0.0;
+        
+        while ($row = $results->fetchArray()) {
+            $paymentAmount = $row['Amount'];
+            $paymentDate = DateTime::createFromFormat( 'Y-m-d H:i:s', $row['Date'] );
+            
+            echo "<div style='padding:10px;'><b>" . $paymentDate->format('F j, Y') . ": (" . $row['ItemType'] . ")</b> $" . number_format($paymentAmount, 2) . "</div>";
+            $totalPaid += $paymentAmount;
+        }
+        
+        echo "<div style='margin-top:20px; padding: 5px; font-size:1.1em;'><b>Total Paid:</b> $" . number_format($totalPaid, 2) . "</div>";
+        
+        $totalOwed = $totalPurchased - $totalPaid;
+        
+        echo "</td>";
+         
+        echo "</tr>";
+        
+        echo "<tr>";
+         
+        echo "<td style='background-color: #39ad67;'>&nbsp;</td>";
+        
+        $owedColor = "#1f7943";
+        
+        if( $totalOwed > 0 ) {
+            $owedColor = "#791f1f";
+        }
+        echo "<td style='padding:10px; background-color: #a359c1; font-size:1.1em; text-align:right; vertical-align:bottom;'>";
+        echo "<span style='padding: 5px; border:2px dashed #000; background-color: $owedColor; color: #FFFFFF;'><b>Total Owed:</b> $" . number_format($totalOwed, 2) . "</span>";
+        echo "</td>";
+         
+        echo "</tr>";
+         
+        echo "</table>";
     }
 ?>
 

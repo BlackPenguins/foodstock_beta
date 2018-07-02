@@ -368,7 +368,7 @@ function buildTopSection( $row, $containerType, $location, $userName, $loggedIn,
             } 
             else 
             { 
-                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($outOfStock == "1")?("<img src='./warning.png' title='Item reported as sold out by another user!'/>&nbsp;"):(""))."$warm_item $containerType" . ( $warm_item > 1 ? "s" : "" ) . " at desk</div>"; 
+                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($warm_item < 5)?("<img src='./warning.png' title='Item running low...'/>&nbsp;"):(""))."$warm_item $containerType" . ( $warm_item > 1 ? "s" : "" ) . " at desk</div>"; 
             }
         }
         

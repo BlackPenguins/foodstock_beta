@@ -220,11 +220,12 @@ else if(isset($_POST['Payment']))
     if($auth == "2385") {
         error_log( "Incoming payment." );
         $userID = trim($_POST["UserDropdown"]);
+        $paymentMonth = trim($_POST["MonthDropdown"]);
         $itemType = trim($_POST["ItemTypeDropdown"]);
         $date = date('Y-m-d H:i:s');
         $amount = trim($_POST["Amount"]);
         $note = trim($_POST["Note"]);
-        $method = trim($_POST["Method"]);
+        $method = trim($_POST["MethodDropdown"]);
          
         $isUserPayment = $userID > 0;
         $isBalanceValid = true;
@@ -256,7 +257,7 @@ else if(isset($_POST['Payment']))
         }
         
         if( $isBalanceValid ) {
-            $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType) VALUES($userID, '$method', $amount, '$date', '$note', '$itemType')");
+            $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $amount, '$date', '$note', '$itemType', '$paymentMonth')");
 
             if( $isUserPayment ) {
                 $db->exec("UPDATE User SET $typeOfBalance = $typeOfBalance - $amount where UserID = $userID");
@@ -365,13 +366,15 @@ else if(isset($_POST['Inventory']))
             
             $emoji = ":soda:";
             $location = "fridge";
+            $page = "sodastock.php";
             
             if( $itemType == "Snack" ) {
                 $emoji = ":cookie:";
                 $location = "cabinet";
+                $page = "snackstock.php";
             }
             if( $slackMessageItems != "" && $sendToSlack == true) {
-                $slackMessage = $slackMessageItems ."\n\nWant to see what\'s in the $location, the prices, what has been discontinued, the trends of different items being bought, or just general statistics? View the NEW <http://penguinore.net/$url>";
+                $slackMessage = $slackMessageItems ."\n\nWant to see what is in the $location, the prices, what has been discontinued, the trends of different items being bought, or just general statistics? View the NEW <http://penguinore.net/$page>";
                 
                 sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - REFILL" );
             }
