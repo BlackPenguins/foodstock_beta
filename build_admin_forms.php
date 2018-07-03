@@ -85,7 +85,6 @@
         echo "<input type='text' name='Note' class='text ui-widget-content ui-corner-all'/>";
         
         echo $user_info;
-        echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
         echo "<input type='hidden' name='Payment' value='Payment'/><br>";
         echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
         
@@ -113,7 +112,6 @@
             echo "<input style='display:inline;' type='checkbox' name='ResetPassword'/>";
         echo "</div>";
         
-        echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
         echo "<input type='hidden' name='EditUser' value='EditUser'/><br>";
         echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
         
@@ -183,7 +181,6 @@
             echo "<input type='tel' name='CurrentPrice' value='0.50' class='text ui-widget-content ui-corner-all'/>";
             
             echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
-            echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
             echo "<input type='hidden' name='AddItem' value='AddItem'/><br>";
             echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
             
@@ -236,7 +233,6 @@
             
             echo $item_info;
             echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
-            echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
             echo "<input type='hidden' name='EditItem' value='EditItem'/><br>";
             echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
             
@@ -260,7 +256,6 @@
             echo "<label style='padding:5px 0px;' for='Cost'>Cost for Pack</label>";
             echo "<input type='tel' name='Cost' class='text ui-widget-content ui-corner-all'/>";
             
-            echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
             echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/><br>";
             echo "<input type='hidden' name='Restock' value='Restock'/><br>";
             echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
@@ -341,7 +336,6 @@
                 echo "</table>";
                 echo "<input type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
                 
-                        echo "<input type='hidden' name='AuthPass517' value='2385'/><br>";
                echo "<input type='hidden' name='Inventory' value='Inventory'/><br>";
                echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
                 
