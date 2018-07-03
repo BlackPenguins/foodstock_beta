@@ -293,12 +293,12 @@ if(isset($_POST['Purchase'])) {
     
                 $results = $db->query("SELECT ID, BackStockQuantity, ShelfQuantity, Price, Name, Type, UnitName FROM Item WHERE ID = $id");
                 while ($row = $results->fetchArray()) {
-                    $backstockQuantityBefore = $row[1];
-                    $shelfQuantityBefore = $row[2];
-                    $priceBefore = $row[3];
-                    $itemName = $row[4];
-                    $itemType = $row[5];
-                    $itemUnits = $row[6];
+                    $backstockQuantityBefore = $row['BackStockQuantity'];
+                    $shelfQuantityBefore = $row['ShelfQuantity'];
+                    $priceBefore = $row['Price'];
+                    $itemName = $row['Name'];
+                    $itemType = $row['Type'];
+                    $itemUnits = $row['UnitName'];
                 }
     
                 if( $price == "") {

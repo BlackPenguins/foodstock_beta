@@ -156,9 +156,9 @@ function buildTopSection( $row, $containerType, $location, $isMobile ) {
     $isLoggedIn = IsLoggedIn();
     
     $outOfStock = $row['OutOfStock'];
-    $item_id = $row[0];
-    $item_name = $row[1];
-    $price = $row[7];
+    $item_id = $row['ID'];
+    $item_name = $row['Name'];
+    $price = $row['Price'];
     $originalPrice = $price;
     $discountPrice = $row['DiscountPrice'];
     $hasDiscount = false;
@@ -181,9 +181,9 @@ function buildTopSection( $row, $containerType, $location, $isMobile ) {
         $price_background_color = "#5f0000";
     }
 
-    $retired_item = $row[12];
-    $cold_item = $row[6];
-    $warm_item = $row[5];
+    $retired_item = $row['Retired'];
+    $cold_item = $row['ShelfQuantity'];
+    $warm_item = $row['BackstockQuantity'];
 
     $priceDisplay = "";
 
@@ -197,11 +197,11 @@ function buildTopSection( $row, $containerType, $location, $isMobile ) {
     
     if( $isLoggedIn && $outOfStock != "1" ) {
         $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
-        echo "<span style='float:right; padding-right:10px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\",$row[0],\"$row[1]\")'><img src='flag.png' title='Report Item Out of Stock'/></span>&nbsp;";
+        echo "<span style='float:right; padding-right:10px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='flag.png' title='Report Item Out of Stock'/></span>&nbsp;";
     }
     
     echo "<div style='width:40%; float:left;'>";
-    DisplayCan($row[1], ($cold_item + $warm_item == 0), $row[13] );
+    DisplayCan($row['Name'], ($cold_item + $warm_item == 0), $row['ImageURL'] );
     echo "</div>";
     echo "<div style='width:56%; float:right;'>";
 
@@ -253,11 +253,13 @@ function getPriceDisplay($price) {
     
     return $price;
 }
+
+
 function buildMiddleSection($db, $row, $isMobile) {
     $isLoggedInAdmin = IsAdminLoggedIn();
     $isLoggedIn = IsLoggedIn();
     
-    $cold_item = $row[6];
+    $cold_item = $row['ShelfQuantity'];
     $outOfStock = $row['OutOfStock'];
     $outOfStockReporter = $row['OutOfStockReporter'];
     
@@ -279,7 +281,7 @@ function buildMiddleSection($db, $row, $isMobile) {
                 $profit = "<div style='font-weight:bold;'>Profit" . ( $isLoggedInAdmin ? ":" : "" ) . "</div>". ($isLoggedInAdmin ? "<div>$" .  number_format($profit, 2) . "</div>" : "" );
         }
     
-        $total_can = $row[4];
+        $total_can = $row['TotalCans'];
     
         //<img width='20px' src='profit_icon.png'/>
         
@@ -289,9 +291,6 @@ function buildMiddleSection($db, $row, $isMobile) {
             $center = "style='text-align:center;'";
         }
         // For the JUSTIFY TO EVENLY SPACE THE ELEMENTS THERE MUST BE SPACES BETWEEN THEM (&nbsp;) much like how for words to separated using justify there must be spaces to break on
-        
-        
-        
         
         if( $isLoggedInAdmin ) {
             echo "<div $center id='money_container'>";
@@ -306,13 +305,13 @@ function buildMiddleSection($db, $row, $isMobile) {
     
     if( $isLoggedIn ) {
         echo "<div style='padding-bottom:10px;'>";
-        echo "<button id='remove_button_" .  $row[0] . "' class='quantity_button quantity_button_remove_disabled' onclick='removeItemFromCart(" . $row[0] . ")' title='Remove item(s)'>REMOVE</button>";
-        echo "<span style='font-weight:bold; color:#FFF; padding:5px 10px; border: dashed 2px #000;' id='quantity_holder_" . $row[0] . "'>0</span>";
+        echo "<button id='remove_button_" .  $row['ID'] . "' class='quantity_button quantity_button_remove_disabled' onclick='removeItemFromCart(" . $row['ID'] . ")' title='Remove item(s)'>REMOVE</button>";
+        echo "<span style='font-weight:bold; color:#FFF; padding:5px 10px; border: dashed 2px #000;' id='quantity_holder_" . $row['ID'] . "'>0</span>";
         
         if( $cold_item == 0 ) {
-            echo "<button id='add_button_" .  $row[0] . "' class='quantity_button quantity_button_add_disabled' onclick='addItemToCart(" . $row[0] . ")' title='Add item(s)'>ADD</button>";
+            echo "<button id='add_button_" .  $row['ID'] . "' class='quantity_button quantity_button_add_disabled' onclick='addItemToCart(" . $row['ID'] . ")' title='Add item(s)'>ADD</button>";
         } else {
-            echo "<button id='add_button_" .  $row[0] . "' class='quantity_button quantity_button_add' onclick='addItemToCart(" . $row[0] . ")' title='Add item(s)'>ADD</button>";
+            echo "<button id='add_button_" .  $row['ID'] . "' class='quantity_button quantity_button_add' onclick='addItemToCart(" . $row['ID'] . ")' title='Add item(s)'>ADD</button>";
         }
         
         echo "</div>";
@@ -337,7 +336,7 @@ function buildMiddleSection($db, $row, $isMobile) {
 function buildBottomSection($db, $row, $containerType, $isMobile) {
     if( !$isMobile ) {
         
-        $resultsPopularity = $db->query('SELECT ItemID, Date FROM Restock where ItemID = ' . $row[0] . ' ORDER BY Date DESC');
+        $resultsPopularity = $db->query('SELECT ItemID, Date FROM Restock where ItemID = ' . $row['ID'] . ' ORDER BY Date DESC');
         $firstDate = "";
         $lastDate = "";
         $totalPurchases = 0;
@@ -376,7 +375,7 @@ function buildBottomSection($db, $row, $containerType, $isMobile) {
             echo "<span title='Restocked every " . $purchaseDayInterval ." days.' style='padding:10px; color:#f9ff00; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='dolly.png'/>&nbsp;&nbsp;"  . $purchaseDayInterval . " days</span>";
         }
         
-        $total_can_sold = $row[4] - ($row[5] + $row[6]);
+        $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
         
         echo "<span title='" . $total_can_sold ." total sold.' style='padding:10px; color:#ffffff; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='trends.png'/>&nbsp;&nbsp;"  . $total_can_sold . " sold</span>";
         

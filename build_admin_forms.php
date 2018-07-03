@@ -128,15 +128,15 @@
             $item_options_no_discontinued = "";
             $item_info = "";
             while ($row = $results->fetchArray()) {
-                $item_id = $row[0];
-                $item_name = $row[1];
-                $item_price = $row[2];
-                $item_discount_price = $row[8];
-                $item_retired = $row[3];
-                $item_chart_color = $row[4];
-                $item_imageURL = $row[5];
-                $item_thumbURL = $row[6];
-                $item_unit_name = $row[7];
+                $item_id = $row['ID'];
+                $item_name = $row['Name'];
+                $item_price = $row['Price'];
+                $item_discount_price = $row['DiscountPrice'];
+                $item_retired = $row['Retired'];
+                $item_chart_color = $row['ChartColor'];
+                $item_imageURL = $row['ImageURL'];
+                $item_thumbURL = $row['ThumbURL'];
+                $item_unit_name = $row['UnitName'];
                 if(strlen($item_name) > 30) {
                     $item_name = substr($item_name, 0, 30)."...";
                 }
@@ -146,10 +146,10 @@
                 }
                 
                 $strikethrough = ( $item_retired == "0" ? "" : " style='font-weight:bold; color:#9b0909'");
-                $item_options = $item_options . "<option $strikethrough value='$row[0]'>$item_name</option>";
+                $item_options = $item_options . "<option $strikethrough value='" . $row['ID'] . "'>$item_name</option>";
             
                 if($item_retired == 0) {
-                    $item_options_no_discontinued = $item_options_no_discontinued . "<option $strikethrough value='$row[0]'>$item_name</option>";
+                    $item_options_no_discontinued = $item_options_no_discontinued . "<option $strikethrough value='" . $row['ID'] . "'>$item_name</option>";
                 }
             
                 $item_info = $item_info . "<input type='hidden' id='Item_" . $itemType . "_Name_$item_id' value='$item_name'/>" .
@@ -285,11 +285,11 @@
                 $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, Price, ID FROM Item WHERE NOT Retired = 1 AND Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY Name asc, Retired");
             $tabIndex = 1;
             while ($row = $results->fetchArray()) {
-                        $item_name = $row[0];
-                        $backstockquantity = $row[1];
-                        $shelfquantity = $row[2];
-                        $price = $row[3];
-                        $item_id = $row[4];
+                        $item_name = $row['Name'];
+                        $backstockquantity = $row['BackstockQuantity'];
+                        $shelfquantity = $row['ShelfQuantity'];
+                        $price = $row['Price'];
+                        $item_id = $row['ID'];
                         echo "<tr>";
                         echo "<td><b>$item_name</b></td>";
                         echo "<input type='hidden' id='item_$item_id' name='ItemID[]' value='$item_id'/>";

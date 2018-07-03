@@ -275,16 +275,16 @@ if( !$isMobile && $itemType != "Snack" ) {
     echo "<div style='color:#8e8b8b; font-weight:bold; padding-bottom:10px;'>The Shelf <span style='font-size:0.7em;'>(currently in the $location)</span></div>";
     $lastUpdated = "";
     while ($row = $results->fetchArray()) {
-        $name = $row[1];
-        $shelf = $row[2];
+        $name = $row['Name'];
+        $shelf = $row['ShelfQuantity'];
         
         if( $lastUpdated == "") {
-            $lastUpdated = $row[3];
+            $lastUpdated = $row['DateModified'];
         }
         
         if( $shelf > 0 ) {
             for($i = 0; $i < $shelf; $i++) {
-                DisplayShelfCan($name, $row[4]);
+                DisplayShelfCan($name, $row['ThumbURL']);
             }
         }
     }

@@ -208,19 +208,25 @@
         
         $results = $db->query("SELECT ID, Name, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Retired, Hidden FROM Item WHERE Hidden != 1 ORDER BY Retired, Type DESC, ID DESC");
         while ($row = $results->fetchArray()) {
+            $isDiscontinued = $row['Retired'] == 1;
+            
+            if( $isDiscontinued ) {
+                $rowClass = "discontinued_row";
+            }
+            
             echo "<tr class='$rowClass'>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[0]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[1]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[2]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[3] ($row[4])</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[5]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[6]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[7]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[8]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[9]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[10]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$row[11]</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>".(($row[12]==1)?("YES"):("NO"))."</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ID'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Date'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['DateModified'] . " (" . $row['ModifyType'] . ")</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ChartColor'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['TotalCans'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['BackstockQuantity'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ShelfQuantity'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Price'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['TotalIncome'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['TotalExpenses'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
             echo "</tr>";
             if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
         }

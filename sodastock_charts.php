@@ -101,16 +101,16 @@ echo "</table>";
             $results = $db->query("SELECT ID, Name from Item WHERE Type ='" . $itemType . "' order by totalcans desc");
             while ($row = $results->fetchArray()) {
                 echo ",";
-                echo "'$row[1]'";
-                $previousAmounts[$row[0]] = 0;
-                $idOrder[] = $row[0];
+                echo "'$row['Name']'";
+                $previousAmounts[$row['ID']] = 0;
+                $idOrder[] = $row['ID'];
             }
             echo "]";
 
             $previousTime = "";
             $results = $db->query('SELECT s.Name, r.Date, s.ID, r.ShelfQuantity, r.BackstockQuantity, r.Price FROM Daily_Amount r JOIN Item s ON r.itemID = s.id  WHERE r.Date > "2015-04-03 15:47:08" ORDER BY r.Date ASC');
             while ($row = $results->fetchArray()) {
-                $currentTime = $row[1];
+                $currentTime = $row['Date'];
                 //error_log("Current Time: [" . $currentTime . "]");
                 if( $previousTime == "" || $currentTime != $previousTime ) {
                     error_log("NEW TIME: [" . $currentTime . "|". $previousTime . "]");
@@ -134,7 +134,7 @@ echo "</table>";
                 }
                 
                 //error_log("Storing [$row[0] ($row[2])] with [$row[3]]");
-                $previousAmounts[$row[2]] = $row[3];
+                $previousAmounts[$row['ID']] = $row['ShelfQuantity'];
             }
             
             // That last row would be ignored, so print it now

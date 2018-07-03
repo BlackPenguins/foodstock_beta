@@ -40,11 +40,11 @@
         
             $containerType = "[UNKNOWN]";
         
-            if( $row[15] != "" ) {
-                $containerType = $row[15];
+            if( $row['UnitName'] != "" ) {
+                $containerType = $row['UnitName'];
             }
         
-            if( $row[12] == 0 ) {
+            if( $row['Retired'] == 0 ) {
                 // Active - blue cards
                 echo "<div class='" . $className . "_card card'>";
             } else {

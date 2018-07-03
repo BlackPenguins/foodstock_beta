@@ -1,5 +1,4 @@
 <?php
-// TODO: Row[] using columns not indicies
 // Indentation
 // do the login stuff on top of every page in a function, dont duplicate code
 function Login($db) {

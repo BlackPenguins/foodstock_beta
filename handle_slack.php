@@ -25,10 +25,10 @@ if(isset($_POST['token']))
         
         $results = $db->query("SELECT ID, BackStockQuantity, ShelfQuantity, Price, Name FROM Item WHERE Retired = 0 AND Hidden != 1 AND (BackstockQuantity != 0 OR ShelfQuantity != 0) Order By Name");
         while ($row = $results->fetchArray()) {
-            $backstockQuantity = $row[1];
-            $shelfQuantity = $row[2];
-            $price = $row[3];
-            $itemName = $row[4];
+            $backstockQuantity = $row['BackStockQuantity'];
+            $shelfQuantity = $row['ShelfQuantity'];
+            $price = $row['Price'];
+            $itemName = $row['Name'];
             
             $slackMessageItems = $slackMessageItems . "•  *" . $itemName . ":* *" . $shelfQuantity . " cans* (" . ( $shelfQuantity + $backstockQuantity ) . " total)\n";
         }
