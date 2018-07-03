@@ -14,8 +14,8 @@
     Login($db);
             
         
-    $loggedIn = IsLoggedIn();
-    $loggedInAdmin = IsAdminLoggedIn();
+    $isLoggedIn = IsLoggedIn();
+    $isLoggedInAdmin = IsAdminLoggedIn();
     $loginPassword = false;
     
     require_once 'Mobile_Detect.php';
@@ -47,8 +47,8 @@
     $( document ).ready( function() {
                 
         <?php 
-            if(!$isMobile) {
-                echo "loadUserModals('" . $loggedIn . "');\n";
+            if(!$isMobile && $isLoggedIn) {
+                echo "loadUserModals();\n";
             }
         ?>           
     });
@@ -74,9 +74,7 @@
     
     include("login_bar.php");
     
-//     if( !$loggedInAdmin ) {
-        TrackVisit($db, 'Requests', $loggedIn);
-//     }
+    TrackVisit($db, 'Requests');
     
         echo "<div style='padding: 10px; background-color:#d03030; border-bottom: 3px solid #000;'>";
         echo "<button style='padding:5px; margin:0px 5px;' id='request_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack & Soda  &nbsp;&nbsp;|&nbsp;&nbsp;  Request Feature  &nbsp;&nbsp;|&nbsp;&nbsp;  Report Bug</button>";
@@ -109,12 +107,12 @@
         echo "</form>";
         echo "</div>";
     
-        drawTable($db, $loggedInAdmin, "Requests", "'Soda','Snack'");
-        drawTable($db, $loggedInAdmin, "Feature Requests", "'Feature'");
-        drawTable($db, $loggedInAdmin, "Bug Reports", "'Bug'");
+        drawTable($db, $isLoggedInAdmin, "Requests", "'Soda','Snack'");
+        drawTable($db, $isLoggedInAdmin, "Feature Requests", "'Feature'");
+        drawTable($db, $isLoggedInAdmin, "Bug Reports", "'Bug'");
     
         
-        function drawTable( $db, $loggedInAdmin, $title, $type ) {
+        function drawTable( $db, $isLoggedInAdmin, $title, $type ) {
             // ------------------------------------
             // REQUESTS TABLE
             // ------------------------------------
@@ -148,7 +146,7 @@
             
                 $onClick = "";
             
-                if( $loggedInAdmin ) {
+                if( $isLoggedInAdmin ) {
                     $onClick = " onclick='toggleCompleted(" . $row['ID'] . ");'";
                 }
             

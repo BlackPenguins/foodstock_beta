@@ -11,8 +11,8 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
         
         Login($db);
         
-        $loggedIn = IsLoggedIn();
-        $loggedInAdmin = IsAdminLoggedIn();
+        $isLoggedIn = IsLoggedIn();
+        $isLoggedInAdmin = IsAdminLoggedIn();
         $loginPassword = false;
         
         require_once 'Mobile_Detect.php';
@@ -38,7 +38,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 <script>
     var itemsInCart = [];
     
-    function updateCardArea(itemTypeValue, classNameValue, locationValue, isMobileValue, loggedInValue, loggedInAdminValue, itemSearchValue, userIDValue, userNameValue) {
+    function updateCardArea(itemTypeValue, classNameValue, locationValue, isMobileValue, itemSearchValue) {
         console.log("Updating Card Area with [" + itemSearchValue + "]...");
         $.post("sodastock_ajax.php", { 
                 type:'CardArea',
@@ -46,11 +46,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
                 className:classNameValue,
                 location:locationValue,
                 isMobile:isMobileValue,
-                loggedInAdmin:loggedInAdminValue,
-                loggedIn:loggedInValue,
                 itemSearch:itemSearchValue,
-                userID:userIDValue,
-                userName:userNameValue
             },function(data) {
                 $('#card_area').html(data);
         });
@@ -65,7 +61,8 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
             $.post("sodastock_ajax.php", { 
                 type:'OutOfStockRequest',
                 reporter:user,
-                itemID:itemID
+                itemID:itemID,
+                itemName:itemName
             },function(data) {
                 // Do nothing right now
             });
@@ -150,7 +147,9 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 
     $( document ).ready( function() {
         <?php 
-            echo "loadUserModals('" . $loggedInAdmin . "');\n";
+        if( $isLoggedIn ) {
+            echo "loadUserModals();\n";
+        }
         ?>           
     });
 </script>
@@ -183,10 +182,9 @@ date_default_timezone_set('America/New_York');
 
 
 
-if( !$loggedInAdmin ) {
-    TrackVisit($db, $title, $loggedIn);
-}
+TrackVisit($db, $title);
 
+DisplayUserMessage();
 
 include("exec_sql.php");
 
@@ -236,7 +234,7 @@ if(!$isMobile) {
     echo "<div style='margin: auto;'>";
     echo "<div>";
     echo "<a href='#change_log'><span style='color:#000000; background-color:#ffc782; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
-    if( $loggedInAdmin ) {
+    if( $isLoggedInAdmin ) {
         echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Expected):</b> $". number_format($total_income, 2)."</span>";
         echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Total Expenses:</b> $". number_format($total_expense, 2)."</span>";
         echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Expected):</b> $". number_format($total_profit, 2)."</span>";
@@ -256,7 +254,7 @@ if(!$isMobile) {
     
     echo "<div style='margin-left:269px; margin-top:12px;'>";
     
-    if( $loggedInAdmin ) {
+    if( $isLoggedInAdmin ) {
         echo "<span style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Actual):</b> $". number_format($total_income_actual, 2)."</span>";
         $actualProfit = $total_income_actual - $total_expense;
         echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Actual):</b> $". number_format($actualProfit, 2)."</span>";
@@ -299,26 +297,9 @@ if( !$isMobile && $itemType != "Snack" ) {
     echo "</div>";
 }
 
-$userID = "";
-$userName = "";
-
-if( isset( $_SESSION['userID'] ) ) {
-    $userID = $_SESSION['userID'];
-}
-
-if( isset( $_SESSION['firstname'] ) ) {
-    $userName = $_SESSION['firstname'];
-    
-    if( isset( $_SESSION['lastname'] ) ) {
-        $userName = $userName . " " . $_SESSION['lastname'];
-    }
-}
-
-
-
-echo "<div style='font-size:1.6em; font-weight:bold; margin:3px;'>Search: <input autofocus type='text' style='font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', this.value, '$userID', '$userName' );\"/></div>";
+echo "<div style='font-size:1.6em; font-weight:bold; margin:3px;'>Search: <input autofocus type='text' style='font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', this.value );\"/></div>";
 echo "<div id='card_area'>";
-echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '$loggedIn', '$loggedInAdmin', '', '$userID', '$userName' );</script>";
+echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '' );</script>";
 echo "</div>";
 
 if( !$isMobile) {

@@ -9,10 +9,9 @@
     date_default_timezone_set('America/New_York');
         
     Login($db);
-            
-        
-    $loggedIn = IsLoggedIn();
-    $loggedInAdmin = IsAdminLoggedIn();
+
+    $isLoggedIn = IsLoggedIn();
+    $isLoggedInAdmin = IsAdminLoggedIn();
     $loginPassword = false;
     
     $itemType = "Soda";
@@ -53,10 +52,10 @@
     $( document ).ready( function() {
                 
         <?php 
-            if(!$isMobile) {
-                echo "loadSingleModals('" . $loggedInAdmin . "');\n";
-                echo "loadItemModals('" . $loggedInAdmin . "','Soda');\n";
-                echo "loadItemModals('" . $loggedInAdmin . "','Snack');\n";
+            if(!$isMobile && $isLoggedInAdmin) {
+                echo "loadSingleModals();\n";
+                echo "loadItemModals('Soda');\n";
+                echo "loadItemModals('Snack');\n";
             }
         ?>           
     });
@@ -72,22 +71,21 @@
         echo "<body class='soda_body'>";
     }
     
-    include("build_forms.php");
+    include("build_admin_forms.php");
     include("login_bar.php");
     
-    if( !$loggedInAdmin ) {
-        TrackVisit($db, 'Admin', $loggedIn);
+    TrackVisit($db, 'Admin');
+    
+    if( !$isLoggedInAdmin ) {
+        // Only admin is allowed on this page
         die;
     }
 
-    if( isset( $_SESSION['user_message'])) {
-        echo "<script>alert('" . $_SESSION['user_message'] . "');</script>";
-        unset( $_SESSION['user_message'] );
-    }
+    DisplayUserMessage();
     
     echo "<span style='width:11%; vertical-align:top; display:inline-block; padding: 10px; background-color:#4d544e; border: 0px solid #000;'>";
     
-    if( $loggedInAdmin ) {
+    if( $isLoggedInAdmin ) {
         echo "<div style='margin-bottom:20px;'>";
         
             echo "<div id='add_item_Soda_button' class='nav_buttons nav_buttons_soda'>Add Soda</div>";

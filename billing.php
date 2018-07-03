@@ -10,8 +10,8 @@
         
     Login($db);
         
-    $loggedIn = IsLoggedIn();
-    $loggedInAdmin = IsAdminLoggedIn();
+    $isLoggedIn = IsLoggedIn();
+    $isLoggedInAdmin = IsAdminLoggedIn();
     $loginPassword = false;
     
     $itemType = "Soda";
@@ -60,16 +60,14 @@
     include("login_bar.php");
     $itemType = $_GET['type'];
     
-    if( !$loggedInAdmin ) {
-        TrackVisit($db, "Billing-" .  $itemType, $loggedIn);
-    }
+    TrackVisit($db, "Billing-" .  $itemType);
     
-    if( $loggedInAdmin && isset($_GET['userid'] ) && isset($_GET['name'] )  ) {
+    if( $isLoggedInAdmin && isset($_GET['userid'] ) && isset($_GET['name'] )  ) {
         $userID = $_GET['userid'];
         $name = $_GET['name'];
     } else {
-        $userID = $_SESSION['userID'];
-        $name = $_SESSION['firstname'];
+        $userID = $_SESSION['UserID'];
+        $name = $_SESSION['FirstName'];
     }
     
     // ------------------------------------

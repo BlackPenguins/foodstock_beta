@@ -4,14 +4,14 @@
 
     if( $isMobile ) {
         echo "<span style='float:right; padding:0px 5px; display:inline-block'>";
-        DisplayLoggedInUser($loggedIn, $loggedInAdmin, $loginPassword, $url);
+        DisplayLoggedInUser($isLoggedIn, $isLoggedInAdmin, $loginPassword, $url);
         echo "</span>";
         echo "<div style='clear: both;'></div>";
     } else {
         echo "<a style='text-decoration:none;' href='sodastock.php'><span class='nav_buttons nav_buttons_soda'>Soda Home</span></a>";
         echo "<a style='text-decoration:none;' href='snackstock.php'><span class='nav_buttons nav_buttons_snack'>Snack Home</span></a>";
         
-        if(!$loggedIn) {
+        if(!$isLoggedIn) {
             $results = $db->query("SELECT Count(*) as Active, Sum(SnackSavings) as TotalSnackSavings, Sum(SodaSavings) as TotalSodaSavings FROM User WHERE SnackBalance != 0.0 OR SodaBalance != 0");
             $row = $results->fetchArray();
             $totalActiveUsers = $row['Active'];
@@ -28,7 +28,7 @@
             
             echo "<a style='text-decoration:none;' href='requests.php'><span class='nav_buttons nav_buttons_requests'>Requests</span></a>";
             
-            if( $loggedInAdmin ) {
+            if( $isLoggedInAdmin ) {
                 echo "<a style='text-decoration:none;' href='admin_x25.php'><span class='nav_buttons nav_buttons_admin'>Administration</span></a>";
             }
             echo "<span style='margin-left:25px;'>";
@@ -41,17 +41,17 @@
         }
         
         echo "<span style='float:right;'>";
-        DisplayLoggedInUser($loggedIn, $loggedInAdmin, $loginPassword, $url);
+        DisplayLoggedInUser($isLoggedIn, $isLoggedInAdmin, $loginPassword, $url);
         echo "</span>";
     }
 
     echo "</div>";
     echo "</div>";
 
-    function DisplayLoggedInUser($loggedIn, $loggedInAdmin, $loginPassword, $url) {
-        if($loggedIn)
+    function DisplayLoggedInUser($isLoggedIn, $isLoggedInAdmin, $loginPassword, $url) {
+        if($isLoggedIn)
         {    
-            echo "Logged in: <b><font color ='#FFFF00'>[" . $_SESSION['username'] . "]" . ( $loggedInAdmin ? " - Administrator" : "" ) . "</font></b>";
+            echo "Logged in: <b><font color ='#FFFF00'>[" . $_SESSION['UserName'] . "]" . ( $isLoggedInAdmin ? " - Administrator" : "" ) . "</font></b>";
             echo "<span title='" . $_SESSION['SlackID'] . "' style='padding:0px 10px 0px 10px;'>";
             echo "<b><a style='color:white;' href='logout.php'>[Logout]</a></b>";
             echo "</span>";

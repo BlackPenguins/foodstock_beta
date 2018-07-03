@@ -1,5 +1,5 @@
 <?php
-        if(!$loggedInAdmin) {
+        if(!$isLoggedInAdmin) {
             return;
         }
         

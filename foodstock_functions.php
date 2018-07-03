@@ -1,4 +1,5 @@
 <?php
+include( 'session_functions.php');
 
 function sendSlackMessageToMatt( $slackMessage, $emoji, $botName ) {
     sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
@@ -13,6 +14,11 @@ function sendSlackMessageToRandom( $slackMessage, $emoji, $botName ) {
 }
 
 function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
+    
+    if( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) {
+        $slackMessage = "(TEST SERVER)\n" . $slackMessage;
+    }
+    
     error_log("Sending Slack Message:\nSlack ID: [" . $slackID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $slackMessage . "]" );
     $params = array( "channel" => $slackID, "icon_emoji" => $emoji , "username" => $botName, "text" => $slackMessage);
 
@@ -43,156 +49,11 @@ function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
     // close connection
     curl_close($ch);
 }
-function GetNameByIP($ip)
-{
-    if($ip == "192.9.200.54") {
-            return "<span style='color:red;'>Matt Miles</span>";
-    } else if($ip == "192.9.200.208") {
-           return "<span style='color:red;'>Matt Miles (VM)</span>";
-    } else if($ip == "192.9.200.37") {
-            return "WebCRD_Coop1 (DJ)";
-    } else if($ip == "192.9.200.95") {
-            return "WebCRD_Coop3 (Angel)";
-    } else if($ip == "192.9.200.193") {
-            return "QA_Coop4 (John)";
-    } else if($ip == "192.9.200.185") {
-            return "QA_Coop1 (Luke)";
-    } else if($ip == "192.9.200.166") {
-            return "Tom W";
-    } else if($ip == "192.9.200.186") {
-            return "Chris M";
-    } else if($ip == "192.9.200.171") {
-            return "Joe S";
-    } else if($ip == "192.9.200.31") {
-            return "QA_Coop2 (Nich)";
-    } else if($ip == "192.9.200.49") {
-            return "QA_Coop1";
-    } else if($ip == "192.9.200.67") {
-            return "Emuel";
-    } else if($ip == "192.9.200.229") {
-            return "Lindsay";     
-    } else if($ip == "192.9.200.47") {
-            return "Mike";     
-    } else if($ip == "192.9.200.109") {
-            return "Darrick";     
-    } else if($ip == "192.9.200.198") {
-            return "John T";  
-    } else { 
-            return $ip; 
-    }
-}
 
 function DisplayPaymentMethods() {
     echo "<div style='margin:10px; padding:5px;'>";
     echo "<span style='float:left; '><span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span> <img style='width:34px; margin-right:5px;' title='Square Cash App' src='square_cash.png'/><img style='width:35px; margin-right:5px;' title='Venmo App' src='venmo.png'/><img style='width:37px; margin-right:5px;' title=\"Seriously needed a hover-text for this?  It's PayPal.\" src='paypal.png'/><img style='width:30px; margin-right:5px;' title='Send through Facebook' src='facebook.png'/> <span style='font-size:0.8em; vertical-align:super;'>(or suggest something else)</span></span>";
     echo "</div>";
-}
-function Login($db) {
-    session_start();
-    
-    if( isset( $_SESSION['signed_in'] ) && $_SESSION['signed_in'] == true ) {
-        // Already logged in
-        $results = $db->query("SELECT * FROM User WHERE UserName = '" . $_SESSION['username'] . "'");
-        $row = $results->fetchArray();
-        $_SESSION['SlackID'] = $row['SlackID'];
-        $_SESSION['SodaBalance'] = $row['SodaBalance'];
-        $_SESSION['SnackBalance'] = $row['SnackBalance'];
-        error_log( "Recached SlackID [" . $_SESSION['SlackID'] . "] for [" . $_SESSION['username'] . "]" );
-        return;
-    }
-
-    if( !isset( $_POST['login_username'] ) || !isset( $_POST['login_password'] ) ) {
-        // Missing fields - reject login
-        $_SESSION['signed_in'] = false;
-        $_SESSION['username'] = null;
-        return;
-    }
-    
-    session_destroy();
-    session_start();
-    
-    $username = $_POST['login_username'];
-    $password_sha1 = sha1($_POST['login_password']);
-    
-    $results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "' AND Password  = '" . $password_sha1 . "'");
-    
-    $row = $results->fetchArray();
-    $userExists = $row != false;
-    
-    if( $userExists ) {
-        $firstName = $row['FirstName'];
-        $lastName = $row['LastName'];
-        $userID = $row['UserID'];
-        $sodaBalance = $row['SodaBalance'];
-        $snackBalance = $row['SnackBalance'];
-        $slackID = $row['SlackID'];
-        error_log("Logging in with [$username] [$userID] [$sodaBalance][$snackBalance]");
-        $_SESSION['signed_in'] = true;
-        $_SESSION['username'] = $username;
-        $_SESSION['firstname'] = $firstName;
-        $_SESSION['lastname'] = $lastName;
-        $_SESSION['userID'] = $userID;
-        $_SESSION['SodaBalance'] = $sodaBalance;
-        $_SESSION['SnackBalance'] = $snackBalance;
-        $_SESSION['SlackID'] = $slackID;
-    } else {
-        $_SESSION['signed_in'] = false;
-        $_SESSION['username'] = null;
-        
-        echo "<div style='padding:30px; font-weight:bold; font-size:1.3em;'>Incorrect password!</div>";
-    }
-}
-function IsLoggedIn()
-{        
-       return $_SESSION['signed_in'];
-}
-
-function IsAdminLoggedIn()
-{
-    return $_SESSION['signed_in'] && $_SESSION['username'] == 'mmiles';
-}
-
-function GetSessionKey()
-{
-        global $randomKey; 
-        $retvar = md5($randomKey);
-        $retvar = 'user_'.substr($retvar,0,10);
-        return $retvar;
-}
-
-function SanitizeForSQL($str)
-{
-        if( function_exists( "mysql_real_escape_string" ) )
-        {
-                  $ret_str = mysql_real_escape_string( $str );
-        }
-        else
-        {
-                  $ret_str = addslashes( $str );
-        }
-        $ret_str = str_replace(";", "", $ret_str);
-        return $ret_str;
-}
-
-function TrackVisit($db, $title, $loggedIn)
-{
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
-        
-        if( $loggedIn == true ) {
-            $ipAddress = $_SESSION['username'];
-        }
-        
-        $date = date('Y-m-d H:i:s', time());
-        $agent = "Not Found";
-        
-        if(isset($_SERVER['HTTP_USER_AGENT']) == true)
-                $agent = $_SERVER['HTTP_USER_AGENT'];
-        
-        $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ipAddress', '$date', '$agent')");
-        
-        if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
-            sendSlackMessageToMatt($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SodaStock - VISIT NEW" );
-        }
 }
 
 function BuildCans($cold_item, $warm_item)
@@ -289,8 +150,10 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
         return $ago_text;
 }
 
-function buildTopSection( $row, $containerType, $location, $userName, $loggedIn, $isMobile ) {
+function buildTopSection( $row, $containerType, $location, $isMobile ) {
     $retired_label = "<span style='color:#FF6464; border: #9D3A3A 2px dashed; padding:10px; font-weight:bold;'>DISCONTINUED</span>";
+    
+    $isLoggedIn = IsLoggedIn();
     
     $outOfStock = $row['OutOfStock'];
     $item_id = $row[0];
@@ -300,7 +163,7 @@ function buildTopSection( $row, $containerType, $location, $userName, $loggedIn,
     $discountPrice = $row['DiscountPrice'];
     $hasDiscount = false;
     
-    if( $loggedIn && $discountPrice != "" ) {
+    if( $isLoggedIn && $discountPrice != "" ) {
         $price = $discountPrice;
         $hasDiscount = true;
     }
@@ -324,7 +187,7 @@ function buildTopSection( $row, $containerType, $location, $userName, $loggedIn,
 
     $priceDisplay = "";
 
-    if( $loggedIn && $hasDiscount == true ) {
+    if( $isLoggedIn && $hasDiscount == true ) {
         $priceDisplay = "<span style='font-size:19px; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>".getPriceDisplay ( $discountPrice )."</span><span style='font-size:19px; color:#FFFFFF; padding:5px; font-weight:bold; background-color:#151515; text-decoration:line-through; margin-right:5px; border: 2px solid #6b6b6b; float:right;'>". getPriceDisplay( $originalPrice ) ."</span>";
     } else {
         $priceDisplay = "<span style='font-size:19px; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>". getPriceDisplay( $price ) ."</span>";
@@ -332,7 +195,8 @@ function buildTopSection( $row, $containerType, $location, $userName, $loggedIn,
     echo "<div style='height:200px;'>";
     echo $priceDisplay;
     
-    if( $loggedIn && $outOfStock != "1" ) {
+    if( $isLoggedIn && $outOfStock != "1" ) {
+        $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
         echo "<span style='float:right; padding-right:10px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\",$row[0],\"$row[1]\")'><img src='flag.png' title='Report Item Out of Stock'/></span>&nbsp;";
     }
     
@@ -389,7 +253,9 @@ function getPriceDisplay($price) {
     
     return $price;
 }
-function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
+function buildMiddleSection($db, $row, $isMobile) {
+    $isLoggedInAdmin = IsAdminLoggedIn();
+    $isLoggedIn = IsLoggedIn();
     
     $cold_item = $row[6];
     $outOfStock = $row['OutOfStock'];
@@ -406,11 +272,11 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
         $backgroundColor = "#EBEB59";
     
         if($profit < 0) {
-                $profit = "<div style='font-weight:bold;'>Debt" . ( $loggedInAdmin ? ":" : "" ) . "</div>" . ( $loggedInAdmin ? "<div>$" .  number_format( abs($profit), 2 ) . "</div>" : "" );
+                $profit = "<div style='font-weight:bold;'>Debt" . ( $isLoggedInAdmin ? ":" : "" ) . "</div>" . ( $isLoggedInAdmin ? "<div>$" .  number_format( abs($profit), 2 ) . "</div>" : "" );
                 $border = "3px solid #C60000";
                 $backgroundColor = "#E25353";
         } else {
-                $profit = "<div style='font-weight:bold;'>Profit" . ( $loggedInAdmin ? ":" : "" ) . "</div>". ($loggedInAdmin ? "<div>$" .  number_format($profit, 2) . "</div>" : "" );
+                $profit = "<div style='font-weight:bold;'>Profit" . ( $isLoggedInAdmin ? ":" : "" ) . "</div>". ($isLoggedInAdmin ? "<div>$" .  number_format($profit, 2) . "</div>" : "" );
         }
     
         $total_can = $row[4];
@@ -419,7 +285,7 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
         
         $center = "";
         
-        if( !$loggedInAdmin ) {
+        if( !$isLoggedInAdmin ) {
             $center = "style='text-align:center;'";
         }
         // For the JUSTIFY TO EVENLY SPACE THE ELEMENTS THERE MUST BE SPACES BETWEEN THEM (&nbsp;) much like how for words to separated using justify there must be spaces to break on
@@ -427,7 +293,7 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
         
         
         
-        if( $loggedInAdmin ) {
+        if( $isLoggedInAdmin ) {
             echo "<div $center id='money_container'>";
             echo "<div class='money' style='background-color:$backgroundColor; border: $border' >" . $profit . "</div>&nbsp;";
             echo "<div class='money' style='background-color:#90EE90;'><div style='font-weight:bold;'>Income:</div><div>$" . number_format($income, 2) . "</div></div>&nbsp;";
@@ -438,7 +304,7 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
         echo "<div style='clear:both;'></div>";
     }
     
-    if( $loggedIn ) {
+    if( $isLoggedIn ) {
         echo "<div style='padding-bottom:10px;'>";
         echo "<button id='remove_button_" .  $row[0] . "' class='quantity_button quantity_button_remove_disabled' onclick='removeItemFromCart(" . $row[0] . ")' title='Remove item(s)'>REMOVE</button>";
         echo "<span style='font-weight:bold; color:#FFF; padding:5px 10px; border: dashed 2px #000;' id='quantity_holder_" . $row[0] . "'>0</span>";
@@ -460,7 +326,7 @@ function buildMiddleSection($db, $row, $loggedInAdmin, $loggedIn, $isMobile) {
     if( !$isMobile ) {
         echo "<div>";
         
-        if( !$loggedInAdmin ) {
+        if( !$isLoggedInAdmin ) {
             echo "<div class='money' style='font-size:0.5em; background-color:$backgroundColor;'>" . $profit . "</div>";
         }
         echo "</div>";

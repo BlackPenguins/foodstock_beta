@@ -9,6 +9,8 @@
         $db = new SQLite3("db/item.db");
         if (!$db) die ($error);
         
+        include("foodstock_functions.php");
+        
         date_default_timezone_set('America/New_York');
         
         $userMessage = "";
@@ -42,6 +44,8 @@
                 } else {
                     $db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance, SodaSavings, SnackSavings) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00, 0.00, 0.00)");
                     $userMessage = "Registration complete! User <b>$username</b> has been created.";
+                    
+                    sendSlackMessageToMatt( "*User Name:* " . $username . "\n*Name:* " . $firstName . " " . $lastName, ":busts_in_silhouette:", "NEW USER" );
                 }
             }
         }

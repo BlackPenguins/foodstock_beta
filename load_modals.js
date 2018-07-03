@@ -1,4 +1,4 @@
-function loadItemModals(isLoggedIn, type) {
+function loadItemModals(type) {
     // Open modals with buttons
     $("#add_item_" + type + "_button").click( function() {
             $('#add_item_' + type).dialog('open');
@@ -39,9 +39,7 @@ function loadItemModals(isLoggedIn, type) {
                             id:"Add_Food_" + type + "_Submit",
                             text: "Add " + type,
                             click: function() { 
-                                if(isLoggedIn) {
-                                    $("#add_item_" + type + "_form").submit();
-                                }
+                                $("#add_item_" + type + "_form").submit();
                             }
                         }
                     ]
@@ -63,9 +61,7 @@ function loadItemModals(isLoggedIn, type) {
                             id:"Edit_Item_" + type + "_Submit",
                             text: "Edit " + type,
                             click: function() { 
-                                if(isLoggedIn) {
-                                    $("#edit_item_" + type + "_form").submit();
-                                }
+                                $("#edit_item_" + type + "_form").submit();
                             }
                         }
                     ]
@@ -87,9 +83,7 @@ function loadItemModals(isLoggedIn, type) {
                             id:"Restock_Item_" + type + "_Submit",
                             text: "Restock " + type,
                             click: function() { 
-                                if(isLoggedIn) {
-                                    $("#restock_item_" + type + "_form").submit();
-                                }
+                                $("#restock_item_" + type + "_form").submit();
                             }
                         }
                     ]
@@ -113,16 +107,14 @@ function loadItemModals(isLoggedIn, type) {
                             id:"Update_Item_" + type + "_Submit",
                             text: "Update " + type,
                             click: function() { 
-                                if(isLoggedIn) {
-                                    $("#inventory_" + type + "_form").submit();
-                                }
+                                $("#inventory_" + type + "_form").submit();
                             }
                         }
                     ]
     });
 }
 
-function loadSingleModals( isLoggedIn ) {
+function loadSingleModals() {
     $("#payment_button").click( function() {
         $('#payment').dialog('open');
          return false;
@@ -144,9 +136,7 @@ function loadSingleModals( isLoggedIn ) {
                         id:"Payment_Submit",
                         text: "Add Payment",
                         click: function() { 
-                            if(isLoggedIn) {
-                                $("#payment_form").submit();
-                            }
+                            $("#payment_form").submit();
                         }
                     }
                 ]
@@ -173,16 +163,14 @@ function loadSingleModals( isLoggedIn ) {
                         id:"Edit_User_Submit",
                         text: "Save",
                         click: function() { 
-                            if(isLoggedIn) {
-                                $("#edit_user_form").submit();
-                            }
+                            $("#edit_user_form").submit();
                         }
                     }
                 ]
     });
 }
 
-function loadUserModals( isLoggedIn ) {
+function loadUserModals() {
     $("#request_button").click( function() {
         $('#request').dialog('open');
          return false;
@@ -204,9 +192,7 @@ function loadUserModals( isLoggedIn ) {
                         id:"Request_Submit",
                         text: "Submit Request",
                         click: function() { 
-                            if(isLoggedIn) {
-                                $("#request_form").submit();
-                            }
+                            $("#request_form").submit();
                         }
                     }
                 ]

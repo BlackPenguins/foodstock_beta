@@ -9,8 +9,10 @@ Login($db);
 
 $userMessage = "";
 
+$isLoggedInAdmin = IsAdminLoggedIn();
+
 // ------------------------------------
-// HANDLE QUERIES
+// HANDLE USER QUERIES
 // ------------------------------------
 if(isset($_POST['AddItem'])) 
 {
@@ -99,7 +101,9 @@ else if(isset($_POST['EditUser']))
 
 else if(isset($_POST['Purchase']))
 {
-    
+    if( $_SESSION['InactiveUser'] == true ) {
+        $userMessage = "You cannot purchase items when you are inactive.";
+    } else {
     
         $itemsInCart = json_decode($_POST['items']);
         $cashOnly = isset( $_POST['CashOnly'] );
@@ -140,8 +144,8 @@ else if(isset($_POST['Purchase']))
                 $totalPrice += $itemPrice;
                 
                 
-                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date ) VALUES (" . $_SESSION['userID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "')";
-                $itemQuery = "UPDATE Item SET TotalIncome = TotalIncome + $itemPrice, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['userID'] . "' where ID = $itemID";
+                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date ) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "')";
+                $itemQuery = "UPDATE Item SET TotalIncome = TotalIncome + $itemPrice, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
                 $itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 where ID = $itemID";
                 $informationQuery = "UPDATE Information SET Income = Income + $itemPrice where ItemType = '$itemType'";
                 $inventoryQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES($itemID, '$date', $backstockQuantity, $backstockQuantity, $shelfQuantity," . ($shelfQuantity - 1) . ", $itemPrice, 0)";
@@ -162,7 +166,7 @@ else if(isset($_POST['Purchase']))
             $typeOfBalance = $itemType . "Balance";
             $typeOfSavings = $itemType . "Savings";
             
-            $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $typeOfBalance + $totalPrice , $typeOfSavings = $typeOfSavings + $totalSavings where UserID = " . $_SESSION['userID'];
+            $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $typeOfBalance + $totalPrice , $typeOfSavings = $typeOfSavings + $totalSavings where UserID = " . $_SESSION['UserID'];
             error_log("Balance Update [" . $balanceUpdateQuery . "]" );
             $db->exec( $balanceUpdateQuery );
             
@@ -178,19 +182,19 @@ else if(isset($_POST['Purchase']))
         }
         
         if( $_SESSION["SlackID"] == "" ) {
-            sendSlackMessageToMatt( "Failed to send notification for " . $_SESSION['username'] . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!" );
+            sendSlackMessageToMatt( "Failed to send notification for " . $_SESSION['UserName'] . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!" );
         } else {
             sendSlackMessageToUser( $_SESSION["SlackID"],  $purchaseMessage , ":shopping_trolley:" , $itemType . "Stock - RECEIPT" );
         }
         
-        sendSlackMessageToMatt( "*(" . strtoupper($_SESSION['username']) . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT" );
+        sendSlackMessageToMatt( "*(" . strtoupper($_SESSION['UserName']) . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT" );
         
         if( $errors != "" ) {
-            error_log( "ERROR: [" . $_SESSION['userID'] . "]" . $errors );
+            error_log( "ERROR: [" . $_SESSION['UserID'] . "]" . $errors );
             $userMessage = "Something went wrong - contact Matt!! " . $errors;
             sendSlackMessageToMatt( "Errors: " . $errors, ":no_entry:", $itemType . "Stock - ERROR!!" );
         }
-        
+    }
         
 }
 
@@ -277,8 +281,8 @@ else if(isset($_POST['Request']))
     $date = date('Y-m-d H:i:s');
     $itemName = $db->escapeString(trim($_POST["ItemName_Request"]));
     $note = $db->escapeString(trim($_POST["Note_Request"]));
-    $userID = $_SESSION['userID'];
-    $username = $_SESSION['username'];
+    $userID = $_SESSION['UserID'];
+    $username = $_SESSION['UserName'];
     $slackID = $_SESSION['SlackID'];
         
     if( $slackID == "" ) {
@@ -388,7 +392,7 @@ else if(isset($_POST['Inventory']))
 if( isset( $_POST['redirectURL'] ) ) {
     
     if( $userMessage != "" ) {
-        $_SESSION['user_message'] = $userMessage;
+        $_SESSION['UserMessage'] = $userMessage;
     }
     
     // Redirect to page
