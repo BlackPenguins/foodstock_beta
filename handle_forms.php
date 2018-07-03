@@ -54,8 +54,8 @@ if(isset($_POST['Purchase'])) {
                 $date = date('Y-m-d H:i:s', time());
                 $totalPrice += $itemPrice;
 
-
-                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date ) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "')";
+                $cashOnlyInteger = $cashOnly ? 1 : 0;
+                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date, CashOnly) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "'," . $cashOnlyInteger .  ")";
                 $itemQuery = "UPDATE Item SET TotalIncome = TotalIncome + $itemPrice, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
                 $itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 where ID = $itemID";
                 $informationQuery = "UPDATE Information SET Income = Income + $itemPrice where ItemType = '$itemType'";

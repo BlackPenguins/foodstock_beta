@@ -68,41 +68,38 @@ function DisplayUserMessage() {
     }
 }
 
-function IsLoggedIn()
-{        
+function IsLoggedIn(){        
        return $_SESSION['LoggedIn'];
 }
 
-function IsAdminLoggedIn()
-{
+function IsAdminLoggedIn(){
     return isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
 }
 
-function TrackVisit($db, $title)
-{   
+function TrackVisit($db, $title){   
     if( IsAdminLoggedIn() ) {
         // Don't track the admin
         return;
     }
     
-        $isLoggedIn = IsLoggedIn();
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
-        
-        if( $isLoggedIn == true ) {
-            $ipAddress = $_SESSION['UserName'];
-        }
-        
-        $date = date('Y-m-d H:i:s', time());
-        $agent = "Not Found";
-        
-        if(isset($_SERVER['HTTP_USER_AGENT']) == true) {
-            $agent = $_SERVER['HTTP_USER_AGENT'];
-        }
-        
-        $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ipAddress', '$date', '$agent')");
-        
-        if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
-            sendSlackMessageToMatt($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SodaStock - VISIT NEW" );
-        }
+    $isLoggedIn = IsLoggedIn();
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+    
+    if( $isLoggedIn == true ) {
+        $ipAddress = $_SESSION['UserName'];
+    }
+    
+    $date = date('Y-m-d H:i:s', time());
+    $agent = "Not Found";
+    
+    if(isset($_SERVER['HTTP_USER_AGENT']) == true) {
+        $agent = $_SERVER['HTTP_USER_AGENT'];
+    }
+    
+    $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ipAddress', '$date', '$agent')");
+    
+    if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
+        sendSlackMessageToMatt($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SodaStock - VISIT NEW" );
+    }
 }
 ?>

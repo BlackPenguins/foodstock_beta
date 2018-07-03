@@ -3,33 +3,31 @@
 
 <?php
 function main( $url, $title, $favicon, $itemType, $className, $location ) {
-        $db = new SQLite3("db/item.db");
-        if (!$db) die ($error);
-        
-        include("foodstock_functions.php");
-        date_default_timezone_set('America/New_York');
-        
-        Login($db);
-        
-        $isLoggedIn = IsLoggedIn();
-        $isLoggedInAdmin = IsAdminLoggedIn();
-        $loginPassword = false;
-        
-        require_once 'Mobile_Detect.php';
- 
-        $detect = new Mobile_Detect;
-        $device_type = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
-        $isMobile = $device_type == 'phone';
+    $db = new SQLite3("db/item.db");
+    if (!$db) die ($error);
+    
+    include("foodstock_functions.php");
+    date_default_timezone_set('America/New_York');
+    
+    Login($db);
+    
+    $isLoggedIn = IsLoggedIn();
+    $isLoggedInAdmin = IsAdminLoggedIn();
+    $loginPassword = false;
+    
+    require_once 'Mobile_Detect.php';
 
-        if(isset($_GET['mobile'])) {
-            $isMobile = true;
-        }
-      echo "<title>" . $title . " " . date('Y') . "</title>";
-      echo "<link rel='icon' type='image/png' href='" . $favicon . "' />";
+    $detect = new Mobile_Detect;
+    $device_type = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
+    $isMobile = $device_type == 'phone';
+
+    if(isset($_GET['mobile'])) {
+        $isMobile = true;
+    }
+    
+    echo "<title>" . $title . " " . date('Y') . "</title>";
+    echo "<link rel='icon' type='image/png' href='" . $favicon . "' />";
 ?>
-
-
-
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
@@ -177,15 +175,9 @@ if( $isMobile ) {
 }
 
 include("login_bar.php");
-
 date_default_timezone_set('America/New_York');
-
-
-
 TrackVisit($db, $title);
-
 DisplayUserMessage();
-
 include("exec_sql.php");
 
 
@@ -201,24 +193,13 @@ if( !$isMobile ) {
 
 echo "</div>";
 
-$user_name = "";
-$user_visits = 0;
-$user_ip = $_SERVER["REMOTE_ADDR"];
-
-$results = $db->query('SELECT COUNT(*) FROM Visits WHERE IP = "'.$user_ip.'"');
-while ($row = $results->fetchArray()) {
-        $user_visits = $row[0];
-}
-
-
-
 $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, FirstDay FROM Information WHERE ItemType ='" . $itemType . "'");
 
 //---------------------------------------
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 4.6 (July 1st, 2018)";
+    $version = "Version 4.7 (July 2nd, 2018)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -229,7 +210,6 @@ if(!$isMobile) {
     $total_profit = $row['ProfitExpected'];
     $total_income_actual = $row['ProfitActual'];
     $firstDay = $row['FirstDay'];
-    
 
     echo "<div style='margin: auto;'>";
     echo "<div>";
@@ -264,9 +244,9 @@ if(!$isMobile) {
     echo "<div></div>";
 }
 
-    echo "<div id='cart_area' style='margin:20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
-    echo "Remember to <u>pick up your product first</u> and have it physically in your hand before you buy on the website to avoid 'concurrency issues'.<br>Discounted prices are only available when you buy through the site.";
-    echo "</div>";
+echo "<div id='cart_area' style='margin:20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
+echo "Remember to <u>pick up your product first</u> and have it physically in your hand before you buy on the website to avoid 'concurrency issues'.<br>Discounted prices are only available when you buy through the site.";
+echo "</div>";
     
 if( !$isMobile && $itemType != "Snack" ) {
     $results = $db->query("SELECT ID, Name, ShelfQuantity, DateModified, ThumbURL, Hidden FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 ORDER BY DateModified DESC");
@@ -305,9 +285,9 @@ echo "</div>";
 if( !$isMobile) {
     echo "<div style='clear:both;'></div>";
 
-
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
+    echo "<li><b>Jul 2, 2018:</b> Fixed many security vulnerabilities (thanks to Joe Guest for finding those). Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron). Added more slack notifications: new users and out of stock.</li>";
     echo "<li><b>Jul 1, 2018:</b> Redesigned the Billing page so it's easier to read and combined the soda and snack into one page. Marked the quantity of item with warning icon if someone reported it as out of stock. Added billing to top bar, removed it from Purchase History page. Divided purchase history by weeks, added day of week to date, labeled 'Cash-Only' purchases. Admin: Created dropdown for 'Method' and added 'Payment Month' to payment form.</li>";
     echo "<li><b>Jun 29, 2018:</b> Admin Changes: Message feedback, side bar for navigation. Added edit user: change slackID, set inactive, reset password.</li>";
     echo "<li><b>Jun 28, 2018:</b> Added 'Report Out of Stock' button (Nick C request). Saved space on cards by making statistics into icons.</li>";
