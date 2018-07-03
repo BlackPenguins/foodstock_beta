@@ -287,7 +287,7 @@ if( !$isMobile) {
 
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
-    echo "<li><b>Jul 2, 2018:</b> Fixed many security vulnerabilities (thanks to Joe Guest for finding those). Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron). Added more slack notifications: new users and out of stock.</li>";
+    echo "<li><b>Jul 2, 2018:</b> Fixed many security vulnerabilities (thanks to Joe Guest for finding those). Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron). Added more slack notifications: new users and out of stock. Added plural unit name DB column (english language sucks).</li>";
     echo "<li><b>Jul 1, 2018:</b> Redesigned the Billing page so it's easier to read and combined the soda and snack into one page. Marked the quantity of item with warning icon if someone reported it as out of stock. Added billing to top bar, removed it from Purchase History page. Divided purchase history by weeks, added day of week to date, labeled 'Cash-Only' purchases. Admin: Created dropdown for 'Method' and added 'Payment Month' to payment form.</li>";
     echo "<li><b>Jun 29, 2018:</b> Admin Changes: Message feedback, side bar for navigation. Added edit user: change slackID, set inactive, reset password.</li>";
     echo "<li><b>Jun 28, 2018:</b> Added 'Report Out of Stock' button (Nick C request). Saved space on cards by making statistics into icons.</li>";

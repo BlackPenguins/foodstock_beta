@@ -156,12 +156,13 @@ if(isset($_POST['Purchase'])) {
             $imageURL = trim($_POST["EditImageURL" . $itemType]);
             $thumbURL = trim($_POST["EditThumbURL" . $itemType]);
             $unitName = trim($_POST["EditUnitName" . $itemType]);
+            $unitNamePlural = trim($_POST["EditUnitNamePlural" . $itemType]);
             $status = trim($_POST["EditStatus" . $itemType]);
     
             error_log("Status: " . $status );
             $retired = $status == "active" ? 0 : 1;
     
-            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName'  where ID = $id";
+            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName', UnitNamePlural = '$unitNamePlural'  where ID = $id";
             error_log("Edit Item Query: [" . $editItemQuery . "]" );
             $db->exec( $editItemQuery );
     

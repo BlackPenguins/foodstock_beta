@@ -23,11 +23,11 @@
             $nameQuery = " AND Name Like '%" . $itemSearch . "%' ";
         }
         
-        $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
+        $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
         
         if( IsLoggedIn() ) {
             // Sort by user preference
-            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] . " AND p.ItemID = i.ID) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
+            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] . " AND p.ItemID = i.ID) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
         }
         
         $results = $db->query($cardQuery);
@@ -38,12 +38,6 @@
         $columnNumber = 1;
         while ($row = $results->fetchArray()) {
         
-            $containerType = "[UNKNOWN]";
-        
-            if( $row['UnitName'] != "" ) {
-                $containerType = $row['UnitName'];
-            }
-        
             if( $row['Retired'] == 0 ) {
                 // Active - blue cards
                 echo "<div class='" . $className . "_card card'>";
@@ -53,7 +47,7 @@
             }
         
             echo "<div class='top_section'>";
-            buildTopSection($row, $containerType, $location, $isMobile);
+            buildTopSection($row, $location, $isMobile);
             echo "</div>";
         
             
@@ -63,7 +57,7 @@
             
             if( !$isMobile) {
                 echo "<div class='bottom_section'>";
-                buildBottomSection($db, $row, $containerType, $isMobile);
+                buildBottomSection($db, $row, $isMobile);
                 echo "</div>";
             }
         

@@ -150,7 +150,7 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
         return $ago_text;
 }
 
-function buildTopSection( $row, $containerType, $location, $isMobile ) {
+function buildTopSection( $row, $location, $isMobile ) {
     $retired_label = "<span style='color:#FF6464; border: #9D3A3A 2px dashed; padding:10px; font-weight:bold;'>DISCONTINUED</span>";
     
     $isLoggedIn = IsLoggedIn();
@@ -205,34 +205,37 @@ function buildTopSection( $row, $containerType, $location, $isMobile ) {
     echo "</div>";
     echo "<div style='width:56%; float:right;'>";
 
+    $unitName = "[UNKNOWN]";
+    $unitNamePlural = "[UNKNOWN]";
     
+    if( $row['UnitName'] != "" ) {
+        $unitName = $row['UnitName'];
+    }
+    
+    if( $row['UnitNamePlural'] != "" ) {
+        $unitNamePlural = $row['UnitNamePlural'];
+    }
     
     if( $retired_item == 1) {
         echo "<div class='circle'>$retired_label</div>"; 
     } else {
-    
-
         if($cold_item == 0 && $warm_item == 0) {
             echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
             echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>"; 
         } else {
-            if($cold_item == 0) 
-            { 
-                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $containerType in $location</div>"; 
-            } 
-            else 
-            { 
-                echo "<div title='Cold Cans in the Fridge' class='cold_item circle' style='padding:10px;'>".(($outOfStock == "1")?("<img src='./warning.png' title='Item reported as sold out by another user!'/>&nbsp;"):(""))."$cold_item $containerType" . ( $cold_item > 1 ? "s" : "" ) . " in $location</div>"; 
+            if($cold_item == 0) { 
+                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $unitNamePlural in $location</div>"; 
+            } else { 
+                $unitNameFinal = $cold_item > 1 ? $unitNamePlural : $unitName;
+                echo "<div title='Cold Cans in the Fridge' class='cold_item circle' style='padding:10px;'>".(($outOfStock == "1")?("<img src='./warning.png' title='Item reported as sold out by another user!'/>&nbsp;"):(""))."$cold_item $unitNameFinal in $location</div>"; 
             }
 
             
-            if($warm_item == 0) 
-            { 
-                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $containerType at desk</div>"; 
-            } 
-            else 
-            { 
-                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($warm_item < 5)?("<img src='./warning.png' title='Item running low...'/>&nbsp;"):(""))."$warm_item $containerType" . ( $warm_item > 1 ? "s" : "" ) . " at desk</div>"; 
+            if($warm_item == 0) { 
+                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $unitNamePlural at desk</div>"; 
+            } else {
+                $unitNameFinal = $warm_item > 1 ? $unitNamePlural : $unitName;
+                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($warm_item < 5)?("<img src='./warning.png' title='Item running low...'/>&nbsp;"):(""))."$warm_item $unitNameFinal at desk</div>"; 
             }
         }
         
@@ -333,7 +336,7 @@ function buildMiddleSection($db, $row, $isMobile) {
     */
 }
 
-function buildBottomSection($db, $row, $containerType, $isMobile) {
+function buildBottomSection($db, $row, $isMobile) {
     if( !$isMobile ) {
         
         $resultsPopularity = $db->query('SELECT ItemID, Date FROM Restock where ItemID = ' . $row['ID'] . ' ORDER BY Date DESC');
