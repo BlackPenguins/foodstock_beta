@@ -36,16 +36,16 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="jscolor.js"></script>
+<script src="js/jscolor.js"></script>
 
 <?php
     if( !$isMobile) {
-        echo "<script src='load_modals.js'></script>";
+        echo "<script src='js/load_modals.js'></script>";
     }
 ?>
 
 <link rel="stylesheet" type="text/css" href="colorPicker.css"/>
-<link rel="stylesheet" type="text/css" href="style.css"/>
+<link rel="stylesheet" type="text/css" href="css/style.css"/>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 
 <script type="text/javascript">
@@ -86,31 +86,7 @@
     echo "<span style='width:11%; vertical-align:top; display:inline-block; padding: 10px; background-color:#4d544e; border: 0px solid #000;'>";
     
     if( $isLoggedInAdmin ) {
-        echo "<div style='margin-bottom:20px;'>";
-        
-            echo "<div id='add_item_Soda_button' class='nav_buttons nav_buttons_soda'>Add Soda</div>";
-            echo "<div id='edit_item_Soda_button' class='nav_buttons nav_buttons_soda'>Edit Soda</div>";
-            echo "<div id='restock_item_Soda_button' class='nav_buttons nav_buttons_soda'>Restock Soda</div>";
-            echo "<div id='inventory_Soda_button' class='nav_buttons nav_buttons_soda'>Inventory Soda</div>";
-            
-        echo "</div>";
-        
-        echo "<div style='margin-bottom:20px;'>";
-        
-            echo "<div id='add_item_Snack_button' class='nav_buttons nav_buttons_snack'>Add Snack</div>";
-            echo "<div id='edit_item_Snack_button' class='nav_buttons nav_buttons_snack'>Edit Snack</div>";
-            echo "<div id='restock_item_Snack_button' class='nav_buttons nav_buttons_snack'>Restock Snack</div>";
-            echo "<div id='inventory_Snack_button' class='nav_buttons nav_buttons_snack'>Inventory Snack</div>";
-            
-        echo "</div>";
-        
-        echo "<div style='margin-bottom:20px;'>";
-        
-            echo "<div id='payment_button' class='nav_buttons nav_buttons_billing'>Add Payment</div>";
-            echo "<div id='edit_user_button' class='nav_buttons nav_buttons_admin'>Edit User</div>";
-        
-        echo "</div>";
-        
+        include "admin_nav_x25.php";
     }
     
     echo "</span>";
@@ -181,111 +157,6 @@
         
             echo "</table>";
         echo "</span>";
-        
-        // ------------------------------------
-        // ITEM TABLE
-        // ------------------------------------
-        echo "<span class='soda_popout' onclick='$(\"#item_all\").toggle();' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Item Inventory</span> <span style='font-size:0.8em;'>(show/hide)</span></span>";
-        echo "<span id='item_all' style='display:none;'>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
-        echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>ID</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Modified</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Chart Color</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Cans</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Backstock Quantity</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Shelf Quantity</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price per Can</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Income</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Expenses</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Discontinued</th>";
-        
-        echo "</tr></thead>";
-        
-        $rowClass = "odd";
-        
-        $results = $db->query("SELECT ID, Name, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Retired, Hidden FROM Item WHERE Hidden != 1 ORDER BY Retired, Type DESC, ID DESC");
-        while ($row = $results->fetchArray()) {
-            $isDiscontinued = $row['Retired'] == 1;
-            
-            if( $isDiscontinued ) {
-                $rowClass = "discontinued_row";
-            }
-            
-            echo "<tr class='$rowClass'>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ID'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Date'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['DateModified'] . " (" . $row['ModifyType'] . ")</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ChartColor'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['TotalCans'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['BackstockQuantity'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ShelfQuantity'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Price'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['TotalIncome'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['TotalExpenses'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
-            echo "</tr>";
-            if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
-        }
-        
-        echo "</table>";
-        echo "</span>";
-        
-        // ------------------------------------
-        // RESTOCK TABLE
-        // ------------------------------------
-        echo "<span class='soda_popout' onclick='$(\"#restock_all\").toggle();' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Restock Schedule</span> <span style='font-size:0.8em;'>(show/hide)</span></span>";
-        echo "<span id='restock_all' style='display:none;'>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
-        echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Number of Units</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Cost</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Cost Each</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Current Price</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Discount Price</th>";
-        
-        echo "</tr></thead>";
-        
-        $rowClass = "odd";
-        $previousItem = "";
-        
-        $results = $db->query("SELECT s.Name, r.ItemID, r.Date, r.NumberOfCans, r.Cost, (r.Cost/r.NumberOfCans) as 'CostEach', s.Price, s.DiscountPrice, s.Retired FROM Restock r JOIN Item s ON r.itemID = s.id  ORDER BY s.Type DESC, s.Retired ASC, s.Name, CostEach DESC, r.Date DESC");
-        while ($row = $results->fetchArray()) {
-            $maxCostEach = "";
-            if( $previousItem != "" && $previousItem != $row['Name'] ) {
-                if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
-                $maxCostEach = "font-weight:bold; font-size:1.1em;";
-            }
-            
-            if( $row['Retired'] == 1) {
-                $rowClass = "discontinued_row";
-            }
-            
-            echo "<tr class='$rowClass'>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
-            $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-            echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['NumberOfCans'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $row['Cost'], 2) . "</td>";
-            $costEach = $row['CostEach'];
-            
-            
-            echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $costEach, 2 )  . "</td>";
-            echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $row['Price'], 2 )  . "</td>";
-            echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $row['DiscountPrice'], 2 )  . "</td>";
-            echo "</tr>";
-            
-            $previousItem = $row['Name'];
-        }
-        
-        echo "</table>";
-        echo "</span>";
-        
     echo "</span>";
 ?>
 

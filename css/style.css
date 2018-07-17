@@ -239,6 +239,10 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
 .middle_section { padding: 10px 0px; }
 .bottom_section { padding: 5px 0px; color: #FFF; font-weight:bold; }  
 
+.nav_box a {
+	text-underline: none;
+}
+
 .vcenter{
     background:#eee;
     width: 150px;
@@ -270,6 +274,10 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
 
 .discontinued_row {
     background-color: #8a3535;
+}
+
+.restock_row {
+    background-color: #bb9849;
 }
 
 .odd {

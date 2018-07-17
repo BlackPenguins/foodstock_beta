@@ -52,7 +52,7 @@ function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
 
 function DisplayPaymentMethods() {
     echo "<div style='margin:10px; padding:5px;'>";
-    echo "<span style='float:left; '><span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span> <img style='width:34px; margin-right:5px;' title='Square Cash App' src='square_cash.png'/><img style='width:35px; margin-right:5px;' title='Venmo App' src='venmo.png'/><img style='width:37px; margin-right:5px;' title=\"Seriously needed a hover-text for this?  It's PayPal.\" src='paypal.png'/><img style='width:30px; margin-right:5px;' title='Send through Facebook' src='facebook.png'/> <span style='font-size:0.8em; vertical-align:super;'>(or suggest something else)</span></span>";
+    echo "<span style='float:left; '><span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span> <img style='width:34px; margin-right:5px;' title='Square Cash App' src='images/square_cash.png'/><img style='width:35px; margin-right:5px;' title='Venmo App' src='images/venmo.png'/><img style='width:37px; margin-right:5px;' title=\"Seriously needed a hover-text for this?  It's PayPal.\" src='images/paypal.png'/><img style='width:30px; margin-right:5px;' title='Send through Facebook' src='images/facebook.png'/> <span style='font-size:0.8em; vertical-align:super;'>(or suggest something else)</span></span>";
     echo "</div>";
 }
 
@@ -197,7 +197,7 @@ function buildTopSection( $row, $location, $isMobile ) {
     
     if( $isLoggedIn && $outOfStock != "1" ) {
         $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
-        echo "<span style='float:right; padding-right:10px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='flag.png' title='Report Item Out of Stock'/></span>&nbsp;";
+        echo "<span style='float:right; padding-right:10px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='images/flag.png' title='Report Item Out of Stock'/></span>&nbsp;";
     }
     
     echo "<div style='width:40%; float:left;'>";
@@ -220,22 +220,22 @@ function buildTopSection( $row, $location, $isMobile ) {
         echo "<div class='circle'>$retired_label</div>"; 
     } else {
         if($cold_item == 0 && $warm_item == 0) {
-            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
-            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>"; 
+            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='images/none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
+            echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='images/none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>"; 
         } else {
             if($cold_item == 0) { 
-                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $unitNamePlural in $location</div>"; 
+                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='images/none.png' title='Item sold out!'/>&nbsp;0 $unitNamePlural in $location</div>"; 
             } else { 
                 $unitNameFinal = $cold_item > 1 ? $unitNamePlural : $unitName;
-                echo "<div title='Cold Cans in the Fridge' class='cold_item circle' style='padding:10px;'>".(($outOfStock == "1")?("<img src='./warning.png' title='Item reported as sold out by another user!'/>&nbsp;"):(""))."$cold_item $unitNameFinal in $location</div>"; 
+                echo "<div title='Cold Cans in the Fridge' class='cold_item circle' style='padding:10px;'>".(($outOfStock == "1")?("<img src='images/warning.png' title='Item reported as sold out by another user!'/>&nbsp;"):(""))."$cold_item $unitNameFinal in $location</div>"; 
             }
 
             
             if($warm_item == 0) { 
-                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='none.png' title='Item sold out!'/>&nbsp;0 $unitNamePlural at desk</div>"; 
+                echo "<div class='no_item circle' style='padding:10px;'><img width='15px' src='images/none.png' title='Item sold out!'/>&nbsp;0 $unitNamePlural at desk</div>"; 
             } else {
                 $unitNameFinal = $warm_item > 1 ? $unitNamePlural : $unitName;
-                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($warm_item < 5)?("<img src='./warning.png' title='Item running low...'/>&nbsp;"):(""))."$warm_item $unitNameFinal at desk</div>"; 
+                echo "<div title='Warm Cans under my Desk' class='warm_item circle' style='padding:10px;'>".(($warm_item < 5)?("<img src='images/warning.png' title='Item running low...'/>&nbsp;"):(""))."$warm_item $unitNameFinal at desk</div>"; 
             }
         }
         
@@ -321,7 +321,7 @@ function buildMiddleSection($db, $row, $isMobile) {
     }
     
     if( $outOfStock == "1" ) {
-        echo "<div style='color:#000000; padding:5px 0px; border-top: 2px solid #000; border-bottom: 2px solid #000; font-weight:bold; font-size:0.8em; background-color: #f6ff72;'><img style='vertical-align:bottom' width='20px' src='caution.png'/> This item has been reported as out of stock by " . $outOfStockReporter . "!</div>";
+        echo "<div style='color:#000000; padding:5px 0px; border-top: 2px solid #000; border-bottom: 2px solid #000; font-weight:bold; font-size:0.8em; background-color: #f6ff72;'><img style='vertical-align:bottom' width='20px' src='images/caution.png'/> This item has been reported as out of stock by " . $outOfStockReporter . "!</div>";
     }
     
     /*
@@ -370,17 +370,17 @@ function buildBottomSection($db, $row, $isMobile) {
         
         if( isset( $row['Frequency'] ) ) {
             $frequencyBought = $row['Frequency'];
-            echo "<span title='You have bought this ". $frequencyBought ." times.' style='padding:10px; color:#00ff39; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='credit_card.png'/>&nbsp;&nbsp;"  . $frequencyBought . " times</span>";
+            echo "<span title='You have bought this ". $frequencyBought ." times.' style='padding:10px; color:#00ff39; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='images/credit_card.png'/>&nbsp;&nbsp;"  . $frequencyBought . " times</span>";
         }
         
         if( $totalPurchases > 0 ) {
             $purchaseDayInterval = round($days_ago / $totalPurchases);
-            echo "<span title='Restocked every " . $purchaseDayInterval ." days.' style='padding:10px; color:#f9ff00; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='dolly.png'/>&nbsp;&nbsp;"  . $purchaseDayInterval . " days</span>";
+            echo "<span title='Restocked every " . $purchaseDayInterval ." days.' style='padding:10px; color:#f9ff00; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='images/dolly.png'/>&nbsp;&nbsp;"  . $purchaseDayInterval . " days</span>";
         }
         
         $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
         
-        echo "<span title='" . $total_can_sold ." total sold.' style='padding:10px; color:#ffffff; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='trends.png'/>&nbsp;&nbsp;"  . $total_can_sold . " sold</span>";
+        echo "<span title='" . $total_can_sold ." total sold.' style='padding:10px; color:#ffffff; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='images/trends.png'/>&nbsp;&nbsp;"  . $total_can_sold . " sold</span>";
         
         echo "</div>";
     }
@@ -397,16 +397,16 @@ function DisplayCan($item_name, $soldOut, $imageURL)
         if( $imageURL == "" ) {
             echo "<div class='vcenter' style='background-color:#212121; font-weight:bold;  word-spacing:200px; height:100%; color:#FFFFFF'><span>".$item_name."</span></div>";
         } else {
-            echo "<img src='images/$imageURL' style = 'height:100%; max-width:100%; opacity:$opacity' />";
+            echo "<img src='preview_images/normal/$imageURL' style = 'height:100%; max-width:100%; opacity:$opacity' />";
         }
 }
 
 function DisplayShelfCan($item_name, $thumbURL)
 {
         if( $thumbURL == "" ) {
-            echo "<img title='$item_name' style='padding:5px;' src='thumbs/not_found_sm.png' />";
+            echo "<img title='$item_name' style='padding:5px;' src='preview_images/thumbnails/not_found_sm.png' />";
         } else {
-            echo "<img title='$item_name' style='padding:5px;' src='thumbs/$thumbURL' />";
+            echo "<img title='$item_name' style='padding:5px;' src='preview_images/thumbnails/$thumbURL' />";
         }
 }
 ?>

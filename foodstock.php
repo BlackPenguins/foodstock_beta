@@ -31,7 +31,6 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="jscolor.js"></script>
 
 <script>
     var itemsInCart = [];
@@ -154,12 +153,12 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
 
 <?php
     if( !$isMobile) {
-        echo "<script src='load_modals.js'></script>";
+        echo "<script src='js/load_modals.js'></script>";
     }
 ?>
 
 <link rel="stylesheet" type="text/css" href="colorPicker.css"/>
-<link rel="stylesheet" type="text/css" href="style.css"/>
+<link rel="stylesheet" type="text/css" href="css/style.css"/>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 
 </head>
