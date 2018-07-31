@@ -198,7 +198,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 4.7 (July 2nd, 2018)";
+    $version = "Version 4.8 (July 29th, 2018)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -206,18 +206,17 @@ if(!$isMobile) {
     $row = $results->fetchArray();
     $total_income = $row['Income'];
     $total_expense = $row['Expenses'];
-    $total_profit = $row['ProfitExpected'];
-    $total_income_actual = $row['ProfitActual'];
+    $total_profit = $total_income - $total_expense;
+    $total_income_actual = $row['ProfitActual']; // This is actually the INCOME - NOT PROFIT
     $firstDay = $row['FirstDay'];
 
     echo "<div style='margin: auto;'>";
     echo "<div>";
     echo "<a href='#change_log'><span style='color:#000000; background-color:#ffc782; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
     if( $isLoggedInAdmin ) {
-        echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Expected):</b> $". number_format($total_income, 2)."</span>";
-        echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Total Expenses:</b> $". number_format($total_expense, 2)."</span>";
-        echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Expected):</b> $". number_format($total_profit, 2)."</span>";
-        
+        echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Income (Calculated):</b> $". number_format($total_income, 2)."</span>";
+        echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Profit (Calculated):</b> $". number_format($total_profit, 2)."</span>";
+        echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Expenses:</b> $". number_format($total_expense, 2)."</span>";
     }
     
     $dateNow = new DateTime();
@@ -227,16 +226,16 @@ if(!$isMobile) {
     $days_ago = $time_since->format('%a');
 
     $profitPerDay = $total_profit / $days_ago;
-    echo "<span style='color:black; background-color:#FFF; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit / Day:</b> $". number_format($profitPerDay, 2)."</span>";
+    echo "<span style='color:black; background-color:#FFF; padding:5px 15px; border: #000 2px dashed;'><b>Profit / Day:</b> $". number_format($profitPerDay, 2)."</span>";
     echo "<span style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px dashed;'><b>Days Active: </b>". $days_ago ." days</span>";
     echo "</div>";
     
     echo "<div style='margin-left:269px; margin-top:12px;'>";
     
     if( $isLoggedInAdmin ) {
-        echo "<span style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px dashed;'><b>Total Income (Actual):</b> $". number_format($total_income_actual, 2)."</span>";
+        echo "<span style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px dashed;'><b>Income (by Payments):</b> $". number_format($total_income_actual, 2)."</span>";
         $actualProfit = $total_income_actual - $total_expense;
-        echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Total Profit (Actual):</b> $". number_format($actualProfit, 2)."</span>";
+        echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Profit (by Payments):</b> $". number_format($actualProfit, 2)."</span>";
     }
     echo "</div>";
     
@@ -286,6 +285,7 @@ if( !$isMobile) {
 
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
+    echo "<li><b>Jul 29, 2018:</b> Reorganized directories and resources. Divided up Admin into separate pages. Fixed massive income bugs and miscountings.</li>";
     echo "<li><b>Jul 2, 2018:</b> Fixed many security vulnerabilities (thanks to Joe Guest for finding those). Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron). Added more slack notifications: new users and out of stock. Added plural unit name DB column (english language sucks).</li>";
     echo "<li><b>Jul 1, 2018:</b> Redesigned the Billing page so it's easier to read and combined the soda and snack into one page. Marked the quantity of item with warning icon if someone reported it as out of stock. Added billing to top bar, removed it from Purchase History page. Divided purchase history by weeks, added day of week to date, labeled 'Cash-Only' purchases. Admin: Created dropdown for 'Method' and added 'Payment Month' to payment form.</li>";
     echo "<li><b>Jun 29, 2018:</b> Admin Changes: Message feedback, side bar for navigation. Added edit user: change slackID, set inactive, reset password.</li>";

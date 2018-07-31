@@ -99,6 +99,7 @@
         echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
         echo "<thead><tr class='table_header'>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Shelf Quantity</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Backstock Quantity</th>";
@@ -109,13 +110,15 @@
         $rowClass = "odd";
         $previousDate = "";
         
-        $results = $db->query("SELECT i.Name, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.ShelfQuantityBefore, r.ShelfQuantity, r.Price FROM Daily_Amount r JOIN Item i ON r.itemID = i.id WHERE r.Date >= date('now','-2 months') ORDER BY r.Date DESC");
+        $results = $db->query("SELECT i.Name, u.FirstName, u.LastName, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.ShelfQuantityBefore, r.ShelfQuantity, r.Price FROM Daily_Amount r JOIN Item i ON r.itemID = i.id LEFT JOIN Purchase_History p ON r.Date = p.Date LEFT JOIN User u on p.UserID = u.UserID WHERE r.Date >= date('now','-2 months') ORDER BY r.Date DESC");
         while ($row = $results->fetchArray()) {
             
             if( $previousDate != "" && $previousDate != $row['Date'] ) {
                 if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
             }
 
+            $name = $row['FirstName'] . " " . $row['LastName'];
+            
             $backstockQuantityBefore = $row['BackstockQuantityBefore'];
             $backstockQuantityAfter = $row['BackstockQuantity'];
             
@@ -133,6 +136,7 @@
                 
                 echo "<tr class='$rowClass'>";
                 echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
+                echo "<td style='padding:5px; border:1px #000 solid;'>" . $name . "</td>";
                 $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
                 echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
                 

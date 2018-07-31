@@ -55,16 +55,19 @@ if(isset($_POST['Purchase'])) {
                 $totalPrice += $itemPrice;
 
                 $cashOnlyInteger = $cashOnly ? 1 : 0;
-                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date, CashOnly) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "'," . $cashOnlyInteger .  ")";
+                
+                $inventoryQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID) VALUES($itemID, '$date', $backstockQuantity, $backstockQuantity, $shelfQuantity," . ($shelfQuantity - 1) . ", $itemPrice, 0, -2)";
+                $db->exec( $inventoryQuery );
+                $dailyAmountID = $db->lastInsertRowID();
+                
+                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date, CashOnly, DailyAmountID) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "'," . $cashOnlyInteger .  ", " . $dailyAmountID . ")";
                 $itemQuery = "UPDATE Item SET TotalIncome = TotalIncome + $itemPrice, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
                 $itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 where ID = $itemID";
                 $informationQuery = "UPDATE Information SET Income = Income + $itemPrice where ItemType = '$itemType'";
-                $inventoryQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES($itemID, '$date', $backstockQuantity, $backstockQuantity, $shelfQuantity," . ($shelfQuantity - 1) . ", $itemPrice, 0)";
+                
 
                 $db->exec( $purchaseHistoryQuery );
-                $db->exec( $inventoryQuery );
                 $db->exec( $itemCountQuery );
-
                 $db->exec( $itemQuery );
                 $db->exec( $informationQuery );
 
@@ -292,9 +295,9 @@ if(isset($_POST['Purchase'])) {
                 $itemName = "N/A";
     
     
-                $results = $db->query("SELECT ID, BackStockQuantity, ShelfQuantity, Price, Name, Type, UnitName FROM Item WHERE ID = $id");
+                $results = $db->query("SELECT ID, BackstockQuantity, ShelfQuantity, Price, Name, Type, UnitName FROM Item WHERE ID = $id");
                 while ($row = $results->fetchArray()) {
-                    $backstockQuantityBefore = $row['BackStockQuantity'];
+                    $backstockQuantityBefore = $row['BackstockQuantity'];
                     $shelfQuantityBefore = $row['ShelfQuantity'];
                     $priceBefore = $row['Price'];
                     $itemName = $row['Name'];
@@ -310,14 +313,15 @@ if(isset($_POST['Purchase'])) {
                     //New item was added to the fridge
                     $slackMessageItems = $slackMessageItems . "*" . $itemName . ":* " . $shelfQuantityBefore . " " . $itemUnits ."s --> *" . $shelfQuantity . " " . $itemUnits ."s*\n";
                 }
+                
                 $totalCansBefore = $backstockQuantityBefore + $shelfQuantityBefore;
                 $totalCans = $backstockQuantity + $shelfQuantity;
-    
+                
                 $income = ($totalCansBefore - $totalCans) * $priceBefore;
     
-                error_log("SQ1:" . "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES($id, '$date',  $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked)");
-                $db->exec("INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked)");
-                error_log("SQ2:" . "UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id" );
+                $dailyAmountQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked, -3)";
+                error_log("DA: [" . $dailyAmountQuery . "]" );
+                $db->exec( $dailyAmountQuery );
                 $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
                 $db->exec("UPDATE Item SET TotalIncome = TotalIncome + $income, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, OutOfStock = '', DateModified = '$date', ModifyType = 'Counted' where ID = $id");
                 $db->exec("UPDATE Information SET Income = Income + $income where ItemType = '$itemType'");
