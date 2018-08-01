@@ -9,32 +9,39 @@
                 $hideForms = "";
         }
 
-        $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive From User Order By FirstName Asc");
-        $user_options = "";
+        $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive, SodaBalance, SnackBalance From User Order By FirstName Asc");
         $user_info = "";
         
         $user_options = "";
+        $edit_user_options = "";
          
         while ($row = $results->fetchArray()) {
             $fullName = $row['FirstName'] . " " . $row['LastName'];
             $userID = $row['UserID'];
             $slackID = $row['SlackID'];
             $inactive = $row['Inactive'];
-            $user_options = $user_options . "<option value='$userID'>$fullName</option>";
+            $sodaBalance = number_format( round( $row['SodaBalance'], 2), 2);
+            $snackBalance = number_format( round( $row['SnackBalance'], 2), 2);
+            $inactive_strikethrough = "";
+            
+            if( $inactive != "1" ) {
+                $user_options = $user_options . "<option value='$userID'>$fullName</option>";
+            } else {
+                $inactive_strikethrough = " style='font-weight:bold; color:#9b0909'";
+            }
+            
+            $edit_user_options = $edit_user_options . "<option $inactive_strikethrough value='$userID'>$fullName</option>";
             
             $user_info = $user_info .
             "<input type='hidden' id='User_SlackID_$userID' value='$slackID'/>" . 
-            "<input type='hidden' id='User_Inactive_$userID' value='$inactive'/>";
+            "<input type='hidden' id='User_Inactive_$userID' value='$inactive'/>" .
+            "<input type='hidden' id='User_SodaBalance_$userID' value='$sodaBalance'/>" .
+            "<input type='hidden' id='User_SnackBalance_$userID' value='$snackBalance'/>";
         }
          
         $user_dropdown = "<select id='UserDropdown' name='UserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'><option value='0'>(Manual Count)</option>$user_options</select>";
-        $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$user_options</select>";
+        $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$edit_user_options</select>";
          
-        $itemType_options = "";
-        $itemType_options = $itemType_options . "<option value='Soda'>Soda</option>";
-        $itemType_options = $itemType_options . "<option value='Snack'>Snack</option>";
-        $itemType_dropdown = "<select id='ItemTypeDropdown' name='ItemTypeDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$itemType_options</select>";
-        
         $method_dropdown = "<select id='MethodDropdown' name='MethodDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>" .
                 "<option value='None'>None</option>" .
                 "<option value='Venmo'>Venmo</option>" .
@@ -71,16 +78,16 @@
         echo "<div id='payment' title='Add Payment' $hideForms>";
         echo "<form id='payment_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         echo "<fieldset>";
-        echo "<label style='padding:5px 0px;' for='ItemTypeDropdown'>Type</label>";
-        echo $itemType_dropdown;
         echo "<label style='padding:5px 0px;' for='UserDropdown'>User</label>";
         echo $user_dropdown;
         echo "<label style='padding:5px 0px;' for='MonthDropdown'>Payment Month</label>";
         echo $paymentMonth_dropdown;
         echo "<label style='padding:5px 0px;' for='Method'>Method</label>";
         echo $method_dropdown;
-        echo "<label style='padding:5px 0px;' for='Amount'>Amount</label>";
-        echo "<input type='tel' name='Amount' class='text ui-widget-content ui-corner-all'/>";
+        echo "<label style='padding:5px 0px;' for='SodaAmount'>Soda Amount</label>";
+        echo "<input type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "<label style='padding:5px 0px;' for='SnackAmount'>Snack Amount</label>";
+        echo "<input type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
         echo "<label style='padding:5px 0px;' for='Note'>Note</label>";
         echo "<input type='text' name='Note' class='text ui-widget-content ui-corner-all'/>";
         
@@ -366,6 +373,10 @@ $( document ).ready( function() {
     $('#EditUserDropdown').change(function () {
         setUserInfo();
     });
+
+    $('#UserDropdown').change(function () {
+        setUserPaymentInfo();
+    });
     
     setItemInfo('Soda');
     setItemInfo('Snack');
@@ -415,5 +426,14 @@ function setUserInfo() {
     } else {
         $("#Inactive").prop("checked", true);
     }
+}
+
+function setUserPaymentInfo() {
+    var userID = parseInt($('#UserDropdown').val());
+    var sodaBalance = $('#User_SodaBalance_' + userID).val();
+    var snackBalance = $('#User_SnackBalance_' + userID).val();
+    
+    $("#SodaAmount").val(sodaBalance);
+    $("#SnackAmount").val(snackBalance);
 }
 </script>

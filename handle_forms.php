@@ -215,9 +215,9 @@ if(isset($_POST['Purchase'])) {
             error_log( "Incoming payment." );
             $userID = trim($_POST["UserDropdown"]);
             $paymentMonth = trim($_POST["MonthDropdown"]);
-            $itemType = trim($_POST["ItemTypeDropdown"]);
             $date = date('Y-m-d H:i:s');
-            $amount = trim($_POST["Amount"]);
+            $snackAmount = trim($_POST["SnackAmount"]);
+            $sodaAmount = trim($_POST["SodaAmount"]);
             $note = trim($_POST["Note"]);
             $method = trim($_POST["MethodDropdown"]);
              
@@ -226,38 +226,55 @@ if(isset($_POST['Purchase'])) {
     
             if( $isUserPayment ) {
                 error_log( "User payment found." );
-                $typeOfBalance = $itemType . "Balance";
-                $results = $db->query("SELECT $typeOfBalance, SlackID, UserName From User where UserID = $userID");
+                $results = $db->query("SELECT SodaBalance, SnackBalance, SlackID, UserName From User where UserID = $userID");
                 $row = $results->fetchArray();
-                $balance = round($row[$typeOfBalance], 2);
+                $sodaBalance = round($row['SodaBalance'], 2);
+                $snackBalance = round($row['SnackBalance'], 2);
                 $slackID = $row['SlackID'];
                 $username = $row['UserName'];
     
-                if( $amount > $balance ) {
+                if( $sodaAmount > $sodaBalance ) {
                     $isBalanceValid = false;
-                    error_log( "Bad balance. Amount: [" . $amount . "] Balance: [" . $balance . "]" );
-                    $userMessage = "This payment [$" . number_format($amount, 2) . "] is larger than the user\"s $typeOfBalance of [$" . number_format($balance,2) . "]. Payment denied!";
-                } else {
-                    $newBalance = $balance - $amount;
-                    error_log( "Reduced balance [" . $newBalance . "] is [" . $balance . " - " . $amount . "]" );
+                    error_log( "Bad Soda balance. Amount: [" . $sodaAmount . "] Balance: [" . $sodaBalance . "]" );
+                    $userMessage = "This payment [$" . number_format($sodaAmount, 2) . "] is larger than the user\"s Soda Balance of [$" . number_format($sodaBalance,2) . "]. Payment denied!";
+                }
+
+                if( $snackAmount > $snackBalance) {
+                    $isBalanceValid = false;
+                    error_log( "Bad Snack balance. Amount: [" . $snackAmount . "] Balance: [" . $snackBalance . "]" );
+                    $userMessage = "This payment [$" . number_format($snackAmount, 2) . "] is larger than the user\"s Snack Balance of [$" . number_format($snackBalance,2) . "]. Payment denied!";
+                }
+                
+                if( $isBalanceValid ) {
+                    $newSodaBalance = $sodaBalance - $sodaAmount;
+                    error_log( "Reduced Soda balance [" . $newSodaBalance . "] is [" . $sodaBalance . " - " . $sodaAmount . "]" );
+                    
+                    $newSnackBalance = $snackBalance - $snackAmount;
+                    error_log( "Reduced Snack balance [" . $newSnackBalance . "] is [" . $snackBalance . " - " . $snackAmount . "]" );
+                    
                     if( $slackID == "" ) {
-                        sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!");
+                        sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!");
                     } else {
-                        sendSlackMessageToUser( $slackID,  "Payment: *$" . number_format($amount,2) . "*\nYour Current " . $itemType ." Balance: *$" . number_format($newBalance,2) . "*", ":dollar:", $itemType . "Stock - PAYMENT RECEIVED" );
+                        sendSlackMessageToUser( $slackID,  "Soda Payment: *$" . number_format($sodaAmount,2) . "*\nYour Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nYour Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "FoodStock - PAYMENT RECEIVED" );
                     }
     
-                    sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n Payment: *$" . number_format($amount,2) . "*\nTheir Current " . $itemType ." Balance: *$" . number_format($newBalance,2) . "*", ":dollar:", $itemType . "Stock - PAYMENT RECEIVED" );
+                   
+                            
+                    sendSlackMessageToMatt(   "*(" . strtoupper($username) . ")*\nSoda Payment: *$" . number_format($sodaAmount,2) . "*\nTheir Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nTheir Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "FoodStock - PAYMENT RECEIVED" );
                 }
             }
     
             if( $isBalanceValid ) {
-                $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $amount, '$date', '$note', '$itemType', '$paymentMonth')");
+                $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $sodaAmount, '$date', '$note', 'Soda', '$paymentMonth')");
+                $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $snackAmount, '$date', '$note', 'Snack', '$paymentMonth')");
     
                 if( $isUserPayment ) {
-                    $db->exec("UPDATE User SET $typeOfBalance = $typeOfBalance - $amount where UserID = $userID");
+                    $db->exec("UPDATE User SET SodaBalance = SodaBalance - $sodaAmount where UserID = $userID");
+                    $db->exec("UPDATE User SET SnackBalance = SnackBalance - $snackAmount where UserID = $userID");
                 }
     
-                $db->exec("UPDATE Information SET ProfitActual = ProfitActual + $amount where ItemType = '$itemType'");
+                $db->exec("UPDATE Information SET ProfitActual = ProfitActual + $sodaAmount where ItemType = 'Soda'");
+                $db->exec("UPDATE Information SET ProfitActual = ProfitActual + $snackAmount where ItemType = 'Snack'");
     
                 $userMessage = "Payment added successfully.";
             }
