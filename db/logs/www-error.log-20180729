@@ -1,0 +1,2004 @@
+[23-Jul-2018 01:11:38 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [51.254.143.169] on [Mozilla/5.0 (compatible; MJ12bot/v1.4.8; http://mj12bot.com/)]]
+[23-Jul-2018 01:11:40 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [51.254.143.169] on [Mozilla/5.0 (compatible; MJ12bot/v1.4.8; http://mj12bot.com/)]]
+[23-Jul-2018 08:38:58 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 08:38:58 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[23-Jul-2018 08:39:09 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:negative_squared_cross_mark:]
+Bot Name: [OUT OF STOCK REPORT]
+Message: [*Item Name:* Mountain Dew : Baja Blast
+*Reporter:* Ryan Hartzell]
+[23-Jul-2018 09:35:08 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 09:35:08 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 09:35:12 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 09:35:12 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 09:52:18 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [54.86.66.252] on [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.1.25 (KHTML, like Gecko) Version/8.0 Safari/600.1.25]]
+[23-Jul-2018 09:52:24 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [54.175.74.27] on [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.1.25 (KHTML, like Gecko) Version/8.0 Safari/600.1.25]]
+[23-Jul-2018 09:52:25 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 09:52:25 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.47 , SnackSavings = SnackSavings + 0.03 where UserID = 11]
+[23-Jul-2018 09:52:25 America/New_York] Sending Slack Message:
+Slack ID: [@Alex Cavaliere]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $4.73
+]
+[23-Jul-2018 09:52:25 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[23-Jul-2018 09:52:25 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(ACAVALIERE)*
+- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $4.73
+]
+[23-Jul-2018 09:52:25 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 09:52:25 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 11:10:26 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:10:26 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:10:28 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:10:53 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:10:53 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:11:08 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(100, '2018-07-23 11:11:08',  , 0, 47, 47, 0.1, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.1, DateModified = '2018-07-23 11:11:08' where ID = 100
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(108, '2018-07-23 11:11:08',  , 0, 5, 5, 0.3, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-23 11:11:08' where ID = 108
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(68, '2018-07-23 11:11:08',  , 0, 28, 28, 0.35, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-23 11:11:08' where ID = 68
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(124, '2018-07-23 11:11:08',  , 0, 13, 13, 0.25, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-23 11:11:08' where ID = 124
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(117, '2018-07-23 11:11:08',  , 0, 10, 10, 0.35, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-23 11:11:08' where ID = 117
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(87, '2018-07-23 11:11:08',  , 16, 10, 10, 0.35, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-23 11:11:08' where ID = 87
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(88, '2018-07-23 11:11:08',  , 0, 19, 19, 0.35, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-23 11:11:08' where ID = 88
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(135, '2018-07-23 11:11:08',  , 0, 23, 23, 0.35, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-23 11:11:08' where ID = 135
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(118, '2018-07-23 11:11:08',  , 20, 0, 0, 0.4, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-23 11:11:08' where ID = 118
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(69, '2018-07-23 11:11:08',  , 0, 8, 8, 0.25, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-23 11:11:08' where ID = 69
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(121, '2018-07-23 11:11:08',  , 0, 14, 14, 0.4, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-23 11:11:08' where ID = 121
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(129, '2018-07-23 11:11:08',  , 0, 14, 14, 0.25, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-23 11:11:08' where ID = 129
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(65, '2018-07-23 11:11:08',  , 0, 95, 95, 0.2, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-23 11:11:08' where ID = 65
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(131, '2018-07-23 11:11:08',  , 0, 6, 6, 0.7, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.7, DateModified = '2018-07-23 11:11:08' where ID = 131
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(130, '2018-07-23 11:11:08',  , 0, 10, 10, 0.25, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-23 11:11:08' where ID = 130
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(89, '2018-07-23 11:11:08',  , 0, 15, 15, 0.6, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.6, DateModified = '2018-07-23 11:11:08' where ID = 89
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(67, '2018-07-23 11:11:08',  , 0, 5, 5, 0.85, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.85, DateModified = '2018-07-23 11:11:08' where ID = 67
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(123, '2018-07-23 11:11:08',  , 0, 4, 4, 0.4, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-23 11:11:08' where ID = 123
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(84, '2018-07-23 11:11:08',  , 0, 12, 12, 0.25, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-23 11:11:08' where ID = 84
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(86, '2018-07-23 11:11:08',  , 0, 37, 37, 0.75, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.75, DateModified = '2018-07-23 11:11:08' where ID = 86
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(101, '2018-07-23 11:11:08',  , 0, 7, 7, 0.2, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-23 11:11:08' where ID = 101
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(82, '2018-07-23 11:11:08',  , 0, 9, 9, 0.3, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-23 11:11:08' where ID = 82
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(73, '2018-07-23 11:11:08',  , 0, 10, 10, 0.4, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-23 11:11:08' where ID = 73
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(72, '2018-07-23 11:11:08',  , 14, 3, 3, 0.5, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-23 11:11:08' where ID = 72
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(70, '2018-07-23 11:11:08',  , 6, 5, 5, 0.5, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-23 11:11:08' where ID = 70
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(71, '2018-07-23 11:11:08',  , 12, 3, 3, 0.5, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-23 11:11:08' where ID = 71
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(127, '2018-07-23 11:11:08',  , 0, 15, 15, 0.3, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-23 11:11:08' where ID = 127
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(128, '2018-07-23 11:11:08',  , 0, 9, 9, 0.3, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-23 11:11:08' where ID = 128
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(126, '2018-07-23 11:11:08',  , 0, 8, 8, 2, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 2, DateModified = '2018-07-23 11:11:08' where ID = 126
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(66, '2018-07-23 11:11:08',  , 0, 8, 8, 0.25, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-23 11:11:08' where ID = 66
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(122, '2018-07-23 11:11:08',  , 0, 11, 11, 0.35, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-23 11:11:08' where ID = 122
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(74, '2018-07-23 11:11:08',  , 0, 39, 39, 0.2, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-23 11:11:08' where ID = 74
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(134, '2018-07-23 11:11:08',  , 0, 19, 19, 0.4, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-23 11:11:08' where ID = 134
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(119, '2018-07-23 11:11:08',  , 32, 28, 28, 0.4, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-23 11:11:08' where ID = 119
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(115, '2018-07-23 11:11:08',  , 0, 5, 5, 0.55, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.55, DateModified = '2018-07-23 11:11:08' where ID = 115
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(114, '2018-07-23 11:11:08',  , 0, 1, 1, 0.55, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.55, DateModified = '2018-07-23 11:11:08' where ID = 114
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(133, '2018-07-23 11:11:08',  , 18, 0, 18, 0.45, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.45, DateModified = '2018-07-23 11:11:08' where ID = 133
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(85, '2018-07-23 11:11:08',  , 10, 11, 11, 0.25, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-23 11:11:08' where ID = 85
+[23-Jul-2018 11:11:08 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[23-Jul-2018 11:11:08 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(83, '2018-07-23 11:11:08',  , 5, 9, 9, 0.5, 0)
+[23-Jul-2018 11:11:08 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[23-Jul-2018 11:11:08 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-23 11:11:08' where ID = 83
+[23-Jul-2018 11:11:09 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:11:12 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:14:18 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:14:18 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.47 , SnackSavings = SnackSavings + 0.03 where UserID = 1]
+[23-Jul-2018 11:14:18 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Pop-Tarts (Chocolate) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $5.72
+]
+[23-Jul-2018 11:14:18 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(MMILES)*
+- Pop-Tarts (Chocolate) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $5.72
+]
+[23-Jul-2018 11:14:18 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 11:46:47 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 11:46:52 America/New_York] Logging in with [mcastelein] [20] [2.25][1.61]
+[23-Jul-2018 11:46:52 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 11:46:59 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[23-Jul-2018 11:47:00 America/New_York] Balance Update [UPDATE User SET SodaBalance = SodaBalance + 0.45 , SodaSavings = SodaSavings + 0.05 where UserID = 20]
+[23-Jul-2018 11:47:00 America/New_York] Sending Slack Message:
+Slack ID: [@mattcastelein]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Dr. Pepper - Diet ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $2.70
+]
+[23-Jul-2018 11:47:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(MCASTELEIN)*
+- Dr. Pepper - Diet ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $2.70
+]
+[23-Jul-2018 11:47:00 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[23-Jul-2018 11:47:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 11:47:01 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[23-Jul-2018 11:47:01 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 11:47:18 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[23-Jul-2018 11:47:18 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.37 , SnackSavings = SnackSavings + 0.03 where UserID = 20]
+[23-Jul-2018 11:47:18 America/New_York] Sending Slack Message:
+Slack ID: [@mattcastelein]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Smartfood Popcorn ($0.37)
+*Total Price:* $0.37
+*Your Snack Balance:* $1.98
+]
+[23-Jul-2018 11:47:18 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(MCASTELEIN)*
+- Smartfood Popcorn ($0.37)
+*Total Price:* $0.37
+*Your Snack Balance:* $1.98
+]
+[23-Jul-2018 11:47:18 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[23-Jul-2018 11:47:19 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 14:48:11 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 14:48:11 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 14:48:14 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 14:48:14 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 14:50:40 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 14:50:40 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.42 , SnackSavings = SnackSavings + 0.03 where UserID = 11]
+[23-Jul-2018 14:50:40 America/New_York] Sending Slack Message:
+Slack ID: [@Alex Cavaliere]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Veggie Straws ($0.42)
+*Total Price:* $0.42
+*Your Snack Balance:* $5.15
+]
+[23-Jul-2018 14:50:40 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[23-Jul-2018 14:50:40 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(ACAVALIERE)*
+- Veggie Straws ($0.42)
+*Total Price:* $0.42
+*Your Snack Balance:* $5.15
+]
+[23-Jul-2018 14:50:40 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[23-Jul-2018 14:50:40 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 15:53:07 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[23-Jul-2018 15:53:16 America/New_York] Logging in with [RHartzell] [24] [0][0]
+[23-Jul-2018 15:53:16 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[23-Jul-2018 15:53:26 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 15:53:26 America/New_York] Sending Slack Message:
+Slack ID: [@Ryan Hartzell]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Mountain Dew ($0.45)
+*Total Price:* $0.45
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[23-Jul-2018 15:53:26 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[23-Jul-2018 15:53:26 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(RHARTZELL)*
+- Mountain Dew ($0.45)
+*Total Price:* $0.45
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[23-Jul-2018 15:53:26 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 15:53:26 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[23-Jul-2018 15:54:23 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 15:54:23 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [Requests visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[23-Jul-2018 16:02:43 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 16:02:48 America/New_York] Logging in with [jlefurge] [13] [0][0]
+[23-Jul-2018 16:02:48 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jlefurge] on [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 16:06:35 America/New_York] Recached SlackID [tcoop4] for [jlefurge]
+[23-Jul-2018 16:06:35 America/New_York] Sending Slack Message:
+Slack ID: [@tcoop4]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Nutty Buddy ($0.20)
+*Total Price:* $0.20
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[23-Jul-2018 16:06:35 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(JLEFURGE)*
+- Nutty Buddy ($0.20)
+*Total Price:* $0.20
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[23-Jul-2018 16:06:35 America/New_York] Recached SlackID [tcoop4] for [jlefurge]
+[23-Jul-2018 16:06:35 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jlefurge] on [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[23-Jul-2018 16:20:26 America/New_York] Recached SlackID [ncoriale] for [ncoriale]
+[23-Jul-2018 16:20:26 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [ncoriale] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[23-Jul-2018 16:20:31 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 16:20:32 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 16:20:32 America/New_York] Recached SlackID [ncoriale] for [ncoriale]
+[23-Jul-2018 16:20:32 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.47 , SnackSavings = SnackSavings + 0.03 where UserID = 17]
+[23-Jul-2018 16:20:32 America/New_York] Sending Slack Message:
+Slack ID: [@ncoriale]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Cheese and Sticks ($0.27)
+- Slim Jim ($0.20)
+*Total Price:* $0.47
+*Your Snack Balance:* $2.70
+]
+[23-Jul-2018 16:20:32 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(NCORIALE)*
+- Cheese and Sticks ($0.27)
+- Slim Jim ($0.20)
+*Total Price:* $0.47
+*Your Snack Balance:* $2.70
+]
+[23-Jul-2018 16:20:32 America/New_York] Recached SlackID [ncoriale] for [ncoriale]
+[23-Jul-2018 16:20:32 America/New_York] PHP Warning:  SQLite3::exec(): database is locked in /usr/share/httpd/html/session_functions.php on line 99
+[23-Jul-2018 16:20:32 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [ncoriale] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[23-Jul-2018 16:20:48 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 16:20:48 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.54 , SnackSavings = SnackSavings + 0.06 where UserID = 1]
+[23-Jul-2018 16:20:48 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+*Total Price:* $0.54
+*Your Snack Balance:* $6.26
+]
+[23-Jul-2018 16:20:49 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(MMILES)*
+- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+*Total Price:* $0.54
+*Your Snack Balance:* $6.26
+]
+[23-Jul-2018 16:20:49 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[23-Jul-2018 17:02:28 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 17:02:28 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[23-Jul-2018 17:02:30 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 17:02:31 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[23-Jul-2018 17:02:35 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 17:02:35 America/New_York] Sending Slack Message:
+Slack ID: [@Ryan Hartzell]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Nutty Buddy ($0.20)
+*Total Price:* $0.20
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[23-Jul-2018 17:02:36 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[23-Jul-2018 17:02:36 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(RHARTZELL)*
+- Nutty Buddy ($0.20)
+*Total Price:* $0.20
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[23-Jul-2018 17:02:36 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[23-Jul-2018 17:02:36 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[24-Jul-2018 01:33:43 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [5.255.250.49] on [Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)]]
+[24-Jul-2018 02:45:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [84.201.133.9] on [Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)]]
+[24-Jul-2018 07:46:23 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [66.249.64.131] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[24-Jul-2018 09:32:56 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [66.249.64.136] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[24-Jul-2018 10:08:17 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[24-Jul-2018 10:08:17 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 10:08:19 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[24-Jul-2018 10:08:19 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 10:09:31 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[24-Jul-2018 10:09:31 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.47 , SnackSavings = SnackSavings + 0.03 where UserID = 11]
+[24-Jul-2018 10:09:31 America/New_York] Sending Slack Message:
+Slack ID: [@Alex Cavaliere]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $5.62
+]
+[24-Jul-2018 10:09:31 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[24-Jul-2018 10:09:31 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(ACAVALIERE)*
+- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $5.62
+]
+[24-Jul-2018 10:09:31 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[24-Jul-2018 10:09:31 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 10:16:19 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [54.86.66.252] on [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.1.25 (KHTML, like Gecko) Version/8.0 Safari/600.1.25]]
+[24-Jul-2018 10:16:28 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [184.72.115.35] on [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.1.25 (KHTML, like Gecko) Version/8.0 Safari/600.1.25]]
+[24-Jul-2018 12:31:57 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 12:32:07 America/New_York] Logging in with [mcastelein] [20] [2.7][1.98]
+[24-Jul-2018 12:32:07 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 12:32:16 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[24-Jul-2018 12:32:16 America/New_York] Balance Update [UPDATE User SET SodaBalance = SodaBalance + 0.45 , SodaSavings = SodaSavings + 0.05 where UserID = 20]
+[24-Jul-2018 12:32:16 America/New_York] Sending Slack Message:
+Slack ID: [@mattcastelein]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Vanilla Zero ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $3.15
+]
+[24-Jul-2018 12:32:16 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(MCASTELEIN)*
+- Vanilla Zero ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $3.15
+]
+[24-Jul-2018 12:32:16 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[24-Jul-2018 12:32:16 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 12:32:36 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:negative_squared_cross_mark:]
+Bot Name: [OUT OF STOCK REPORT]
+Message: [*Item Name:* Coke Zero
+*Reporter:* Matt Castelein]
+[24-Jul-2018 12:33:05 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:negative_squared_cross_mark:]
+Bot Name: [OUT OF STOCK REPORT]
+Message: [*Item Name:* Dr. Pepper - Diet
+*Reporter:* Matt Castelein]
+[24-Jul-2018 12:33:15 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[24-Jul-2018 12:33:15 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 12:55:50 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [66.249.64.131] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[24-Jul-2018 13:18:50 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[24-Jul-2018 13:18:50 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[24-Jul-2018 13:19:00 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[24-Jul-2018 13:19:00 America/New_York] Sending Slack Message:
+Slack ID: [@Ryan Hartzell]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Voltage ($0.45)
+*Total Price:* $0.45
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[24-Jul-2018 13:19:00 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[24-Jul-2018 13:19:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(RHARTZELL)*
+- Voltage ($0.45)
+*Total Price:* $0.45
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[24-Jul-2018 13:19:01 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[24-Jul-2018 13:19:01 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[24-Jul-2018 13:57:41 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[24-Jul-2018 13:57:41 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 13:57:53 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[24-Jul-2018 13:57:53 America/New_York] Balance Update [UPDATE User SET SodaBalance = SodaBalance + 0.45 , SodaSavings = SodaSavings + 0.05 where UserID = 11]
+[24-Jul-2018 13:57:53 America/New_York] Sending Slack Message:
+Slack ID: [@Alex Cavaliere]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Barqs Root Beer ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $4.50
+]
+[24-Jul-2018 13:57:53 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[24-Jul-2018 13:57:53 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(ACAVALIERE)*
+- Barqs Root Beer ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $4.50
+]
+[24-Jul-2018 13:57:53 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[24-Jul-2018 13:57:53 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[24-Jul-2018 14:12:01 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [66.249.64.131] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[25-Jul-2018 02:55:09 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [66.249.64.136] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[25-Jul-2018 05:38:07 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [66.249.64.134] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[25-Jul-2018 05:43:07 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [66.249.64.131] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[25-Jul-2018 08:24:11 America/New_York] Recached SlackID [qacoop4] for [LChristie]
+[25-Jul-2018 08:24:11 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [LChristie] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[25-Jul-2018 08:24:11 America/New_York] Recached SlackID [qacoop4] for [LChristie]
+[25-Jul-2018 08:24:11 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [LChristie] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[25-Jul-2018 08:24:37 America/New_York] Recached SlackID [qacoop4] for [LChristie]
+[25-Jul-2018 08:24:37 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.3 , SnackSavings = SnackSavings + 0.05 where UserID = 28]
+[25-Jul-2018 08:24:37 America/New_York] Sending Slack Message:
+Slack ID: [@qacoop4]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Fiber One Granola Bar ($0.30)
+*Total Price:* $0.30
+*Your Snack Balance:* $0.64
+]
+[25-Jul-2018 08:24:37 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(LCHRISTIE)*
+- Fiber One Granola Bar ($0.30)
+*Total Price:* $0.30
+*Your Snack Balance:* $0.64
+]
+[25-Jul-2018 08:24:37 America/New_York] Recached SlackID [qacoop4] for [LChristie]
+[25-Jul-2018 08:24:37 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [LChristie] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[25-Jul-2018 10:02:52 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[25-Jul-2018 10:02:52 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[25-Jul-2018 10:02:54 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[25-Jul-2018 10:02:54 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [PurchaseHistory-Snack visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[25-Jul-2018 10:02:56 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[25-Jul-2018 10:02:56 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[25-Jul-2018 10:04:08 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[25-Jul-2018 10:04:08 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.47 , SnackSavings = SnackSavings + 0.03 where UserID = 11]
+[25-Jul-2018 10:04:08 America/New_York] Sending Slack Message:
+Slack ID: [@Alex Cavaliere]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $6.09
+]
+[25-Jul-2018 10:04:08 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[25-Jul-2018 10:04:08 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(ACAVALIERE)*
+- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $6.09
+]
+[25-Jul-2018 10:04:08 America/New_York] Recached SlackID [Alex Cavaliere] for [acavaliere]
+[25-Jul-2018 10:04:08 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [acavaliere] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[25-Jul-2018 10:10:49 America/New_York] PHP Notice:  Undefined index: type in /usr/share/httpd/html/purchase_history.php on line 64
+[25-Jul-2018 10:10:50 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [PurchaseHistory- visited by [54.175.74.27] on [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.1.25 (KHTML, like Gecko) Version/8.0 Safari/600.1.25]]
+[25-Jul-2018 10:10:50 America/New_York] PHP Notice:  Undefined index: UserID in /usr/share/httpd/html/purchase_history.php on line 72
+[25-Jul-2018 10:10:50 America/New_York] PHP Notice:  Undefined index: FirstName in /usr/share/httpd/html/purchase_history.php on line 73
+[25-Jul-2018 10:10:50 America/New_York] PHP Warning:  SQLite3::query(): Unable to prepare statement: 1, near &quot;AND&quot;: syntax error in /usr/share/httpd/html/purchase_history.php on line 83
+[25-Jul-2018 10:10:50 America/New_York] PHP Fatal error:  Uncaught Error: Call to a member function fetchArray() on boolean in /usr/share/httpd/html/purchase_history.php:84
+Stack trace:
+#0 {main}
+  thrown in /usr/share/httpd/html/purchase_history.php on line 84
+[25-Jul-2018 10:20:05 America/New_York] Recached SlackID [alomeli] for [alomeli]
+[25-Jul-2018 10:20:05 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [alomeli] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[25-Jul-2018 10:20:11 America/New_York] Recached SlackID [alomeli] for [alomeli]
+[25-Jul-2018 10:20:11 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.47 , SnackSavings = SnackSavings + 0.03 where UserID = 19]
+[25-Jul-2018 10:20:11 America/New_York] Sending Slack Message:
+Slack ID: [@alomeli]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $1.57
+]
+[25-Jul-2018 10:20:11 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(ALOMELI)*
+- Pop-Tarts (Strawberry) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $1.57
+]
+[25-Jul-2018 10:20:11 America/New_York] Recached SlackID [alomeli] for [alomeli]
+[25-Jul-2018 10:20:11 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [alomeli] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[25-Jul-2018 12:26:44 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[25-Jul-2018 12:26:44 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[25-Jul-2018 12:26:47 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[25-Jul-2018 12:26:47 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[25-Jul-2018 12:29:19 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[25-Jul-2018 12:29:19 America/New_York] Sending Slack Message:
+Slack ID: [@Ryan Hartzell]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- CheezIts ($0.34)
+- Nutty Buddy ($0.20)
+- Fruit Roll Up ($0.23)
+*Total Price:* $0.77
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[25-Jul-2018 12:29:19 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[25-Jul-2018 12:29:19 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(RHARTZELL)*
+- CheezIts ($0.34)
+- Nutty Buddy ($0.20)
+- Fruit Roll Up ($0.23)
+*Total Price:* $0.77
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[25-Jul-2018 12:29:20 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[25-Jul-2018 12:29:20 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[25-Jul-2018 13:53:20 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[25-Jul-2018 14:53:04 America/New_York] Recached SlackID [dkmrsa] for [dmoore]
+[25-Jul-2018 14:53:04 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [dmoore] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36]]
+[25-Jul-2018 14:53:11 America/New_York] Recached SlackID [dkmrsa] for [dmoore]
+[25-Jul-2018 14:53:11 America/New_York] Balance Update [UPDATE User SET SodaBalance = SodaBalance + 0.45 , SodaSavings = SodaSavings + 0.05 where UserID = 22]
+[25-Jul-2018 14:53:11 America/New_York] Sending Slack Message:
+Slack ID: [@dkmrsa]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Mountain Dew ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $0.90
+]
+[25-Jul-2018 14:53:11 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(DMOORE)*
+- Mountain Dew ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $0.90
+]
+[25-Jul-2018 14:53:12 America/New_York] Recached SlackID [dkmrsa] for [dmoore]
+[25-Jul-2018 14:53:12 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [dmoore] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36]]
+[25-Jul-2018 14:53:15 America/New_York] Recached SlackID [dkmrsa] for [dmoore]
+[25-Jul-2018 14:53:16 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [dmoore] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36]]
+[25-Jul-2018 14:53:50 America/New_York] Recached SlackID [dkmrsa] for [dmoore]
+[25-Jul-2018 14:53:50 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.2 , SnackSavings = SnackSavings + 0 where UserID = 22]
+[25-Jul-2018 14:53:50 America/New_York] Sending Slack Message:
+Slack ID: [@dkmrsa]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Slim Jim ($0.20)
+*Total Price:* $0.20
+*Your Snack Balance:* $0.20
+]
+[25-Jul-2018 14:53:50 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(DMOORE)*
+- Slim Jim ($0.20)
+*Total Price:* $0.20
+*Your Snack Balance:* $0.20
+]
+[25-Jul-2018 14:53:51 America/New_York] Recached SlackID [dkmrsa] for [dmoore]
+[25-Jul-2018 14:53:51 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [dmoore] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36]]
+[25-Jul-2018 15:17:09 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[25-Jul-2018 15:17:09 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[25-Jul-2018 15:17:30 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[25-Jul-2018 15:18:00 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[25-Jul-2018 15:18:00 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.54 , SnackSavings = SnackSavings + 0.06 where UserID = 1]
+[25-Jul-2018 15:18:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+*Total Price:* $0.54
+*Your Snack Balance:* $6.80
+]
+[25-Jul-2018 15:18:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(MMILES)*
+- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+- Fun-Size Candy ($0.18)
+*Total Price:* $0.54
+*Your Snack Balance:* $6.80
+]
+[25-Jul-2018 15:18:00 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[25-Jul-2018 16:16:46 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[25-Jul-2018 16:16:46 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[25-Jul-2018 22:31:27 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [5.255.250.49] on [Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)]]
+[26-Jul-2018 09:23:00 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 09:23:00 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 09:23:02 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 09:23:27 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(100, '2018-07-26 09:23:27',  , 0, 47, 47, 0.1, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.1, DateModified = '2018-07-26 09:23:27' where ID = 100
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(108, '2018-07-26 09:23:27',  , 0, 4, 4, 0.3, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:27' where ID = 108
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(68, '2018-07-26 09:23:27',  , 0, 27, 27, 0.35, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:27' where ID = 68
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(124, '2018-07-26 09:23:27',  , 0, 13, 13, 0.25, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:27' where ID = 124
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(117, '2018-07-26 09:23:27',  , 0, 10, 10, 0.35, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:27' where ID = 117
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(87, '2018-07-26 09:23:27',  , 16, 10, 10, 0.35, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:27' where ID = 87
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(88, '2018-07-26 09:23:27',  , 0, 19, 19, 0.35, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:27' where ID = 88
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(135, '2018-07-26 09:23:27',  , 0, 22, 22, 0.35, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:27' where ID = 135
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(118, '2018-07-26 09:23:27',  , 20, 0, 0, 0.4, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:27' where ID = 118
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(69, '2018-07-26 09:23:27',  , 0, 7, 7, 0.25, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:27' where ID = 69
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(121, '2018-07-26 09:23:27',  , 0, 14, 14, 0.4, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:27' where ID = 121
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(129, '2018-07-26 09:23:27',  , 0, 14, 14, 0.25, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:27' where ID = 129
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(65, '2018-07-26 09:23:27',  , 0, 89, 89, 0.2, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-26 09:23:27' where ID = 65
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(131, '2018-07-26 09:23:27',  , 0, 6, 6, 0.7, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.7, DateModified = '2018-07-26 09:23:27' where ID = 131
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(130, '2018-07-26 09:23:27',  , 0, 10, 10, 0.25, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:27' where ID = 130
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(89, '2018-07-26 09:23:27',  , 0, 15, 15, 0.6, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.6, DateModified = '2018-07-26 09:23:27' where ID = 89
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(67, '2018-07-26 09:23:27',  , 0, 5, 5, 0.85, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.85, DateModified = '2018-07-26 09:23:27' where ID = 67
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(123, '2018-07-26 09:23:27',  , 0, 4, 4, 0.4, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:27' where ID = 123
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(84, '2018-07-26 09:23:27',  , 0, 12, 12, 0.25, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:27' where ID = 84
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(86, '2018-07-26 09:23:27',  , 0, 37, 37, 0.75, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.75, DateModified = '2018-07-26 09:23:27' where ID = 86
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(101, '2018-07-26 09:23:27',  , 0, 4, 4, 0.2, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-26 09:23:27' where ID = 101
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(82, '2018-07-26 09:23:27',  , 0, 9, 9, 0.3, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:27' where ID = 82
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(73, '2018-07-26 09:23:27',  , 0, 10, 10, 0.4, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:27' where ID = 73
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(72, '2018-07-26 09:23:27',  , 14, 3, 3, 0.5, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:27' where ID = 72
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(70, '2018-07-26 09:23:27',  , 6, 4, 0, 0.5, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:27' where ID = 70
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(71, '2018-07-26 09:23:27',  , 12, 0, 0, 0.5, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:27' where ID = 71
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(127, '2018-07-26 09:23:27',  , 0, 15, 15, 0.3, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:27' where ID = 127
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(128, '2018-07-26 09:23:27',  , 0, 9, 9, 0.3, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:27' where ID = 128
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(126, '2018-07-26 09:23:27',  , 0, 8, 8, 2, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 2, DateModified = '2018-07-26 09:23:27' where ID = 126
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(66, '2018-07-26 09:23:27',  , 0, 8, 8, 0.25, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:27' where ID = 66
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(122, '2018-07-26 09:23:27',  , 0, 11, 11, 0.35, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:27' where ID = 122
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(74, '2018-07-26 09:23:27',  , 0, 37, 37, 0.2, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-26 09:23:27' where ID = 74
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(134, '2018-07-26 09:23:27',  , 0, 18, 18, 0.4, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:27' where ID = 134
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(119, '2018-07-26 09:23:27',  , 32, 28, 28, 0.4, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:27' where ID = 119
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(115, '2018-07-26 09:23:27',  , 0, 5, 5, 0.55, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.55, DateModified = '2018-07-26 09:23:27' where ID = 115
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(114, '2018-07-26 09:23:27',  , 0, 1, 1, 0.55, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.55, DateModified = '2018-07-26 09:23:27' where ID = 114
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(133, '2018-07-26 09:23:27',  , 18, 17, 17, 0.45, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.45, DateModified = '2018-07-26 09:23:27' where ID = 133
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(85, '2018-07-26 09:23:27',  , 10, 11, 11, 0.25, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:27' where ID = 85
+[26-Jul-2018 09:23:27 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:27 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(83, '2018-07-26 09:23:27',  , 5, 9, 9, 0.5, 0)
+[26-Jul-2018 09:23:27 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:27 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:27' where ID = 83
+[26-Jul-2018 09:23:27 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 09:23:40 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(100, '2018-07-26 09:23:40',  , 0, 47, 47, 0.1, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.1, DateModified = '2018-07-26 09:23:40' where ID = 100
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(108, '2018-07-26 09:23:40',  , 0, 4, 4, 0.3, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:40' where ID = 108
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(68, '2018-07-26 09:23:40',  , 0, 27, 27, 0.35, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:40' where ID = 68
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(124, '2018-07-26 09:23:40',  , 0, 13, 13, 0.25, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:40' where ID = 124
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(117, '2018-07-26 09:23:40',  , 0, 10, 10, 0.35, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:40' where ID = 117
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(87, '2018-07-26 09:23:40',  , 16, 10, 10, 0.35, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:40' where ID = 87
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(88, '2018-07-26 09:23:40',  , 0, 19, 19, 0.35, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:40' where ID = 88
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(135, '2018-07-26 09:23:40',  , 0, 22, 22, 0.35, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:40' where ID = 135
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(118, '2018-07-26 09:23:40',  , 20, 0, 0, 0.4, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:40' where ID = 118
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(69, '2018-07-26 09:23:40',  , 0, 7, 7, 0.25, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:40' where ID = 69
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(121, '2018-07-26 09:23:40',  , 0, 14, 14, 0.4, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:40' where ID = 121
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(129, '2018-07-26 09:23:40',  , 0, 14, 14, 0.25, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:40' where ID = 129
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(65, '2018-07-26 09:23:40',  , 0, 89, 89, 0.2, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-26 09:23:40' where ID = 65
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(131, '2018-07-26 09:23:40',  , 0, 6, 6, 0.7, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.7, DateModified = '2018-07-26 09:23:40' where ID = 131
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(130, '2018-07-26 09:23:40',  , 0, 10, 10, 0.25, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:40' where ID = 130
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(89, '2018-07-26 09:23:40',  , 0, 15, 15, 0.6, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.6, DateModified = '2018-07-26 09:23:40' where ID = 89
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(67, '2018-07-26 09:23:40',  , 0, 5, 5, 0.85, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.85, DateModified = '2018-07-26 09:23:40' where ID = 67
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(123, '2018-07-26 09:23:40',  , 0, 4, 4, 0.4, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:40' where ID = 123
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(84, '2018-07-26 09:23:40',  , 0, 12, 12, 0.25, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:40' where ID = 84
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(86, '2018-07-26 09:23:40',  , 0, 37, 37, 0.75, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.75, DateModified = '2018-07-26 09:23:40' where ID = 86
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(101, '2018-07-26 09:23:40',  , 0, 4, 4, 0.2, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-26 09:23:40' where ID = 101
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(82, '2018-07-26 09:23:40',  , 0, 9, 9, 0.3, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:40' where ID = 82
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(73, '2018-07-26 09:23:40',  , 0, 10, 10, 0.4, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:40' where ID = 73
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(72, '2018-07-26 09:23:40',  , 14, 3, 3, 0.5, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:40' where ID = 72
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(70, '2018-07-26 09:23:40',  , 0, 0, 6, 0.5, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:40' where ID = 70
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(71, '2018-07-26 09:23:40',  , 12, 0, 0, 0.5, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:40' where ID = 71
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(127, '2018-07-26 09:23:40',  , 0, 15, 15, 0.3, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:40' where ID = 127
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(128, '2018-07-26 09:23:40',  , 0, 9, 9, 0.3, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.3, DateModified = '2018-07-26 09:23:40' where ID = 128
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(126, '2018-07-26 09:23:40',  , 0, 8, 8, 2, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 2, DateModified = '2018-07-26 09:23:40' where ID = 126
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(66, '2018-07-26 09:23:40',  , 0, 8, 8, 0.25, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:40' where ID = 66
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(122, '2018-07-26 09:23:40',  , 0, 11, 11, 0.35, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.35, DateModified = '2018-07-26 09:23:40' where ID = 122
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(74, '2018-07-26 09:23:40',  , 0, 37, 37, 0.2, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.2, DateModified = '2018-07-26 09:23:40' where ID = 74
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(134, '2018-07-26 09:23:40',  , 0, 18, 18, 0.4, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:40' where ID = 134
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(119, '2018-07-26 09:23:40',  , 32, 28, 28, 0.4, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.4, DateModified = '2018-07-26 09:23:40' where ID = 119
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(115, '2018-07-26 09:23:40',  , 0, 5, 5, 0.55, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.55, DateModified = '2018-07-26 09:23:40' where ID = 115
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(114, '2018-07-26 09:23:40',  , 0, 1, 1, 0.55, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.55, DateModified = '2018-07-26 09:23:40' where ID = 114
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(133, '2018-07-26 09:23:40',  , 18, 17, 17, 0.45, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.45, DateModified = '2018-07-26 09:23:40' where ID = 133
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(85, '2018-07-26 09:23:40',  , 10, 11, 11, 0.25, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.25, DateModified = '2018-07-26 09:23:40' where ID = 85
+[26-Jul-2018 09:23:40 America/New_York] PHP Notice:  Undefined index: BackStockQuantity in /usr/share/httpd/html/handle_forms.php on line 297
+[26-Jul-2018 09:23:40 America/New_York] SQ1:INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock) VALUES(83, '2018-07-26 09:23:40',  , 5, 9, 9, 0.5, 0)
+[26-Jul-2018 09:23:40 America/New_York] PHP Warning:  SQLite3::exec(): near &quot;,&quot;: syntax error in /usr/share/httpd/html/handle_forms.php on line 319
+[26-Jul-2018 09:23:40 America/New_York] SQ2:UPDATE Item SET Price = 0.5, DateModified = '2018-07-26 09:23:40' where ID = 83
+[26-Jul-2018 09:23:40 America/New_York] Sending Slack Message:
+Slack ID: [#random]
+Emoji: [:cookie:]
+Bot Name: [SnackStock - REFILL]
+Message: [*Pop-Tarts (Chocolate):* 0 tarts --> *6 tarts*
+
+
+Want to see what is in the cabinet, the prices, what has been discontinued, the trends of different items being bought, or just general statistics? View the NEW <http://penguinore.net/snackstock.php>]
+[26-Jul-2018 09:23:41 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 09:23:41 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [34.234.87.24] on [Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)]]
+[26-Jul-2018 09:26:41 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 09:37:09 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 09:37:52 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:37:53 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 09:38:29 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 10:05:33 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [5.255.250.49] on [Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)]]
+[26-Jul-2018 12:42:05 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 12:42:07 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 12:42:14 America/New_York] Logging in with [jtowner] [21] [4.4408920985006E-16][1.62]
+[26-Jul-2018 12:42:14 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 12:42:16 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[26-Jul-2018 12:42:16 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 12:42:34 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[26-Jul-2018 12:42:34 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 1.6 , SnackSavings = SnackSavings + 0.4 where UserID = 21]
+[26-Jul-2018 12:42:34 America/New_York] Sending Slack Message:
+Slack ID: [@jtowner]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Progresso Soup ($1.60)
+*Total Price:* $1.60
+*Your Snack Balance:* $3.22
+]
+[26-Jul-2018 12:42:34 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(JTOWNER)*
+- Progresso Soup ($1.60)
+*Total Price:* $1.60
+*Your Snack Balance:* $3.22
+]
+[26-Jul-2018 12:42:35 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[26-Jul-2018 12:42:35 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 13:13:43 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 13:13:43 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 13:14:20 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 13:14:20 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 1.25 , SnackSavings = SnackSavings + 0.1 where UserID = 1]
+[26-Jul-2018 13:14:20 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Ramen Cup ($0.33)
+- Fun-Size Candy ($0.18)
+- Mini Cereal Box ($0.37)
+- Mini Cereal Box ($0.37)
+*Total Price:* $1.25
+*Your Snack Balance:* $8.05
+]
+[26-Jul-2018 13:14:20 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(MMILES)*
+- Ramen Cup ($0.33)
+- Fun-Size Candy ($0.18)
+- Mini Cereal Box ($0.37)
+- Mini Cereal Box ($0.37)
+*Total Price:* $1.25
+*Your Snack Balance:* $8.05
+]
+[26-Jul-2018 13:14:20 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 13:14:23 America/New_York] Recached SlackID [mmiles] for [mmiles]
+[26-Jul-2018 13:35:01 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 14:12:24 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 14:16:55 America/New_York] Logging in with [mcastelein] [20] [3.15][1.98]
+[26-Jul-2018 14:16:55 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 14:17:03 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[26-Jul-2018 14:17:03 America/New_York] Balance Update [UPDATE User SET SodaBalance = SodaBalance + 0.45 , SodaSavings = SodaSavings + 0.05 where UserID = 20]
+[26-Jul-2018 14:17:03 America/New_York] Sending Slack Message:
+Slack ID: [@mattcastelein]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Vanilla Zero ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $3.60
+]
+[26-Jul-2018 14:17:03 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(MCASTELEIN)*
+- Vanilla Zero ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $3.60
+]
+[26-Jul-2018 14:17:03 America/New_York] Recached SlackID [mattcastelein] for [mcastelein]
+[26-Jul-2018 14:17:03 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [mcastelein] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 14:17:13 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:negative_squared_cross_mark:]
+Bot Name: [OUT OF STOCK REPORT]
+Message: [*Item Name:* Vanilla Zero
+*Reporter:* Matt Castelein]
+[26-Jul-2018 14:29:28 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [5.35.58.219] on [Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)]]
+[26-Jul-2018 14:42:53 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36]]
+[26-Jul-2018 14:42:55 America/New_York] Logging in with [pnguyen] [9] [0.45][1.28]
+[26-Jul-2018 14:42:55 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [pnguyen] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36]]
+[26-Jul-2018 14:42:56 America/New_York] Recached SlackID [pnguyen] for [pnguyen]
+[26-Jul-2018 14:42:56 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [pnguyen] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36]]
+[26-Jul-2018 14:43:01 America/New_York] Recached SlackID [pnguyen] for [pnguyen]
+[26-Jul-2018 14:43:01 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.47 , SnackSavings = SnackSavings + 0.03 where UserID = 9]
+[26-Jul-2018 14:43:01 America/New_York] Sending Slack Message:
+Slack ID: [@pnguyen]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Pop-Tarts (Brown Sugar) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $1.75
+]
+[26-Jul-2018 14:43:01 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(PNGUYEN)*
+- Pop-Tarts (Brown Sugar) ($0.47)
+*Total Price:* $0.47
+*Your Snack Balance:* $1.75
+]
+[26-Jul-2018 14:43:01 America/New_York] Recached SlackID [pnguyen] for [pnguyen]
+[26-Jul-2018 14:43:01 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [pnguyen] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36]]
+[26-Jul-2018 15:28:05 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[26-Jul-2018 15:28:05 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:05 America/New_York] PHP Notice:  Undefined index: LoggedIn in /usr/share/httpd/html/session_functions.php on line 72
+[26-Jul-2018 15:28:23 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[26-Jul-2018 15:28:26 America/New_York] Logging in with [RHartzell] [24] [0][0]
+[26-Jul-2018 15:28:26 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[26-Jul-2018 15:28:37 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[26-Jul-2018 15:28:37 America/New_York] Sending Slack Message:
+Slack ID: [@Ryan Hartzell]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Pitch Black ($0.45)
+*Total Price:* $0.45
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[26-Jul-2018 15:28:37 America/New_York] There was an error connecting to slack!! [channel_not_found]
+[26-Jul-2018 15:28:37 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(RHARTZELL)*
+- Pitch Black ($0.45)
+*Total Price:* $0.45
+*THIS PURCHASE WAS CASH-ONLY*
+]
+[26-Jul-2018 15:28:37 America/New_York] Recached SlackID [Ryan Hartzell] for [RHartzell]
+[26-Jul-2018 15:28:37 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [RHartzell] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36]]
+[26-Jul-2018 16:08:44 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 16:08:45 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 16:08:51 America/New_York] Logging in with [jtowner] [21] [4.4408920985006E-16][3.22]
+[26-Jul-2018 16:08:51 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 16:08:56 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[26-Jul-2018 16:08:56 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.22 , SnackSavings = SnackSavings + 0.03 where UserID = 21]
+[26-Jul-2018 16:08:56 America/New_York] Sending Slack Message:
+Slack ID: [@jtowner]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Fudgsicle ($0.22)
+*Total Price:* $0.22
+*Your Snack Balance:* $3.44
+]
+[26-Jul-2018 16:08:57 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(JTOWNER)*
+- Fudgsicle ($0.22)
+*Total Price:* $0.22
+*Your Snack Balance:* $3.44
+]
+[26-Jul-2018 16:08:57 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[26-Jul-2018 16:08:57 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[26-Jul-2018 16:26:50 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 16:27:01 America/New_York] Logging in with [jlefurge] [13] [0][0]
+[26-Jul-2018 16:27:01 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jlefurge] on [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0]]
+[26-Jul-2018 23:32:14 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [5.255.250.49] on [Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)]]
+[27-Jul-2018 11:45:53 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [69.55.70.36] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36]]
+[27-Jul-2018 11:45:55 America/New_York] Logging in with [pnguyen] [9] [0.45][1.75]
+[27-Jul-2018 11:45:55 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [pnguyen] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36]]
+[27-Jul-2018 11:46:00 America/New_York] Recached SlackID [pnguyen] for [pnguyen]
+[27-Jul-2018 11:46:00 America/New_York] Balance Update [UPDATE User SET SodaBalance = SodaBalance + 0.45 , SodaSavings = SodaSavings + 0.05 where UserID = 9]
+[27-Jul-2018 11:46:00 America/New_York] Sending Slack Message:
+Slack ID: [@pnguyen]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Mountain Dew ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $0.90
+]
+[27-Jul-2018 11:46:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(PNGUYEN)*
+- Mountain Dew ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $0.90
+]
+[27-Jul-2018 11:46:00 America/New_York] Recached SlackID [pnguyen] for [pnguyen]
+[27-Jul-2018 11:46:00 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [pnguyen] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36]]
+[27-Jul-2018 13:23:37 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[27-Jul-2018 13:23:37 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[27-Jul-2018 13:23:39 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[27-Jul-2018 13:23:39 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[27-Jul-2018 13:24:09 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[27-Jul-2018 13:24:09 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 2.02 , SnackSavings = SnackSavings + 0.43 where UserID = 21]
+[27-Jul-2018 13:24:09 America/New_York] Sending Slack Message:
+Slack ID: [@jtowner]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Veggie Straws ($0.42)
+- Progresso Soup ($1.60)
+*Total Price:* $2.02
+*Your Snack Balance:* $5.46
+]
+[27-Jul-2018 13:24:09 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(JTOWNER)*
+- Veggie Straws ($0.42)
+- Progresso Soup ($1.60)
+*Total Price:* $2.02
+*Your Snack Balance:* $5.46
+]
+[27-Jul-2018 13:24:09 America/New_York] Recached SlackID [jtowner] for [jtowner]
+[27-Jul-2018 13:24:09 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [jtowner] on [Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[27-Jul-2018 14:52:25 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [172.58.217.63] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36]]
+[27-Jul-2018 14:54:10 America/New_York] Logging in with [cmartinez] [14] [0.45][4.4408920985006E-16]
+[27-Jul-2018 14:54:10 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [cmartinez] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36]]
+[27-Jul-2018 14:54:14 America/New_York] Recached SlackID [cmartinez2985] for [cmartinez]
+[27-Jul-2018 14:54:14 America/New_York] Balance Update [UPDATE User SET SodaBalance = SodaBalance + 0.45 , SodaSavings = SodaSavings + 0.05 where UserID = 14]
+[27-Jul-2018 14:54:14 America/New_York] Sending Slack Message:
+Slack ID: [@cmartinez2985]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [- Ginger Ale ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $0.90
+]
+[27-Jul-2018 14:54:15 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SodaStock - RECEIPT]
+Message: [*(CMARTINEZ)*
+- Ginger Ale ($0.45)
+*Total Price:* $0.45
+*Your Soda Balance:* $0.90
+]
+[27-Jul-2018 14:54:15 America/New_York] Recached SlackID [cmartinez2985] for [cmartinez]
+[27-Jul-2018 14:54:15 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [cmartinez] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36]]
+[27-Jul-2018 14:54:20 America/New_York] Recached SlackID [cmartinez2985] for [cmartinez]
+[27-Jul-2018 14:54:20 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [cmartinez] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36]]
+[27-Jul-2018 14:54:25 America/New_York] Recached SlackID [cmartinez2985] for [cmartinez]
+[27-Jul-2018 14:54:25 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.35 , SnackSavings = SnackSavings + 0.05 where UserID = 14]
+[27-Jul-2018 14:54:25 America/New_York] Sending Slack Message:
+Slack ID: [@cmartinez2985]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Spicy Doritos & Cheetos ($0.35)
+*Total Price:* $0.35
+*Your Snack Balance:* $0.35
+]
+[27-Jul-2018 14:54:25 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(CMARTINEZ)*
+- Spicy Doritos & Cheetos ($0.35)
+*Total Price:* $0.35
+*Your Snack Balance:* $0.35
+]
+[27-Jul-2018 14:54:25 America/New_York] Recached SlackID [cmartinez2985] for [cmartinez]
+[27-Jul-2018 14:54:25 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [cmartinez] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36]]
+[27-Jul-2018 17:03:31 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [69.55.70.36] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[27-Jul-2018 17:03:36 America/New_York] Logging in with [ncoriale] [17] [0][2.7]
+[27-Jul-2018 17:03:36 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [ncoriale] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[27-Jul-2018 17:04:01 America/New_York] Recached SlackID [ncoriale] for [ncoriale]
+[27-Jul-2018 17:04:01 America/New_York] Balance Update [UPDATE User SET SnackBalance = SnackBalance + 0.2 , SnackSavings = SnackSavings + 0 where UserID = 17]
+[27-Jul-2018 17:04:01 America/New_York] Sending Slack Message:
+Slack ID: [@ncoriale]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [- Slim Jim ($0.20)
+*Total Price:* $0.20
+*Your Snack Balance:* $2.90
+]
+[27-Jul-2018 17:04:02 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:shopping_trolley:]
+Bot Name: [SnackStock - RECEIPT]
+Message: [*(NCORIALE)*
+- Slim Jim ($0.20)
+*Total Price:* $0.20
+*Your Snack Balance:* $2.90
+]
+[27-Jul-2018 17:04:02 America/New_York] Recached SlackID [ncoriale] for [ncoriale]
+[27-Jul-2018 17:04:02 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [ncoriale] on [Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36]]
+[27-Jul-2018 19:56:14 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [64.201.235.10] on [Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36]]
+[28-Jul-2018 13:16:31 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [34.234.87.24] on [Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)]]
+[28-Jul-2018 18:46:27 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [66.249.64.136] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
+[28-Jul-2018 19:52:08 America/New_York] Logging in with [mmiles] [1] [0][8.05]
+[28-Jul-2018 20:00:25 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SnackStock visited by [5.255.250.49] on [Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)]]
+[28-Jul-2018 21:28:57 America/New_York] Sending Slack Message:
+Slack ID: [@mmiles]
+Emoji: [:earth_americas:]
+Bot Name: [SodaStock - VISIT NEW]
+Message: [SodaStock visited by [66.249.64.131] on [Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)]]
