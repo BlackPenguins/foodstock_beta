@@ -171,12 +171,22 @@ function loadSingleModals() {
 }
 
 function loadUserModals() {
-    $("#request_button").click( function() {
-        $('#request').dialog('open');
+    $("#request_item_button").click( function() {
+        $('#request_item').dialog('open');
          return false;
     });
     
-    $( "#request" ).dialog( {
+    $("#request_feature_button").click( function() {
+        $('#request_feature').dialog('open');
+         return false;
+    });
+    
+    $("#report_bug_button").click( function() {
+        $('#report_bug').dialog('open');
+         return false;
+    });
+    
+    $( "#request_item" ).dialog( {
         autoOpen: false, 
         width: 500,
         modal: true,
@@ -192,7 +202,51 @@ function loadUserModals() {
                         id:"Request_Submit",
                         text: "Submit Request",
                         click: function() { 
-                            $("#request_form").submit();
+                            $("#request_item_form").submit();
+                        }
+                    }
+                ]
+    });
+    
+    $( "#request_feature" ).dialog( {
+        autoOpen: false, 
+        width: 500,
+        modal: true,
+        buttons: [
+                    {
+                        id: "Request_Cancel",
+                        text: "Cancel",
+                        click: function() {
+                            $(this).dialog("close");
+                        } 
+                    },
+                    {
+                        id:"Request_Submit",
+                        text: "Submit Request",
+                        click: function() { 
+                            $("#request_feature_form").submit();
+                        }
+                    }
+                ]
+    });
+    
+    $( "#report_bug" ).dialog( {
+        autoOpen: false, 
+        width: 500,
+        modal: true,
+        buttons: [
+                    {
+                        id: "Request_Cancel",
+                        text: "Cancel",
+                        click: function() {
+                            $(this).dialog("close");
+                        } 
+                    },
+                    {
+                        id:"Request_Submit",
+                        text: "Submit Report",
+                        click: function() { 
+                            $("#report_bug_form").submit();
                         }
                     }
                 ]

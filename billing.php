@@ -57,9 +57,8 @@
     }
     
     include("login_bar.php");
-    $itemType = $_GET['type'];
     
-    TrackVisit($db, "Billing-" .  $itemType);
+    TrackVisit($db, "Billing" );
     
     if( $isLoggedInAdmin && isset($_GET['userid'] ) && isset($_GET['name'] )  ) {
         $userID = $_GET['userid'];
@@ -76,7 +75,7 @@
     
     displayPaymentMethods();
     
-    echo "<div id='billing' style='margin-top:50px;'>";
+    echo "<div id='billing' style='margin-top:20px;'>";
 
     
     $currentMonthLabel = "";
@@ -109,7 +108,7 @@
         if( $purchaseMonthLabel != $currentMonthLabel ) {
 
             // Print the last month
-            printNewBillMonth( $db, $itemType, $userID, $currentMonthLabel,
+            printNewBillMonth( $db, $userID, $currentMonthLabel,
                 $currentMonthSodaTotal, $currentMonthSnackTotal, $currentMonthSodaCashOnlyTotal, $currentMonthSnackCashOnlyTotal,
                 $currentMonthSodaCount, $currentMonthSnackCount, $currentMonthSodaCashOnlyCount, $currentMonthSnackCashOnlyCount );
             
@@ -156,13 +155,13 @@
     }
     
     // Print the last month (usually the current one)
-    printNewBillMonth( $db, $itemType, $userID, $currentMonthLabel,
+    printNewBillMonth( $db, $userID, $currentMonthLabel,
                 $currentMonthSodaTotal, $currentMonthSnackTotal, $currentMonthSodaCashOnlyTotal, $currentMonthSnackCashOnlyTotal,
                 $currentMonthSodaCount, $currentMonthSnackCount, $currentMonthSodaCashOnlyCount, $currentMonthSnackCashOnlyCount );
     
     echo "</div>";
     
-    function printNewBillMonth( $db, $itemType, $userID, $currentMonthLabel,
+    function printNewBillMonth( $db, $userID, $currentMonthLabel,
                 $currentMonthSodaTotal, $currentMonthSnackTotal, $currentMonthSodaCashOnlyTotal, $currentMonthSnackCashOnlyTotal,
                 $currentMonthSodaCount, $currentMonthSnackCount, $currentMonthSodaCashOnlyCount, $currentMonthSnackCashOnlyCount ) {
         
@@ -191,16 +190,18 @@
         }
         
         if( $currentMonthSodaCashOnlyCount > 0 ) {
-            echo "<div style='padding:10px;'><b>Cash-Only Soda ($currentMonthSodaCashOnlyCount items):</b> $" . number_format($currentMonthSodaCashOnlyTotal, 2) . " (already paid)</div>";
+            echo "<div style='padding:10px; color:#297547;'><b>Cash-Only Soda ($currentMonthSodaCashOnlyCount items):</b> $" . number_format($currentMonthSodaCashOnlyTotal, 2) . " (already paid)</div>";
         }
         
         if( $currentMonthSnackCashOnlyCount > 0 ) {
-            echo "<div style='padding:10px;'><b>Cash-Only Snacks ($currentMonthSnackCashOnlyCount items):</b> $" . number_format($currentMonthSnackCashOnlyTotal, 2) . " (already paid)</div>";
+            echo "<div style='padding:10px; color:#297547;'><b>Cash-Only Snacks ($currentMonthSnackCashOnlyCount items):</b> $" . number_format($currentMonthSnackCashOnlyTotal, 2) . " (already paid)</div>";
         }
         
         $totalPurchased = $currentMonthSodaTotal + $currentMonthSnackTotal;
+        $totalPurchasedCashOnly = $currentMonthSodaCashOnlyTotal + $currentMonthSnackCashOnlyTotal;
         
-        echo "<div style='margin-top:20px; padding:5px; font-size:1.1em;'><b>Total Balance:</b> $" . number_format($totalPurchased, 2) . "</div>";
+        echo "<div style='margin-top:20px; padding:5px; font-size:1.1em;'><b>Site Total Balance:</b> $" . number_format($totalPurchased, 2) . "</div>";
+        echo "<div style='padding:5px; font-size:1.1em; color:#297547;'><b>Cash-Only Total Balance (already paid):</b> $" . number_format($totalPurchasedCashOnly, 2) . "</div>";
         
         echo "</td>";
         

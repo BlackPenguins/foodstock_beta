@@ -27,6 +27,7 @@
         } else {
             
             echo "<a style='text-decoration:none;' href='requests.php'><span class='nav_buttons nav_buttons_requests'>Requests</span></a>";
+            echo "<a style='text-decoration:none;' href='stats.php'><span class='nav_buttons nav_buttons_stats'>Stats</span></a>";
             
             if( $isLoggedInAdmin ) {
                 echo "<a style='text-decoration:none;' href='admin_x25.php'><span class='nav_buttons nav_buttons_admin'>Administration</span></a>";
@@ -36,7 +37,7 @@
             echo "&nbsp;";
             echo "<a href='purchase_history.php?type=Snack'><span class='nav_buttons nav_buttons_snack'>Snack Balance: $" .  number_format($_SESSION['SnackBalance'], 2) . "</span></a>";
             echo "&nbsp;";
-            echo "<a href='billing.php?type=Snack'><span class='nav_buttons nav_buttons_billing'>Billing</span></a>";
+            echo "<a href='billing.php'><span class='nav_buttons nav_buttons_billing'>Billing</span></a>";
             echo "</span>";
         }
         

@@ -49,8 +49,13 @@ if(isset($_POST['Purchase'])) {
             $itemType = $row['Type'];
 
             if( $shelfQuantity - 1 <= -1 ) {
-                $errors .= "Not enough " . $itemName . " in stock. Purchase Cancelled.\\n";
+                $errors .= "Not enough " . $itemName . " in stock. Purchase of THAT ITEM cancelled. Contact Matt.\\n";
             } else {
+                
+                if( $shelfQuantity - 1 == 0 ) {
+                    sendSlackMessageToMatt( "*Item Name:* " . $itemName . "\n*Buyer:* " . $_SESSION['UserName'], ":negative_squared_cross_mark:", "OUT OF STOCK BY PURCHASE", "#791414" );
+                }
+                
                 $date = date('Y-m-d H:i:s', time());
                 $totalPrice += $itemPrice;
 
@@ -75,6 +80,9 @@ if(isset($_POST['Purchase'])) {
                 $purchaseMessage = $purchaseMessage . "- " . $itemName . " ($" . number_format($itemPrice, 2) . ")\n";
             }
         }
+        
+        $totalPrice = round( $totalPrice, 2 );
+        $totalSavings = round( $totalSavings, 2);
 
         if( !$cashOnly ) {
             $typeOfBalance = $itemType . "Balance";
@@ -96,17 +104,17 @@ if(isset($_POST['Purchase'])) {
         }
 
         if( $_SESSION["SlackID"] == "" ) {
-            sendSlackMessageToMatt( "Failed to send notification for " . $_SESSION['UserName'] . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!" );
+            sendSlackMessageToMatt( "Failed to send notification for " . $_SESSION['UserName'] . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
         } else {
-            sendSlackMessageToUser( $_SESSION["SlackID"],  $purchaseMessage , ":shopping_trolley:" , $itemType . "Stock - RECEIPT" );
+            sendSlackMessageToUser( $_SESSION["SlackID"],  $purchaseMessage , ":shopping_trolley:" , $itemType . "Stock - RECEIPT", "#3f5abb" );
         }
 
-        sendSlackMessageToMatt( "*(" . strtoupper($_SESSION['UserName']) . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT" );
+        sendSlackMessageToMatt( "*(" . strtoupper($_SESSION['UserName']) . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb" );
 
         if( $errors != "" ) {
             error_log( "ERROR: [" . $_SESSION['UserID'] . "]" . $errors );
             $userMessage = "Something went wrong - contact Matt!! " . $errors;
-            sendSlackMessageToMatt( "Errors: " . $errors, ":no_entry:", $itemType . "Stock - ERROR!!" );
+            sendSlackMessageToMatt( "Errors: " . $errors, ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
         }
     }
 
@@ -120,12 +128,12 @@ if(isset($_POST['Purchase'])) {
     $slackID = $_SESSION['SlackID'];
         
     if( $slackID == "" ) {
-        sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!"  );
+        sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f"  );
     } else {
-        sendSlackMessageToUser( $slackID,  "*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED" );
+        sendSlackMessageToUser( $slackID,  "*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED", "#863fbb" );
     }
 
-    sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED" );
+    sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED", "#863fbb" );
 
     $db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType) VALUES($userID, '$itemName', '$date', '$note', '$itemType')");
 
@@ -160,12 +168,13 @@ if(isset($_POST['Purchase'])) {
             $thumbURL = trim($_POST["EditThumbURL" . $itemType]);
             $unitName = trim($_POST["EditUnitName" . $itemType]);
             $unitNamePlural = trim($_POST["EditUnitNamePlural" . $itemType]);
+            $alias = trim($_POST["EditAlias" . $itemType]);
             $status = trim($_POST["EditStatus" . $itemType]);
     
             error_log("Status: " . $status );
             $retired = $status == "active" ? 0 : 1;
     
-            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName', UnitNamePlural = '$unitNamePlural'  where ID = $id";
+            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias' where ID = $id";
             error_log("Edit Item Query: [" . $editItemQuery . "]" );
             $db->exec( $editItemQuery );
     
@@ -253,14 +262,12 @@ if(isset($_POST['Purchase'])) {
                     error_log( "Reduced Snack balance [" . $newSnackBalance . "] is [" . $snackBalance . " - " . $snackAmount . "]" );
                     
                     if( $slackID == "" ) {
-                        sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!");
+                        sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!", "#bb3f3f");
                     } else {
-                        sendSlackMessageToUser( $slackID,  "Soda Payment: *$" . number_format($sodaAmount,2) . "*\nYour Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nYour Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "FoodStock - PAYMENT RECEIVED" );
+                        sendSlackMessageToUser( $slackID,  "Soda Payment: *$" . number_format($sodaAmount,2) . "*\nYour Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nYour Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
                     }
-    
-                   
-                            
-                    sendSlackMessageToMatt(   "*(" . strtoupper($username) . ")*\nSoda Payment: *$" . number_format($sodaAmount,2) . "*\nTheir Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nTheir Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "FoodStock - PAYMENT RECEIVED" );
+                    
+                    sendSlackMessageToMatt(   "*(" . strtoupper($username) . ")*\nSoda Payment: *$" . number_format($sodaAmount,2) . "*\nTheir Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nTheir Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
                 }
             }
     
@@ -269,8 +276,8 @@ if(isset($_POST['Purchase'])) {
                 $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $snackAmount, '$date', '$note', 'Snack', '$paymentMonth')");
     
                 if( $isUserPayment ) {
-                    $db->exec("UPDATE User SET SodaBalance = SodaBalance - $sodaAmount where UserID = $userID");
-                    $db->exec("UPDATE User SET SnackBalance = SnackBalance - $snackAmount where UserID = $userID");
+                    $db->exec("UPDATE User SET SodaBalance = SodaBalance - " . round($sodaAmount, 2) . " where UserID = $userID");
+                    $db->exec("UPDATE User SET SnackBalance = SnackBalance - " . round($snackAmount, 2) . " where UserID = $userID");
                 }
     
                 $db->exec("UPDATE Information SET ProfitActual = ProfitActual + $sodaAmount where ItemType = 'Soda'");

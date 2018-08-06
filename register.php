@@ -45,7 +45,7 @@
                     $db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance, SodaSavings, SnackSavings) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00, 0.00, 0.00)");
                     $userMessage = "Registration complete! User <b>$username</b> has been created.";
                     
-                    sendSlackMessageToMatt( "*User Name:* " . $username . "\n*Name:* " . $firstName . " " . $lastName, ":busts_in_silhouette:", "NEW USER" );
+                    sendSlackMessageToMatt( "*User Name:* " . $username . "\n*Name:* " . $firstName . " " . $lastName, ":busts_in_silhouette:", "NEW USER", "#b7ab1a" );
                 }
             }
         }

@@ -1,18 +1,76 @@
 <?php
 include( 'session_functions.php');
 
-function sendSlackMessageToMatt( $slackMessage, $emoji, $botName ) {
-    sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
+function sendSlackMessageToMatt( $slackMessage, $emoji, $botName, $color ) {
+        sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, $color );
+//     sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
 }
 
-function sendSlackMessageToUser( $slackID, $slackMessage, $emoji, $botName ) {
-    sendSlackMessagePOST( "@" . $slackID, $emoji, $botName, $slackMessage );
+function sendSlackMessageToUser( $slackID, $slackMessage, $emoji, $botName, $color ) {
+    sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color );
+//     sendSlackMessagePOST( "@" . $slackID, $emoji, $botName, $slackMessage );
 }
 
 function sendSlackMessageToRandom( $slackMessage, $emoji, $botName ) {
     sendSlackMessagePOST( "#random", $emoji, $botName, $slackMessage );
 }
 
+
+function sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color  ){
+    if( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) {
+        $slackMessage = "`[TEST SERVER]`\n" . $slackMessage;
+    }
+    
+    $response = sendRequestToSlack( "https://slack.com/api/im.open?user=" . $slackID );
+    $responseJSON = json_decode( $response );
+    $sessionID = $responseJSON->channel->id;
+    
+    $attachmentParams = array([
+            "fallback" => $slackMessage,
+            "text" => $slackMessage,
+            "color" => $color,
+            "mrkdwn_in" => "[\"text\"]"
+            ]);
+     
+     
+    $slackIcon = urlencode( $emoji );
+    $botName = urlencode( $botName );
+    $attachmentEncoded = urlencode( json_encode( $attachmentParams ) );
+     
+    error_log( "Slack: [" . $slackIcon . "]" );
+    error_log( "Bot Name: [" .  $botName . "]" );
+    error_log( "Attachment: [" . $attachmentEncoded . "]" );
+     
+    $chatMessage = "https://slack.com/api/chat.postMessage?as_user=false&username=" . $botName . "&attachments=" . $attachmentEncoded . "&icon_emoji=" . $slackIcon . "&channel=" . $sessionID;
+     
+    $response = sendRequestToSlack( $chatMessage );
+    error_log("Message [" .  $response . "]" );
+}
+
+function sendRequestToSlack( $url ) {
+    $token = "xoxb-49480869793-411237841957-D8mSfnFpcTzLgj0tFAWqHdZ9";
+    $finalURL = $url . "&token=" . $token;
+
+    // open connection
+    $ch = curl_init();
+    
+    error_log(" URL: [" . $finalURL . "]" );
+    
+    // set the url, number of POST vars, POST data
+    curl_setopt($ch, CURLOPT_URL, $finalURL);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    // execute post
+    $result = curl_exec($ch);
+    
+    error_log( "RESULT [" . $result . "]" );
+    // close connection
+    curl_close($ch);
+    
+    return $result;
+}
+
+// DEPRECATED!!!
 function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
     
     if( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) {
@@ -51,8 +109,39 @@ function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
 }
 
 function DisplayPaymentMethods() {
-    echo "<div style='margin:10px; padding:5px;'>";
-    echo "<span style='float:left; '><span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span> <img style='width:34px; margin-right:5px;' title='Square Cash App' src='images/square_cash.png'/><img style='width:35px; margin-right:5px;' title='Venmo App' src='images/venmo.png'/><img style='width:37px; margin-right:5px;' title=\"Seriously needed a hover-text for this?  It's PayPal.\" src='images/paypal.png'/><img style='width:30px; margin-right:5px;' title='Send through Facebook' src='images/facebook.png'/> <span style='font-size:0.8em; vertical-align:super;'>(or suggest something else)</span></span>";
+    echo "<div style='margin:10px 15px; padding:5px; width: 95%;'>";
+    echo "<div style='background-color: #bd7949; padding:5px; border-top: 3px solid #000; border-right: 3px solid #000; border-left: 3px solid #000; border-bottom: 2px solid #000; '>";
+    echo "<span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span>"; 
+    echo "</div>";
+    
+    echo "<div style='padding: 10px; display:flex; align-items:stretch; font-weight:bold; background-color: #d89465; border-right: 3px solid #000; border-left: 3px solid #000; border-bottom: 3px solid #000;'>";
+    
+    $flexCSS = "padding:5px; border: 2px dashed #c16a2c; display:flex; align-items:center; margin:0px 10px;";
+    echo "<span style='$flexCSS'>";
+    echo "<img style='width:34px; margin-right:5px;' title='Square Cash App' src='images/square_cash.png'/> \$mtm4440";
+    echo "</span>";
+    
+    echo "<span style='$flexCSS'>";
+    echo "<img style='width:35px; margin-right:5px;' title='Venmo App' src='images/venmo.png'/> @Matt-Miles-17";
+    echo "</span>";
+    
+    echo "<span style='$flexCSS'>";
+    echo "<img style='width:37px; margin-right:5px;' title=\"Seriously needed a hover-text for this?  It's PayPal.\" src='images/paypal.png'/> lightwave365@yahoo.com";
+    echo "</span>";
+    
+    echo "<span style='$flexCSS'>";
+    echo "<img style='width:30px; margin-right:5px;' title='Send through Facebook' src='images/facebook.png'/>  mattmiles17";
+    echo "</span>";
+    
+    echo "<span style='$flexCSS'>";
+    echo "<img style='width:30px; margin-right:5px;' title='Cash in Hand' src='images/cash_in_hand.png'/> Location: My Cube";
+    echo "</span>";
+    
+    echo "<span style='$flexCSS font-size:0.7em;'>";
+    echo "Or you can suggest something else - be a trendsetter.";
+    echo "</span>";
+    
+    echo "</div>";
     echo "</div>";
 }
 

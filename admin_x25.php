@@ -123,7 +123,13 @@
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['UserName'] . "</td>";
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['SlackID'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['PhoneNumber'] . "</td>";
+            $phoneNumber = $row['PhoneNumber'];
+            
+            if( strlen( $phoneNumber ) == 10 ) {
+                $phoneNumber = "(" . substr( $phoneNumber, 0, 3 ) . ") " . substr( $phoneNumber, 3, 3 ) . "-" . substr( $phoneNumber, 6, 4 ); 
+            }
+            
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $phoneNumber . "</td>";
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateCreated']);
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "</td>";
             $sodaBalance = number_format($row['SodaBalance'], 2);

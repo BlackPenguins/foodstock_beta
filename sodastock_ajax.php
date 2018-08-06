@@ -20,14 +20,14 @@
         $nameQuery = "";
 
         if( $itemSearch != "" ) {
-            $nameQuery = " AND Name Like '%" . $itemSearch . "%' ";
+            $nameQuery = " AND ( Name Like '%" . $itemSearch . "%' OR Alias Like '%" . $itemSearch . "%')";
         }
         
         $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
         
         if( IsLoggedIn() ) {
             // Sort by user preference
-            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] . " AND p.ItemID = i.ID) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Frequency DESC, Retired, BackstockQuantity DESC, ShelfQuantity DESC"; 
+            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] . " AND p.ItemID = i.ID) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Frequency DESC, Retired, ShelfQuantity DESC, BackstockQuantity DESC"; 
         }
         
         $results = $db->query($cardQuery);
@@ -76,13 +76,36 @@
             $db->exec( "UPDATE Requests set Completed = 1 WHERE ID = " . $requestID );
         }
     }
+    else if( $type == "NotifyUserOfPayment" ) {
+        $results = $db->query("SELECT UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User WHERE SodaBalance > 0.0 OR SnackBalance > 0.0" );
+        error_log( "Notifying Users..." );
+        
+        while ($row = $results->fetchArray()) {
+            $userName = $row['UserName'];
+            $slackID = $row['SlackID'];
+            $name = $row["FirstName"] . " " . $row['LastName'];
+            
+            $sodaBalance = round( $row['SodaBalance'], 2);
+            $snackBalance = round( $row['SnackBalance'], 2);
+            
+            $totalBalance = round( $sodaBalance + $snackBalance, 2);
+            
+            $slackMessage = "Good morning, $name! It's the first of the month. Here is your FoodStock Balance for the previous month:\n" .
+                    "*_Soda Balance:_* $" . number_format( $sodaBalance, 2) . "\n" .
+                    "*_Snack Balance:_* $" . number_format( $snackBalance, 2) . "\n\n" .
+                    "*Total Balance Owed:* $" . number_format( $totalBalance, 2) . "\n\n" .
+                    "You can view more details on the <http://penguinore.net/billing.php|Billing Page>. Have a great day! :grin:";
+            
+            sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a" );
+        }
+    }
     else if( $type == "OutOfStockRequest" ) {
         $itemID = $_POST['itemID'];
         $itemName = $_POST['itemName'];
         $reporter = $_POST['reporter'];
         $date = date('Y-m-d H:i:s', time());
         $db->exec( "UPDATE Item set OutOfStock = 1, OutOfStockDate = '$date', OutOfStockReporter = '$reporter' WHERE ID = $itemID" );
-        sendSlackMessageToMatt( "*Item Name:* " . $itemName . "\n*Reporter:* " . $reporter, ":negative_squared_cross_mark:", "OUT OF STOCK REPORT" );
+        sendSlackMessageToMatt( "*Item Name:* " . $itemName . "\n*Reporter:* " . $reporter, ":negative_squared_cross_mark:", "OUT OF STOCK REPORT", "#791414" );
     }
     else if($type == "DrawCart" )
     {

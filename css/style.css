@@ -47,6 +47,13 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
     background-color: #7c24b3;
 }
 
+.nav_buttons_stats:hover {
+    background-color: #d69d6c;
+}
+.nav_buttons_stats {
+    background-color: #b96925;
+}
+
 .nav_buttons_billing:hover {
     background-color: #70d682;
 }

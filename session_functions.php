@@ -99,7 +99,7 @@ function TrackVisit($db, $title){
     $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ipAddress', '$date', '$agent')");
     
     if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
-        sendSlackMessageToMatt($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SodaStock - VISIT NEW" );
+        sendSlackMessageToMatt($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SITE VISIT", "#22d6bd" );
     }
 }
 ?>

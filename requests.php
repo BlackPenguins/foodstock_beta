@@ -76,7 +76,9 @@
     TrackVisit($db, 'Requests');
     
         echo "<div style='padding: 10px; background-color:#d03030; border-bottom: 3px solid #000;'>";
-        echo "<button style='padding:5px; margin:0px 5px;' id='request_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack & Soda  &nbsp;&nbsp;|&nbsp;&nbsp;  Request Feature  &nbsp;&nbsp;|&nbsp;&nbsp;  Report Bug</button>";
+        echo "<button style='padding:5px; margin:0px 5px;' id='request_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack or Soda</button>";
+        echo "<button style='padding:5px; margin:0px 5px;' id='request_feature_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Feature</button>";
+        echo "<button style='padding:5px; margin:0px 5px;' id='report_bug_button' class='item_button ui-button ui-widget-content ui-corner-all'>Report Bug</button>";
         echo "</div>";
         
         // ------------------------------------
@@ -85,12 +87,11 @@
         $itemType_options = "";
         $itemType_options = $itemType_options . "<option value='Soda'>Soda</option>";
         $itemType_options = $itemType_options . "<option value='Snack'>Snack</option>";
-        $itemType_options = $itemType_options . "<option value='Feature'>Feature Request</option>";
-        $itemType_options = $itemType_options . "<option value='Bug'>Bug Report</option>";
+        
         $itemType_dropdown = "<select id='ItemTypeDropdown_Request' name='ItemTypeDropdown_Request' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$itemType_options</select>";
             
-        echo "<div id='request' title='Request' style='display:none;'>";
-        echo "<form id='request_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
+        echo "<div id='request_item' title='Request Item' style='display:none;'>";
+        echo "<form id='request_item_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
         echo "<fieldset>";
         echo "<label style='padding:5px 0px;' for='ItemTypeDropdown_Request'>Type</label>";
         echo $itemType_dropdown;
@@ -102,6 +103,34 @@
         echo "<input type='hidden' name='Request' value='Request'/><br>";
         echo "<input type='hidden' name='redirectURL' value='requests.php'/><br>";
     
+        echo "</fieldset>";
+        echo "</form>";
+        echo "</div>";
+        
+        echo "<div id='request_feature' title='Request Feature' style='display:none;'>";
+        echo "<form id='request_feature_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
+        echo "<fieldset>";
+        echo "<label style='padding:5px 0px;' for='ItemName_Request'>Item</label>";
+        echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
+        
+        echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Feature'/><br>";
+        echo "<input type='hidden' name='Request' value='Request'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='requests.php'/><br>";
+        
+        echo "</fieldset>";
+        echo "</form>";
+        echo "</div>";
+        
+        echo "<div id='report_bug' title='Report Bug' style='display:none;'>";
+        echo "<form id='report_bug_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
+        echo "<fieldset>";
+        echo "<label style='padding:5px 0px;' for='ItemName_Request'>Item</label>";
+        echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
+        
+        echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Bug'/><br>";
+        echo "<input type='hidden' name='Request' value='Request'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='requests.php'/><br>";
+        
         echo "</fieldset>";
         echo "</form>";
         echo "</div>";
@@ -128,7 +157,7 @@
             
             echo "</tr></thead>";
             
-            $results = $db->query("SELECT r.ID, r.Completed, u.FirstName, u.LastName, r.ItemName, r.ItemType, r.Date, r.Note  FROM REQUESTS r JOIN User u ON r.UserID = u.UserID WHERE r.ItemType in (" . $type . ") ORDER BY r.Date DESC");
+            $results = $db->query("SELECT r.ID, r.Completed, u.FirstName, u.LastName, r.ItemName, r.ItemType, r.Date, r.Note  FROM REQUESTS r JOIN User u ON r.UserID = u.UserID WHERE r.ItemType in (" . $type . ") ORDER BY Completed ASC, r.Date DESC");
             while ($row = $results->fetchArray()) {
                 echo "<tr>";
             

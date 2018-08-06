@@ -130,7 +130,7 @@
         
         function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
             // Build Item Dropdown
-            $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
+            $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
             $item_options = "";
             $item_options_no_discontinued = "";
             $item_info = "";
@@ -145,6 +145,7 @@
                 $item_thumbURL = $row['ThumbURL'];
                 $item_unit_name = $row['UnitName'];
                 $item_unit_name_plural = $row['UnitNamePlural'];
+                $item_alias = $row['Alias'];
                 if(strlen($item_name) > 30) {
                     $item_name = substr($item_name, 0, 30)."...";
                 }
@@ -167,6 +168,7 @@
                 "<input type='hidden' id='Item_" . $itemType . "_ThumbURL_$item_id' value='$item_thumbURL'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_UnitName_$item_id' value='$item_unit_name'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_UnitNamePlural_$item_id' value='$item_unit_name_plural'/>" .
+                "<input type='hidden' id='Item_" . $itemType . "_Alias_$item_id' value='$item_alias'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_Retired_$item_id' value='$item_retired'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_ChartColor_$item_id' value='$item_chart_color'/>";
             }
@@ -211,6 +213,7 @@
             $editThumbURLID = "EditThumbURL" . $itemType;
             $editUnitNameID = "EditUnitName" . $itemType;
             $editUnitNamePluralID = "EditUnitNamePlural" . $itemType;
+            $editAliasID = "EditAlias" . $itemType;
             $editActiveID = "EditStatusActive" . $itemType;
             $editDiscontinuedID = "EditStatusDiscontinued" . $itemType;
             $editStatusID = "EditStatus" . $itemType;
@@ -236,6 +239,8 @@
             echo "<input id='$editUnitNameID' name='$editUnitNameID' class='text ui-widget-content ui-corner-all'>";
             echo "<label style='padding:5px 0px;' for='UnitNamePlural'>Unit Name (plural)</label>";
             echo "<input id='$editUnitNamePluralID' name='$editUnitNamePluralID' class='text ui-widget-content ui-corner-all'>";
+            echo "<label style='padding:5px 0px;' for='Alias'>Alias</label>";
+            echo "<input id='$editAliasID' name='$editAliasID' class='text ui-widget-content ui-corner-all'>";
             echo "<div class='radio_status'>";
             echo "<input class='radio' type='radio' id='$editActiveID' name='$editStatusID' value='active' checked />";
             echo "<label for='$editActiveID'>Active</label>";
@@ -294,7 +299,7 @@
                 
             echo "</tr>";
                 
-                $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, Price, ID FROM Item WHERE NOT Retired = 1 AND Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY Name asc, Retired");
+                $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, Price, ID FROM Item WHERE NOT Retired = 1 AND Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY ShelfQuantity DESC, Name asc, Retired");
             $tabIndex = 1;
             while ($row = $results->fetchArray()) {
                         $item_name = $row['Name'];
@@ -391,6 +396,7 @@ function setItemInfo( type ) {
     var itemImageURL = $('#Item_' + type + '_ImageURL_' + itemID).val();
     var itemUnitName = $('#Item_' + type + '_UnitName_' + itemID).val();
     var itemUnitNamePlural = $('#Item_' + type + '_UnitNamePlural_' + itemID).val();
+    var itemAlias = $('#Item_' + type + '_Alias_' + itemID).val();
     var itemThumbURL = $('#Item_' + type + '_ThumbURL_' + itemID).val();
     var itemChartColor = $('#Item_' + type + '_ChartColor_' + itemID).val();
     var itemRetired = $('#Item_' + type + '_Retired_' + itemID).val();
@@ -403,6 +409,7 @@ function setItemInfo( type ) {
     $("#EditThumbURL" + type).val(itemThumbURL);
     $("#EditUnitName" + type).val(itemUnitName);
     $("#EditUnitNamePlural" + type).val(itemUnitNamePlural);
+    $("#EditAlias" + type).val(itemAlias);
     $("#EditChartColor + type").val(itemChartColor);
     
     if( itemRetired == 0 ) {

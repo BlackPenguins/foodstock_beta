@@ -183,7 +183,7 @@ include("exec_sql.php");
 // ------------------------------------
 // FANCY ITEM TABLE
 // ------------------------------------
-echo "<div style='margin-bottom:20px;'>";
+echo "<div style='margin-bottom:20px; margin-left:5px;'>";
 
 if( !$isMobile ) {
     echo "<span><b><a href='http://penguinore.net/sodastock.php'>Bookmark Us! Tell your friends!</a></b><br><span style='font-size:10px;'>Only the ones at RSA because I'm not selling this anywhere else.</span></span>";
@@ -198,7 +198,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 4.8 (July 29th, 2018)";
+    $version = "Version 4.9 (August 5th, 2018)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -211,8 +211,8 @@ if(!$isMobile) {
     $firstDay = $row['FirstDay'];
 
     echo "<div style='margin: auto;'>";
-    echo "<div>";
-    echo "<a href='#change_log'><span style='color:#000000; background-color:#ffc782; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
+    echo "<div style='margin-left:5px;'>";
+    echo "<a href='#change_log'><span style='color:#000000; font-weight:bold; background-color:#82d7ff; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
     if( $isLoggedInAdmin ) {
         echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Income (Calculated):</b> $". number_format($total_income, 2)."</span>";
         echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Profit (Calculated):</b> $". number_format($total_profit, 2)."</span>";
@@ -230,7 +230,7 @@ if(!$isMobile) {
     echo "<span style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px dashed;'><b>Days Active: </b>". $days_ago ." days</span>";
     echo "</div>";
     
-    echo "<div style='margin-left:269px; margin-top:12px;'>";
+    echo "<div style='margin-left:274px; margin-top:12px;'>";
     
     if( $isLoggedInAdmin ) {
         echo "<span style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px dashed;'><b>Income (by Payments):</b> $". number_format($total_income_actual, 2)."</span>";
@@ -243,7 +243,13 @@ if(!$isMobile) {
 }
 
 echo "<div id='cart_area' style='margin:20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
-echo "Remember to <u>pick up your product first</u> and have it physically in your hand before you buy on the website to avoid 'concurrency issues'.<br>Discounted prices are only available when you buy through the site.";
+echo "<div style='display:flex; align-items:center;'>";
+echo "<img width='40px' src='images/handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
+echo "</div>";
+
+echo "<div style='display:flex; align-items:center;'>";
+echo "<img width='40px' src='images/sale.png'/>&nbsp;Discounted prices are only available when you buy through the site.";
+echo "</div>";
 echo "</div>";
     
 if( !$isMobile && $itemType != "Snack" ) {
@@ -285,6 +291,7 @@ if( !$isMobile) {
 
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
+    echo "<li><b>Aug 5, 2018:</b> Added FoodStockBot. Show cash-only totals in Billing (Ryan ask). Added 'Alias' for items (people couldn't find the Spicy Snacks). Redesigned 'Methods of Payment' section with accounts. Divided request modals into 3 separate modal/buttons. Sort requests by completion. Added the start of the stats page. Slack notifications when item inventory reaches zero (Nick ask). Attempted to fix rounding issues with negative $0 balances. ADMIN: Sorted inventory by quantity, added bot automatically notifying all users of payment owed at first of month, formatted phone numbers.</li>";
     echo "<li><b>Jul 29, 2018:</b> Reorganized directories and resources. Divided up Admin into separate pages. Fixed massive income bugs and miscountings.</li>";
     echo "<li><b>Jul 2, 2018:</b> Fixed many security vulnerabilities (thanks to Joe Guest for finding those). Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron). Added more slack notifications: new users and out of stock. Added plural unit name DB column (english language sucks).</li>";
     echo "<li><b>Jul 1, 2018:</b> Redesigned the Billing page so it's easier to read and combined the soda and snack into one page. Marked the quantity of item with warning icon if someone reported it as out of stock. Added billing to top bar, removed it from Purchase History page. Divided purchase history by weeks, added day of week to date, labeled 'Cash-Only' purchases. Admin: Created dropdown for 'Method' and added 'Payment Month' to payment form.</li>";
