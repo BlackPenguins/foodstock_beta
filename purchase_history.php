@@ -79,7 +79,7 @@
     $totalSavings = 0.0;
     $totalBalance = 0.0;
     
-    $results = $db->query("SELECT p.Cost, p.DiscountCost FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND i.Type='$itemType'");
+    $results = $db->query("SELECT p.Cost, p.DiscountCost FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND i.Type='$itemType' AND Cancelled IS NULL");
     while ($row = $results->fetchArray()) {
         
         if( $row['DiscountCost'] != "" ) {
@@ -109,7 +109,7 @@
     
     $rowClass = "odd";
     
-    $results = $db->query("SELECT i.Name, p.Cost, p.DiscountCost, p.Date, p.UserID, p.CashOnly FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND i.Type='$itemType' ORDER BY p.Date DESC");
+    $results = $db->query("SELECT i.Name, p.Cancelled, p.Cost, p.DiscountCost, p.Date, p.UserID, p.CashOnly FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND i.Type='$itemType' ORDER BY p.Date DESC");
     $currentWeek = "";
     while ($row = $results->fetchArray()) {
         $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
@@ -130,17 +130,26 @@
                 $currentWeek = $weekOfPurchase;
             }
         }
+        $isCancelled = $row['Cancelled'] === 1;
+        $itemName = $row['Name'];
+        $discountAmountDisplay = "$" . number_format($row['DiscountCost'],2);
+        $costAmountDisplay = "$" . number_format($row['Cost'], 2);
         
+        if( $isCancelled ) {
+            $rowClass = "discontinued_row";
+            $discountAmountDisplay .= " (REFUNDED)";
+            $costAmountDisplay .= " (REFUNDED)";
+        }
         
         echo "<tr class='$rowClass'>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
+        echo "<td style='padding:5px; border:1px #000 solid;'>" . $itemName . "</td>";
         
         $costDisplay = "";
         
         if( $row['DiscountCost'] != "" ) {
-            $costDisplay = "<span class='red_price'>$" . number_format($row['Cost'], 2) . "</span> $" . number_format($row['DiscountCost'],2);
+            $costDisplay = "<span class='red_price'>$" . number_format($row['Cost'], 2) . "</span>" . $discountAmountDisplay;
         } else {
-            $costDisplay = "$" . number_format($row['Cost'], 2);
+            $costDisplay = $costAmountDisplay;
         }
         
         if( $row['CashOnly'] == 1 ) {

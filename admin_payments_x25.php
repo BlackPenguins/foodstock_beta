@@ -31,9 +31,6 @@
     echo "<link rel='icon' type='image/png' href='soda_can_icon.png' />";
 ?>
 
-
-
-
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
@@ -70,6 +67,21 @@
 
             $.post("sodastock_ajax.php", { 
                 type:'NotifyUserOfPayment',
+            },function(data) {
+                // Do nothing right now
+            });
+        }
+    }
+
+    function cancelPayment(paymentID, name, month) {
+        $isAlert = confirm('Are you sure that you want cancel payment for ' + name + ' - ' + month + '?');
+        
+        if ( $isAlert ) {
+            alert("Payment cancelled.");
+
+            $.post("sodastock_ajax.php", { 
+                type:'CancelPayment',
+                PaymentID:paymentID,
             },function(data) {
                 // Do nothing right now
             });
@@ -155,6 +167,63 @@
         
             echo "</table>";
         echo "</span>";
+        
+        // ------------------------------------
+        // PAYMENT TABLE
+        // ------------------------------------
+        echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Payments</span></span>";
+        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
+        echo "<thead><tr class='table_header'>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>&nbsp;</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Payment Month</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Amount</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Method</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Type</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Note</th>";
+        
+        echo "</tr></thead>";
+        
+        $rowClass = "odd";
+        $previousDate = "";
+        
+        $results = $db->query("SELECT p.PaymentID, u.FirstName, u.LastName, p.Cancelled, p.Method, p.Amount, p.Date, p.Note, p.ItemType, p.MonthForPayment FROM Payments p LEFT JOIN User u on p.UserID = u.UserID WHERE p.Date >= date('now','-12 months') ORDER BY p.Date DESC");
+        while ($row = $results->fetchArray()) {
+        
+            if( $previousDate != "" && $previousDate != $row['Date'] ) {
+                if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
+            }
+        
+            $name = $row['FirstName'] . " " . $row['LastName'];
+        
+            $paymentID = $row['PaymentID'];
+            $method = $row['Method'];
+            $amount = $row['Amount'];
+            $date = $row['Date'];
+            $note = $row['Note'];
+            $cancelled = $row['Cancelled'];
+            $itemType = $row['ItemType'];
+            $paymentMonth = $row['MonthForPayment'];
+            $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
+
+            echo "<tr class='$rowClass'>";
+            if( $cancelled !=  1 ) {
+                echo "<td style='padding:5px; border:1px #000 solid;'><span onclick='cancelPayment($paymentID, \"$name\", \"$paymentMonth\");' class='nav_buttons nav_buttons_snack'>Cancel Payment</span></td>";
+            } else {
+                echo "<td style='padding:5px; border:1px #000 solid;'>Cancelled</td>";
+            }
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $name . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $paymentMonth . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $amount, 2) . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $method . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $itemType . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $note . "</td>";
+            echo "</tr>";
+        }
+        
+        echo "</table>";
     echo "</span>";
     
     function calculateMonth( $db, $userID, $monthNumber, $year, $monthLabel ) {
@@ -199,9 +268,8 @@
                 }
             }
         }
-        
-         0.0;
-        $results = $db->query("SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel'");
+
+        $results = $db->query("SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND Cancelled != 1");
         $totalPaid = $results->fetchArray()['TotalAmount'];
         $totalPurchases = $currentMonthSodaTotal + $currentMonthSnackTotal;
         $totalUnpaid = round( $totalPurchases - $totalPaid, 2);

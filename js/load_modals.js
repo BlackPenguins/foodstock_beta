@@ -14,9 +14,7 @@ function loadItemModals(type) {
             $('#restock_item_' + type).dialog('open');
              return false;
     });
-    
-    
-    
+
     $("#inventory_" + type + "_button").click( function() {
             $('#inventory_' + type).dialog('open');
              return false;
@@ -111,6 +109,35 @@ function loadItemModals(type) {
                             }
                         }
                     ]
+    });
+}
+
+function loadShoppingModal() {
+    $("#shopping_button").click( function() {
+        $('#shopping').dialog('open');
+         return false;
+    });
+    
+    $( "#shopping" ).dialog( {
+        autoOpen: false, 
+        width: 500,
+        modal: true,
+        buttons: [
+                    {
+                        id: "Shopping_Cancel",
+                        text: "Cancel",
+                        click: function() {
+                            $(this).dialog("close");
+                        } 
+                    },
+                    {
+                        id:"Shopping_Submit",
+                        text: "Add Shopping",
+                        click: function() { 
+                            $("#shopping_form").submit();
+                        }
+                    }
+                ]
     });
 }
 
@@ -257,3 +284,4 @@ function loadUserModals() {
 window.loadItemModals = loadItemModals;
 window.loadSingleModals = loadSingleModals;
 window.loadUserModals = loadUserModals;
+window.loadShoppingModal = loadShoppingModal;

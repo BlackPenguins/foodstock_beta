@@ -290,7 +290,7 @@ function buildTopSection( $row, $location, $isMobile ) {
     }
     
     echo "<div style='width:40%; float:left;'>";
-    DisplayCan($row['Name'], ($cold_item + $warm_item == 0), $row['ImageURL'] );
+    DisplayPreview($row['Name'], ($cold_item + $warm_item == 0), $row['ImageURL'] );
     echo "</div>";
     echo "<div style='width:56%; float:right;'>";
 
@@ -475,7 +475,7 @@ function buildBottomSection($db, $row, $isMobile) {
     }
     
 }
-function DisplayCan($item_name, $soldOut, $imageURL)
+function DisplayPreview($item_name, $soldOut, $imageURL)
 {
         $opacity = "1.0";
 
@@ -484,9 +484,9 @@ function DisplayCan($item_name, $soldOut, $imageURL)
         }
         
         if( $imageURL == "" ) {
-            echo "<div class='vcenter' style='background-color:#212121; font-weight:bold;  word-spacing:200px; height:100%; color:#FFFFFF'><span>".$item_name."</span></div>";
+            echo "<div class='vcenter' style='background-color:#212121; font-weight:bold;  word-spacing:200px; height:200px; color:#FFFFFF'><span>".$item_name."</span></div>";
         } else {
-            echo "<img src='preview_images/normal/$imageURL' style = 'height:100%; max-width:100%; opacity:$opacity' />";
+            echo "<img src='preview_images/normal/$imageURL' style = 'height:200px; max-width:100%; opacity:$opacity' />";
         }
 }
 

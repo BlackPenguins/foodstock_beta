@@ -150,6 +150,22 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
     font-weight: bold;
 }
 
+.bordered_table {
+	border-collapse: collapse;
+	border: 1px solid #000;
+	width: 100%;
+}
+
+.bordered_table tr, .bordered_table th, .bordered_table td {
+	border: 1px solid #000;
+}
+
+.bordered_table td {
+   text-align: center;
+   padding:5px;
+}
+
+
 .warm_item { 
     font-size: 1em; 
     background-color: #FF6464; 
@@ -172,6 +188,13 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
 .income { font-size: 20px; padding: 5px 0px; color:#000; }
 
 .circle { padding:10px; border-radius: 15px; margin-top:30px; margin-bottom:30px; }
+
+.shopping_guide_container {
+	padding:10px;
+	font-size: 2em; 
+    background-color: #f5f766; 
+    border:#98893e dashed 2px;
+}
 
 .soda_body {
     background-color:#7EBAFF;

@@ -138,6 +138,37 @@ if(isset($_POST['Purchase'])) {
     $db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType) VALUES($userID, '$itemName', '$date', '$note', '$itemType')");
 
     $userMessage = "Request submitted successfully.";
+} else if(isset($_POST['Shopping'])) {
+        $itemID = trim($_POST["ItemDropdown"]);
+        $store = trim($_POST["StoreDropdown"]);
+        $date = date('Y-m-d H:i:s');
+        $packQuantity = trim($_POST["PackQuantity"]);
+        $price = trim($_POST["Price"]);
+        $priceType = trim($_POST["PriceType"]);
+        $submitter = trim($_POST["Submitter"]);
+    
+        $regularPrice = "null";
+        $salePrice = "null";
+    
+    
+        if( $priceType == "sale" ) {
+            $salePrice = $price;
+        } else {
+            $regularPrice = $price;
+        }
+    
+        if( $store == "BestProfits" ) {
+            $store = "null";
+            $regularPrice = "null";
+            $salePrice = "null";
+        } else {
+            $store = "'$store'";
+        }
+    
+    
+        $shoppingQuery = "INSERT INTO Shopping_Guide (ItemID, PackQuantity, RegularPrice, SalePrice, Store, User, Date) VALUES($itemID, $packQuantity, $regularPrice, $salePrice, $store, '$submitter', '$date')";
+        error_log("Shopping Query: [" . $shoppingQuery . "]" );
+        $db->exec( $shoppingQuery );
 } else {
     // ------------------------------------
     // HANDLE ADMIN QUERIES

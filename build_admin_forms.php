@@ -1,13 +1,100 @@
 <?php
+        if(!$isLoggedIn) {
+            return;
+        }
+        // ------------------------------------
+        // SHOPPING MODAL - We want Nick to access this form
+        // ------------------------------------
+        // Build Item Dropdown
+        $results = $db->query("SELECT ID, Name, Type FROM Item WHERE Hidden != 1 AND Retired != 1 order by type desc, name asc");
+        $item_options = "";
+        $previousType = "";
+        while ($row = $results->fetchArray()) {
+            $item_id = $row['ID'];
+            $item_name = $row['Name'];
+            $item_type = $row['Type'];
+            
+            if( $item_type != $previousType ) {
+                $previousType = $item_type;
+                $item_options = $item_options . "<option disabled style='font-weight:bold; color: blue;' value='$previousType'>$previousType</option>";
+            }
+            
+            $item_options = $item_options . "<option value='" . $row['ID'] . "'>$item_name</option>";
+            
+        }
+        
+        $results = $db->query("SELECT Store FROM Shopping_Guide Order by Date Desc LIMIT 1");
+        $lastStore = $results->fetchArray()['Store'];
+        
+        if( $lastStore == "" ) { $lastStore = "BestProfits"; }
+        
+        $shopping_item_dropdown = "<select id='ItemDropdown' name='ItemDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options</select>";
+        
+        $stores = array( "Walmart", "Costco", "BJs", "Target", "Aldi", "Wegmans", "PriceRite", "Tops", "BestProfits" );
+        $store_dropdown = "<select id='StoreDropdown' name='StoreDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>";
+        
+        foreach( $stores as $store ) {
+            $selected = "";
+            if( $store == $lastStore ) {
+                $selected = "selected";
+            }
+            
+            
+            if( $store == "BestProfits" ) {
+                if( $isLoggedInAdmin ) {
+                    $store_dropdown = $store_dropdown . "<option $selected value='BestProfits'>( BEST PROFITS )</option>";
+                }
+            } else {
+                $store_dropdown = $store_dropdown ."<option $selected value='$store'>$store</option>";
+            }
+        }
+              
+        $store_dropdown = $store_dropdown ."</select>";
+        
+        echo "<div id='shopping' title='Add Shopping'>";
+        echo "<form id='shopping_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
+        echo "<fieldset>";
+        echo "<label style='padding:5px 0px;' for='ItemDropdown'>Item</label>";
+        echo $shopping_item_dropdown;
+        echo "<label style='padding:5px 0px;' for='StoreDropdown'>Store</label>";
+        echo $store_dropdown;
+        echo "<label style='padding:5px 0px;' for='PackQuantity'>Pack Quantity</label>";
+        echo "<input style='font-size:1.8em;' type='tel' id='PackQuantity' name='PackQuantity' class='text ui-widget-content ui-corner-all'/>";
+        echo "<label style='padding:5px 0px;' for='Price'>Price</label>";
+        echo "<input style='font-size:1.8em;' type='tel' id='Price' name='Price' class='text ui-widget-content ui-corner-all'/>";
+        
+        echo "<div class='radio_status'>";
+        echo "<input class='radio' type='radio' id='RegularPrice' name='PriceType' value='regular' checked />";
+        echo "<label for='RegularPrice'>Regular Price</label>";
+        echo "<input class='radio' type='radio' id='SalePrice' name='PriceType' value='sale' />";
+        echo "<label for='SalePrice'>Sale Price</label>";
+        echo "</div>";
+        
+        echo "<input type='hidden' name='Shopping' value='Shopping'/><br>";
+        echo "<input type='hidden' name='Submitter' value='" . $_SESSION["UserName"] . "'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='admin_shopping_guide_x25.php'/><br>";
+        
+        echo "<input class='ui-button' style='padding:10px;' type='submit' name='Shopping_Submit' value='Add Shopping'/><br>";
+        
+        echo "</fieldset>";
+        echo "</form>";
+        echo "</div>";
+
         if(!$isLoggedInAdmin) {
             return;
         }
         
-        $hideForms = "style='display:none;'";
+        // I want the modals back in the mobile sites
         
-        if( !$isMobile ) {
-                $hideForms = "";
+        if( $url == "admin_shopping_guide.php" ) {
+            $hideForms = "style='display:none;'";
+        } else {
+            $hideForms = "";
         }
+        
+//         if( !$isMobile ) {
+//                 $hideForms = "";
+//         }
 
         $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive, SodaBalance, SnackBalance From User Order By FirstName Asc");
         $user_info = "";
@@ -98,7 +185,7 @@
         echo "</fieldset>";
         echo "</form>";
         echo "</div>";
-        
+
         // ------------------------------------
         // EDIT USER MODAL
         // ------------------------------------

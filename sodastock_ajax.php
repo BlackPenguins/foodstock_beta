@@ -76,6 +76,154 @@
             $db->exec( "UPDATE Requests set Completed = 1 WHERE ID = " . $requestID );
         }
     }
+    
+    else if( $type == "CancelPurchase" ) {
+        $dailyAmountID = trim($_POST["DailyAmountID"]);
+        
+        $results = $db->query("SELECT u.UserName, u.SlackID, p.Cost, p.DiscountCost, p.UserID, i.Type, i.Name, d.ItemID, d.BackstockQuantityBefore, d.BackstockQuantity, d.ShelfQuantityBefore, d.ShelfQuantity, d.Price from Daily_Amount d JOIN Item i on d.ItemID =  i.ID JOIN Purchase_History p on d.ID = p.DailyAmountID JOIN User u on p.UserID = u.UserID WHERE d.ID = $dailyAmountID");
+        $row = $results->fetchArray();
+        
+        $date = date('Y-m-d H:i:s');
+        $itemID = $row['ItemID'];
+        $itemName = $row['Name'];
+        $userID = $row['UserID'];
+        $username = $row['UserName'];
+        $slackID = $row['SlackID'];
+        $itemType = $row['Type'];
+        $backstockBefore = $row['BackstockQuantityBefore'];
+        $backstockAfter= $row['BackstockQuantity'];
+        $shelfBefore = $row['ShelfQuantityBefore'];
+        $shelfAfter= $row['ShelfQuantity'];
+        $price= $row['Cost'];
+        $discountPrice= $row['DiscountCost'];
+        
+        $actualPrice = $discountPrice == 0.0 ? $price : $discountPrice;
+        
+        $savings = round( $price - $discountPrice, 2 );
+        
+        $cancelDailySQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
+        error_log("Cancel Daily Amount SQL: [" . $cancelDailySQL . "]" );
+        $db->exec( $cancelDailySQL );
+        
+        $cancelPurchaseSQL = "UPDATE Purchase_History SET Cancelled = 1 WHERE DailyAmountID = $dailyAmountID";
+        error_log("Cancel SQL: [" . $cancelPurchaseSQL . "]" );
+        $db->exec( $cancelPurchaseSQL );
+        
+        $itemQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity + 1, TotalIncome = TotalIncome - $actualPrice, DateModified = '$date', ModifyType = 'Cancelled' where ID = $itemID";
+        error_log("Item SQL: [" . $itemQuery . "]" );
+        $db->exec( $itemQuery );
+        
+        $infoQuery = "UPDATE Information SET Income = Income - $actualPrice where ItemType = '$itemType'";
+        error_log("Info SQL: [" . $infoQuery . "]" );
+        $db->exec( $infoQuery );
+        
+        $typeOfBalance = $itemType . "Balance";
+        $typeOfSavings = $itemType . "Savings";
+        
+        $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $typeOfBalance - $actualPrice , $typeOfSavings = $typeOfSavings - $savings where UserID = $userID";
+        error_log("Balance Update SQL [" . $balanceUpdateQuery . "]" );
+        $db->exec( $balanceUpdateQuery );
+        
+        $purchaseMessage = $itemName . " (+ $" . number_format($actualPrice, 2) . ")";
+        
+        if( $slackID == "" ) {
+            sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
+        } else {
+            sendSlackMessageToUser($slackID,  $purchaseMessage , ":money_mouth_face:" , $itemType . "Stock - REFUND", "#3f5abb" );
+        }
+        
+        sendSlackMessageToMatt( "*(" . $username . ")*\n" . $purchaseMessage, ":money_mouth_face:", $itemType . "Stock - REFUND", "#3f5abb" );
+    }
+    else if( $type == "CancelInventory" ) {
+        $dailyAmountID = trim($_POST["DailyAmountID"]);
+        
+        $results = $db->query("SELECT i.Type, d.ItemID, d.BackstockQuantityBefore, d.BackstockQuantity, d.ShelfQuantityBefore, d.ShelfQuantity, d.Price from Daily_Amount d JOIN Item i on d.ItemID =  i.ID WHERE d.ID = $dailyAmountID");
+        $row = $results->fetchArray();
+        
+        $date = date('Y-m-d H:i:s');
+        $itemID = $row['ItemID'];
+        $itemType = $row['Type'];
+        $backstockBefore = $row['BackstockQuantityBefore'];
+        $backstockAfter= $row['BackstockQuantity'];
+        $shelfBefore = $row['ShelfQuantityBefore'];
+        $shelfAfter= $row['ShelfQuantity'];
+        $price= $row['Price'];
+        
+        $quantityBefore = $backstockBefore + $shelfBefore;
+        $quantityAfter = $backstockAfter + $shelfAfter;
+        
+        $backstockDelta = $backstockBefore - $backstockAfter;
+        $shelfDelta = $shelfBefore - $shelfAfter;
+        
+        $income = ($quantityBefore - $quantityAfter) * $price;
+        
+        $cancelSQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
+        error_log("Cancel SQL: [" . $cancelSQL . "]" );
+        $db->exec( $cancelSQL );
+        
+        $itemSQL = "UPDATE Item SET TotalIncome = TotalIncome - $income, BackstockQuantity = BackstockQuantity + $backstockDelta, ShelfQuantity = ShelfQuantity + $shelfDelta, ModifyType = 'Cancelled', DateModified = '$date' where ID = $itemID";
+        error_log("Item SQL: [" . $itemSQL . "]" );
+        $db->exec( $itemSQL );
+        
+        $infoSQL = "UPDATE Information SET Income = Income - $income where ItemType = '$itemType'";
+        error_log("Info SQL: [" . $infoSQL . "]" );
+        $db->exec( $infoSQL );
+    }
+    else if( $type == "CancelRestock" ) {
+        $restockID = trim($_POST["RestockID"]);
+        
+        $results = $db->query("SELECT r.Cost, r.ItemID, r.NumberOfCans, i.Type From Restock r JOIN Item i on r.ItemID = i.ID where RestockID = $restockID");
+        $row = $results->fetchArray();
+        
+        $cost = $row['Cost'];
+        $numberOfCans = $row['NumberOfCans'];
+        $itemType = $row['Type'];
+        $itemID = $row['ItemID'];
+
+        $cancelSQL = "UPDATE Restock SET Cancelled = 1 where RestockID = $restockID";
+        error_log( "Cancel SQL [$cancelSQL]" );
+        $db->exec( $cancelSQL );
+        
+        $itemSQL = "UPDATE Item SET TotalExpenses = TotalExpenses - $cost, BackstockQuantity = BackstockQuantity - $numberOfCans, TotalCans = TotalCans - $numberOfCans where ID = $itemID";
+        error_log( "Item SQL [$itemSQL]" );
+        $db->exec( $itemSQL );
+        
+        $infoSQL = "UPDATE Information SET Expenses = Expenses - $cost where ItemType = '$itemType'";
+        error_log( "Info SQL [$infoSQL]" );
+        $db->exec( $infoSQL );
+    }
+    else if( $type == "CancelPayment" ) {
+        
+        $paymentID = trim($_POST["PaymentID"]);
+        
+        $results = $db->query("SELECT UserID, Amount, ItemType From Payments where PaymentID = $paymentID");
+        $row = $results->fetchArray();
+        
+        $userID = $row['UserID'];
+        $amount = $row['Amount'];
+        $itemType = $row['ItemType'];
+        
+        $isUserPayment = $userID > 0;
+        
+        $cancelSQL = "Update Payments SET Cancelled = 1 WHERE PaymentID = $paymentID";
+        error_log("Cancel [$cancelSQL]");
+        
+        $db->exec( $cancelSQL );
+    
+        if( $isUserPayment ) {
+            $balanceType = $itemType . "Balance";
+            
+            $balanceSQL = "UPDATE User SET $balanceType = $balanceType + " . round($amount, 2) . " where UserID = $userID";
+            error_log("UserBalance [$balanceSQL]");
+            $db->exec( $balanceSQL );
+        }
+    
+        $infoSQL = "UPDATE Information SET ProfitActual = ProfitActual - $amount where ItemType = '$itemType'";
+        error_log("Info [$infoSQL]");
+        $db->exec( $infoSQL );
+        
+        $db->exec();
+    }
     else if( $type == "NotifyUserOfPayment" ) {
         $results = $db->query("SELECT UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User WHERE SodaBalance > 0.0 OR SnackBalance > 0.0" );
         error_log( "Notifying Users..." );

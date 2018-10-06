@@ -18,6 +18,7 @@
         echo "<div style='margin-bottom:20px;'>";
             echo "<div id='payment_button' class='nav_buttons nav_buttons_billing'>Add Payment</div>";
             echo "<div id='edit_user_button' class='nav_buttons nav_buttons_admin'>Edit User</div>";
+            echo "<div id='shopping_button' class='nav_buttons nav_buttons_admin'>Add Shopping Guide</div>";
         echo "</div>";
         
         echo "<div style='margin-bottom:20px; padding-top:40px; margin-top:40px; border-top: 3px solid #000;'>";
@@ -26,6 +27,7 @@
             echo "<a href='admin_items_x25.php'><div class='nav_buttons nav_buttons_snack'>Items</div></a>";
             echo "<a href='admin_restock_x25.php'><div class='nav_buttons nav_buttons_snack'>Restock</div></a>";
             echo "<a href='admin_inventory_x25.php'><div class='nav_buttons nav_buttons_snack'>Inventory</div></a>";
+            echo "<a href='admin_shopping_guide_x25.php'><div class='nav_buttons nav_buttons_snack'>Shopping Guide</div></a>";
         echo "</div>";
         
     echo "</div>";

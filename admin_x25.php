@@ -39,9 +39,9 @@
 <script src="js/jscolor.js"></script>
 
 <?php
-    if( !$isMobile) {
+//     if( !$isMobile) {
         echo "<script src='js/load_modals.js'></script>";
-    }
+//     }
 ?>
 
 <link rel="stylesheet" type="text/css" href="colorPicker.css"/>
@@ -52,7 +52,7 @@
     $( document ).ready( function() {
                 
         <?php 
-            if(!$isMobile && $isLoggedInAdmin) {
+            if( $isLoggedInAdmin ) {
                 echo "loadSingleModals();\n";
                 echo "loadItemModals('Soda');\n";
                 echo "loadItemModals('Snack');\n";

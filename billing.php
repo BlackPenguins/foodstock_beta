@@ -207,7 +207,7 @@
         
         echo "<td style='background-color: #a359c1; width:50%; vertical-align: top;'>";
         
-        $results = $db->query("SELECT Amount, Date, ItemType FROM Payments WHERE UserID = $userID AND MonthForPayment = '$currentMonthLabel'");
+        $results = $db->query("SELECT Amount, Date, ItemType FROM Payments WHERE UserID = $userID AND MonthForPayment = '$currentMonthLabel'  AND Cancelled is NULL");
         
         $totalPaid = 0.0;
         
