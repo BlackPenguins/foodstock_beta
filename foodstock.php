@@ -198,7 +198,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 4.9 (August 5th, 2018)";
+    $version = "Version 5.0 (October 20th, 2018)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -212,7 +212,7 @@ if(!$isMobile) {
 
     echo "<div style='margin: auto;'>";
     echo "<div style='margin-left:5px;'>";
-    echo "<a href='#change_log'><span style='color:#000000; font-weight:bold; background-color:#82d7ff; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
+    echo "<a href='#change_log'><span style='color:#000000; font-weight:bold; background-color:#efa217; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
     if( $isLoggedInAdmin ) {
         echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Income (Calculated):</b> $". number_format($total_income, 2)."</span>";
         echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Profit (Calculated):</b> $". number_format($total_profit, 2)."</span>";
@@ -291,6 +291,7 @@ if( !$isMobile) {
 
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
+    echo "<li><b>Oct 20, 2018:</b> Added graphs to stats page and ability to set date range. Ability to undo anything (refunds on purchases, payments, inventory, restock). Improved sorting on main page so discontinued and sold out snacks don't appear at the top. Inventory Form - Added incrementers and 'unit changed' colors, removed Price column. Restock Form - improved UI, multiplier. Shopping Guide - order by Cost Each. Added 'Expiration Date' column to items. Misc bug fixes.</li>";
     echo "<li><b>Aug 5, 2018:</b> Added FoodStockBot. Show cash-only totals in Billing (Ryan ask). Added 'Alias' for items (people couldn't find the Spicy Snacks). Redesigned 'Methods of Payment' section with accounts. Divided request modals into 3 separate modal/buttons. Sort requests by completion. Added the start of the stats page. Slack notifications when item inventory reaches zero (Nick ask). Attempted to fix rounding issues with negative $0 balances. ADMIN: Sorted inventory by quantity, added bot automatically notifying all users of payment owed at first of month, formatted phone numbers.</li>";
     echo "<li><b>Jul 29, 2018:</b> Reorganized directories and resources. Divided up Admin into separate pages. Fixed massive income bugs and miscountings.</li>";
     echo "<li><b>Jul 2, 2018:</b> Fixed many security vulnerabilities (thanks to Joe Guest for finding those). Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron). Added more slack notifications: new users and out of stock. Added plural unit name DB column (english language sucks).</li>";

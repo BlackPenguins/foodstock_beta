@@ -98,6 +98,7 @@
         // ------------------------------------
         // ITEM TABLE
         // ------------------------------------
+
         echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>$shoppingTitle</span></span>";
         
         $storeColors = array(
@@ -112,6 +113,7 @@
         );
         
         echo "<div style='margin:20px;'>";
+        echo "<span style='float:right;' id='shopping_button' class='nav_buttons nav_buttons_admin'>Add Shopping Guide</span>";
         echo "<a href='admin_shopping_guide_x25.php'><span style='color:#000000; cursor:pointer; border:2px solid #000; margin-right:5px; background-color:#ffffff; padding: 5px;'>All</span></a>";
         foreach( $storeColors as $store => $color ) {
             echo "<a href='admin_shopping_guide_x25.php?store=$store'><span style='color:#000000; cursor:pointer; border:2px solid #000; margin-right:5px; background-color:$color; padding: 5px;'>$store</span></a>";
@@ -144,7 +146,7 @@
             $STORE_PRICES_TABLE = "";
             $profitAtThisStore = false;
             
-            $resultsQuantity = $db->query("SELECT ItemID, PackQuantity, Store, RegularPrice, SalePrice, (RegularPrice/PackQuantity) as CostEach from Shopping_Guide WHERE ItemID = $item_id AND Store is NOT NULL ORDER BY CostEach");
+            $resultsQuantity = $db->query("SELECT ItemID, CASE WHEN SalePrice IS NULL THEN RegularPrice/PackQuantity ELSE SalePrice/PackQuantity END CostEach, PackQuantity, Store, RegularPrice, SalePrice from Shopping_Guide WHERE ItemID = $item_id AND Store is NOT NULL ORDER BY CostEach");
             $rowQuantity = $resultsQuantity->fetchArray();
             
             if( $rowQuantity !== false ) {
@@ -159,14 +161,8 @@
                     $store = $rowQuantity['Store'];
                     $regularPrice = $rowQuantity['RegularPrice'];
                     $salePrice = $rowQuantity['SalePrice'];
-                    $costEach = 0.0;
-            
-                    if( $regularPrice != "" ) {
-                        $costEach = $regularPrice / $packQuantity;
-                    } else {
-                        $costEach = $salePrice / $packQuantity;
-                    }
-                    
+                    $costEach = $rowQuantity['CostEach'];
+
                     if( isset($_GET['store']) && $store == $_GET['store'] && $costEach <= $price ) {
                         $profitAtThisStore = true;
                     }

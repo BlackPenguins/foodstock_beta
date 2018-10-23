@@ -15,6 +15,10 @@ function sendSlackMessageToRandom( $slackMessage, $emoji, $botName ) {
     sendSlackMessagePOST( "#random", $emoji, $botName, $slackMessage );
 }
 
+function sendSlackMessageToSlackBot( $slackMessage, $emoji, $botName ) {
+   sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
+}
+
 
 function sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color  ){
     if( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) {

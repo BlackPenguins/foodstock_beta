@@ -201,11 +201,12 @@ if(isset($_POST['Purchase'])) {
             $unitNamePlural = trim($_POST["EditUnitNamePlural" . $itemType]);
             $alias = trim($_POST["EditAlias" . $itemType]);
             $status = trim($_POST["EditStatus" . $itemType]);
+            $expirationDate = trim($_POST["EditExpirationDate" . $itemType]);
     
             error_log("Status: " . $status );
             $retired = $status == "active" ? 0 : 1;
     
-            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias' where ID = $id";
+            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias', ExpirationDate = '$expirationDate' where ID = $id";
             error_log("Edit Item Query: [" . $editItemQuery . "]" );
             $db->exec( $editItemQuery );
     
@@ -245,8 +246,14 @@ if(isset($_POST['Purchase'])) {
             $date = date('Y-m-d H:i:s');
             $numberOfCans = trim($_POST["NumberOfCans"]);
             $cost = trim($_POST["Cost"]);
+            $multiplier = trim($_POST["Multiplier"]);
+            
+            if( $multiplier > 1 ) {
+                $numberOfCans *= $multiplier;
+                $cost *= $multiplier;
+            }
     
-            $db->exec("INSERT INTO Restock VALUES($id, '$date', $numberOfCans, $cost)");
+            $db->exec("INSERT INTO Restock (ItemID, Date, NumberOfCans, Cost) VALUES($id, '$date', $numberOfCans, $cost)");
             $db->exec("UPDATE Item SET TotalExpenses = TotalExpenses + $cost, BackstockQuantity = BackstockQuantity + $numberOfCans, TotalCans = TotalCans + $numberOfCans where ID = $id");
             $db->exec("UPDATE Information SET Expenses = Expenses + $cost where ItemType = '$itemType'");
     

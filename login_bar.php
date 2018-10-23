@@ -19,7 +19,7 @@
             $totalSodaSavings = $row['TotalSodaSavings'];
             $totalSavings = $totalSnackSavings + $totalSodaSavings;
             
-            $results = $db->query("SELECT Count(*) as Total FROM Purchase_History");
+            $results = $db->query("SELECT Count(*) as Total FROM Purchase_History WHERE Cancelled IS NULL");
             $row = $results->fetchArray();
             $totalPurchases = $row['Total'];
             

@@ -92,7 +92,7 @@
     $currentMonth = 0;
     $currentYear = 0;
     
-    $results = $db->query("SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID ORDER BY p.Date DESC");
+    $results = $db->query("SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.Cancelled IS NULL AND p.UserID = $userID ORDER BY p.Date DESC");
     while ($row = $results->fetchArray()) {
         $purchaseDateObject = DateTime::createFromFormat( 'Y-m-d H:i:s', $row['Date'] );
         $purchaseMonthLabel = $purchaseDateObject->format('F Y');
@@ -221,7 +221,7 @@
         
         echo "<div style='margin-top:20px; padding: 5px; font-size:1.1em;'><b>Total Paid:</b> $" . number_format($totalPaid, 2) . "</div>";
         
-        $totalOwed = $totalPurchased - $totalPaid;
+        $totalOwed = round($totalPurchased - $totalPaid, 2);
         
         echo "</td>";
          

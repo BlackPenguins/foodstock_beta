@@ -59,7 +59,15 @@
         ?>           
     });
 
-    function notifyUsersOfPayments() {
+    function openPaymentModal( user, month, method, sodaAmount, snackAmount ) {
+        $('#payment').dialog('open');
+        $('#UserDropdown').val(user);
+        $('#MonthDropdown').val(month);
+        $('#SodaAmount').val(sodaAmount);
+        $('#SnackAmount').val(snackAmount);
+    }
+
+    function notifyUsersOfPayments( month ) {
         $isAlert = confirm('Are you sure that you want to notify all users about their balances?');
         
         if ( $isAlert ) {
@@ -67,6 +75,7 @@
 
             $.post("sodastock_ajax.php", { 
                 type:'NotifyUserOfPayment',
+                month:month,
             },function(data) {
                 // Do nothing right now
             });
@@ -246,7 +255,7 @@
         
         $endDate = $year . "-" . $monthNumber . "-01";
         
-        $query = "SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' ORDER BY p.Date DESC";
+        $query = "SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' AND p.Cancelled IS NULL ORDER BY p.Date DESC";
         $results = $db->query( $query );
         while ($row = $results->fetchArray()) {
             
@@ -269,7 +278,7 @@
             }
         }
 
-        $results = $db->query("SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND Cancelled != 1");
+        $results = $db->query("SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND Cancelled IS NULL");
         $totalPaid = $results->fetchArray()['TotalAmount'];
         $totalPurchases = $currentMonthSodaTotal + $currentMonthSnackTotal;
         $totalUnpaid = round( $totalPurchases - $totalPaid, 2);
@@ -279,13 +288,19 @@
             $totalBalanceColor = "background-color:#fdff7a;";
         }
         
+        
+        $sodaAmount = number_format( $currentMonthSodaTotal, 2 );
+        $snackAmount = number_format( $currentMonthSnackTotal, 2 );
+        
+        $onclick = "openPaymentModal(\"$userID\", \"$monthLabel\", \"None\", \"$sodaAmount\", \"$snackAmount\");";
+        
         return "<td style='padding:5px; $totalBalanceColor border:1px #000 solid;'>"
                 . "<div>"
-                . "<span>Soda: $" . number_format( $currentMonthSodaTotal, 2 ). "</span>"
-                . "<span style='float:right;'>Snack: $" . number_format( $currentMonthSnackTotal, 2 )."</span>" 
+                . "<span>Soda: $" . $sodaAmount . "</span>"
+                . "<span style='float:right;'>Snack: $" . $snackAmount ."</span>" 
                 . "</div>"
                 . "<div style='padding:5px; text-align:center;'>"
-                . "<span style='padding:5px; border: 1px dashed #000;'>"
+                . "<span onclick='$onclick' style='cursor:pointer; padding:5px; border: 1px dashed #000;'>"
                 . "Total: $". number_format( $totalPurchases, 2 )
                 . "</span>"
                 . "</div>"

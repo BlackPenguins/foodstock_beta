@@ -180,7 +180,7 @@
         
         echo $user_info;
         echo "<input type='hidden' name='Payment' value='Payment'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='admin_payments_x25.php'/><br>";
         
         echo "</fieldset>";
         echo "</form>";
@@ -217,7 +217,7 @@
         
         function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
             // Build Item Dropdown
-            $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
+            $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
             $item_options = "";
             $item_options_no_discontinued = "";
             $item_info = "";
@@ -233,6 +233,7 @@
                 $item_unit_name = $row['UnitName'];
                 $item_unit_name_plural = $row['UnitNamePlural'];
                 $item_alias = $row['Alias'];
+                $item_expiration_date= $row['ExpirationDate'];
                 if(strlen($item_name) > 30) {
                     $item_name = substr($item_name, 0, 30)."...";
                 }
@@ -256,13 +257,14 @@
                 "<input type='hidden' id='Item_" . $itemType . "_UnitName_$item_id' value='$item_unit_name'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_UnitNamePlural_$item_id' value='$item_unit_name_plural'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_Alias_$item_id' value='$item_alias'/>" .
+                "<input type='hidden' id='Item_" . $itemType . "_ExpirationDate_$item_id' value='$item_expiration_date'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_Retired_$item_id' value='$item_retired'/>" .
                 "<input type='hidden' id='Item_" . $itemType . "_ChartColor_$item_id' value='$item_chart_color'/>";
             }
                 
             $edit_dropdown = "<select id='Edit" . $itemType . "Dropdown' name='Edit" . $itemType . "Dropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options</select>";
                 
-            $restock_dropdown = "<select id='RestockDropdown' name='RestockDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options_no_discontinued</select>";
+            $restock_dropdown = "<select id='RestockDropdown' name='RestockDropdown' style='padding:5px; width:100%; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options_no_discontinued</select>";
                 
             
             // ------------------------------------
@@ -301,6 +303,7 @@
             $editUnitNameID = "EditUnitName" . $itemType;
             $editUnitNamePluralID = "EditUnitNamePlural" . $itemType;
             $editAliasID = "EditAlias" . $itemType;
+            $editExpirationDateID = "EditExpirationDate" . $itemType;
             $editActiveID = "EditStatusActive" . $itemType;
             $editDiscontinuedID = "EditStatusDiscontinued" . $itemType;
             $editStatusID = "EditStatus" . $itemType;
@@ -328,6 +331,8 @@
             echo "<input id='$editUnitNamePluralID' name='$editUnitNamePluralID' class='text ui-widget-content ui-corner-all'>";
             echo "<label style='padding:5px 0px;' for='Alias'>Alias</label>";
             echo "<input id='$editAliasID' name='$editAliasID' class='text ui-widget-content ui-corner-all'>";
+            echo "<label style='padding:5px 0px;' for='ExpirationDate'>Expiration Date</label>";
+            echo "<input id='$editExpirationDateID' name='$editExpirationDateID' class='text ui-widget-content ui-corner-all'>";
             echo "<div class='radio_status'>";
             echo "<input class='radio' type='radio' id='$editActiveID' name='$editStatusID' value='active' checked />";
             echo "<label for='$editActiveID'>Active</label>";
@@ -352,13 +357,44 @@
             // ------------------------------------
             echo "<div id='restock_item_" . $itemType . "' title='Restock " . $itemType . "' $hideForms>";
             echo "<form id='restock_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
-            echo "<fieldset>";
             echo "<label style='padding:5px 0px;' for='ItemNameDropdown'>" . $itemType . "</label>";
             echo $restock_dropdown;
+            echo "<table>";
+            
+            echo "<tr>";
+            echo "<td>";
             echo "<label style='padding:5px 0px;' for='NumberOfCans'>Number Of Units</label>";
-            echo "<input type='tel' name='NumberOfCans' class='text ui-widget-content ui-corner-all'/>";
+            echo "</td>";
+            echo "<td>";
             echo "<label style='padding:5px 0px;' for='Cost'>Cost for Pack</label>";
-            echo "<input type='tel' name='Cost' class='text ui-widget-content ui-corner-all'/>";
+            echo "</td>";
+            echo "<td>";
+            echo "<label style='padding:5px 0px;' for='Multiplier'>Multiplier</label>";
+            echo "</td>";
+            echo "</tr>";
+            
+            echo "<tr>";
+            echo "<td>";
+            echo "<input type='tel' style='font-size: 2em;' name='NumberOfCans' class='text ui-widget-content ui-corner-all'/>";
+            echo "</td>";
+            echo "<td>";
+            echo "<input type='tel' style='font-size: 2em; 'name='Cost' class='text ui-widget-content ui-corner-all'/>";
+            echo "</td>";
+            echo "<td>";
+            echo "<input type='tel' style='font-size: 2em; 'name='Multiplier' value='1' class='text ui-widget-content ui-corner-all'/>";
+            echo "</td>";
+            echo "</tr>";
+            
+            echo "</table>";
+            
+            $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
+            $item_options = "";
+            $item_options_no_discontinued = "";
+            $item_info = "";
+            while ($row = $results->fetchArray()) {
+                $item_id = $row['ID'];
+                $item_name = $row['Name'];
+            }
             
             echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/><br>";
             echo "<input type='hidden' name='Restock' value='Restock'/><br>";
@@ -367,7 +403,6 @@
             if( $isMobile) {
                 echo "<input style='padding:10px;' type='submit' name='Restock_Item_" . $itemType .  "_Submit' value='Restock " . $itemType . "'/><br>";
             }
-            echo "</fieldset>";
             echo "</form>";
             echo "</div>";
             
@@ -378,76 +413,68 @@
             echo "<form id='inventory_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
             
             echo "<table>";
-                echo "<tr><th>" . $itemType . "</th><th>Shelf Quantity</th><th>Backstock Quantity</th>";
+            echo "<tr><th>" . $itemType . "</th><th>Add to Shelf</th><th>Shelf Quantity</th><th>Backstock Quantity</th></tr>";
                 
-            if(!$isMobile) {
-                echo "<th>Price</th>";
-                }
-                
-            echo "</tr>";
-                
-                $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, Price, ID FROM Item WHERE NOT Retired = 1 AND Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY ShelfQuantity DESC, Name asc, Retired");
+            $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, ID FROM Item WHERE NOT Retired = 1 AND Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY ShelfQuantity DESC, Name asc, Retired");
             $tabIndex = 1;
             while ($row = $results->fetchArray()) {
-                        $item_name = $row['Name'];
-                        $backstockquantity = $row['BackstockQuantity'];
-                        $shelfquantity = $row['ShelfQuantity'];
-                        $price = $row['Price'];
-                        $item_id = $row['ID'];
-                        echo "<tr>";
-                        echo "<td><b>$item_name</b></td>";
-                        echo "<input type='hidden' id='item_$item_id' name='ItemID[]' value='$item_id'/>";
-                        echo "<td><input type='tel' onClick='this.select();' tabindex=$tabIndex id='ShelfQuantity_$item_id' value='$shelfquantity' name='ShelfQuantity[]' class='text ui-corner-all'/></td>";
-                        echo "<td><input type='tel' tabindex=0 id='BackstockQuantity_$item_id' value='$backstockquantity' name='BackstockQuantity[]' class='text  ui-corner-all'/></td>";
+                $item_name = $row['Name'];
+                $backstockquantity = $row['BackstockQuantity'];
+                $shelfquantity = $row['ShelfQuantity'];
+                $item_id = $row['ID'];
+                echo "<tr>";
+                echo "<td><b>$item_name</b></td>";
+                echo "<input type='hidden' id='item_$item_id' name='ItemID[]' value='$item_id'/>";
+                echo "<td><input type='tel' onClick='this.select();' tabindex=$tabIndex id='AddToShelf_$item_id' value='0' name='AddToShelf[]' class='text ui-corner-all'/></td>";
+                echo "<td><input type='tel' onClick='this.select();' tabindex=0 id='ShelfQuantity_$item_id' value='$shelfquantity' name='ShelfQuantity[]' class='text ui-corner-all'/></td>";
+                echo "<td><input type='tel' tabindex=0 id='BackstockQuantity_$item_id' value='$backstockquantity' name='BackstockQuantity[]' class='text  ui-corner-all'/></td>";
+                echo "</tr>";
+        
+                $tabIndex++;
+                
+                // On change, update the backstock quantity if you are increasing the shelf quantity
+                echo "<script type='text/javascript'>";
+                echo "$( document ).ready( function() {";
+
+                echo "$('#AddToShelf_$item_id').change(function () {";
+                    echo "var incrementAmount = parseInt($('#AddToShelf_$item_id').val());";
+                    echo "console.log('New Increment: [' + incrementAmount + ']');";
+                    echo "if(incrementAmount > 0) {";
+                        
+                        echo "var backStockQuantity = parseInt($('#BackstockQuantity_$item_id').val());";
+                        echo "var shelfQuantity = parseInt($('#ShelfQuantity_$item_id').val());";
+                        echo "var newBackstockQuantity = backStockQuantity - incrementAmount;";
+                        echo "var newShelfQuantity = shelfQuantity + incrementAmount;";
+            
+                        echo "if(newBackstockQuantity >= 0) {";
+                            echo "$('#BackstockQuantity_$item_id').val(newBackstockQuantity);";
+                            echo "$('#ShelfQuantity_$item_id').val(newShelfQuantity);";
                             
-                        if( !$isMobile ) {
-                        echo "<td><input tabindex=0 id='CurrentPrice_$item_id' value='$price' name='CurrentPrice[]' class='text ui-corner-all'/></td>";
-                        }
-                        echo "</tr>";
+                            echo "$('#BackstockQuantity_$item_id').css('background-color', '#a6ff9b');";
+                            echo "$('#ShelfQuantity_$item_id').css('background-color', '#ff9b9b');";
+                            
+                            // Dont wan't to think changing from 6 to 7 will increase by 1, it will increase 7 again
+                            echo "$('#AddToShelf_$item_id').attr('placeholder', 'Incremented ' + incrementAmount + ' units');";
+                            echo "$('#AddToShelf_$item_id').val('');";
+                        echo "} else {";
+                            echo "alert('There is not enough backstock available for [' + incrementAmount + '] units.');";
+                        echo "}";
+                    echo "}";
+                echo "});"; // On Change
+                echo "});"; // Document Ready
+                echo "</script>";
+            }
+            echo "</table>";
+            echo "<input type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
                 
-                        $tabIndex++;
-                        // On change, update the backstock quantity if you are increasing the shelf quantity
-                                echo "<script type='text/javascript'>";
-                                echo "$( document ).ready( function() {";
-                
-                                echo "var originalShelf_$item_id = parseInt($('#ShelfQuantity_$item_id').val());";
-                
-                        echo "$('#ShelfQuantity_$item_id').change(function () {";
-                                    echo "var newValue = parseInt($('#ShelfQuantity_$item_id').val());";
-                                    echo "console.log('Original: [' + originalShelf_$item_id + ']');";
-                                    echo "console.log('New: [' + newValue + ']');";
-                                echo "if(newValue > originalShelf_$item_id) {";
-                                echo "var takenFromBackstock = (newValue - originalShelf_$item_id);";
-                            echo "console.log('Taken:' + takenFromBackstock);";
-                                        echo "var backStockQuantity = $('#BackstockQuantity_$item_id').val();";
-                                        echo "var newBackstockQuantity = backStockQuantity - takenFromBackstock;";
-                
-                                        echo "if(newBackstockQuantity >= 0 && takenFromBackstock > 0) {";
-                                        echo "$('#BackstockQuantity_$item_id').val(newBackstockQuantity);";
-                                                //echo "$('#BackStockUpdate_$item_id').html(' (Removed <b>' + takenFromBackstock + '</b> from Backstock)');";
-                                                //echo "$('#BackStockUpdate_$item_id').css('color', 'green');";
-                                                echo "originalShelf_$item_id = newValue;";
-                                                echo "} else {";
-                                                echo "$('#ShelfQuantity_$item_id').val(originalShelf_$item_id);";
-                                                //echo "$('#BackStockUpdate_$item_id').html(' (Not enough backstock to remove ' + takenFromBackstock + ' cans!)');";
-                                                //echo "$('#BackStockUpdate_$item_id').css('color', 'red');";
-                                                echo "}";
-                                                echo "}";
-                                                echo "});";
-                                                echo "});";
-                                                echo "</script>";
-                }
-                echo "</table>";
-                echo "<input type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
-                
-               echo "<input type='hidden' name='Inventory' value='Inventory'/><br>";
-               echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
+            echo "<input type='hidden' name='Inventory' value='Inventory'/><br>";
+            echo "<input type='hidden' name='redirectURL' value='admin_x25.php'/><br>";
                 
                 
             if( $isMobile) {
-                                   echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Add Inventory'/><br>";
-                }
-                echo "</form>";
+                echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Add Inventory'/><br>";
+            }
+            echo "</form>";
             echo "</div>";
         }
 ?>
@@ -469,7 +496,9 @@ $( document ).ready( function() {
     $('#UserDropdown').change(function () {
         setUserPaymentInfo();
     });
-    
+
+    $('#EditExpirationDateSnack').datepicker();
+
     setItemInfo('Soda');
     setItemInfo('Snack');
     setUserInfo();
@@ -484,6 +513,7 @@ function setItemInfo( type ) {
     var itemUnitName = $('#Item_' + type + '_UnitName_' + itemID).val();
     var itemUnitNamePlural = $('#Item_' + type + '_UnitNamePlural_' + itemID).val();
     var itemAlias = $('#Item_' + type + '_Alias_' + itemID).val();
+    var itemExpirationDate = $('#Item_' + type + '_ExpirationDate_' + itemID).val();
     var itemThumbURL = $('#Item_' + type + '_ThumbURL_' + itemID).val();
     var itemChartColor = $('#Item_' + type + '_ChartColor_' + itemID).val();
     var itemRetired = $('#Item_' + type + '_Retired_' + itemID).val();
@@ -497,6 +527,7 @@ function setItemInfo( type ) {
     $("#EditUnitName" + type).val(itemUnitName);
     $("#EditUnitNamePlural" + type).val(itemUnitNamePlural);
     $("#EditAlias" + type).val(itemAlias);
+    $("#EditExpirationDate" + type).val(itemExpirationDate);
     $("#EditChartColor + type").val(itemChartColor);
     
     if( itemRetired == 0 ) {
