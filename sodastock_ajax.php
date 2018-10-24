@@ -106,9 +106,12 @@
             
             if( $retired_item == 1) {
                 $amountLeft = "Discontinued";
-                $amountClass = "discontinued";
-                $statusClass = "post-module-discontinued";
-                $buttonClass = "disabled";
+                
+                if($cold_item == 0) {
+                    $amountClass = "discontinued";
+                    $statusClass = "post-module-discontinued";
+                    $buttonClass = "disabled";
+                }
             } else {
                 if($cold_item == 0) {
                     $amountLeft = "SOLD OUT";
@@ -149,7 +152,7 @@
                 $days_ago = $time_since->format('%a');
             }
             
-            $frequencyBought = "N/A";
+            $frequencyBought = "0";
             $purchaseDayInterval = "N/A";
             
             if( isset( $row['Frequency'] ) ) {
@@ -198,28 +201,57 @@
                       
                     echo "<h1 class='title'>" . $row['Name'] . "</h1>";
 
+                    $income = $row['TotalIncome'];
+                    $expense = $row['TotalExpenses'];
+                    
+                    $profit = number_format(($income-$expense), 2);
+                    $profitClass = $profit > 0 ? "income" : "expenses";
+                    
+                    if( IsAdminLoggedIn() ) {
+                        $profitSign = $profit > 0 ? "$" : "-$";
+
+                        echo "<div class='stats'>";
+                            echo "<span class='box box-expenses' title='Total Expenses'>";
+                                echo "<span class='value'>$" . number_format($expense, 2) . "</span>";
+                                echo "<span class='parameter'>Expenses</span>";
+                            echo "</span>";
+                            
+                            echo "<span style='border: 2px solid #000;' class='box box-$profitClass' title='Total Profit'>";
+                                echo "<span class='value'>$profitSign" . number_format(abs($profit), 2) . "</span>";
+                                echo "<span class='parameter'>Profit</span>";
+                            echo "</span>";
+                            
+                            echo "<span class='box box-income' title='Total Income'>";
+                                echo "<span class='value'>$" . number_format($income, 2) . "</span>";
+                                echo "<span class='parameter'>Income</span>";
+                            echo "</span>";
+                        echo "</div>";
+                    }
+                    
                     echo "<div class='stats'>";
-                        echo "<span class='box' title='You have bought this x times.'>";
-                            echo "<span class='value'>$frequencyBought</span>";
-                            echo "<span class='parameter'>Purchases</span>";
-                        echo "</span>";
-                        
-                        echo "<span class='box' title='Restocked every x days.'>";
-                            echo "<span class='value'>$purchaseDayInterval</span>";
+                    echo "<span class='box box-$profitClass' title='You have bought this x times.'>";
+                    echo "<span class='value'>$frequencyBought</span>";
+                    echo "<span class='parameter'>Purchases</span>";
+                    echo "</span>";
+                    
+                        echo "<span class='box box-$profitClass' title='Restocked every x days.'>";
+                    echo "<span class='value'>$purchaseDayInterval</span>";
                             echo "<span class='parameter'>Days</span>";
-                        echo "</span>";
-                        
-                        echo "<span class='box' title='Total of x units sold.'>";
-                            echo "<span class='value'>$total_can_sold</span>";
-                            echo "<span class='parameter'>Total Sold</span>";
-                        echo "</span>";
+                    echo "</span>";
+                    
+                    echo "<span class='box box-$profitClass' title='Total of x units sold.'>";
+                    echo "<span class='value'>$total_can_sold</span>";
+                    echo "<span class='parameter'>Total Sold</span>";
+                    echo "</span>";
                     echo "</div>";
 
-                    echo "<div class='actions'>";
-                        echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
-                        echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
-                        echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
-                    echo "</div>"; //actions
+                    if( IsLoggedIn() ) {
+                        echo "<div class='actions'>";
+                            echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
+                            echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
+                            echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
+                        echo "</div>"; //actions
+                    }
                 echo "</div>"; //post-content
         echo "</span>"; //post-module
         

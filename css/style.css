@@ -745,6 +745,13 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
   padding: 10px;
   transition: all .4s ease-in-out;
 }
+.stats .box-expenses {
+  background: #eab5b5;
+}
+
+.stats .box-income {
+  background: #b8eab5;
+}
 .stats .box:hover {
   background: #E1CFC2;
 }
