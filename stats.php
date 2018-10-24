@@ -67,7 +67,11 @@
             
         ?>
 
-        
+        // top soda purchases
+        // top snack purchases
+        // top count purchase
+        // your own ideas
+        // sold per day 
     });
 
     function toggleCompleted( requestID ) {
@@ -111,6 +115,8 @@
     echo "End Date: <input autocomplete='off' type='text' name='end_date' id='end_date'>";
     echo "<input type='submit' value='Give me Statistics!'/>";
     echo "</form>";
+    
+    echo "<h1>Have an idea for a chart/graph? Let me know, I'll make it.</h1>";
     ?>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script> 
 <script type="text/javascript"> 

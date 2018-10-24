@@ -38,31 +38,216 @@
         //---------------------------------------
         $columnNumber = 1;
         while ($row = $results->fetchArray()) {
-        
-            if( $row['Retired'] == 0 ) {
-                // Active - blue cards
-                echo "<div class='" . $className . "_card card'>";
+            
+            $isLoggedIn = IsLoggedIn();
+            
+            $outOfStock = $row['OutOfStock'];
+            $outOfStockReporter = $row['OutOfStockReporter'];
+            $item_id = $row['ID'];
+            $item_name = $row['Name'];
+            $price = $row['Price'];
+            $originalPrice = $price;
+            $discountPrice = $row['DiscountPrice'];
+            $imageURL = $row['ImageURL'];
+            $hasDiscount = false;
+            
+            if( $isLoggedIn && $discountPrice != "" ) {
+                $price = $discountPrice;
+                $hasDiscount = true;
+            }
+            
+            $cardClass = "soda";
+            
+            if( $itemType == "Snack" ) {
+                $cardClass = "snack";
+            }
+            
+            $price_color = "#FFFFFF";
+            $price_background_color = "#025F00";
+            
+            // On sale - YELLOW
+            if($price < 0.50) {
+                $price_color = "#000000";
+                $price_background_color = "#FFD500";
+                // Expensive - RED
+            } else if( $price > 1.00) {
+                $price_color = "#FFFFFF";
+                $price_background_color = "#5f0000";
+            }
+            
+            $retired_item = $row['Retired'];
+            $cold_item = $row['ShelfQuantity'];
+            $warm_item = $row['BackstockQuantity'];
+            
+            $priceDisplay = "";
+            
+            if( $isLoggedIn && $hasDiscount == true ) {
+                $priceDisplay = getPriceDisplay ( $discountPrice );
             } else {
-                // Retired - black cards
-                echo "<div class='card' style='background-color:#131313;'>";
+                $priceDisplay = getPriceDisplay( $price );
             }
-        
-            echo "<div class='top_section'>";
-            buildTopSection($row, $location, $isMobile);
-            echo "</div>";
-        
             
-            echo "<div class='middle_section'>";
-            buildMiddleSection($db, $row, $isMobile);
-            echo "</div>";
+            $unitName = "[UNKNOWN]";
+            $unitNamePlural = "[UNKNOWN]";
             
-            if( !$isMobile) {
-                echo "<div class='bottom_section'>";
-                buildBottomSection($db, $row, $isMobile);
+            if( $row['UnitName'] != "" ) {
+                $unitName = $row['UnitName'];
+            }
+            
+            if( $row['UnitNamePlural'] != "" ) {
+                $unitNamePlural = $row['UnitNamePlural'];
+            }
+            
+            $amountLeft = "N/A";
+            $amountClass = "";
+            $statusClass = "";
+            $thumbnailClass = $cardClass;
+            $buttonClass = $cardClass;
+            
+            if( $retired_item == 1) {
+                $amountLeft = "Discontinued";
+                $amountClass = "discontinued";
+                $statusClass = "post-module-discontinued";
+                $buttonClass = "disabled";
+            } else {
+                if($cold_item == 0) {
+                    $amountLeft = "SOLD OUT";
+                    $amountClass = "sold-out";
+                    $thumbnailClass = "sold-out";
+                    $buttonClass = "disabled";
+                } else {
+                    $unitNameFinal = $cold_item > 1 ? $unitNamePlural : $unitName;
+                    $amountLeft = "<span>$cold_item</span> $unitNameFinal Left";
+                }
+            }
+            
+            echo "<input id='shelf_quantity_" . $item_id . "' type='hidden' value='" . $cold_item . "'/>";
+            
+            $resultsPopularity = $db->query('SELECT ItemID, Date FROM Restock where ItemID = ' . $row['ID'] . ' ORDER BY Date DESC');
+            $firstDate = "";
+            $lastDate = "";
+            $totalPurchases = 0;
+            while ($rowPopularity = $resultsPopularity->fetchArray()) {
+                if( $firstDate == "") {
+                    $firstDate = $rowPopularity[1];
+                }
+                $lastDate = $rowPopularity[1];
+                $totalPurchases++;
+            }
+            
+            $date_before = DateTime::createFromFormat('Y-m-d H:i:s', $firstDate);
+            $date_after = DateTime::createFromFormat('Y-m-d H:i:s', $lastDate);
+            
+            $days_ago = 0;
+            
+            if( $firstDate != "" && $lastDate != "" ) {
+                if( $firstDate == $lastDate) {
+                    $date_after = new DateTime();
+                }
+            
+                $time_since = $date_before->diff($date_after);
+                $days_ago = $time_since->format('%a');
+            }
+            
+            $frequencyBought = "N/A";
+            $purchaseDayInterval = "N/A";
+            
+            if( isset( $row['Frequency'] ) ) {
+                $frequencyBought = $row['Frequency'];
+            }
+            
+            if( $totalPurchases > 0 ) {
+                $purchaseDayInterval = round($days_ago / $totalPurchases);
+            }
+            
+            $previewImage = "";
+            
+            if( $imageURL != "" ) {
+                $previewImage = "<img src='preview_images/normal/$imageURL' />";
+            } else {
+                $previewImage = "<img style='width: 100px; height: 100px; padding-top:70px;' src='images/no_image.png' />";
+            }
+            
+            $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
+            
+            $reportButton = "";
+            if( $isLoggedIn && $outOfStock != "1" ) {
+                $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
+                $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='images/flag.png' title='Report Item Out of Stock'/></div>";
+            }
+            
+            $outOfStockLabel = "";
+            if( $outOfStock == "1" ) {
+                $outOfStockLabel = "<div class='out-of-stock-label'>Reported as out of stock by " . $outOfStockReporter . "!</div>";
+            }
+            
+            // ------------------
+            // BUILD THE CARD
+            // ------------------
+            echo "<span class='post-module $statusClass'>";
+                echo "<div class='thumbnail thumbnail-$thumbnailClass'>";
+                    echo "<div class='price'>";
+                        echo $priceDisplay;
+                    echo "</div>";
+                    echo $previewImage;
                 echo "</div>";
-            }
+                echo "<div class='post-content'>";
+                    echo $reportButton;
+                    echo "$outOfStockLabel";
+                    echo "<div class='category category-$cardClass $amountClass'>$amountLeft</div>";
+                      
+                    echo "<h1 class='title'>" . $row['Name'] . "</h1>";
+
+                    echo "<div class='stats'>";
+                        echo "<span class='box' title='You have bought this x times.'>";
+                            echo "<span class='value'>$frequencyBought</span>";
+                            echo "<span class='parameter'>Purchases</span>";
+                        echo "</span>";
+                        
+                        echo "<span class='box' title='Restocked every x days.'>";
+                            echo "<span class='value'>$purchaseDayInterval</span>";
+                            echo "<span class='parameter'>Days</span>";
+                        echo "</span>";
+                        
+                        echo "<span class='box' title='Total of x units sold.'>";
+                            echo "<span class='value'>$total_can_sold</span>";
+                            echo "<span class='parameter'>Total Sold</span>";
+                        echo "</span>";
+                    echo "</div>";
+
+                    echo "<div class='actions'>";
+                        echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
+                        echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
+                        echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
+                    echo "</div>"; //actions
+                echo "</div>"; //post-content
+        echo "</span>"; //post-module
         
-            echo "</div>";
+        
+//             if( $row['Retired'] == 0 ) {
+//                 // Active - blue cards
+//                 echo "<div class='" . $className . "_card card'>";
+//             } else {
+//                 // Retired - black cards
+//                 echo "<div class='card' style='background-color:#131313;'>";
+//             }
+        
+//             echo "<div class='top_section'>";
+//             buildTopSection($row, $location, $isMobile);
+//             echo "</div>";
+        
+            
+//             echo "<div class='middle_section'>";
+//             buildMiddleSection($db, $row, $isMobile);
+//             echo "</div>";
+            
+//             if( !$isMobile) {
+//                 echo "<div class='bottom_section'>";
+//                 buildBottomSection($db, $row, $isMobile);
+//                 echo "</div>";
+//             }
+        
+//             echo "</div>";
         
         }
     } 
