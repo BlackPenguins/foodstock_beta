@@ -141,6 +141,10 @@ function DisplayPaymentMethods() {
     echo "<img style='width:30px; margin-right:5px;' title='Cash in Hand' src='images/cash_in_hand.png'/> Location: My Cube";
     echo "</span>";
     
+    echo "<span style='$flexCSS'>";
+    echo "<img style='width:30px; margin-right:5px;' title='Google Pay' src='images/google_pay.jpg'/>mtm4440@g.rit.edu";
+    echo "</span>";
+    
     echo "<span style='$flexCSS font-size:0.7em;'>";
     echo "Or you can suggest something else - be a trendsetter.";
     echo "</span>";
@@ -472,6 +476,12 @@ function buildBottomSection($db, $row, $isMobile) {
         }
         
         $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
+        
+        $resultsDefect = $db->query("SELECT Sum(Amount) as 'TotalDefect' From Defectives where ItemID = ". $row['ID']);
+        $rowDefect = $resultsDefect->fetchArray();
+        $totalDefects = $rowDefect['TotalDefect'];
+        
+        $total_can_sold = $total_can_sold - $totalDefects;
         
         echo "<span title='" . $total_can_sold ." total sold.' style='padding:10px; color:#ffffff; font-weight:bold;' ><img style='vertical-align:middle; padding-bottom:5px;' src='images/trends.png'/>&nbsp;&nbsp;"  . $total_can_sold . " sold</span>";
         

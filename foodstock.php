@@ -208,17 +208,6 @@ if(!$isMobile) {
     $total_expense = $row['Expenses'];
     $total_profit = $total_income - $total_expense;
     $total_income_actual = $row['ProfitActual']; // This is actually the INCOME - NOT PROFIT
-    $firstDay = $row['FirstDay'];
-
-    echo "<div style='margin: auto;'>";
-    echo "<div style='margin-left:5px;'>";
-    echo "<a href='#change_log'><span style='color:#000000; font-weight:bold; background-color:#efa217; padding:5px; border: #000 2px dashed; margin-right:5px; width:245px; display:inline-block;'>$version</span></a>";
-    if( $isLoggedInAdmin ) {
-        echo "<span style='color:black; background-color:#90EE90; margin-left:5px; padding:5px 15px; border: #000 2px dashed;'><b>Income (Calculated):</b> $". number_format($total_income, 2)."</span>";
-        echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Profit (Calculated):</b> $". number_format($total_profit, 2)."</span>";
-        echo "<span style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px dashed;'><b>Expenses:</b> $". number_format($total_expense, 2)."</span>";
-    }
-    
     $dateNow = new DateTime();
     $firstDay = DateTime::createFromFormat('Y-m-d H:i:s', $row['FirstDay']);
     
@@ -226,18 +215,34 @@ if(!$isMobile) {
     $days_ago = $time_since->format('%a');
 
     $profitPerDay = $total_profit / $days_ago;
-    echo "<span style='color:black; background-color:#FFF; padding:5px 15px; border: #000 2px dashed;'><b>Profit / Day:</b> $". number_format($profitPerDay, 2)."</span>";
-    echo "<span style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px dashed;'><b>Days Active: </b>". $days_ago ." days</span>";
-    echo "</div>";
+
+    echo "<div style='margin: auto;'>";
     
-    echo "<div style='margin-left:274px; margin-top:12px;'>";
+    echo "<table>";
+    echo "<tr>";
+    echo "<td style='color:#000000; font-weight:bold; background-color:#efa217; padding:5px; border: #000 2px solid;'><a href='#change_log'>$version</a></td>";
+    echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> $". number_format($profitPerDay, 2)."</td>";
+    echo "<td style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px solid;'><b>Days Active: </b>". $days_ago ." days</td>";
     
     if( $isLoggedInAdmin ) {
-        echo "<span style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px dashed;'><b>Income (by Payments):</b> $". number_format($total_income_actual, 2)."</span>";
-        $actualProfit = $total_income_actual - $total_expense;
-        echo "<span style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px dashed;'><b>Profit (by Payments):</b> $". number_format($actualProfit, 2)."</span>";
+        echo "<td>&nbsp;</td>";
+        echo "<td style='text-align:right; font-weight:bold;'>Calculated:</td>";
+        echo "<td style='color:black; background-color:#90EE90; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> $". number_format($total_income, 2)."</td>";
+        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> $". number_format($total_profit, 2)."</td>";
+        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> $". number_format($total_expense, 2)."</td>";
     }
-    echo "</div>";
+    echo "</tr>";
+    
+    if( $isLoggedInAdmin ) {
+        echo "<tr>";
+        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
+        echo "<td style='text-align:right; font-weight:bold;'>Payments:</td>";
+        echo "<td style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> $". number_format($total_income_actual, 2)."</td>";
+        $actualProfit = $total_income_actual - $total_expense;
+        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> $". number_format($actualProfit, 2)."</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
     
     echo "<div></div>";
 }
@@ -281,7 +286,7 @@ if( !$isMobile && $itemType != "Snack" ) {
     echo "</div>";
 }
 
-echo "<div style='font-size:1.6em; font-weight:bold; margin:3px;'><input placeholder='Search Items' autofocus type='text' style='padding:5px; border-radius:20px; font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', this.value );\"/></div>";
+echo "<div style='font-size:1.2em; font-weight:bold; margin-left:30px;'><input placeholder='Search Items' autofocus type='text' style='padding:5px; border-radius:20px; font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', this.value );\"/></div>";
 echo "<div id='card_area'>";
 echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '' );</script>";
 echo "</div>";
@@ -291,6 +296,7 @@ if( !$isMobile) {
 
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
+    echo "<li><b>Nov 10, 2018:</b> Added Audit and Defectives admin pages. Moved and reduced size of search box. Added 'Google Pay' as supported payment.</li>";
     echo "<li><b>Oct 24, 2018:</b> Complete redesign of cards with a more modern look. Removed 'Search' label. Credit goes towards <a href='https://codepen.io/andytran/pen/BNjymy'>Andy Tran</a> and <a href='https://codepen.io/roydigerhund/pen/OMreoV'>Matthias Martin</a> for taking elements from both of their UI designs and tweaking them to work with my site.</li>";
     echo "<li><b>Oct 20, 2018:</b> Added graphs to stats page and ability to set date range. Ability to undo anything (refunds on purchases, payments, inventory, restock). Improved sorting on main page so discontinued and sold out snacks don't appear at the top. Inventory Form - Added incrementers and 'unit changed' colors, removed Price column. Restock Form - improved UI, multiplier. Shopping Guide - order by Cost Each. Added 'Expiration Date' column to items. Misc bug fixes.</li>";
     echo "<li><b>Aug 5, 2018:</b> Added FoodStockBot. Show cash-only totals in Billing (Ryan ask). Added 'Alias' for items (people couldn't find the Spicy Snacks). Redesigned 'Methods of Payment' section with accounts. Divided request modals into 3 separate modal/buttons. Sort requests by completion. Added the start of the stats page. Slack notifications when item inventory reaches zero (Nick ask). Attempted to fix rounding issues with negative $0 balances. ADMIN: Sorted inventory by quantity, added bot automatically notifying all users of payment owed at first of month, formatted phone numbers.</li>";

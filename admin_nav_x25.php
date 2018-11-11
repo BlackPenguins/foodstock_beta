@@ -6,6 +6,7 @@
             echo "<div id='edit_item_Soda_button' class='nav_buttons nav_buttons_soda'>Edit Soda</div>";
             echo "<div id='restock_item_Soda_button' class='nav_buttons nav_buttons_soda'>Restock Soda</div>";
             echo "<div id='inventory_Soda_button' class='nav_buttons nav_buttons_soda'>Inventory Soda</div>";
+            echo "<div id='defective_item_Soda_button' class='nav_buttons nav_buttons_soda'>Defect Soda</div>";
         echo "</div>";
         
         echo "<div style='margin-bottom:20px;'>";
@@ -13,6 +14,7 @@
             echo "<div id='edit_item_Snack_button' class='nav_buttons nav_buttons_snack'>Edit Snack</div>";
             echo "<div id='restock_item_Snack_button' class='nav_buttons nav_buttons_snack'>Restock Snack</div>";
             echo "<div id='inventory_Snack_button' class='nav_buttons nav_buttons_snack'>Inventory Snack</div>";
+            echo "<div id='defective_item_Snack_button' class='nav_buttons nav_buttons_snack'>Defect Snack</div>";
         echo "</div>";
         
         echo "<div style='margin-bottom:20px;'>";
@@ -27,6 +29,8 @@
             echo "<a href='admin_restock_x25.php'><div class='nav_buttons nav_buttons_snack'>Restock</div></a>";
             echo "<a href='admin_inventory_x25.php'><div class='nav_buttons nav_buttons_snack'>Inventory/Purchases</div></a>";
             echo "<a href='admin_shopping_guide_x25.php'><div class='nav_buttons nav_buttons_snack'>Shopping Guide</div></a>";
+            echo "<a href='admin_defectives_x25.php'><div class='nav_buttons nav_buttons_defectives'>Defectives</div></a>";
+            echo "<a href='admin_audit_x25.php'><div class='nav_buttons nav_buttons_audit'>Audit</div></a>";
         echo "</div>";
         
     echo "</div>";

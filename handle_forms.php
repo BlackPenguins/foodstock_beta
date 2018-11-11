@@ -258,6 +258,37 @@ if(isset($_POST['Purchase'])) {
             $db->exec("UPDATE Information SET Expenses = Expenses + $cost where ItemType = '$itemType'");
     
             $userMessage = "Restocked successfully.";
+        }  else if(isset($_POST['Defective'])) {
+            $id = trim($_POST["DefectiveDropdown"]);
+            $itemType = trim($_POST["ItemType"]);
+            $date = date('Y-m-d H:i:s');
+            $numberOfCans = trim($_POST["NumberOfUnits"]);
+            
+            $results = $db->query("SELECT Price, BackstockQuantity, ShelfQuantity From Item where ID = $id");
+            $row = $results->fetchArray();
+            $price = round($row['Price'], 2);
+            $shelfQuantity = $row['ShelfQuantity'];
+            $backstockQuantity = $row['BackstockQuantity'];
+            
+            $totalQuantity = $shelfQuantity + $backstockQuantity;
+            
+            if( $numberOfCans > $totalQuantity ) {
+                $userMessage = "Error: Trying to defect out more than you have.";
+            } else {
+                $shelfDecrement = 0;
+                $backstockDecrement = 0;
+                
+                if( $numberOfCans > $shelfQuantity ) {
+                    $backstockDecrement = $numberOfCans -  $shelfQuantity;
+                    $shelfDecrement  = $shelfQuantity;
+                } else {
+                    $shelfDecrement = $numberOfCans;
+                }
+                
+                $db->exec("INSERT INTO Defectives (ItemID, Date, Amount, Price) VALUES($id, '$date', $numberOfCans, $price)");
+                $db->exec("UPDATE Item SET ShelfQuantity=ShelfQuantity-$shelfDecrement, BackstockQuantity=BackstockQuantity-$backstockDecrement WHERE ID = $id");
+                $userMessage = "Defectives successfully.";
+            }
         } else if(isset($_POST['Payment'])) {
             error_log( "Incoming payment." );
             $userID = trim($_POST["UserDropdown"]);

@@ -65,6 +65,22 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
     border: solid 2px #025d09;
 }
 
+.nav_buttons_defectives:hover {
+    background-color: #464646;
+}
+.nav_buttons_defectives {
+    background-color: #333333;
+    border: solid 2px #020202;
+}
+
+.nav_buttons_audit:hover {
+    background-color: #56c1b7;
+}
+.nav_buttons_audit {
+    background-color: #31a59a;
+    border: solid 2px #0d423d;
+}
+
 .nav_buttons_admin:hover {
     background-color: #dadc4b;
 }

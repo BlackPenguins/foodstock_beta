@@ -265,6 +265,8 @@
             $edit_dropdown = "<select id='Edit" . $itemType . "Dropdown' name='Edit" . $itemType . "Dropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options</select>";
                 
             $restock_dropdown = "<select id='RestockDropdown' name='RestockDropdown' style='padding:5px; width:100%; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options_no_discontinued</select>";
+            
+            $defective_dropdown = "<select id='DefectiveDropdown' name='DefectiveDropdown' style='padding:5px; width:100%; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options_no_discontinued</select>";
                 
             
             // ------------------------------------
@@ -402,6 +404,27 @@
             
             if( $isMobile) {
                 echo "<input style='padding:10px;' type='submit' name='Restock_Item_" . $itemType .  "_Submit' value='Restock " . $itemType . "'/><br>";
+            }
+            echo "</form>";
+            echo "</div>";
+            
+            // ------------------------------------
+            // DEFECTIVES ITEM MODAL
+            // ------------------------------------
+            echo "<div id='defective_item_" . $itemType . "' title='Defective " . $itemType . "' $hideForms>";
+            echo "<form id='defective_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
+            echo "<label style='padding:5px 0px;' for='ItemNameDropdown'>" . $itemType . "</label>";
+            echo $defective_dropdown;
+            
+            echo "<label style='padding:5px 0px;' for='NumberOfUnits'>Number Of Units</label>";
+            echo "<input type='tel' style='font-size: 2em;' name='NumberOfUnits' class='text ui-widget-content ui-corner-all'/>";
+
+            echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/><br>";
+            echo "<input type='hidden' name='Defective' value='Defective'/><br>";
+            echo "<input type='hidden' name='redirectURL' value='admin_defectives_x25.php'/><br>";
+            
+            if( $isMobile) {
+                echo "<input style='padding:10px;' type='submit' name='Defective_Item_" . $itemType .  "_Submit' value='Defective " . $itemType . "'/><br>";
             }
             echo "</form>";
             echo "</div>";

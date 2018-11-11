@@ -19,6 +19,11 @@ function loadItemModals(type) {
             $('#inventory_' + type).dialog('open');
              return false;
     });
+    
+    $("#defective_item_" + type + "_button").click( function() {
+        $('#defective_item_' + type).dialog('open');
+         return false;
+    });
 
     // Build forms
     $( "#add_item_" + type ).dialog( {
@@ -110,6 +115,28 @@ function loadItemModals(type) {
                         }
                     ]
     });
+    
+    $( "#defective_item_" + type ).dialog( {
+        autoOpen: false, 
+        width: 500,
+        modal: true,
+        buttons: [
+                    {
+                        id: "Defective_Item_" + type + "_Cancel",
+                        text: "Cancel",
+                        click: function() {
+                            $(this).dialog("close");
+                        } 
+                    },
+                    {
+                        id:"Defective_Item_" + type + "_Submit",
+                        text: "Defect " + type,
+                        click: function() { 
+                            $("#defective_item_" + type + "_form").submit();
+                        }
+                    }
+                ]
+});
 }
 
 function loadShoppingModal() {

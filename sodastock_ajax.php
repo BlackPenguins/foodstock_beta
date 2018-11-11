@@ -105,9 +105,10 @@
             $buttonClass = $cardClass;
             
             if( $retired_item == 1) {
-                $amountLeft = "Discontinued";
+                $amountLeft = "Discontinued Soon";
                 
                 if($cold_item == 0) {
+                    $amountLeft = "Discontinued";
                     $amountClass = "discontinued";
                     $statusClass = "post-module-discontinued";
                     $buttonClass = "disabled";
@@ -172,6 +173,13 @@
             }
             
             $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
+            
+            $resultsDefect = $db->query("SELECT Sum(Amount) as 'TotalDefect' From Defectives where ItemID = ". $row['ID']);
+            $rowDefect = $resultsDefect->fetchArray();
+            $totalDefects = $rowDefect['TotalDefect'];
+            
+            $total_can_sold = $total_can_sold - $totalDefects;
+            
             
             $reportButton = "";
             if( $isLoggedIn && $outOfStock != "1" ) {
