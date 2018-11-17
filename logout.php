@@ -1,8 +1,10 @@
 <html>
 <head>
 <?php
+include( "appendix.php" );
+
 session_start();
-$lastPage = "sodastock.php";
+$lastPage = SODASTOCK_LINK;
 session_destroy();
 ?>
 

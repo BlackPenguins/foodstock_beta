@@ -1,6 +1,6 @@
 <?php
-// Indentation
-// do the login stuff on top of every page in a function, dont duplicate code
+include(__DIR__ . "/../appendix.php" );
+
 function Login($db) {
     session_start();
     

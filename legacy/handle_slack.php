@@ -18,7 +18,7 @@ if(isset($_POST['token']))
         error_log("TEXT: [" . $_POST["text"] . "]" );
         error_log("RESPONSE URL: [" . $_POST["response_url"] . "]" );
         
-        $db = new SQLite3('db/item.db');
+        $db = new SQLite3(DB_PATH);
         if (!$db) die ($error);
 
         $slackMessageItems = "";

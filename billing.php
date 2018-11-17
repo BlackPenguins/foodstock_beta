@@ -2,63 +2,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
-    $db = new SQLite3("db/item.db");
-    if (!$db) die ($error);
-        
-    include("foodstock_functions.php");
-    date_default_timezone_set('America/New_York');
-        
-    Login($db);
-        
-    $isLoggedIn = IsLoggedIn();
-    $isLoggedInAdmin = IsAdminLoggedIn();
-    $loginPassword = false;
+    include( "appendix.php" );
     
-    $itemType = "Soda";
-    $url = "sodastock.php";
-        
-    require_once 'Mobile_Detect.php';
- 
-    $detect = new Mobile_Detect;
-    $device_type = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
-    $isMobile = $device_type == 'phone';
-
-    if(isset($_GET['mobile'])) {
-        $isMobile = true;
-    }
-        
-    echo "<title>Billing - Foodstock</title>";
-    echo "<link rel='icon' type='image/png' href='soda_can_icon.png' />";
-?>
-
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-
-<?php
-    if( !$isMobile) {
-        echo "<script src='js/load_modals.js'></script>";
-    }
-?>
-
-<link rel="stylesheet" type="text/css" href="colorPicker.css"/>
-<link rel="stylesheet" type="text/css" href="css/style.css"/>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-
-</head>
-
-
-<?php
-
-    if( $isMobile ) {
-        //Some magic that makes the top blue bar fill the width of the phone's screen
-        echo "<body class='soda_body' style='display:inline-table;'>";
-    } else {
-        echo "<body class='soda_body'>";
-    }
-    
-    include("login_bar.php");
-    
-    TrackVisit($db, "Billing" );
+    $url = BILLING_LINK;
+    include( HEADER_PATH );
     
     if( $isLoggedInAdmin && isset($_GET['userid'] ) && isset($_GET['name'] )  ) {
         $userID = $_GET['userid'];

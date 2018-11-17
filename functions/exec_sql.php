@@ -1,4 +1,5 @@
 <?php
+    include(__DIR__ . "/../appendix.php" );
     $statement = "";
     
     // Add Completed and ID to Requests
@@ -91,7 +92,7 @@
 }
     */
     
-    $db = new SQLite3("db/item.db");
+    $db = new SQLite3(DB_PATH);
     if (!$db) die ($error);
     
 //     

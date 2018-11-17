@@ -2,91 +2,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
-    $db = new SQLite3("db/item.db");
-    if (!$db) die ($error);
-        
-    include("foodstock_functions.php");
-    date_default_timezone_set('America/New_York');
-        
-    Login($db);
-
-    $isLoggedIn = IsLoggedIn();
-    $isLoggedInAdmin = IsAdminLoggedIn();
-    $loginPassword = false;
+    include(__DIR__ . "/../appendix.php" );
     
-    $itemType = "Soda";
-    $url = "admin_shopping_guide.php";
-        
-    require_once 'Mobile_Detect.php';
- 
-    $detect = new Mobile_Detect;
-    $device_type = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
-    $isMobile = $device_type == 'phone';
-
-    if(isset($_GET['mobile'])) {
-        $isMobile = true;
-    }
-        
-    echo "<title>Admin - Foodstock</title>";
-    echo "<link rel='icon' type='image/png' href='soda_can_icon.png' />";
-?>
-
-
-
-
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="js/jscolor.js"></script>
-
-<?php
-    if( !$isMobile) {
-        echo "<script src='js/load_modals.js'></script>";
-    }
-?>
-
-<link rel="stylesheet" type="text/css" href="colorPicker.css"/>
-<link rel="stylesheet" type="text/css" href="css/style.css"/>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-
-<script type="text/javascript">
-    $( document ).ready( function() {
-                
-        <?php 
-            if( $isLoggedInAdmin ) {
-                if( !$isMobile ) {
-                    echo "loadSingleModals();\n";
-                    echo "loadItemModals('Soda');\n";
-                    echo "loadItemModals('Snack');\n";
-                }
-                echo "loadShoppingModal();\n";
-            }
-        ?>           
-    });
-</script>
-</head>
-
-<?php
-
-    if( $isMobile ) {
-        //Some magic that makes the top blue bar fill the width of the phone's screen
-        echo "<body class='soda_body' style='display:inline-table;'>";
-    } else {
-        echo "<body class='soda_body'>";
-    }
-    
-    include("build_admin_forms.php");
-    include("login_bar.php");
-    
-    TrackVisit($db, 'Admin - Items Listing');
-    
-
-    DisplayUserMessage();
-    
-    if( $isLoggedInAdmin && !$isMobile ) {
-        echo "<span style='width:11%; vertical-align:top; display:inline-block; padding: 10px; background-color:#4d544e; border: 0px solid #000;'>";
-        include "admin_nav_x25.php";
-        echo "</span>";
-    }
+    $url = ADMIN_SHOPPING_GUIDE_LINK;
+    include( HEADER_PATH );
     
     echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
     
@@ -114,9 +33,9 @@
         
         echo "<div style='margin:20px;'>";
         echo "<span style='float:right;' id='shopping_button' class='nav_buttons nav_buttons_admin'>Add Shopping Guide</span>";
-        echo "<a href='admin_shopping_guide_x25.php'><span style='color:#000000; cursor:pointer; border:2px solid #000; margin-right:5px; background-color:#ffffff; padding: 5px;'>All</span></a>";
+        echo "<a href='" . ADMIN_SHOPPING_GUIDE_LINK . "'><span style='color:#000000; cursor:pointer; border:2px solid #000; margin-right:5px; background-color:#ffffff; padding: 5px;'>All</span></a>";
         foreach( $storeColors as $store => $color ) {
-            echo "<a href='admin_shopping_guide_x25.php?store=$store'><span style='color:#000000; cursor:pointer; border:2px solid #000; margin-right:5px; background-color:$color; padding: 5px;'>$store</span></a>";
+            echo "<a href='" . ADMIN_SHOPPING_GUIDE_LINK . "?store=$store'><span style='color:#000000; cursor:pointer; border:2px solid #000; margin-right:5px; background-color:$color; padding: 5px;'>$store</span></a>";
         }
         echo "</div>";
         
@@ -220,7 +139,7 @@
             }
             
             if($totalQuantity == 0) {
-                echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='images/none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
+                echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='" . IMAGES_LINK . "none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
             } else {
                 $unitNameFinal = $totalQuantity > 1 ? $unitNamePlural : $unitName;
                 echo "<div title='Quantity in Stock' class='cold_item' style='padding:10px; margin:5px 0px;'>$totalQuantity $unitNameFinal</div>";

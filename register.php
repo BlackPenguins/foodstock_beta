@@ -1,17 +1,8 @@
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="css/style.css"/>
-<title>Register</title>
-</head>
-
-<body style='margin:0; padding:0;'>
 <?php
-        $db = new SQLite3("db/item.db");
-        if (!$db) die ($error);
+        include( "appendix.php" );
         
-        include("foodstock_functions.php");
-        
-        date_default_timezone_set('America/New_York');
+        $url = REGISTER_LINK;
+        include( HEADER_PATH );
         
         $userMessage = "";
         $userError = "";
@@ -59,7 +50,7 @@
         }
         
         echo "<div style='margin: 0 auto;' class='fancy'>";
-        echo "<form style='width:300px; margin: 0 auto;' id='add_item_form' enctype='multipart/form-data' action='register.php' method='POST'>";
+        echo "<form style='width:300px; margin: 0 auto;' id='add_item_form' enctype='multipart/form-data' action='" . REGISTER_LINK . "' method='POST'>";
         
         echo "<fieldset style='padding:0px 20px 20px 20px; font-size:1.2em; color:#FFF; border:3px solid #1d6cc7; background-color:#2c7ede;'>";
         echo "<h1>Create an Account</h1>";
@@ -91,8 +82,6 @@
 
         echo "</fieldset>";
         echo "</form>";
-        
-        echo "<div style='width:300px; margin: 0 auto; padding:10px; text-align:center;'><b><a href='sodastock.php'>Return to Sodastock</a></b></div>";
         
         echo "</div>";
         $db->close();

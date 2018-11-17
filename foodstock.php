@@ -2,42 +2,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
-function main( $url, $title, $favicon, $itemType, $className, $location ) {
-    $db = new SQLite3("db/item.db");
-    if (!$db) die ($error);
-    
-    include("foodstock_functions.php");
-    date_default_timezone_set('America/New_York');
-    
-    Login($db);
-    
-    $isLoggedIn = IsLoggedIn();
-    $isLoggedInAdmin = IsAdminLoggedIn();
-    $loginPassword = false;
-    
-    require_once 'Mobile_Detect.php';
+include( CSS_PATH );
+include( "appendix.php" );
 
-    $detect = new Mobile_Detect;
-    $device_type = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
-    $isMobile = $device_type == 'phone';
-
-    if(isset($_GET['mobile'])) {
-        $isMobile = true;
-    }
-    
-    echo "<title>" . $title . " " . date('Y') . "</title>";
-    echo "<link rel='icon' type='image/png' href='" . $favicon . "' />";
+function main( $url, $itemType, $className, $location ) {
+    include( HEADER_PATH );
 ?>
-
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 
 <script>
     var itemsInCart = [];
     
     function updateCardArea(itemTypeValue, classNameValue, locationValue, isMobileValue, itemSearchValue) {
         console.log("Updating Card Area with [" + itemSearchValue + "]...");
-        $.post("sodastock_ajax.php", { 
+        $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'CardArea',
                 itemType:itemTypeValue,
                 className:classNameValue,
@@ -55,7 +32,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
         if ( $isOutOfStock ) {
             alert("Thank you. Matt Miles has been notified about " + itemName + ".");
 
-            $.post("sodastock_ajax.php", { 
+            $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'OutOfStockRequest',
                 reporter:user,
                 itemID:itemID,
@@ -94,7 +71,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
             $('#add_button_' + itemID).removeClass('btn- <? echo $itemType; ?>');
         }
         
-        $.post("sodastock_ajax.php", { 
+        $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'DrawCart',
                 items:JSON.stringify(itemsInCart),
                 url:'<?php  echo $url; ?>'
@@ -133,7 +110,7 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
             $('#add_button_' + itemID).addClass('btn- <? echo $itemType; ?>');
         }
         
-        $.post("sodastock_ajax.php", { 
+        $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'DrawCart',
                 items:JSON.stringify(itemsInCart),
                 url:'<?php  echo $url; ?>'
@@ -141,44 +118,8 @@ function main( $url, $title, $favicon, $itemType, $className, $location ) {
                 $('#cart_area').html(data);
         });
     }
-
-    $( document ).ready( function() {
-        <?php 
-        if( $isLoggedIn ) {
-            echo "loadUserModals();\n";
-        }
-        ?>           
-    });
 </script>
-
 <?php
-    if( !$isMobile) {
-        echo "<script src='js/load_modals.js'></script>";
-    }
-?>
-
-<link rel="stylesheet" type="text/css" href="colorPicker.css"/>
-<link rel="stylesheet" type="text/css" href="css/style.css"/>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-
-</head>
-
-
-<?php
-
-if( $isMobile ) {
-    //Some magic that makes the top blue bar fill the width of the phone's screen
-    echo "<body class='" . $className . "_body' style='display:inline-table;'>";
-} else {
-    echo "<body class='" . $className . "_body'>";
-}
-
-include("login_bar.php");
-date_default_timezone_set('America/New_York');
-TrackVisit($db, $title);
-DisplayUserMessage();
-include("exec_sql.php");
-
 
 // ------------------------------------
 // FANCY ITEM TABLE
@@ -198,7 +139,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.1 (October 24th, 2018)";
+    $version = "Version 5.2 (November 17th, 2018)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -229,7 +170,7 @@ if(!$isMobile) {
         echo "<td style='text-align:right; font-weight:bold;'>Calculated:</td>";
         echo "<td style='color:black; background-color:#90EE90; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> $". number_format($total_income, 2)."</td>";
         echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> $". number_format($total_profit, 2)."</td>";
-        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> $". number_format($total_expense, 2)."</td>";
+        echo "<td rowspan='2' style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> $". number_format($total_expense, 2)."</td>";
     }
     echo "</tr>";
     
@@ -249,11 +190,11 @@ if(!$isMobile) {
 
 echo "<div id='cart_area' style='margin:20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
 echo "<div style='display:flex; align-items:center;'>";
-echo "<img width='40px' src='images/handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
+echo "<img width='40px' src='" . IMAGES_LINK . "handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
 echo "</div>";
 
 echo "<div style='display:flex; align-items:center;'>";
-echo "<img width='40px' src='images/sale.png'/>&nbsp;Discounted prices are only available when you buy through the site.";
+echo "<img width='40px' src='" . IMAGES_LINK . "sale.png'/>&nbsp;Discounted prices are only available when you buy through the site.";
 echo "</div>";
 echo "</div>";
     
@@ -296,7 +237,7 @@ if( !$isMobile) {
 
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
     echo "<ul>";
-    echo "<li><b>Nov 10, 2018:</b> Added Audit and Defectives admin pages. Moved and reduced size of search box. Added 'Google Pay' as supported payment.</li>";
+    echo "<li><b>Nov 17, 2018:</b> Added Audit and Defectives admin pages. Moved and reduced size of search box. Added 'Google Pay' as supported payment. Refactored the entire code base - organized by directories, centralized the URLs (appendix), removed unused code, removed duplicate code by reusing a 'header' page, indentation, renamed page names.</li>";
     echo "<li><b>Oct 24, 2018:</b> Complete redesign of cards with a more modern look. Removed 'Search' label. Credit goes towards <a href='https://codepen.io/andytran/pen/BNjymy'>Andy Tran</a> and <a href='https://codepen.io/roydigerhund/pen/OMreoV'>Matthias Martin</a> for taking elements from both of their UI designs and tweaking them to work with my site.</li>";
     echo "<li><b>Oct 20, 2018:</b> Added graphs to stats page and ability to set date range. Ability to undo anything (refunds on purchases, payments, inventory, restock). Improved sorting on main page so discontinued and sold out snacks don't appear at the top. Inventory Form - Added incrementers and 'unit changed' colors, removed Price column. Restock Form - improved UI, multiplier. Shopping Guide - order by Cost Each. Added 'Expiration Date' column to items. Misc bug fixes.</li>";
     echo "<li><b>Aug 5, 2018:</b> Added FoodStockBot. Show cash-only totals in Billing (Ryan ask). Added 'Alias' for items (people couldn't find the Spicy Snacks). Redesigned 'Methods of Payment' section with accounts. Divided request modals into 3 separate modal/buttons. Sort requests by completion. Added the start of the stats page. Slack notifications when item inventory reaches zero (Nick ask). Attempted to fix rounding issues with negative $0 balances. ADMIN: Sorted inventory by quantity, added bot automatically notifying all users of payment owed at first of month, formatted phone numbers.</li>";

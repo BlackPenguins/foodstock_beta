@@ -1,12 +1,15 @@
 <?php
-    include("foodstock_functions.php");
+    include(__DIR__ . "/../appendix.php" );
+    include( SESSION_FUNCTIONS_PATH );
+    include(UI_FUNCTIONS_PATH);
+    include(SLACK_FUNCTIONS_PATH);
     
     session_start();
     date_default_timezone_set('America/New_York');
 
     $type = $_POST['type'];
         
-    $db = new SQLite3('db/item.db');
+    $db = new SQLite3(DB_PATH);
     if (!$db) die ($error);
 
     if($type == "CardArea" ) 
@@ -167,9 +170,9 @@
             $previewImage = "";
             
             if( $imageURL != "" ) {
-                $previewImage = "<img src='preview_images/normal/$imageURL' />";
+                $previewImage = "<img src='" . PREVIEW_IMAGES_NORMAL . $imageURL . "' />";
             } else {
-                $previewImage = "<img style='width: 100px; height: 100px; padding-top:70px;' src='images/no_image.png' />";
+                $previewImage = "<img style='width: 100px; height: 100px; padding-top:70px;' src='" . IMAGES_LINK . "no_image.png' />";
             }
             
             $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
@@ -184,7 +187,7 @@
             $reportButton = "";
             if( $isLoggedIn && $outOfStock != "1" ) {
                 $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
-                $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='images/flag.png' title='Report Item Out of Stock'/></div>";
+                $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='" . IMAGES_LINK . "flag.png' title='Report Item Out of Stock'/></div>";
             }
             
             $outOfStockLabel = "";
@@ -262,33 +265,6 @@
                     }
                 echo "</div>"; //post-content
         echo "</span>"; //post-module
-        
-        
-//             if( $row['Retired'] == 0 ) {
-//                 // Active - blue cards
-//                 echo "<div class='" . $className . "_card card'>";
-//             } else {
-//                 // Retired - black cards
-//                 echo "<div class='card' style='background-color:#131313;'>";
-//             }
-        
-//             echo "<div class='top_section'>";
-//             buildTopSection($row, $location, $isMobile);
-//             echo "</div>";
-        
-            
-//             echo "<div class='middle_section'>";
-//             buildMiddleSection($db, $row, $isMobile);
-//             echo "</div>";
-            
-//             if( !$isMobile) {
-//                 echo "<div class='bottom_section'>";
-//                 buildBottomSection($db, $row, $isMobile);
-//                 echo "</div>";
-//             }
-        
-//             echo "</div>";
-        
         }
     } 
     else if( $type == "ToggleRequestCompleted" ) {
@@ -538,7 +514,7 @@
         echo "<tr><td style='color:#49c533; padding-top:5px;'>TOTAL SAVINGS:</td><td style='color:#49c533; font-weight:bold; padding-left:15px; padding-top:5px;'>" . '$' . number_format($totalSavings, 2) ."</td>";
         echo "</table>";
         
-        echo "<form id='add_item_form' enctype='multipart/form-data' action='handle_forms.php' method='POST'>";
+        echo "<form id='add_item_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
         echo "<input type='hidden' name='items' value='" . json_encode($itemsInCart) . "'/><br>";
         echo "<input type='hidden' name='Purchase' value='Purchase'/><br>";
         echo "<input type='hidden' name='redirectURL' value='$url'/><br>";

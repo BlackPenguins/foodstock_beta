@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('America/New_York');
 
-$db = new SQLite3('db/item.db');
+$db = new SQLite3(DB_PATH);
 if (!$db) die ($error);
 
 /*

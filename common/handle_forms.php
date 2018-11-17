@@ -1,8 +1,12 @@
 <?php
-$db = new SQLite3("db/item.db");
+include(__DIR__ . "/../appendix.php" );
+$db = new SQLite3(DB_PATH);
 if (!$db) die ($error);
 
-include("foodstock_functions.php");
+
+include( SESSION_FUNCTIONS_PATH );
+include(UI_FUNCTIONS_PATH);
+include(SLACK_FUNCTIONS_PATH);
 date_default_timezone_set('America/New_York');
 
 Login($db);
@@ -425,12 +429,12 @@ if(isset($_POST['Purchase'])) {
     
             $emoji = ":soda:";
             $location = "fridge";
-            $page = "sodastock.php";
+            $page = SODASTOCK_LINK;
     
             if( $itemType == "Snack" ) {
                 $emoji = ":cookie:";
                 $location = "cabinet";
-                $page = "snackstock.php";
+                $page = SNACKSTOCK_LINK;
             }
             if( $slackMessageItems != "" && $sendToSlack == true) {
                 $slackMessage = $slackMessageItems ."\n\nWant to see what is in the $location, the prices, what has been discontinued, the trends of different items being bought, or just general statistics? View the NEW <http://penguinore.net/$page>";
