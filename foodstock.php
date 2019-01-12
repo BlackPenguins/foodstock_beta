@@ -2,7 +2,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
-include( CSS_PATH );
 include( "appendix.php" );
 
 function main( $url, $itemType, $className, $location ) {
@@ -118,16 +117,36 @@ function main( $url, $itemType, $className, $location ) {
                 $('#cart_area').html(data);
         });
     }
+
+    function breakBulb(bulb) {
+        $(bulb).addClass('dead');
+    }
 </script>
 <?php
+
+function DisplayUpdate( $date, $itemType, $changes ) {
+    $backgroundColor = "#c8e2ff";
+    
+    if( $itemType == "Snack" ) {
+        $backgroundColor = "#ffdedc";
+    }
+    echo "<li style='margin: 20px 0px; background-color:$backgroundColor; padding:15px; border:1px solid #000;'><b>$date:</b>";
+    echo "<ul style='margin-top:10px;'>";
+    foreach( $changes as $change ) {
+        echo "<li>$change</li>";
+    }
+    echo "</ul>";
+    echo "</li>";
+}
 
 // ------------------------------------
 // FANCY ITEM TABLE
 // ------------------------------------
-echo "<div style='margin-bottom:20px; margin-left:5px;'>";
+
+echo "<div style='margin-bottom:5px; margin-left:5px;'>";
 
 if( !$isMobile ) {
-    echo "<span><b><a href='http://penguinore.net/sodastock.php'>Bookmark Us! Tell your friends!</a></b><br><span style='font-size:10px;'>Only the ones at RSA because I'm not selling this anywhere else.</span></span>";
+    // echo "<span><b><a href='http://penguinore.net/sodastock.php'>Bookmark Us! Tell your friends!</a></b><br><span style='font-size:10px;'>Only the ones at RSA because I'm not selling this anywhere else.</span></span>";
 }
 
 
@@ -139,7 +158,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.2 (November 17th, 2018)";
+    $version = "Version 5.3 (November 24th, 2018)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -159,9 +178,10 @@ if(!$isMobile) {
 
     echo "<div style='margin: auto;'>";
     
-    echo "<table>";
+    echo "<table style='margin:0px 20px'>";
     echo "<tr>";
-    echo "<td style='color:#000000; font-weight:bold; background-color:#efa217; padding:5px; border: #000 2px solid;'><a href='#change_log'>$version</a></td>";
+    echo "<td rowspan='2'><img src='" . IMAGES_LINK . "logo.jpg'/></td>";
+    echo "<td class='version'><a href='#change_log'>$version</a></td>";
     echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> $". number_format($profitPerDay, 2)."</td>";
     echo "<td style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px solid;'><b>Days Active: </b>". $days_ago ." days</td>";
     
@@ -188,7 +208,7 @@ if(!$isMobile) {
     echo "<div></div>";
 }
 
-echo "<div id='cart_area' style='margin:20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
+echo "<div id='cart_area' class='cart_area' style='position:relative; margin:5px 20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
 echo "<div style='display:flex; align-items:center;'>";
 echo "<img width='40px' src='" . IMAGES_LINK . "handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
 echo "</div>";
@@ -235,40 +255,201 @@ echo "</div>";
 if( !$isMobile) {
     echo "<div style='clear:both;'></div>";
 
-    echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log</span></div>";
-    echo "<ul>";
-    echo "<li><b>Nov 17, 2018:</b> Added Audit and Defectives admin pages. Moved and reduced size of search box. Added 'Google Pay' as supported payment. Refactored the entire code base - organized by directories, centralized the URLs (appendix), removed unused code, removed duplicate code by reusing a 'header' page, indentation, renamed page names.</li>";
-    echo "<li><b>Oct 24, 2018:</b> Complete redesign of cards with a more modern look. Removed 'Search' label. Credit goes towards <a href='https://codepen.io/andytran/pen/BNjymy'>Andy Tran</a> and <a href='https://codepen.io/roydigerhund/pen/OMreoV'>Matthias Martin</a> for taking elements from both of their UI designs and tweaking them to work with my site.</li>";
-    echo "<li><b>Oct 20, 2018:</b> Added graphs to stats page and ability to set date range. Ability to undo anything (refunds on purchases, payments, inventory, restock). Improved sorting on main page so discontinued and sold out snacks don't appear at the top. Inventory Form - Added incrementers and 'unit changed' colors, removed Price column. Restock Form - improved UI, multiplier. Shopping Guide - order by Cost Each. Added 'Expiration Date' column to items. Misc bug fixes.</li>";
-    echo "<li><b>Aug 5, 2018:</b> Added FoodStockBot. Show cash-only totals in Billing (Ryan ask). Added 'Alias' for items (people couldn't find the Spicy Snacks). Redesigned 'Methods of Payment' section with accounts. Divided request modals into 3 separate modal/buttons. Sort requests by completion. Added the start of the stats page. Slack notifications when item inventory reaches zero (Nick ask). Attempted to fix rounding issues with negative $0 balances. ADMIN: Sorted inventory by quantity, added bot automatically notifying all users of payment owed at first of month, formatted phone numbers.</li>";
-    echo "<li><b>Jul 29, 2018:</b> Reorganized directories and resources. Divided up Admin into separate pages. Fixed massive income bugs and miscountings.</li>";
-    echo "<li><b>Jul 2, 2018:</b> Fixed many security vulnerabilities (thanks to Joe Guest for finding those). Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron). Added more slack notifications: new users and out of stock. Added plural unit name DB column (english language sucks).</li>";
-    echo "<li><b>Jul 1, 2018:</b> Redesigned the Billing page so it's easier to read and combined the soda and snack into one page. Marked the quantity of item with warning icon if someone reported it as out of stock. Added billing to top bar, removed it from Purchase History page. Divided purchase history by weeks, added day of week to date, labeled 'Cash-Only' purchases. Admin: Created dropdown for 'Method' and added 'Payment Month' to payment form.</li>";
-    echo "<li><b>Jun 29, 2018:</b> Admin Changes: Message feedback, side bar for navigation. Added edit user: change slackID, set inactive, reset password.</li>";
-    echo "<li><b>Jun 28, 2018:</b> Added 'Report Out of Stock' button (Nick C request). Saved space on cards by making statistics into icons.</li>";
-    echo "<li><b>Apr 1, 2018:</b> Added Billing section (in Purchase History) for monthly statements and records of payments. Added 'total purchases' statistic to the Register Link. Clicking the Version at the top now jumps you to the change log.</li>";
-    echo "<li><b>Mar 28, 2018:</b> Added 'Feature' and 'Bug' request types. Divided Feature, Bug, and Requests into different sections. Ability to mark requests as completed.</li>";
-    echo "<li><b>Mar 22, 2018:</b> Added discount prices - shown in the page, the purchase history, and the cart. Show total savings and spent in purchase history. Show total savings across all users in register link. Striped tables (might need better colors). Added password confirmation to register page.</li>";
-    echo "<li><b>Mar 11, 2018:</b> Built Admin, Requests, and Purchase History pages. Added Payments. Display the number of times you bought an item in card. Order cards by the most bought (Favorites - Nick Ask). Added Nav Buttons to top bar: Soda Home, Snack Home, Requests, Purchase History, Admin. Sped up home page by removing forms and many unnecessary SQL queries. Added slack notifications for payments, requests, receipts, restocks - with specific emojis and bot names. Split balances into soda balance and snack balance. Cash only option in cart allows you to decrement the quantity without adding total to your balance because you paid in change/cash (Nick Ask). Added ability to submit requests and view others' requests.</li>";
-    echo "<li><b>Mar 3, 2018:</b> Site was moved to Vultr. Added missing snack and soda images.</li>";
-    echo "<li><b>Mar 2, 2018:</b> Tabs and balances are now online. Items can be purchased through the site. Card UI was improved a little.</li>";
-    echo "<li><b>Feb 16, 2018:</b> Created SnackStock. Storing images and unit names in DB.</li>";
-    echo "<li><b>Jan 22, 2017:</b> Bunch of changes. TBA.</li>";
-    echo "<li><b>Nov 10, 2016:</b> Lower opacity for sodas that are sold out. Added red text that says sold out. Added 'container type' labels (bottles/cans/packets).</li>";
-    echo "<li><b>Jul 1, 2016:</b> Created the card layout. Old table layout can be found <a href='sodastock_table.php'>here</a>.</li>";
-    echo "<li><b>Jun 7, 2016:</b> Added 'days active' statistic.</li>";
-    echo "<li><b>Jun 5, 2016:</b> Added 'Email' button to email inventory counts.</li>";
-    echo "<li><b>Oct 28, 2015:</b> Added 'profit per day' statistic.</li>";
-    echo "<li><b>Oct 2, 2015:</b> Added change to cursor when hovering over cells that has hover text.</li>";
-    echo "<li><b>Oct 1, 2015:</b> Hid sold-out soda in 'Daily Amount' modal. Added show/hide toggle sections.</li>";
-    echo "<li><b>Aug 28, 2015:</b> Re-ordered sodas by stock quantity. Sold out sodas at the end.</li>";
-    echo "<li><b>Jul 22, 2015:</b> Removed tiny warm/cold can icons. Added 'Last Store Purchase' & 'Avg Store Purchase'.</li>";
-    echo "<li><b>Jul 10, 2015:</b> Added discontinued sodas.</li>";
-    echo "<li><b>Feb 16, 2015:</b> SodaStock&trade; goes live. Legacy SodaStock is <a href='https://docs.google.com/spreadsheets/d/16BSupau6vEIfGY_-mgvz0_dzTeiJPysl3Kt-80fr8Hc/edit?usp=sharing'>here</a>.</li>";
-    echo "<li><b>Nov 11, 2014:</b> Started selling soda at RSA.</li>";
+    $milestoneClass= "background-color: #f1ff1a; padding:5px; margin: 20px 0px; border:solid 3px #8c8e1d;";
+    $requestClass = "color:#6328bd; font-weight:bold;";
+    $adminClass = "color:#bd2828; font-weight:bold;";
+    $dbClass = "color:#0f6d28; font-weight:bold;";
+    
+    echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
+    echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
+    
+    DisplayUpdate("Nov 24, 2018 (5.3)", $itemType, array(
+    "Christmas theme added. Credit for Christmas Lights goes to <a href='https://codepen.io/tobyj/pen/QjvEex'>Toby</a> and wreath icon goes to <a href='https://www.freepik.com/' title='Freepik'>Freepik</a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a> under the <a href='http://creativecommons.org/licenses/by/3.0/' title='Creative Commons BY 3.0' >CC 3.0 BY License</a>.",
+    "Clicking the bulbs breaks them.",
+    "Soda section goes green for the season.",
+    "Removed 'seconds' from purchase history dates."
+    ) );
+    
+    DisplayUpdate("Nov 17, 2018 (5.2)", $itemType, array(
+    "Improved the readability of this change log, added two milestones, color-coded changes.",
+    "Designed the \"Thirsty\" mascot and logo.",
+    "<span style='$adminClass'>Admin: Added Audit and Defectives pages.</span>",
+    "Moved and reduced size of search box.",
+    "<span style='$requestClass'>Request by Frank: Added 'Google Pay' as supported payment</span>",
+    "<span style='$dbClass'>Directories: Refactored the entire code base - organized into directories, centralized the URLs (appendix), removed unused code, removed duplicate code by reusing a 'header' page, indentation, renamed page names.</span>"
+    ) );
+    
+    DisplayUpdate("Oct 24, 2018 (5.1)", $itemType, array(
+    "Complete redesign of cards with a more modern look. Credit goes towards <a href='https://codepen.io/andytran/pen/BNjymy'>Andy Tran</a> and <a href='https://codepen.io/roydigerhund/pen/OMreoV'>Matthias Martin</a> for taking elements from both of their UI designs and tweaking them to work with my site.",
+    "Removed 'Search' label.",
+    ) );
+    
+    DisplayUpdate("Oct 20, 2018", $itemType, array(
+    "Added graphs to stats page and ability to set date range.",
+    "<span style='$adminClass'>Admin: Ability to undo anything (refunds on purchases, payments, inventory, restock).</span>",
+    "Improved sorting on main page so discontinued and sold out snacks don't appear at the top.",
+    "<span style='$adminClass'>Admin: Inventory Form - Added incrementers and 'unit changed' colors, removed Price column.</span>",
+    "<span style='$adminClass'>Admin: Restock Form - improved UI, multiplier.</span>",
+    "<span style='$adminClass'>Admin: Shopping Guide - order by Cost Each.</span>",
+    "<span style='$dbClass'>DB: Added 'Expiration Date' column to items.</span>",
+    "Misc bug fixes.",
+    ) );
+    
+    DisplayUpdate("Aug 5, 2018", $itemType, array(
+    "Added FoodStockBot.",
+    "<span style='$requestClass'>Request by Ryan: Show cash-only totals in Billing</span>.",
+    "Added 'Alias' for items (people couldn't find the Spicy Snacks).",
+    "<span style='$adminClass'>Admin: Redesigned 'Methods of Payment' section with accounts.</span>",
+    "Divided request modals into 3 separate modal/buttons.",
+    "Sort requests by completion.",
+    "Added the start of the stats page.",
+    "<span style='$requestClass'>Request by Nick: Slack notifications when item inventory reaches zero</span>.",
+    "Attempted to fix rounding issues with negative $0 balances.",
+    "<span style='$adminClass'>Admin: Sorted inventory by quantity, added bot automatically notifying all users of payment owed at first of month, formatted phone numbers.</span>",
+    ) );
+    
+    DisplayUpdate("Jul 29, 2018", $itemType, array(
+    "<span style='$dbClass'>Directories: Reorganized directories for resources/images.</span>",
+    "<span style='$adminClass'>Admin: Divided up Admin into separate pages.</span>",
+    "Fixed massive income bugs and miscountings."
+    ) );
+    
+    DisplayUpdate("Jul 2, 2018", $itemType, array(
+    "Fixed many security vulnerabilities (thanks to Joe Guest for finding those).",
+    "Prevent inactive users from ordering in case they want to login after leaving RSA (looking at you Aaron).",
+    "Added more slack notifications: new users and out of stock.",
+    "<span style='$dbClass'>DB: Added plural unit name DB column (english language sucks).</span>"
+    ) );
+
+    DisplayUpdate("Jul 1, 2018", $itemType, array(
+    "Redesigned the Billing page so it's easier to read and combined the soda and snack into one page.",
+    "Marked the quantity of item with warning icon if someone reported it as out of stock.",
+    "Added billing to top bar, removed it from Purchase History page.",
+    "Divided purchase history by weeks, added day of week to date, labeled 'Cash-Only' purchases.",
+    "<span style='$adminClass'>Admin: Created dropdown for 'Method' and added 'Payment Month' to payment form.</span>"
+    ) );
+    
+    DisplayUpdate("Jun 29, 2018", $itemType, array(
+    "<span style='$adminClass'>Admin: Message feedback, side bar for navigation.</span>",
+    "<span style='$adminClass'>Admin: Added edit user: change slackID, set inactive, reset password.</span>",
+    ) );
+    
+    DisplayUpdate("Jun 28, 2018", $itemType, array(
+    "<span style='$requestClass'>Request By Nick: Added 'Report Out of Stock' button.</span>",
+    "Saved space on cards by making statistics into icons.",
+    ) );
+    
+    DisplayUpdate("Apr 1, 2018", $itemType, array(
+    "Added Billing section (in Purchase History) for monthly statements and records of payments.",
+    "Added 'total purchases' statistic to the Register Link.",
+    "Clicking the Version at the top now jumps you to the change log.",
+    ) );
+    
+    DisplayUpdate("Mar 28, 2018", $itemType, array(
+    "Added 'Feature' and 'Bug' request types.",
+    "Divided Feature, Bug, and Requests into different sections.",
+    "Ability to mark requests as completed.",
+    ) );
+    
+    DisplayUpdate("Mar 22, 2018", $itemType, array(
+    "Added discount prices - shown in the page, the purchase history, and the cart.",
+    "Show total savings and spent in purchase history.",
+    "Show total savings across all users in register link.",
+    "Striped tables (might need better colors).",
+    "Added password confirmation to register page.",
+    ) );
+    
+    DisplayUpdate("Mar 11, 2018", $itemType, array(
+    "Built Admin, Requests, and Purchase History pages.",
+    "Added Payments.",
+    "Display the number of times you bought an item in card.",
+    "<span style='$requestClass'>Request by Nick: Order cards by the most bought (Favorites).</span>",
+    "Added Nav Buttons to top bar: Soda Home, Snack Home, Requests, Purchase History, Admin.",
+    "<span style='$dbClass'>DB: Sped up home page by removing forms and many unnecessary SQL queries.</span>",
+    "Added slack notifications for payments, requests, receipts, restocks - with specific emojis and bot names.",
+    "Split balances into soda balance and snack balance.",
+    "<span style='$requestClass'>Request by Nick: Cash only option in cart allows you to decrement the quantity without adding total to your balance because you paid in change/cash.</span>",
+    "Added ability to submit requests and view others' requests.",
+    ) );
+    
+    DisplayUpdate("Mar 3, 2018", $itemType, array(
+    "<span style='$dbClass'>Server: Site was moved to Vultr.</span>",
+    "Added missing snack and soda images.",
+    ) );
+    
+    DisplayUpdate("Mar 2, 2018", $itemType, array(
+    "Tabs and balances are now online. Items can be purchased through the site.",
+    "Card UI was improved a little.",
+    ) );
+    
+    echo "<div style='$milestoneClass'><b>MILESTONE:</b> Site is now usable by other people.</div>";
+    
+    DisplayUpdate("Feb 16, 2018", $itemType, array(
+    "Started selling snacks - created SnackStock&trade;.",
+    "<span style='$dbClass'>DB: Storing images and unit names in DB.</span>",
+    ) );
+    
+    DisplayUpdate("Jan 22, 2017", $itemType, array(
+    "<span style='$dbClass'>I have no Idea what this was: Bunch of changes. TBA.</span>",
+    ) );
+    
+    DisplayUpdate("Nov 10, 2016", $itemType, array(
+    "Lower opacity for sodas that are sold out.",
+    "Added red text that says sold out.",
+    "Added 'container type' labels (bottles/cans/packets).",
+    ) );
+    
+    DisplayUpdate("Jul 1, 2016", $itemType, array(
+    "Created the card layout.",
+    "Old table layout can be found <a href='sodastock_table.php'>here</a>.",
+    ) );
+    
+    DisplayUpdate("Jun 7, 2016", $itemType, array(
+    "Added 'days active' statistic.",
+    ) );
+    
+    DisplayUpdate("Jun 5, 2016", $itemType, array(
+    "Added 'Email' button to email inventory counts.",
+    ) );
+    
+    DisplayUpdate("Oct 28, 2015", $itemType, array(
+    "Added 'profit per day' statistic.",
+    ) );
+    
+    DisplayUpdate("Oct 2, 2015", $itemType, array(
+    "Added change to cursor when hovering over cells that has hover text.",
+    ) );
+    
+    DisplayUpdate("Oct 1, 2015", $itemType, array(
+    "Hid sold-out soda in 'Daily Amount' modal.",
+    "Added show/hide toggle for restock/inventory sections on home page.",
+    ) );
+    
+    DisplayUpdate("Aug 28, 2015", $itemType, array(
+    "Re-ordered sodas by stock quantity. Sold out sodas are at the end.",
+    ) );
+    
+    DisplayUpdate("Jul 22, 2015", $itemType, array(
+    "Removed tiny warm/cold can icons.",
+    "Added 'Last Store Purchase' and 'Avg Store Purchase'.",
+    ) );
+    
+    DisplayUpdate("Jul 10, 2015", $itemType, array(
+    "Added ability to discontinue sodas.",
+    ) );
+    
+    DisplayUpdate("Feb 16, 2015", $itemType, array(
+    "SodaStock&trade; goes live. Legacy SodaStock is <a href='https://docs.google.com/spreadsheets/d/16BSupau6vEIfGY_-mgvz0_dzTeiJPysl3Kt-80fr8Hc/edit?usp=sharing'>here</a>.",
+    ) );
+    
+    echo "<div style='$milestoneClass'><b>MILESTONE:</b> Google Sheets replaced with website and a database.</div>";
+    
+    DisplayUpdate("Nov 11, 2014", $itemType, array(
+    "Started selling soda at RSA.",
+    ) );
+
     echo "</ul>";
 }
-
 //include("sodastock_charts.php");
 $db->close();
 }

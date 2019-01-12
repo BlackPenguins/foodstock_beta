@@ -106,6 +106,7 @@
             $statusClass = "";
             $thumbnailClass = $cardClass;
             $buttonClass = $cardClass;
+            $lightRopeClass = "";
             
             if( $retired_item == 1) {
                 $amountLeft = "Discontinued Soon";
@@ -115,6 +116,7 @@
                     $amountClass = "discontinued";
                     $statusClass = "post-module-discontinued";
                     $buttonClass = "disabled";
+                    $lightRopeClass = "class='dead'";
                 }
             } else {
                 if($cold_item == 0) {
@@ -170,9 +172,9 @@
             $previewImage = "";
             
             if( $imageURL != "" ) {
-                $previewImage = "<img src='" . PREVIEW_IMAGES_NORMAL . $imageURL . "' />";
+                $previewImage = "<img class='preview_zoom' src='" . PREVIEW_IMAGES_NORMAL . $imageURL . "' />";
             } else {
-                $previewImage = "<img style='width: 100px; height: 100px; padding-top:70px;' src='" . IMAGES_LINK . "no_image.png' />";
+                $previewImage = "<img class='preview_zoom' style='width: 100px; height: 100px; padding-top:70px;' src='" . IMAGES_LINK . "no_image.png' />";
             }
             
             $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
@@ -199,11 +201,15 @@
             // BUILD THE CARD
             // ------------------
             echo "<span class='post-module $statusClass'>";
+                echo "<div class='snow'>";
                 echo "<div class='thumbnail thumbnail-$thumbnailClass'>";
+                    echo "<img style='position:absolute; top:14px; right:17px; z-index:200;' src='" . IMAGES_LINK . "wreath.png'/>";
                     echo "<div class='price'>";
+                    
                         echo $priceDisplay;
                     echo "</div>";
                     echo $previewImage;
+                echo "</div>";
                 echo "</div>";
                 echo "<div class='post-content'>";
                     echo $reportButton;
@@ -264,6 +270,19 @@
                         echo "</div>"; //actions
                     }
                 echo "</div>"; //post-content
+                
+                echo "<ul style='top: 2px;' class='lightrope'>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                "</ul>";
+                
         echo "</span>"; //post-module
         }
     } 

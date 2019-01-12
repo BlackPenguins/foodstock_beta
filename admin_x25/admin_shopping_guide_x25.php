@@ -87,8 +87,14 @@
                     }
                     
                     $storeColor = $storeColors[$store];
+                    
+                    $rowStyle = "style='background-color: $storeColor'";
+                    
+                    if( $costEach > $price ) {
+                        $rowStyle = " style='color:white; background-color:#232323;' ";
+                    }
             
-                    $STORE_PRICES_TABLE .= "<tr><td style='background-color: $storeColor'>$store</td><td>$packQuantity</td><td>$" . number_format( $regularPrice, 2 ) . "</td><td>$" . number_format( $salePrice, 2 ) . "</td><td>$" . number_format( $costEach, 2 ) . "</td></tr>";
+                    $STORE_PRICES_TABLE .= "<tr><td $rowStyle>$store</td><td $rowStyle>$packQuantity</td><td $rowStyle>$" . number_format( $regularPrice, 2 ) . "</td><td $rowStyle>$" . number_format( $salePrice, 2 ) . "</td><td $rowStyle>$" . number_format( $costEach, 2 ) . "</td></tr>";
                 } while ($rowQuantity = $resultsQuantity->fetchArray() );
             
                 $STORE_PRICES_TABLE .= "</table>";

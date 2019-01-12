@@ -102,7 +102,7 @@
         }
         
         echo "<td style='padding:5px; border:1px #000 solid;'>" . $costDisplay ."</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('l m/d/Y  [h:i:s A]') . "</td>";
+        echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('l m/d/Y  [h:i A]') . "</td>";
         echo "</tr>";
         
         if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
