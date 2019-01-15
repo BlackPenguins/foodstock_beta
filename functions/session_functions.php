@@ -103,4 +103,21 @@ function TrackVisit($db, $title){
         sendSlackMessageToSlackBot($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SITE VISIT" );
     }
 }
+
+function addToValue( $db, $tableName, $columnName, $valueToAdd, $whereClause, $doAdd ) {
+    $results = $db->query("SELECT $columnName FROM $tableName $whereClause" );
+    $row = $results->fetchArray();
+    $columnValue = $row[$columnName];
+    
+    $finalValue;
+    if( $doAdd ) {
+        $finalValue = round( $columnValue + $valueToAdd, 2 );
+    } else {
+        $finalValue = round( $columnValue - $valueToAdd, 2 );
+    }
+    
+    error_log( "[$tableName/$columnName] TABLE COLUMN --- [$columnValue] " . ( $doAdd ? "+" : "-" ) . " [$valueToAdd] = [$finalValue]" );
+    
+    return $finalValue;
+}
 ?>

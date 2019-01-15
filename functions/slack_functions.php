@@ -40,15 +40,13 @@
                 ]);
          
          
-        $slackIcon = urlencode( $emoji );
+        $emoji = urlencode( $emoji );
         $botName = urlencode( $botName );
         $attachmentEncoded = urlencode( json_encode( $attachmentParams ) );
          
-        error_log( "Slack: [" . $slackIcon . "]" );
-        error_log( "Bot Name: [" .  $botName . "]" );
-        error_log( "Attachment: [" . $attachmentEncoded . "]" );
-         
-        $chatMessage = "https://slack.com/api/chat.postMessage?as_user=false&username=" . $botName . "&attachments=" . $attachmentEncoded . "&icon_emoji=" . $slackIcon . "&channel=" . $sessionID;
+        error_log("Sending DM:\nSlack ID: [" . $slackID . "]\nSession ID:[" . $sessionID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $attachmentEncoded . "]" );
+        
+        $chatMessage = "https://slack.com/api/chat.postMessage?as_user=false&username=" . $botName . "&attachments=" . $attachmentEncoded . "&icon_emoji=" . $emoji . "&channel=" . $sessionID;
          
         $response = sendRequestToSlack( $chatMessage );
         error_log("Message [" .  $response . "]" );
@@ -61,7 +59,7 @@
         // open connection
         $ch = curl_init();
         
-        error_log(" URL: [" . $finalURL . "]" );
+        error_log( "REQUEST URL: [" . $finalURL . "]" );
         
         // set the url, number of POST vars, POST data
         curl_setopt($ch, CURLOPT_URL, $finalURL);
@@ -70,7 +68,7 @@
         // execute post
         $result = curl_exec($ch);
         
-        error_log( "RESULT [" . $result . "]" );
+        error_log( "RESPONSE: [" . $result . "] [" . curl_error($ch) . "]" );
         // close connection
         curl_close($ch);
         
@@ -81,37 +79,38 @@
     function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
         
         if( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) {
-            $slackMessage = "(TEST SERVER)\n" . $slackMessage;
+            sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, "#000000" );
+        } else {
+        
+            error_log("Sending SlackBot/Channel Message:\nSlack ID: [" . $slackID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $slackMessage . "]" );
+            $params = array( "channel" => $slackID, "icon_emoji" => $emoji , "username" => $botName, "text" => $slackMessage);
+        
+            $url = 'https://hooks.slack.com/services/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';
+            
+            $fields = array(
+                'payload' => json_encode($params)
+            );
+            
+            // build the urlencoded data
+            $postvars = http_build_query($fields);
+            
+            // open connection
+            $ch = curl_init();
+            
+            // set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, count($fields));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            
+            // execute post
+            $result = curl_exec($ch);
+            
+            if( $result != "ok" ) {
+                error_log("There was an error connecting to slack!!\nError Message: [" . $result . "] [" . curl_error($ch) . "]" );
+            }
+            // close connection
+            curl_close($ch);
         }
-        
-        error_log("Sending Slack Message:\nSlack ID: [" . $slackID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $slackMessage . "]" );
-        $params = array( "channel" => $slackID, "icon_emoji" => $emoji , "username" => $botName, "text" => $slackMessage);
-    
-        $url = 'https://hooks.slack.com/services/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';
-        
-        $fields = array(
-            'payload' => json_encode($params)
-        );
-        
-        // build the urlencoded data
-        $postvars = http_build_query($fields);
-        
-        // open connection
-        $ch = curl_init();
-        
-        // set the url, number of POST vars, POST data
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
-        // execute post
-        $result = curl_exec($ch);
-        
-        if( $result != "ok" ) {
-            error_log("There was an error connecting to slack!! [" . $result . "]" );
-        }
-        // close connection
-        curl_close($ch);
     }
 ?>

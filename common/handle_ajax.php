@@ -201,9 +201,9 @@
             // BUILD THE CARD
             // ------------------
             echo "<span class='post-module $statusClass'>";
-                echo "<div class='snow'>";
+//                 echo "<div class='snow'>";
                 echo "<div class='thumbnail thumbnail-$thumbnailClass'>";
-                    echo "<img style='position:absolute; top:14px; right:17px; z-index:200;' src='" . IMAGES_LINK . "wreath.png'/>";
+//                     echo "<img style='position:absolute; top:14px; right:17px; z-index:200;' src='" . IMAGES_LINK . "wreath.png'/>";
                     echo "<div class='price'>";
                     
                         echo $priceDisplay;
@@ -271,17 +271,17 @@
                     }
                 echo "</div>"; //post-content
                 
-                echo "<ul style='top: 2px;' class='lightrope'>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                "</ul>";
+//                 echo "<ul style='top: 2px;' class='lightrope'>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "</ul>";
                 
         echo "</span>"; //post-module
         }
@@ -330,18 +330,23 @@
         error_log("Cancel SQL: [" . $cancelPurchaseSQL . "]" );
         $db->exec( $cancelPurchaseSQL );
         
-        $itemQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity + 1, TotalIncome = TotalIncome - $actualPrice, DateModified = '$date', ModifyType = 'Cancelled' where ID = $itemID";
+        $newIncome = addToValue( $db, "Item", "TotalIncome", $actualPrice, "where ID = $itemID", false );
+        $itemQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity + 1, TotalIncome = $newIncome, DateModified = '$date', ModifyType = 'Cancelled' where ID = $itemID";
         error_log("Item SQL: [" . $itemQuery . "]" );
         $db->exec( $itemQuery );
         
-        $infoQuery = "UPDATE Information SET Income = Income - $actualPrice where ItemType = '$itemType'";
+        $newIncome = addToValue( $db, "Information", "Income", $actualPrice, "where ItemType = '$itemType'", false );
+        $infoQuery = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
         error_log("Info SQL: [" . $infoQuery . "]" );
         $db->exec( $infoQuery );
         
         $typeOfBalance = $itemType . "Balance";
         $typeOfSavings = $itemType . "Savings";
         
-        $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $typeOfBalance - $actualPrice , $typeOfSavings = $typeOfSavings - $savings where UserID = $userID";
+        $newBalance = addToValue( $db, "User", $typeOfBalance, $actualPrice, "where UserID = $userID", false );
+        $newSavings = addToValue( $db, "User", $typeOfSavings, $savings, "where UserID = $userID", false );
+        $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $newBalance, $typeOfSavings = $newSavings where UserID = $userID";
+        
         error_log("Balance Update SQL [" . $balanceUpdateQuery . "]" );
         $db->exec( $balanceUpdateQuery );
         
@@ -376,17 +381,22 @@
         $backstockDelta = $backstockBefore - $backstockAfter;
         $shelfDelta = $shelfBefore - $shelfAfter;
         
+        error_log("[" . $quantityBefore . "][$quantityAfter]" );
+        
         $income = ($quantityBefore - $quantityAfter) * $price;
         
         $cancelSQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
         error_log("Cancel SQL: [" . $cancelSQL . "]" );
         $db->exec( $cancelSQL );
         
-        $itemSQL = "UPDATE Item SET TotalIncome = TotalIncome - $income, BackstockQuantity = BackstockQuantity + $backstockDelta, ShelfQuantity = ShelfQuantity + $shelfDelta, ModifyType = 'Cancelled', DateModified = '$date' where ID = $itemID";
+        $newIncome = addToValue( $db, "Item", "TotalIncome", $income, "where ID = $itemID", false );
+        $itemSQL = "UPDATE Item SET TotalIncome = $newIncome, BackstockQuantity = BackstockQuantity + $backstockDelta, ShelfQuantity = ShelfQuantity + $shelfDelta, ModifyType = 'Cancelled', DateModified = '$date' where ID = $itemID";
         error_log("Item SQL: [" . $itemSQL . "]" );
         $db->exec( $itemSQL );
         
-        $infoSQL = "UPDATE Information SET Income = Income - $income where ItemType = '$itemType'";
+        $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", false );
+        $infoSQL = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
+        
         error_log("Info SQL: [" . $infoSQL . "]" );
         $db->exec( $infoSQL );
     }
@@ -405,11 +415,13 @@
         error_log( "Cancel SQL [$cancelSQL]" );
         $db->exec( $cancelSQL );
         
-        $itemSQL = "UPDATE Item SET TotalExpenses = TotalExpenses - $cost, BackstockQuantity = BackstockQuantity - $numberOfCans, TotalCans = TotalCans - $numberOfCans where ID = $itemID";
+        $newTotalExpenses = addToValue( $db, "Item", "TotalExpenses", $cost, "where ID = $itemID", false );
+        $itemSQL = "UPDATE Item SET TotalExpenses = $newTotalExpenses, BackstockQuantity = BackstockQuantity - $numberOfCans, TotalCans = TotalCans - $numberOfCans where ID = $itemID";
         error_log( "Item SQL [$itemSQL]" );
         $db->exec( $itemSQL );
         
-        $infoSQL = "UPDATE Information SET Expenses = Expenses - $cost where ItemType = '$itemType'";
+        $newExpenses = addToValue( $db, "Information", "Expenses", $cost, "where ItemType = '$itemType'", false );
+        $infoSQL = "UPDATE Information SET Expenses = $newExpenses where ItemType = '$itemType'";
         error_log( "Info SQL [$infoSQL]" );
         $db->exec( $infoSQL );
     }
@@ -434,12 +446,15 @@
         if( $isUserPayment ) {
             $balanceType = $itemType . "Balance";
             
-            $balanceSQL = "UPDATE User SET $balanceType = $balanceType + " . round($amount, 2) . " where UserID = $userID";
+            $newBalance = addToValue( $db, "User", $balanceType, round($amount, 2), "where UserID = $userID", true );
+            $balanceSQL = "UPDATE User SET $balanceType = " . $newBalance . " where UserID = $userID";
             error_log("UserBalance [$balanceSQL]");
             $db->exec( $balanceSQL );
         }
     
-        $infoSQL = "UPDATE Information SET ProfitActual = ProfitActual - $amount where ItemType = '$itemType'";
+        $newProfit = addToValue( $db, "Information", "ProfitActual", $amount, "where ItemType = '$itemType'", false );
+        $infoSQL = "UPDATE Information SET ProfitActual = $newProfit where ItemType = '$itemType'";
+        
         error_log("Info [$infoSQL]");
         $db->exec( $infoSQL );
         

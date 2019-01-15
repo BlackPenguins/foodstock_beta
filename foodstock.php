@@ -158,7 +158,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.3 (November 24th, 2018)";
+    $version = "Version 5.4 (January 14th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -262,6 +262,11 @@ if( !$isMobile) {
     
     echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
+    
+    DisplayUpdate("Jan 14, 2019 (5.4)", $itemType, array(
+            "Christmas theme removed.",
+            "Fixed the floating point number arithmetic bug. A similar bug that <a href='https://en.wikipedia.org/wiki/MIM-104_Patriot#Failure_at_Dhahran'>killed 28 soldiers in 1991</a> I learned from Stack Overflow.",
+    ) );
     
     DisplayUpdate("Nov 24, 2018 (5.3)", $itemType, array(
     "Christmas theme added. Credit for Christmas Lights goes to <a href='https://codepen.io/tobyj/pen/QjvEex'>Toby</a> and wreath icon goes to <a href='https://www.freepik.com/' title='Freepik'>Freepik</a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a> under the <a href='http://creativecommons.org/licenses/by/3.0/' title='Creative Commons BY 3.0' >CC 3.0 BY License</a>.",

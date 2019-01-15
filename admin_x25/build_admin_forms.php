@@ -492,7 +492,7 @@
         echo "<input type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
             
         echo "<input type='hidden' name='Inventory' value='Inventory'/><br>";
-        echo "<input type='hidden' name='redirectURL' value=" . ADMIN_LINK . "'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
             
             
         if( $isMobile) {

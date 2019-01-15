@@ -70,9 +70,14 @@ if(isset($_POST['Purchase'])) {
                 $dailyAmountID = $db->lastInsertRowID();
                 
                 $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date, CashOnly, DailyAmountID) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "'," . $cashOnlyInteger .  ", " . $dailyAmountID . ")";
-                $itemQuery = "UPDATE Item SET TotalIncome = TotalIncome + $itemPrice, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
+                
+                $newTotalIncome = addToValue( $db, "Item", "TotalIncome", $itemPrice, "where ID = $itemID", true );
+                $itemQuery = "UPDATE Item SET TotalIncome = $newTotalIncome, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
+                
                 $itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 where ID = $itemID";
-                $informationQuery = "UPDATE Information SET Income = Income + $itemPrice where ItemType = '$itemType'";
+                
+                $newIncome = addToValue( $db, "Information", "Income", $itemPrice, "where ItemType = '$itemType'", true );
+                $informationQuery = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
                 
 
                 $db->exec( $purchaseHistoryQuery );
@@ -92,7 +97,9 @@ if(isset($_POST['Purchase'])) {
             $typeOfBalance = $itemType . "Balance";
             $typeOfSavings = $itemType . "Savings";
 
-            $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $typeOfBalance + $totalPrice , $typeOfSavings = $typeOfSavings + $totalSavings where UserID = " . $_SESSION['UserID'];
+            $newBalance = addToValue( $db, "User", $typeOfBalance, $totalPrice, "where UserID = " . $_SESSION['UserID'], true );
+            $newSavings = addToValue( $db, "User", $typeOfSavings, $totalSavings, "where UserID = " . $_SESSION['UserID'], true );
+            $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $newBalance , $typeOfSavings = $newSavings where UserID = " . $_SESSION['UserID'];
             error_log("Balance Update [" . $balanceUpdateQuery . "]" );
             $db->exec( $balanceUpdateQuery );
 
@@ -258,8 +265,12 @@ if(isset($_POST['Purchase'])) {
             }
     
             $db->exec("INSERT INTO Restock (ItemID, Date, NumberOfCans, Cost) VALUES($id, '$date', $numberOfCans, $cost)");
-            $db->exec("UPDATE Item SET TotalExpenses = TotalExpenses + $cost, BackstockQuantity = BackstockQuantity + $numberOfCans, TotalCans = TotalCans + $numberOfCans where ID = $id");
-            $db->exec("UPDATE Information SET Expenses = Expenses + $cost where ItemType = '$itemType'");
+            
+            $newTotalExpenses = addToValue( $db, "Item", "TotalExpenses", $cost, "where ID = $id", true );
+            $db->exec("UPDATE Item SET TotalExpenses = $newTotalExpenses, BackstockQuantity = BackstockQuantity + $numberOfCans, TotalCans = TotalCans + $numberOfCans where ID = $id");
+            
+            $newExpenses = addToValue( $db, "Information", "Expenses", $cost, "where ItemType = '$itemType'", true );
+            $db->exec("UPDATE Information SET Expenses = $newExpenses where ItemType = '$itemType'");
     
             $userMessage = "Restocked successfully.";
         }  else if(isset($_POST['Defective'])) {
@@ -349,12 +360,18 @@ if(isset($_POST['Purchase'])) {
                 $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $snackAmount, '$date', '$note', 'Snack', '$paymentMonth')");
     
                 if( $isUserPayment ) {
-                    $db->exec("UPDATE User SET SodaBalance = SodaBalance - " . round($sodaAmount, 2) . " where UserID = $userID");
-                    $db->exec("UPDATE User SET SnackBalance = SnackBalance - " . round($snackAmount, 2) . " where UserID = $userID");
+                    $newSodaBalance = addToValue( $db, "User", "SodaBalance", round($sodaAmount, 2), "where UserID = $userID", false );
+                    $newSnackBalance = addToValue( $db, "User", "SnackBalance", round($snackAmount, 2), "where UserID = $userID", false );
+                    
+                    $db->exec("UPDATE User SET SodaBalance = $newSodaBalance where UserID = $userID");
+                    $db->exec("UPDATE User SET SnackBalance = $newSnackBalance where UserID = $userID");
                 }
     
-                $db->exec("UPDATE Information SET ProfitActual = ProfitActual + $sodaAmount where ItemType = 'Soda'");
-                $db->exec("UPDATE Information SET ProfitActual = ProfitActual + $snackAmount where ItemType = 'Snack'");
+                $newProfitSoda = addToValue( $db, "Information", "ProfitActual", $sodaAmount, "where ItemType = 'Soda'", true );
+                $newProfitSnack = addToValue( $db, "Information", "ProfitActual", $snackAmount, "where ItemType = 'Snack'", true );
+                
+                $db->exec("UPDATE Information SET ProfitActual = $newProfitSoda where ItemType = 'Soda'");
+                $db->exec("UPDATE Information SET ProfitActual = $newProfitSnack where ItemType = 'Snack'");
     
                 $userMessage = "Payment added successfully.";
             }
@@ -392,7 +409,7 @@ if(isset($_POST['Purchase'])) {
                 $itemName = "N/A";
     
     
-                $results = $db->query("SELECT ID, BackstockQuantity, ShelfQuantity, Price, Name, Type, UnitName FROM Item WHERE ID = $id");
+                $results = $db->query("SELECT ID, BackstockQuantity, ShelfQuantity, Price, Name, Type, UnitName, UnitNamePlural FROM Item WHERE ID = $id");
                 while ($row = $results->fetchArray()) {
                     $backstockQuantityBefore = $row['BackstockQuantity'];
                     $shelfQuantityBefore = $row['ShelfQuantity'];
@@ -400,6 +417,7 @@ if(isset($_POST['Purchase'])) {
                     $itemName = $row['Name'];
                     $itemType = $row['Type'];
                     $itemUnits = $row['UnitName'];
+                    $itemUnitsPlural = $row['UnitNamePlural'];
                 }
     
                 if( $price == "") {
@@ -408,7 +426,10 @@ if(isset($_POST['Purchase'])) {
     
                 if( $shelfQuantity > $shelfQuantityBefore ) {
                     //New item was added to the fridge
-                    $slackMessageItems = $slackMessageItems . "*" . $itemName . ":* " . $shelfQuantityBefore . " " . $itemUnits ."s --> *" . $shelfQuantity . " " . $itemUnits ."s*\n";
+                    $slackMessageItems = $slackMessageItems . "*" . $itemName . ":* " . $shelfQuantityBefore . " " . 
+                            ( $shelfQuantityBefore == 1 ? $itemUnits : $itemUnitsPlural ) .
+                            " --> *" . $shelfQuantity . " " . 
+                            ( $shelfQuantity == 1 ? $itemUnits : $itemUnitsPlural ) . "*\n";
                 }
                 
                 $totalCansBefore = $backstockQuantityBefore + $shelfQuantityBefore;
@@ -420,8 +441,12 @@ if(isset($_POST['Purchase'])) {
                 error_log("DA: [" . $dailyAmountQuery . "]" );
                 $db->exec( $dailyAmountQuery );
                 $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
-                $db->exec("UPDATE Item SET TotalIncome = TotalIncome + $income, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, OutOfStock = '', DateModified = '$date', ModifyType = 'Counted' where ID = $id");
-                $db->exec("UPDATE Information SET Income = Income + $income where ItemType = '$itemType'");
+                
+                $newTotalIncome = addToValue( $db, "Item", "TotalIncome", $income, "where ID = $id", true );
+                $db->exec("UPDATE Item SET TotalIncome = $newTotalIncome, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, OutOfStock = '', DateModified = '$date', ModifyType = 'Counted' where ID = $id");
+                
+                $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", true );
+                $db->exec("UPDATE Information SET Income = $newIncome where ItemType = '$itemType'");
     
             }
     
@@ -437,7 +462,7 @@ if(isset($_POST['Purchase'])) {
                 $page = SNACKSTOCK_LINK;
             }
             if( $slackMessageItems != "" && $sendToSlack == true) {
-                $slackMessage = $slackMessageItems ."\n\nWant to see what is in the $location, the prices, what has been discontinued, the trends of different items being bought, or just general statistics? View the NEW <http://penguinore.net/$page>";
+                $slackMessage = $slackMessageItems ."\n\nVisit <http://penguinore.net$page|Foodstock> to see the prices and inventory of all snacks & sodas.";
     
                 sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - REFILL" );
             }

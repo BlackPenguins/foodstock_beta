@@ -9,7 +9,7 @@
     $subdomain = "";
 
     if( $isTestServer ) {
-        error_log("TEST SERVER WAS FOUND - USING FOODSTOCK_BETA PATHS." );
+//         error_log("TEST SERVER WAS FOUND - USING FOODSTOCK_BETA PATHS." );
         $subdomain = "/foodstock_beta";
         $slash = "\\";
     } else if( strpos( $_SERVER['PHP_SELF'], "staging_x27" ) !== false ) {
@@ -18,7 +18,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_3.css" );
+        define( "CSS_LINK", "$subdomain/css/style_4.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
