@@ -26,12 +26,19 @@
             $nameQuery = " AND ( Name Like '%" . $itemSearch . "%' OR Alias Like '%" . $itemSearch . "%')";
         }
         
-        $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
+        $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses," .
+        "DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate " .
+        "FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
         
         if( IsLoggedIn() ) {
             // Sort by user preference
-            // This sort pretty much breaks them into 3 groups (bought ones at #1, discontinued at #3, the rest at #2) and sorts those 3, then inside those groups it sorts by frequecy, then shelf, then backstock
-            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] . " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY CASE WHEN Retired = 1 THEN '3' WHEN Frequency > 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfQuantity DESC, BackstockQuantity DESC"; 
+            // This sort pretty much breaks them into 3 groups (bought ones at #1, discontinued at #3, the rest at #2) and sorts those 3,
+            // then inside those groups it sorts by frequency, then shelf, then backstock
+            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, " .
+            "ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
+            " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i " . 
+            "WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 " . 
+            "ORDER BY CASE WHEN Retired = 1 AND ShelfQuantity = 0 THEN '3' WHEN Frequency > 0 AND Retired = 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfQuantity DESC, BackstockQuantity DESC"; 
         }
         
         $results = $db->query($cardQuery);
@@ -101,6 +108,8 @@
                 $unitNamePlural = $row['UnitNamePlural'];
             }
             
+            $unitNameFinal = $cold_item > 1 ? $unitNamePlural : $unitName;
+            
             $amountLeft = "N/A";
             $amountClass = "";
             $statusClass = "";
@@ -109,14 +118,16 @@
             $lightRopeClass = "";
             
             if( $retired_item == 1) {
-                $amountLeft = "Discontinued Soon";
-                
                 if($cold_item == 0) {
                     $amountLeft = "Discontinued";
                     $amountClass = "discontinued";
                     $statusClass = "post-module-discontinued";
                     $buttonClass = "disabled";
                     $lightRopeClass = "class='dead'";
+                } else {
+                    $amountClass = "discontinued-soon";
+                    $amountLeft = "<div><span>$cold_item</span> $unitNameFinal Left</div>" . 
+                    "<div style='font-size: 0.8em; font-weight:bold; margin-top:5px; color:#ffe000'>(discontinued soon)</div>";
                 }
             } else {
                 if($cold_item == 0) {
@@ -125,7 +136,6 @@
                     $thumbnailClass = "sold-out";
                     $buttonClass = "disabled";
                 } else {
-                    $unitNameFinal = $cold_item > 1 ? $unitNamePlural : $unitName;
                     $amountLeft = "<span>$cold_item</span> $unitNameFinal Left";
                 }
             }
@@ -461,26 +471,43 @@
         $db->exec();
     }
     else if( $type == "NotifyUserOfPayment" ) {
-        $results = $db->query("SELECT UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User WHERE SodaBalance > 0.0 OR SnackBalance > 0.0" );
+        $month = trim($_POST["month"]);
+        $year = trim($_POST["year"]);
+        $displayMonth = trim($_POST["displayMonth"]);
+        
+        $results = $db->query("SELECT UserID, UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User" );
         error_log( "Notifying Users..." );
         
         while ($row = $results->fetchArray()) {
             $userName = $row['UserName'];
             $slackID = $row['SlackID'];
+            $userID = $row['UserID'];
             $name = $row["FirstName"] . " " . $row['LastName'];
             
-            $sodaBalance = round( $row['SodaBalance'], 2);
-            $snackBalance = round( $row['SnackBalance'], 2);
+            $totalArray = getTotalsForUser( $db, $userID, $month, $year, $displayMonth );
             
-            $totalBalance = round( $sodaBalance + $snackBalance, 2);
+            $sodaTotal = $totalArray['SodaTotal'];
+            $snackTotal = $totalArray['SnackTotal'];
+            $sodaPaid = $totalArray['SodaPaid'];
+            $snackPaid = $totalArray['SnackPaid'];
             
-            $slackMessage = "Good morning, $name! It's the first of the month. Here is your FoodStock Balance for the previous month:\n" .
-                    "*_Soda Balance:_* $" . number_format( $sodaBalance, 2) . "\n" .
-                    "*_Snack Balance:_* $" . number_format( $snackBalance, 2) . "\n\n" .
-                    "*Total Balance Owed:* $" . number_format( $totalBalance, 2) . "\n\n" .
-                    "You can view more details on the <http://penguinore.net/billing.php|Billing Page>. Have a great day! :grin:";
+            $sodaTotalUnpaid = round( $sodaTotal - $sodaPaid, 2);
+            $snackTotalUnpaid = round( $snackTotal - $snackPaid, 2);
             
-            sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a" );
+            error_log("User[$userName]Month[$month]Year[$year]Soda Total[$sodaTotal]Snack Total[$snackTotal][Soda Paid[$sodaTotalUnpaid]SnackPaid[$snackTotalUnpaid]");
+            
+            
+            $totalBalance = round( $sodaTotalUnpaid + $snackTotalUnpaid, 2);
+            
+            if( $totalBalance > 0 ) {
+                $slackMessage = "Good morning, $name! It's a new month. Here is your FoodStock Balance for $displayMonth:\n" .
+                "*_Soda Balance:_* $" . number_format( $sodaTotalUnpaid, 2) . "\n" .
+                "*_Snack Balance:_* $" . number_format( $snackTotalUnpaid, 2) . "\n\n" .
+                        "*Total Balance Owed:* $" . number_format( $totalBalance, 2) . "\n\n" .
+                        "You can view more details on the <http://penguinore.net/billing.php|Billing Page>. Have a great day! :grin:";
+                
+                sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a" );
+            }
         }
     }
     else if( $type == "OutOfStockRequest" ) {

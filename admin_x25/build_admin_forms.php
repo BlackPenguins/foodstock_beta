@@ -97,7 +97,7 @@
 //             $hideForms = "";
 //     }
 
-    $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive, SodaBalance, SnackBalance From User Order By FirstName Asc");
+    $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive, IsCoop, SodaBalance, SnackBalance, AnonName From User Order By FirstName Asc");
     $user_info = "";
     
     $user_options = "";
@@ -108,6 +108,8 @@
         $userID = $row['UserID'];
         $slackID = $row['SlackID'];
         $inactive = $row['Inactive'];
+        $isCoop = $row['IsCoop'];
+        $anonName = $row['AnonName'];
         $sodaBalance = number_format( round( $row['SodaBalance'], 2), 2);
         $snackBalance = number_format( round( $row['SnackBalance'], 2), 2);
         $inactive_strikethrough = "";
@@ -122,7 +124,9 @@
         
         $user_info = $user_info .
         "<input type='hidden' id='User_SlackID_$userID' value='$slackID'/>" . 
+        "<input type='hidden' id='User_AnonName_$userID' value='$anonName'/>" . 
         "<input type='hidden' id='User_Inactive_$userID' value='$inactive'/>" .
+        "<input type='hidden' id='User_IsCoop_$userID' value='$isCoop'/>" .
         "<input type='hidden' id='User_SodaBalance_$userID' value='$sodaBalance'/>" .
         "<input type='hidden' id='User_SnackBalance_$userID' value='$snackBalance'/>";
     }
@@ -173,11 +177,11 @@
     echo "<label style='padding:5px 0px;' for='Method'>Method</label>";
     echo $method_dropdown;
     echo "<label style='padding:5px 0px;' for='SodaAmount'>Soda Amount</label>";
-    echo "<input type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
+    echo "<input style='font-size:2em;' type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
     echo "<label style='padding:5px 0px;' for='SnackAmount'>Snack Amount</label>";
-    echo "<input type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label style='padding:5px 0px;' for='Note'>Note</label>";
-    echo "<input type='text' name='Note' class='text ui-widget-content ui-corner-all'/>";
+    echo "<input style='font-size:2em;' type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
+//     echo "<label style='padding:5px 0px;' for='Note'>Note</label>";
+//     echo "<input type='text' name='Note' class='text ui-widget-content ui-corner-all'/>";
     
     echo $user_info;
     echo "<input type='hidden' name='Payment' value='Payment'/><br>";
@@ -197,9 +201,17 @@
     echo "<label style='padding:5px 0px;' for='SlackID'>Slack ID</label>";
     echo "<input type='text' id='SlackID' name='SlackID' class='text ui-widget-content ui-corner-all'/>";
     
+    echo "<label style='padding:5px 0px;' for='AnonName'>Anon Name</label>";
+    echo "<input type='text' id='AnonName' name='AnonName' class='text ui-widget-content ui-corner-all'/>";
+    
     echo "<div style='padding:5px 0px;'>";
         echo "<label style='display:inline;' for='Inactive'>Inactive:</label>";
         echo "<input style='display:inline;' type='checkbox' id='Inactive' name='Inactive'/>";
+    echo "</div>";
+    
+    echo "<div style='padding:5px 0px;'>";
+    echo "<label style='display:inline;' for='IsCoop'>Co-op:</label>";
+    echo "<input style='display:inline;' type='checkbox' id='IsCoop' name='IsCoop'/>";
     echo "</div>";
     
     echo "<div style='padding:5px 0px;'>";
@@ -218,7 +230,7 @@
     
     function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
         // Build Item Dropdown
-        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
+        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by retired asc, name asc");
         $item_options = "";
         $item_options_no_discontinued = "";
         $item_info = "";
@@ -566,14 +578,23 @@ function setItemInfo( type ) {
 function setUserInfo() {
     var userID = parseInt($('#EditUserDropdown').val());
     var slackID = $('#User_SlackID_' + userID).val();
+    var anonName = $('#User_AnonName_' + userID).val();
     var inactive = $('#User_Inactive_' + userID).val();
+    var isCoop = $('#User_IsCoop_' + userID).val();
     
     $("#SlackID").val(slackID);
+    $("#AnonName").val(anonName);
     
     if( inactive == 0 ) {
         $("#Inactive").prop("checked", false);
     } else {
         $("#Inactive").prop("checked", true);
+    }
+
+    if( isCoop == 0 ) {
+        $("#IsCoop").prop("checked", false);
+    } else {
+        $("#IsCoop").prop("checked", true);
     }
 }
 

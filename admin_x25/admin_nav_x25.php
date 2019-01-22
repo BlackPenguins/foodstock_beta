@@ -32,6 +32,7 @@
             echo "<a href='" . ADMIN_SHOPPING_GUIDE_LINK . "'><div class='nav_buttons nav_buttons_snack'>Shopping Guide</div></a>";
             echo "<a href='" . ADMIN_DEFECTIVES_LINK . "'><div class='nav_buttons nav_buttons_defectives'>Defectives</div></a>";
             echo "<a href='" . ADMIN_AUDIT_LINK ."'><div class='nav_buttons nav_buttons_audit'>Audit</div></a>";
+            echo "<a href='" . ADMIN_BOT_LINK ."'><div class='nav_buttons nav_buttons_audit'>Bot</div></a>";
         echo "</div>";
         
     echo "</div>";

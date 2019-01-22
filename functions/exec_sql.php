@@ -1,4 +1,17 @@
 <?php
+
+/*
+ * 
+ * DB UPDATES
+ * 
+ * Jan 19, 2019
+ * User - Add IsCoop INTEGER
+ * User - Add AnonName TEXT
+ * 
+ * 
+ * 
+ * 
+ */
     include(__DIR__ . "/../appendix.php" );
     $statement = "";
     

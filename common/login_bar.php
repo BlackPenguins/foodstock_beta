@@ -27,7 +27,7 @@
             echo "<span style='padding:5px;'><a class='register' href='" . REGISTER_LINK . "'>Register for a Discount!<a/> (We have $totalActiveUsers active users with a total of $" . number_format($totalSavings, 2) . " in savings and " . $totalPurchases . " total purchases)</span>";
         } else {
             echo "<a style='text-decoration:none;' href='" . REQUESTS_LINK . "'><span class='nav_buttons nav_buttons_requests'>Requests</span></a>";
-            echo "<a style='text-decoration:none;' href='" . STATS_LINK . "'><span class='nav_buttons nav_buttons_stats'>Stats (NEW!)</span></a>";
+            echo "<a style='text-decoration:none;' href='" . STATS_LINK . "'><span class='nav_buttons nav_buttons_stats'>Graphs</span></a>";
             
             if( $isLoggedInAdmin ) {
                 echo "<a style='text-decoration:none;' href='" . ADMIN_LINK . "'><span class='nav_buttons nav_buttons_admin'>Administration</span></a>";

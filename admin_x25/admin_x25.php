@@ -11,33 +11,37 @@
         // ------------------------------------
         // USER TABLE
         // ------------------------------------
-        echo "<span class='soda_popout' style='display:inline-block; width:100%; margin-left: 10px; padding:5px;'><span style='font-size:26px;'>Users</span> <span style='font-size:0.8em;'></span></span>";
-        echo "<span id='users'>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
-        echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>UserName</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Slack ID</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Phone Number</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Created</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Soda Balance</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Snack Balance</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>TOTAL</th>";
         
-        echo "</tr></thead>";
+        openTable("Full-Timers");
         
         $rowClass = "odd";
+        $startCoops = false;
+        $startInactives = false;
         
-        $results = $db->query('SELECT u.UserID, u.UserName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated, u.InActive FROM User u ORDER BY u.Inactive asc, lower(u.FirstName) ASC');
+        $results = $db->query('SELECT u.UserID, u.UserName, u.AnonName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated, u.InActive, u.IsCoop FROM User u ORDER BY u.Inactive asc, u.IsCoop, lower(u.FirstName) ASC');
         while ($row = $results->fetchArray()) {
-            if( $row['Inactive'] == 1 ) {
+            $isCoop = $row['IsCoop'] == 1;
+            $isInactive = $row['Inactive'] == 1;
+            
+            if( $isInactive ) {
                 $rowClass = "discontinued_row";
+            }
+            
+            if( $isCoop && !$startCoops ) {
+                echo "</table>";
+                openTable("Co-ops");
+                $startCoops = true;
+            } else if( $isInactive && !$startInactives ) {
+                echo "</table>";
+                openTable("Inactives");
+                $startInactives = true;
             }
             
             echo "<tr class='$rowClass'>";
             $fullName = $row['FirstName'] . " " . $row['LastName'];
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['UserName'] . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['AnonName'] . "</td>";
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['SlackID'] . "</td>";
             $phoneNumber = $row['PhoneNumber'];
             
@@ -56,6 +60,7 @@
             $purchaseHistorySnackURL = "<a href='" . PURCHASE_HISTORY_LINK . "?type=Snack&name=" . $fullName . "&userid=" . $row['UserID'] . "'>$" . $snackBalance . "</a>";
             $billingSodaURL = "<a href='" . BILLING_LINK . "?type=Soda&name=" . $fullName . "&userid=" . $row['UserID'] . "'>Billing</a>";
             $billingSnackURL = "<a href='" . BILLING_LINK . "?type=Snack&name=" . $fullName . "&userid=" . $row['UserID'] . "'>Billing</a>";
+            
             $sodaBalanceColor = "";
             $snackBalanceColor = "";
             $totalBalanceColor = "";
@@ -74,12 +79,30 @@
             echo "<td style='padding:5px; $snackBalanceColor border:1px #000 solid;'>" . $purchaseHistorySnackURL . " (" . $billingSnackURL . ")</td>";
             echo "<td style='padding:5px; $totalBalanceColor border:1px #000 solid;'>$" . number_format($totalBalance,2) . "</td>";
             echo "</tr>";
+            
             if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
         }
         
-            echo "</table>";
+        echo "</table>";
         echo "</span>";
     echo "</span>";
+    
+    function openTable( $tableLabel ) {
+        echo "<span class='soda_popout' style='display:inline-block; width:100%; margin-left: 10px; padding:5px;'><span style='font-size:26px;'>$tableLabel</span> <span style='font-size:0.8em;'></span></span>";
+        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px; margin-bottom:30px;'>";
+        echo "<thead><tr class='table_header'>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Anon Name</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Slack ID</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Phone Number</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Created</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Soda Balance</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Snack Balance</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>TOTAL</th>";
+        
+        echo "</tr></thead>";
+    }
 ?>
 
 </body>

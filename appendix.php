@@ -18,7 +18,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_4.css" );
+        define( "CSS_LINK", "$subdomain/css/style_5.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
@@ -29,6 +29,7 @@
         define( "IMAGES_LINK", "$subdomain/images/" );
         
         define( "ADMIN_AUDIT_LINK", "$subdomain/admin_x25/admin_audit_x25.php" );
+        define( "ADMIN_BOT_LINK", "$subdomain/admin_x25/admin_bot_x25.php" );
         define( "ADMIN_LINK", "$subdomain/admin_x25/admin_x25.php" );
         define( "ADMIN_DEFECTIVES_LINK", "$subdomain/admin_x25/admin_defectives_x25.php" );
         define( "ADMIN_INVENTORY_LINK", "$subdomain/admin_x25/admin_inventory_x25.php" );

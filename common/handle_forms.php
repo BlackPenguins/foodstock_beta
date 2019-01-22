@@ -222,15 +222,28 @@ if(isset($_POST['Purchase'])) {
             $db->exec( $editItemQuery );
     
             $userMessage = "Item \"$name\" edited successfully.";
+        } else if(isset($_POST['SendBot'])) {
+            $botMessage = trim($_POST["BotMessage"]);
+            $emoji = trim($_POST["Emoji"]);
+            $botName = trim($_POST["BotName"]);
+            $emoji = str_replace(":", "", $emoji );
+            
+            sendSlackMessageToNerdHerd($botMessage, ":$emoji:", $botName );
         } else if(isset($_POST['EditUser'])) {
             $id = trim($_POST["EditUserDropdown"]);
             $slackID = trim($_POST["SlackID"]);
+            $anonName = trim($_POST["AnonName"]);
     
             $inactive = 0;
             $resetPassword = false;
+            $isCoop = 0;
     
             if( isset($_POST["Inactive"]) ) {
                 $inactive = 1;
+            }
+            
+            if( isset($_POST["IsCoop"]) ) {
+                $isCoop = 1;
             }
     
             if( isset($_POST["ResetPassword"]) ) {
@@ -246,7 +259,7 @@ if(isset($_POST['Purchase'])) {
                 $userMessage = $userMessage . "Password for user was reset to \"$uniqueID\". ";
             }
     
-            $editItemQuery = "UPDATE User SET SlackID='$slackID', $resetPasswordQuery Inactive = $inactive where UserID = $id";
+            $editItemQuery = "UPDATE User SET SlackID='$slackID', AnonName='$anonName', $resetPasswordQuery Inactive = $inactive, IsCoop = $isCoop where UserID = $id";
             error_log("Edit User Query: [" . $editItemQuery . "]" );
             $db->exec( $editItemQuery );
     
@@ -345,13 +358,20 @@ if(isset($_POST['Purchase'])) {
                     $newSnackBalance = $snackBalance - $snackAmount;
                     error_log( "Reduced Snack balance [" . $newSnackBalance . "] is [" . $snackBalance . " - " . $snackAmount . "]" );
                     
+                    $paymentMessage = "Your payment was received for $paymentMonth.\n\n" .
+                    "Your Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*       (*$" . number_format($sodaBalance,2) . "* original balance  -  *$" . number_format($sodaAmount,2) . "* payment)\n" .
+                    "Your Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*       (*$" . number_format($snackBalance,2) . "* original balance  -  *$" . number_format($snackAmount,2) . "* payment)";
+//                     "Final Snack Balance: *$" . number_format($sodaBalance,2) . " - $" . number_format($sodaAmount,2) . "= $" . number_format($newSodaBalance,2) . "\n\n" .
+//                     "Snack Payment: *$" . number_format($snackAmount,2) . "*\nTheir Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*";
+
+                    
                     if( $slackID == "" ) {
                         sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!", "#bb3f3f");
                     } else {
-                        sendSlackMessageToUser( $slackID,  "Soda Payment: *$" . number_format($sodaAmount,2) . "*\nYour Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nYour Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
+                        sendSlackMessageToUser( $slackID,  $paymentMessage, ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
                     }
                     
-                    sendSlackMessageToMatt(   "*(" . strtoupper($username) . ")*\nSoda Payment: *$" . number_format($sodaAmount,2) . "*\nTheir Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*\n\nSnack Payment: *$" . number_format($snackAmount,2) . "*\nTheir Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
+                    sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n$paymentMessage", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
                 }
             }
     

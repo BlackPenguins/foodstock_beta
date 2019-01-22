@@ -10,11 +10,15 @@
     }
     
     function sendSlackMessageToRandom( $slackMessage, $emoji, $botName ) {
-        sendSlackMessagePOST( "#random", $emoji, $botName, $slackMessage );
+        sendSlackMessagePOST( "#random", $emoji, $botName, $slackMessage, false );
+    }
+    
+    function sendSlackMessageToNerdHerd( $slackMessage, $emoji, $botName ) {
+        sendSlackMessagePOST( "#the_nerd_herd", $emoji, $botName, $slackMessage, true );
     }
     
     function sendSlackMessageToSlackBot( $slackMessage, $emoji, $botName ) {
-       sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
+       sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage, false );
     }
     
     
@@ -32,8 +36,11 @@
         $responseJSON = json_decode( $response );
         $sessionID = $responseJSON->channel->id;
         
+        $fallbackMessage = str_replace("*", "", $slackMessage);
+        $fallbackMessage = str_replace("`", "", $fallbackMessage);
+        
         $attachmentParams = array([
-                "fallback" => $slackMessage,
+                "fallback" => $fallbackMessage,
                 "text" => $slackMessage,
                 "color" => $color,
                 "mrkdwn_in" => "[\"text\"]"
@@ -76,9 +83,9 @@
     }
     
     // DEPRECATED!!!
-    function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage ) {
+    function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage, $bypassTestServer ) {
         
-        if( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) {
+        if( $bypassTestServer == false && ( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) ) {
             sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, "#000000" );
         } else {
         

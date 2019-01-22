@@ -103,4 +103,59 @@ function DisplayShelfCan($item_name, $thumbURL) {
         echo "<img title='$item_name' style='padding:5px;' src='" . PREVIEW_IMAGES_THUMBS . $thumbURL . "' />";
     }
 }
+
+function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
+    $startDate = $year . "-" . $monthNumber . "-01";
+    
+    if( $monthNumber == 12) {
+        $monthNumber = 1;
+        $year++;
+    } else {
+        $monthNumber++;
+    }
+    
+    if( $monthNumber < 10 ) { $monthNumber = "0" . $monthNumber; }
+    
+    $endDate = $year . "-" . $monthNumber . "-01";
+    
+    $currentMonthSodaTotal = 0.0;
+    $currentMonthSnackTotal = 0.0;
+
+    $query = "SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' AND p.Cancelled IS NULL ORDER BY p.Date DESC";
+    $results = $db->query( $query );
+    while ($row = $results->fetchArray()) {
+        
+        $cost = 0.0;
+        if( $row['DiscountCost'] != "" && $row['DiscountCost'] != 0 ) {
+            $cost = $row['DiscountCost'];
+        } else {
+            $cost = $row['Cost'];
+        }
+        
+        // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
+        if( $row['CashOnly'] != 1 ) {
+            if( $row['Type'] == "Snack" ) {
+                $currentMonthSnackTotal += $cost;
+            } else if( $row['Type'] == "Soda" ) {
+                $currentMonthSodaTotal += $cost;
+            }
+        }
+    }
+    
+    $sodaQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND ItemType='Soda' AND Cancelled IS NULL";
+    $sodaResults = $db->query($sodaQuery);
+    $sodaTotalPaid = $sodaResults->fetchArray()['TotalAmount'];
+    
+    $snackQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND ItemType='Snack' AND Cancelled IS NULL";
+    $snackResults = $db->query($snackQuery);
+    $snackTotalPaid = $snackResults->fetchArray()['TotalAmount'];
+    
+    $returnArray = array();
+    $returnArray['SodaTotal'] = $currentMonthSodaTotal;
+    $returnArray['SnackTotal'] = $currentMonthSnackTotal;
+    $returnArray['SodaPaid'] = $sodaTotalPaid;
+    $returnArray['SnackPaid'] = $snackTotalPaid;
+    
+    return $returnArray;
+}
 ?>

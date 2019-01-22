@@ -17,7 +17,7 @@
         $('#SnackAmount').val(snackAmount);
     }
 
-    function notifyUsersOfPayments( month ) {
+    function notifyUsersOfPayments( month, year, displayMonth ) {
         $isAlert = confirm('Are you sure that you want to notify all users about their balances?');
         
         if ( $isAlert ) {
@@ -26,6 +26,8 @@
             $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'NotifyUserOfPayment',
                 month:month,
+                year:year,
+                displayMonth:displayMonth,
             },function(data) {
                 // Do nothing right now
             });
@@ -55,17 +57,27 @@
         // USER TABLE
         // ------------------------------------
         echo "<span class='soda_popout' style='display:inline-block; width:100%; margin-left: 10px; padding:5px;'><span style='font-size:26px;'>User Payment Histories</span> <span style='font-size:0.8em;'></span></span>";
-        echo "<button onClick='notifyUsersOfPayments()' style='margin: 10px 10px; padding: 5px;'>Notify All Users of Payments</button>";
         echo "<span id='users'>";
         echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
         echo "<thead><tr class='table_header'>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
         
         $monthsMaxAgo = 5;
+        
         for( $monthsAgo = 0; $monthsAgo <= $monthsMaxAgo; $monthsAgo++ ) {
-            $today = date('F Y');
-            $newdate = date('F Y', strtotime('-' . $monthsAgo . ' months', strtotime($today)));
-            echo "<th style='padding:5px; border:1px #000 solid;' align='left'>$newdate</th>";
+            
+            $month = date('m', getDateOfPreviousMonth( $monthsAgo ) );
+            $year = date('Y', getDateOfPreviousMonth( $monthsAgo ) );
+            
+            $monthDate = new DateTime();
+            $monthDate->setDate($year, $month, 1 );
+            
+            $displayMonth = $monthDate->format( 'F Y' );
+            
+            echo "<th style='padding:5px; font-size:1.4em; border:1px #000 solid;' valign='middle' align='left'>";
+            echo $displayMonth; 
+            echo "<span style='float:right;'><button onClick='notifyUsersOfPayments(\"$month\", \"$year\", \"$displayMonth\")'>Notify All</button></span>";
+            echo "</th>";
         }
         echo "</tr></thead>";
         
@@ -84,11 +96,15 @@
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
            
             for( $monthsAgo = 0; $monthsAgo <= $monthsMaxAgo; $monthsAgo++ ) {
-                $today = date('F Y');
-                $month = date('m', strtotime('-' . $monthsAgo . ' months', strtotime($today)));
-                $year = date('Y', strtotime('-' . $monthsAgo . ' months', strtotime($today)));
-                $monthLabel = date('F Y', strtotime('-' . $monthsAgo . ' months', strtotime($today)));
-                echo calculateMonth( $db, $userID, $month, $year, $monthLabel );
+                $month = date('m', getDateOfPreviousMonth( $monthsAgo ) );
+                $year = date('Y', getDateOfPreviousMonth( $monthsAgo ) );
+                
+                $monthDate = new DateTime();
+                $monthDate->setDate($year, $month, 1 );
+                
+                $monthLabel = $monthDate->format( 'F Y' );
+                
+                echo displayMonthForUser( $db, $userID, $month, $year, $monthLabel );
             }
             
             echo "</tr>";
@@ -156,56 +172,26 @@
         echo "</table>";
     echo "</span>";
     
-    function calculateMonth( $db, $userID, $monthNumber, $year, $monthLabel ) {
-        $currentMonthSodaTotal = 0.0;
-        $currentMonthSnackTotal = 0.0;
+    function getDateOfPreviousMonth( $xMonthsAgo ) {
+        $today = date('F Y');
+        return strtotime( '-' . $xMonthsAgo . ' months', strtotime( $today ) );
+    }
+    
+    function displayMonthForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
+        $totalArray = getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel );
         
-        $currentMonthSodaCount = 0;
-        $currentMonthSnackCount = 0;
+        $currentMonthSodaTotal = $totalArray['SodaTotal'];
+        $currentMonthSnackTotal = $totalArray['SnackTotal'];
+        $sodaTotalPaid = $totalArray['SodaPaid'];
+        $snackTotalPaid = $totalArray['SnackPaid'];
         
-        $startDate = $year . "-" . $monthNumber . "-01";
+        $sodaTotalUnpaid = round( $currentMonthSodaTotal - $sodaTotalPaid, 2);
+        $snackTotalUnpaid = round( $currentMonthSnackTotal - $snackTotalPaid, 2);
         
-        if( $monthNumber == 12) {
-            $monthNumber = 1;
-            $year++;
-        } else {
-            $monthNumber++;
-        }
-        
-        if( $monthNumber < 10 ) { $monthNumber = "0" . $monthNumber; } 
-        
-        $endDate = $year . "-" . $monthNumber . "-01";
-        
-        $query = "SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' AND p.Cancelled IS NULL ORDER BY p.Date DESC";
-        $results = $db->query( $query );
-        while ($row = $results->fetchArray()) {
-            
-            $cost = 0.0;
-            if( $row['DiscountCost'] != "" && $row['DiscountCost'] != 0 ) {
-                $cost = $row['DiscountCost'];
-            } else {
-                $cost = $row['Cost'];
-            }
-        
-            // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
-            if( $row['CashOnly'] != 1 ) {
-                if( $row['Type'] == "Snack" ) {
-                    $currentMonthSnackTotal += $cost;
-                    $currentMonthSnackCount++;
-                } else if( $row['Type'] == "Soda" ) {
-                    $currentMonthSodaTotal += $cost;
-                    $currentMonthSodaCount++;
-                }
-            }
-        }
-
-        $results = $db->query("SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND Cancelled IS NULL");
-        $totalPaid = $results->fetchArray()['TotalAmount'];
         $totalPurchases = $currentMonthSodaTotal + $currentMonthSnackTotal;
-        $totalUnpaid = round( $totalPurchases - $totalPaid, 2);
         $totalBalanceColor = "";
         
-        if( $totalUnpaid != 0.0 ) {
+        if( $sodaTotalUnpaid != 0.0 || $snackTotalUnpaid != 0.0 ) {
             $totalBalanceColor = "background-color:#fdff7a;";
         }
         
@@ -213,21 +199,39 @@
         $sodaAmount = number_format( $currentMonthSodaTotal, 2 );
         $snackAmount = number_format( $currentMonthSnackTotal, 2 );
         
-        $onclick = "openPaymentModal(\"$userID\", \"$monthLabel\", \"None\", \"$sodaAmount\", \"$snackAmount\");";
+        $onclick = "openPaymentModal(\"$userID\", \"$monthLabel\", \"None\", \"$sodaTotalUnpaid\", \"$snackTotalUnpaid\");";
         
-        return "<td style='padding:5px; $totalBalanceColor border:1px #000 solid;'>"
-                . "<div>"
-                . "<span>Soda: $" . $sodaAmount . "</span>"
-                . "<span style='float:right;'>Snack: $" . $snackAmount ."</span>" 
-                . "</div>"
-                . "<div style='padding:5px; text-align:center;'>"
-                . "<span onclick='$onclick' style='cursor:pointer; padding:5px; border: 1px dashed #000;'>"
+        return "<td style='padding:5px; $totalBalanceColor border:1px #000 solid; cursor:pointer;'>"
+                . "<table onclick='$onclick' style='width:100%'>"
+                    
+                . "<tr>"
+                . "<td style='text-align:center; padding-bottom:15px; padding-top:10px;' colspan='3'>"
+                . "<span style='padding:5px; border: 1px dashed #000;'>"
                 . "Total: $". number_format( $totalPurchases, 2 )
                 . "</span>"
-                . "</div>"
-                . "<div style='padding:5px; font-weight:bold; text-align:center;'>"
-                . "Unpaid: $". number_format( $totalUnpaid, 2 )
-                . "</div>"
+                . "</td>"
+                . "</tr>"
+                
+                . "<tr>"
+                . "<td>"
+                . "</td>"
+                . "<td>Soda</td>"
+                . "<td>Snack</td>"
+                . "</tr>"
+                    
+                . "<tr>"
+                . "<td>Total</td>"
+                . "<td>$" . $sodaAmount . "</td>"
+                . "<td>$" . $snackAmount ."</td>"
+                . "</tr>"
+                        
+                . "<tr style='font-weight:bold; '>"
+                . "<td style='border-top: dashed 1px #000; padding-top:10px;'>Unpaid</td>"
+                . "<td style='border-top: dashed 1px #000; padding-top:10px;'> $". number_format( $sodaTotalUnpaid, 2 ) . "</td>"
+                . "<td style='border-top: dashed 1px #000; padding-top:10px;'> $". number_format( $snackTotalUnpaid, 2 ) . "</td>"
+                . "</tr>"
+        
+                . "</table>"
                 . "</td>";
     }
 ?>

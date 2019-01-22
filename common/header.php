@@ -20,6 +20,10 @@
             $isAdminPage = true;
             $titleName = "Admin - Audit";
             break;
+        case ADMIN_BOT_LINK:
+            $isAdminPage = true;
+            $titleName = "Admin - Bot";
+            break;
         case ADMIN_DEFECTIVES_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Defectives";
