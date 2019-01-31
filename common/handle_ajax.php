@@ -304,10 +304,15 @@
         if( $row['Completed'] == 1 ) {
             $db->exec( "UPDATE Requests set Completed = 0 WHERE ID = " . $requestID );
         } else {
-            $db->exec( "UPDATE Requests set Completed = 1 WHERE ID = " . $requestID );
+            $date = date('Y-m-d H:i:s');
+            $db->exec( "UPDATE Requests set Completed = 1, DateCompleted = '$date' WHERE ID = " . $requestID );
         }
     }
-    
+    else if( $type == "ToggleRequestPriority" ) {
+        $requestID = $_POST['id'];
+        $priority = $_POST['priority'];
+        $db->exec( "UPDATE Requests set Priority = '$priority' WHERE ID = " . $requestID );
+    }
     else if( $type == "CancelPurchase" ) {
         $dailyAmountID = trim($_POST["DailyAmountID"]);
         

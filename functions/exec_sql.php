@@ -3,6 +3,9 @@
 /*
  * 
  * DB UPDATES
+ * Jan 27, 2019
+ * Requests - Add Priority TEXT
+ * Requests - Add DateCompleted TEXT
  * 
  * Jan 19, 2019
  * User - Add IsCoop INTEGER

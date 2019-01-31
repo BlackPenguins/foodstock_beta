@@ -131,6 +131,7 @@ if(isset($_POST['Purchase'])) {
 
 } else if(isset($_POST['Request'])) {
     $itemType = trim($_POST["ItemTypeDropdown_Request"]);
+    $priority = trim($_POST["Priority_Request"]);
     $date = date('Y-m-d H:i:s');
     $itemName = $db->escapeString(trim($_POST["ItemName_Request"]));
     $note = $db->escapeString(trim($_POST["Note_Request"]));
@@ -146,7 +147,7 @@ if(isset($_POST['Purchase'])) {
 
     sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED", "#863fbb" );
 
-    $db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType) VALUES($userID, '$itemName', '$date', '$note', '$itemType')");
+    $db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType,Priority) VALUES($userID, '$itemName', '$date', '$note', '$itemType', '$priority')");
 
     $userMessage = "Request submitted successfully.";
 } else if(isset($_POST['Shopping'])) {

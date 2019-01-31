@@ -27,6 +27,12 @@
             echo "<span style='padding:5px;'><a class='register' href='" . REGISTER_LINK . "'>Register for a Discount!<a/> (We have $totalActiveUsers active users with a total of $" . number_format($totalSavings, 2) . " in savings and " . $totalPurchases . " total purchases)</span>";
         } else {
             echo "<a style='text-decoration:none;' href='" . REQUESTS_LINK . "'><span class='nav_buttons nav_buttons_requests'>Requests</span></a>";
+            
+            if( $url == REQUESTS_LINK ) {
+                echo "<a style='text-decoration:none;' href='#Requests'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Requests</span></a>";
+                echo "<a style='text-decoration:none;' href='#Feature Requests'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Feature Requests</span></a>";
+                echo "<a style='text-decoration:none;' href='#Bug Reports'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Bug Reports</span></a>";
+            }
             echo "<a style='text-decoration:none;' href='" . STATS_LINK . "'><span class='nav_buttons nav_buttons_stats'>Graphs</span></a>";
             
             if( $isLoggedInAdmin ) {

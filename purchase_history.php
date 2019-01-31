@@ -14,13 +14,13 @@
         $name = $_GET['name'];
     } else {
         $userID = $_SESSION['UserID'];
-        $name = $_SESSION['FirstName'];
+        $name = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
     }
     
     // ------------------------------------
     // PURCHASE HISTORY TABLE
     // ------------------------------------
-    echo "<div class='soda_popout'  style='margin:10px; padding:5px;'><span style='font-size:26px;'>Purchase History for '$name'</span> <span style='font-size:0.8em;'></span>";
+    echo "<div class='rounded_header'><span class='title'>Purchase History for <b>$name</b></span>";
     $totalSavings = 0.0;
     $totalBalance = 0.0;
     
@@ -35,20 +35,22 @@
         }
     }
     
-    echo  "<span style='float:right;'><b>Total Spent:</b> $". number_format($totalBalance,2) . "&nbsp;&nbsp;|&nbsp;&nbsp;<b>Total Savings:</b> $" . number_format($totalSavings, 2) . "</span>";
+    echo  "<span style='float:right; padding-right:20px;'><b>Total Spent:</b> $". number_format($totalBalance,2) . "&nbsp;&nbsp;|&nbsp;&nbsp;<b>Total Savings:</b> $" . number_format($totalSavings, 2) . "</span>";
     
-    echo "</div>";
-    
-    echo "<div style='margin:10px; padding:5px;'>";
+    echo "<div>";
     echo "View monthly statements in the <b>Billing</b> section (now at the top).";
+    echo "</div>";
     
     echo "</div>";
-    echo "<div id='restock_all'>";
-    echo "<table style='font-size:12; border-collapse:collapse; margin:10px; width:98%'>";
+    
+    
+    echo "<div class='center_piece'>";
+    echo "<div class='rounded_table'>";
+    echo "<table>";
     echo "<thead><tr class='table_header'>";
-    echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-    echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Cost</th>";
-    echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Purchased</th>";
+    echo "<th>Item</th>";
+    echo "<th>Cost</th>";
+    echo "<th>Date Purchased</th>";
     
     echo "</tr></thead>";
     
@@ -67,7 +69,7 @@
             if( $currentWeek != $weekOfPurchase ) {
                 // New week
                 echo "<tr>";
-                echo "<td style='padding:5px; font-style:italic; padding-left: 20px; border:1px #000 solid; background-color:#7a8020;' colspan='3'>";
+                echo "<td class='section' colspan='3'>";
                 echo "Week " . $weekOfPurchase;
                 echo "</td>";
                 echo "</tr>";
@@ -86,8 +88,8 @@
             $costAmountDisplay .= " (REFUNDED)";
         }
         
-        echo "<tr class='$rowClass'>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>" . $itemName . "</td>";
+        echo "<tr>";
+        echo "<td>" . $itemName . "</td>";
         
         $costDisplay = "";
         
@@ -101,14 +103,15 @@
             $costDisplay = $costDisplay . "<span style='float:right; font-weight: bold; color:#023e0c;'>(CASH - ONLY)</span>";
         }
         
-        echo "<td style='padding:5px; border:1px #000 solid;'>" . $costDisplay ."</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('l m/d/Y  [h:i A]') . "</td>";
+        echo "<td>" . $costDisplay ."</td>";
+        echo "<td>" . $date_object->format('l m/d/Y  [h:i A]') . "</td>";
         echo "</tr>";
         
         if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
     }
     
         echo "</table>";
+    echo "</div>";
     echo "</div>";
 ?>
 

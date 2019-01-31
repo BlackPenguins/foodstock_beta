@@ -12,13 +12,13 @@
         $name = $_GET['name'];
     } else {
         $userID = $_SESSION['UserID'];
-        $name = $_SESSION['FirstName'];
+        $name = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
     }
     
     // ------------------------------------
     // PURCHASE HISTORY TABLE
     // ------------------------------------
-    echo "<div class='soda_popout'  style='margin:10px; padding:5px;'><span style='font-size:26px;'>Billing for '$name'</span></div>";
+    echo "<div class='rounded_header'><span class='title'>Billing for <b>$name</b></span></div>";
     
     displayPaymentMethods();
     

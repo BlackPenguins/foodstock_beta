@@ -158,7 +158,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.5 (January 21st, 2019)";
+    $version = "Version 5.6 (January 28th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -260,8 +260,17 @@ if( !$isMobile) {
     $adminClass = "color:#bd2828; font-weight:bold;";
     $dbClass = "color:#0f6d28; font-weight:bold;";
     
-    echo "<div id='change_log' class='" . $className . "_popout' style='margin:10px; padding:5px;'><span style='font-size:26px;'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
+    echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
+    
+    DisplayUpdate("Jan 28, 2019 (5.6)", $itemType, array(
+            "New, easier to read, table styles on Purchase History and Request pages.",
+            "Darker background colors - less neon, amateur like.",
+            "Added 'priority' and 'completion date' to Requests.",
+            "Expanded Requests button into sub-buttons (Request, Features, Bugs).",
+    ) );
+       
+    
     
     DisplayUpdate("Jan 21, 2019 (5.5)", $itemType, array(
             "New Statistic! Display the number of purchases of a certain item per month and on hover show who bought them that month. Finds trends in why items stop selling. Maybe a co-op left and they were the only ones buying it.",
