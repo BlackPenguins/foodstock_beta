@@ -123,7 +123,87 @@
     
 //     fixIncomes($db);
 //     fixPurchaseHistoryLink($db);
+    operationCleanSlate($db);
     
+    
+    function operationCleanSLate($db) {
+        $totalFutureIncomeSoda = fixItemIncomes($db, "Soda");
+        echo "TOTAL FUTURE INCOMES - SODA:[$totalFutureIncomeSoda]<br>";
+        $totalFutureIncomeSnack = fixItemIncomes($db, "Snack");
+        echo "TOTAL FUTURE INCOMES - SNACK:[$totalFutureIncomeSnack]<br>";
+        
+        $sodaExpenses = 0;
+        $snackExpenses = 0;
+        
+        $resultsInfo = $db->query("SELECT * from Information");
+        while ($rowInfo = $resultsInfo->fetchArray()) {
+            if( $rowInfo['ItemType'] == "Snack" ) {
+                $snackExpenses = $rowInfo['Expenses'];
+            } else {
+                $sodaExpenses = $rowInfo['Expenses'];
+            }
+        }
+        $newTotalIncomeSoda = $sodaExpenses - $totalFutureIncomeSoda;
+        $newTotalIncomeSnack = $snackExpenses - $totalFutureIncomeSnack;
+        
+        echo "<pre>Soda Expenses [$sodaExpenses]\t\t\t\tPotential Soda Income [$totalFutureIncomeSoda]\t\t\t\tPotential Soda Income [$newTotalIncomeSoda]</pre>";
+        echo "<pre>Snack Expenses [$snackExpenses]\t\t\t\tPotential Snack Income [$totalFutureIncomeSnack]\t\t\t\tPotential Snack Income [$newTotalIncomeSnack]</pre>";
+        
+        $totalSodaBalance = 0;
+        $totalSnackBalance = 0;
+        
+        $resultsUser = $db->query('SELECT u.UserID, u.UserName, u.AnonName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated, u.InActive, u.IsCoop FROM User u ORDER BY u.Inactive asc, u.IsCoop, lower(u.FirstName) ASC');
+        while ($rowUser = $resultsUser->fetchArray()) {
+            $userName = $rowUser['UserName'];
+            $sodaBalance = $rowUser['SodaBalance'];
+            $snackBalance = $rowUser['SnackBalance'];
+         
+            $totalSodaBalance += $sodaBalance;
+            $totalSnackBalance += $snackBalance;
+            
+            echo "<pre>User [$userName]\t\t\t\tSoda: [$sodaBalance]\t\t\t\tSnack: [$snackBalance]</pre>";
+        }
+
+        $newPaymentSoda = $newTotalIncomeSoda - $totalSodaBalance;
+        $newPaymentSnack = $newTotalIncomeSnack - $totalSnackBalance;
+        
+        echo "<pre>New Income Soda [$newTotalIncomeSoda]\t\t\t\tPending Soda[$totalSodaBalance]\t\t\t\tNew Payment [$newPaymentSoda]</pre>";
+        echo "<pre>New Income Snack [$newTotalIncomeSnack]\t\t\t\tPending Snack[$totalSnackBalance]\t\t\t\tNew Payment [$newPaymentSnack]</pre>";
+            
+        $db->exec("UPDATE INFORMATION Set Income = $newTotalIncomeSoda WHERE ItemType = 'Soda'");
+        $db->exec("UPDATE INFORMATION Set Income = $newTotalIncomeSnack WHERE ItemType = 'Snack'");
+        
+        $db->exec("UPDATE INFORMATION Set ProfitActual = $newPaymentSoda WHERE ItemType = 'Soda'");
+        $db->exec("UPDATE INFORMATION Set ProfitActual = $newPaymentSnack WHERE ItemType = 'Snack'");
+        // Chicken Noodle, Cereal, Chewy = 0;
+        // Expenses - Marshmellow - 3.20
+        
+    }
+    
+    function fixItemIncomes($db, $type) {
+        $totalFutureIncome = 0;
+        $resultsItem = $db->query("SELECT * from Item WHERE Type = '$type'");
+        while ($rowItem = $resultsItem->fetchArray()) {
+            $id = $rowItem['ID'];
+            $totalExpenses = $rowItem['TotalExpenses'];
+            $shelfQuantity = $rowItem['ShelfQuantity'];
+            $backstockQuantity = $rowItem['BackstockQuantity'];
+            $itemName = $rowItem['Name'];
+            $price = $rowItem['Price'];
+            $totalItemsUnsold = $shelfQuantity + $backstockQuantity;
+            
+            $potentalIncome = $totalItemsUnsold * $price;
+            $newIncome = $totalExpenses - $potentalIncome;
+            
+            $totalFutureIncome += $potentalIncome;
+            
+            $db->exec("UPDATE ITEM Set TotalIncome = $newIncome WHERE ID = $id");
+            
+            echo "<pre>Item [$itemName]\t\t\t\tExpenses: [$totalExpenses]\t\t\t\tTotal Unsold [$totalItemsUnsold]\t\t\t\tPrice [$price]\t\t\t\tPotential Income [$potentalIncome]\t\t\t\tNew Income: [$newIncome]</pre><br>";
+        }
+        
+        return $totalFutureIncome;
+    }
     
     function fixPurchaseHistoryLink($db) {
         $results = $db->query("SELECT * from Purchase_history WHERE DailyAmountID IS NULL ORDER BY Date DESC");

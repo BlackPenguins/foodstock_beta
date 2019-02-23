@@ -235,7 +235,7 @@
                     $profitClass = $profit > 0 ? "income" : "expenses";
                     
                     if( IsAdminLoggedIn() ) {
-                        $profitSign = $profit > 0 ? "$" : "-$";
+                        $profitSign = $profit >= 0 ? "$" : "-$";
 
                         echo "<div class='stats'>";
                             echo "<span class='box box-expenses' title='Total Expenses'>";

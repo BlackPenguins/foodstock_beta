@@ -190,7 +190,7 @@ if(!$isMobile) {
         echo "<td style='text-align:right; font-weight:bold;'>Calculated:</td>";
         echo "<td style='color:black; background-color:#90EE90; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> $". number_format($total_income, 2)."</td>";
         echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> $". number_format($total_profit, 2)."</td>";
-        echo "<td rowspan='2' style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> $". number_format($total_expense, 2)."</td>";
+        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> $". number_format($total_expense, 2)."</td>";
     }
     echo "</tr>";
     
@@ -199,8 +199,10 @@ if(!$isMobile) {
         echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
         echo "<td style='text-align:right; font-weight:bold;'>Payments:</td>";
         echo "<td style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> $". number_format($total_income_actual, 2)."</td>";
-        $actualProfit = $total_income_actual - $total_expense;
-        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> $". number_format($actualProfit, 2)."</td>";
+        $actualProfit = $total_income - $total_income_actual;
+        $actualDebt = $total_income_actual - $total_expense;
+        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Owed Money:</b> $". number_format($actualProfit, 2)."</td>";
+        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Actual Debt:</b> $". number_format($actualDebt, 2)."</td>";
         echo "</tr>";
     }
     echo "</table>";
