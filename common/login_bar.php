@@ -68,10 +68,14 @@
         {  
             //PHP_SELF = this current php page name (take you back to the current page)
             echo "<form style='margin:0px 5px; padding:0px;' action='$url' method='post' accept-charset='UTF-8'>"; 
+            echo "<span style='margin-right: 15px; white-space:nowrap;'>";
             echo "Username: ";
             echo "<input type='text' name='login_username' id='username' size='15' maxlength='40' />";
-            echo "&nbsp;&nbsp;&nbsp;Password: ";
+            echo "</span>&nbsp;";
+            echo "<span style='white-space:nowrap;'>";
+            echo "Password: ";
             echo "<input type='password' name='login_password' id='password' size='15' maxlength='40' />";
+            echo "</span>";
             echo "<input style='margin: 0px 10px;' type='submit' id='submit2' name='Submit' value='Login' />";
             echo "</label>";
             echo "</form>";

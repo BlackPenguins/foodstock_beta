@@ -62,8 +62,15 @@ function Login($db) {
 }
 
 function DisplayUserMessage() {
+    
+    
     if( isset( $_SESSION['UserMessage'])) {
-        echo "<script>alert('" . $_SESSION['UserMessage'] . "');</script>";
+        echo "<div id='notification'>";
+        echo $_SESSION['UserMessage'];
+        echo "<button style='float:right; margin: 10px;' onclick='$(\"#notification\").hide();' id='close-notification'>Close Messages</button>";
+        echo "</div>";
+        
+//         echo "<script>alert('" . $_SESSION['UserMessage'] . "');</script>";
         unset( $_SESSION['UserMessage'] );
     }
 }
@@ -77,17 +84,12 @@ function IsAdminLoggedIn(){
 }
 
 function TrackVisit($db, $title){   
-    if( IsAdminLoggedIn() ) {
-        // Don't track the admin
+    if( IsAdminLoggedIn() || !IsLoggedIn() ) {
+        // Don't track the admin, or logged out people
         return;
     }
     
-    $isLoggedIn = IsLoggedIn();
-    $ipAddress = $_SERVER['REMOTE_ADDR'];
-    
-    if( $isLoggedIn == true ) {
-        $ipAddress = $_SESSION['UserName'];
-    }
+    $ipAddress = $_SESSION['UserName'];
     
     $date = date('Y-m-d H:i:s', time());
     $agent = "Not Found";
@@ -96,9 +98,9 @@ function TrackVisit($db, $title){
         $agent = $_SERVER['HTTP_USER_AGENT'];
     }
     
-    $db->exec("INSERT INTO Visits (IP, Date, Agent) VALUES( '$ipAddress', '$date', '$agent')");
+    $db->exec("INSERT INTO Visits (IP, Date, Agent, Page) VALUES( '$ipAddress', '$date', '$agent', '$title')");
     
-    error_log("VISTED [$title]");
+    // Ignore me
     if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
         sendSlackMessageToSlackBot($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SITE VISIT" );
     }

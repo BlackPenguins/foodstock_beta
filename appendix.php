@@ -18,7 +18,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_6.css" );
+        define( "CSS_LINK", "$subdomain/css/style_7.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );

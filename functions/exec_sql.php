@@ -3,6 +3,8 @@
 /*
  * 
  * DB UPDATES
+ * Feb 24, 2019
+ * Visits - Add Page TEXT
  * Jan 27, 2019
  * Requests - Add Priority TEXT
  * Requests - Add DateCompleted TEXT

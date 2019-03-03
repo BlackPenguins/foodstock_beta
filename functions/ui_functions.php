@@ -72,11 +72,16 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
 }
 
 function getPriceDisplay($price) {
+    getPriceDisplayWithHTML( $price, false );
+}
+
+function getPriceDisplayWithHTML($price, $noHTML ) {
     if( $price >= 1.00 ) {
         $price = "$" . number_format($price,2);
     } else {
         $price = $price * 100;
-        $price = $price . "&cent;";
+        $centSymbol = $noHTML ? " cents" : "&cent;";
+        $price = $price . $centSymbol;
     }
     
     return $price;

@@ -19,50 +19,62 @@
         case ADMIN_AUDIT_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Audit";
+            $trackingName = "Admin - Audit";
             break;
         case ADMIN_BOT_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Bot";
+            $trackingName = "Admin - Bot";
             break;
         case ADMIN_DEFECTIVES_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Defectives";
+            $trackingName = "Admin - Defectives";
             break;
         case ADMIN_INVENTORY_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Inventory/Purchases";
+            $trackingName = "Admin - Inventory/Purchases";
             break;
         case ADMIN_ITEMS_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Items";
+            $trackingName = "Admin - Items";
             break;
         case ADMIN_PAYMENTS_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Payments";
+            $trackingName = "Admin - Payments";
             break;
         case ADMIN_RESTOCK_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Restock";
+            $trackingName = "Admin - Restock";
             break;
         case ADMIN_SHOPPING_GUIDE_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Shopping Guide";
+            $trackingName = "Admin - Shopping Guide";
             break;
         case ADMIN_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Home";
+            $trackingName = "Admin - Home";
             break;
         case BILLING_LINK:
             $isAdminPage = false;
             $titleName = "Billing";
+            $trackingName = "Billing";
             break;
         case SODASTOCK_LINK:
             $isAdminPage = false;
             $titleName = "SodaStock - " . date('Y');
+            $trackingName = "SodaStock";
             break;
         case SNACKSTOCK_LINK:
             $isAdminPage = false;
             $titleName = "SnackStock - " . date('Y');
+            $trackingName = "SnackStock";
             $bodyClass = "snack_body";
             break;
         case PURCHASE_HISTORY_LINK:
@@ -72,10 +84,12 @@
         case REGISTER_LINK:
             $isAdminPage = false;
             $titleName = "Register";
+            $trackingName = "Register";
             break;
         case REQUESTS_LINK:
             $isAdminPage = false;
             $titleName = "Requests";
+            $trackingName = "Requests";
             break;
         case STATS_LINK:
             $isAdminPage = false;
@@ -83,6 +97,7 @@
             break;
         default:
             $isAdminPage = false;
+            $trackingName = "Unknown [$url]";
     }
     //-----------------------------------------------------
     
@@ -164,7 +179,7 @@
     
     include(LOGIN_BAR_PATH);
     
-    TrackVisit($db, $titleName);
+    TrackVisit($db, $trackingName);
     
     DisplayUserMessage();
     

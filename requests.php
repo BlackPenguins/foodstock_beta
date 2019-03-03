@@ -36,17 +36,11 @@
     echo "<div id='request_item' title='Request Item' style='display:none;'>";
     echo "<form id='request_item_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<fieldset>";
-    echo "<label style='padding:5px 0px;' for='ItemTypeDropdown_Request'>Type</label>";
+    echo "<label for='ItemTypeDropdown_Request'>Type</label>";
     echo $itemType_dropdown;
-    echo "<label style='padding:5px 0px;' for='Priority_Request'>Priority</label>";
-    echo "<select id='Priority_Request' name='Priority_Request' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>";
-    echo "<option value='High'>High</option>";
-    echo "<option value='Medium'>Medium</option>";
-    echo "<option value='Low'>Low</option>";
-    echo "</select>";
-    echo "<label style='padding:5px 0px;' for='ItemName_Request'>Item</label>";
+    echo "<label for='ItemName_Request'>Item</label>";
     echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label style='padding:5px 0px;' for='Note'>Note</label>";
+    echo "<label for='Note'>Note</label>";
     echo "<input type='text' name='Note_Request' class='text ui-widget-content ui-corner-all'/>";
     
     
@@ -61,14 +55,8 @@
     echo "<div id='request_feature' title='Request Feature' style='display:none;'>";
     echo "<form id='request_feature_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<fieldset>";
-    echo "<label style='padding:5px 0px;' for='ItemName_Request'>Item</label>";
+    echo "<label for='ItemName_Request'>Item</label>";
     echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label style='padding:5px 0px;' for='Priority_Request'>Priority</label>";
-    echo "<select id='Priority_Request' name='Priority_Request' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>";
-    echo "<option value='High'>High</option>";
-    echo "<option value='Medium'>Medium</option>";
-    echo "<option value='Low'>Low</option>";
-    echo "</select>";
     
     echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Feature'/><br>";
     echo "<input type='hidden' name='Request' value='Request'/><br>";
@@ -81,14 +69,8 @@
     echo "<div id='report_bug' title='Report Bug' style='display:none;'>";
     echo "<form id='report_bug_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<fieldset>";
-    echo "<label style='padding:5px 0px;' for='ItemName_Request'>Item</label>";
+    echo "<label for='ItemName_Request'>Item</label>";
     echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label style='padding:5px 0px;' for='Priority_Request'>Priority</label>";
-    echo "<select id='Priority_Request' name='Priority_Request' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>";
-    echo "<option value='High'>High</option>";
-    echo "<option value='Medium'>Medium</option>";
-    echo "<option value='Low'>Low</option>";
-    echo "</select>";
     
     echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Bug'/><br>";
     echo "<input type='hidden' name='Request' value='Request'/><br>";
@@ -149,7 +131,7 @@
         $results = $db->query("SELECT r.ID, r.Priority, r.Completed, r.DateCompleted, u.FirstName, u.LastName, r.ItemName, r.ItemType, r.Date, r.Note  FROM REQUESTS r JOIN User u ON r.UserID = u.UserID WHERE r.ItemType in (" . $type . ") " . 
                 "ORDER BY Completed ASC, " .
                 "CASE WHEN Completed = 1 THEN DateCompleted ELSE " .
-                "CASE WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
+                "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
                 "END DESC," .
                 "r.Date DESC");
         while ($row = $results->fetchArray()) {
@@ -179,12 +161,24 @@
         
             echo "<td style='padding-left: 0px; width:$column1Width%; font-size:1.6em; cursor:pointer; text-align:center; font-weight:bold; color: $completedMarkColor;'> <span$onClick>$completedMark </span></td>";
         
-            echo "<td style='width:$column2Width%;'>";
-            
             $priority = $row['Priority'];
+            
+            $priorityColor = "";
+            
+            if( $priority == "High" ) {
+                $priorityColor = "background-color:#ff9e9e;";
+            } else if( $priority == "Medium" ) {
+                $priorityColor = "background-color:#fffca9;";
+            } else if( $priority == "Low" ) {
+                $priorityColor = "background-color:#b2d8ff;";
+            }
+            
+            echo "<td style='width:$column2Width%; $priorityColor'>";
+            
             
             if( $isLoggedInAdmin ) {
                 echo "<select onchange='togglePriority(" . $row['ID'] . ", this.value);' id='Priority_Request' name='Priority_Request' class='text ui-widget-content ui-corner-all'>";
+                echo "<option " . ( $priority == ""  ? "selected" : "" ) . " value='Unassigned'>Unassigned</option>";
                 echo "<option " . ( $priority == "High"  ? "selected" : "" ) . " value='High'>High</option>";
                 echo "<option " . ( $priority == "Medium"  ? "selected" : "" ) . " value='Medium'>Medium</option>";
                 echo "<option " . ( $priority == "Low"  ? "selected" : "" ) . " value='Low'>Low</option>";

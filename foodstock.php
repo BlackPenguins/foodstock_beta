@@ -158,7 +158,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.6 (January 28th, 2019)";
+    $version = "Version 5.7 (February 25th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -264,6 +264,19 @@ if( !$isMobile) {
     
     echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
+    
+    DisplayUpdate("Feb 25, 2019 (5.7)", $itemType, array(
+            "Larger labels in all modals and inputs.",
+            "Delayed 'out of stock' notification.",
+            "Added 'priority' and 'completion date' to Requests.",
+            "Unassigned default priority.",
+            "Color-coded priority.",
+            "Display price in restock slack message.",
+            "Password and password field on one line.",
+            "WebCRD-like information messages instead of alerts.",
+            "Stats default to previous year instead of random month last year, hiding newer users.",
+            "(YOU) now displays in line graph.",
+    ) );
     
     DisplayUpdate("Jan 28, 2019 (5.6)", $itemType, array(
             "New, easier to read, table styles on Purchase History and Request pages.",

@@ -2,6 +2,32 @@
     include( "appendix.php" );
     
     $url = STATS_LINK;
+    
+    // Start Date - 1 Year Ago
+    $startDate =  date('Y-m-d', strtotime( '-1 year', time() ) );
+    
+    // End Date - Today
+    $endDate = date('Y-m-d');
+    
+    if( isset( $_POST['start_date'])) {
+        $startDate = $_POST['start_date'];
+    }
+    
+    if( isset( $_POST['end_date'])) {
+        $endDate = $_POST['end_date'];
+    }
+    
+    $itemsToShow = "29,42,119";
+    
+    if(isset($_POST['submit_items'])){
+        if(!empty($_POST['Item'])){
+            // Loop to store and display values of individual checked checkbox.
+            $itemsToShow = implode(",", $_POST['Item'] );
+        }
+    }
+    
+    $trackingName = "Stats - $startDate : $endDate [$itemsToShow]";
+    
     include( HEADER_PATH );
 ?>
 <script type="text/javascript">
@@ -15,18 +41,8 @@
                 echo "loadUserModals();\n";
             }
             
-            if( !isset( $_POST['start_date'])) {
-                echo "$('#start_date').datepicker('setDate', '-90' );";
-            } else {
-                echo "$('#start_date').datepicker('setDate', '" . $_POST['start_date'] . "' );";
-            }
-            
-            if( !isset( $_POST['end_date'])) {
-                echo "$('#end_date').datepicker('setDate', new Date() );";
-            } else {
-                echo "$('#end_date').datepicker('setDate', '" . $_POST['end_date'] . "' );";
-            }
-            
+            echo "$('#start_date').datepicker('setDate', '$startDate' );";
+            echo "$('#end_date').datepicker('setDate', '$endDate' );";
         ?>
 
         // top soda purchases
@@ -71,29 +87,10 @@
     
     echo "<input type='submit' name='submit_items' value='Graph Items'/>";
     echo "</form>";
-    
-    $itemsToShow = "29,42,119";
-    
-    if(isset($_POST['submit_items'])){
-        if(!empty($_POST['Item'])){
-            // Loop to store and display values of individual checked checkbox.
-            $itemsToShow = implode(",", $_POST['Item'] );
-        }
-    }
 
     echo "<div id='purchasesPerMonth' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
     
-    
-    $startDate = "2018-09-01";
-    $endDate = "2018-10-01";
-    
-    if( isset( $_POST['start_date'])) {
-        $startDate = $_POST['start_date'];
-    }
-    
-    if( isset( $_POST['end_date'])) {
-        $endDate = $_POST['end_date'];
-    }
+    error_log("Start Date [$startDate] End Date [$endDate]");
     
     echo "<form enctype='multipart/form-data' action='" . STATS_LINK . "' method='POST' style='background-color:#b9b9b9; border:2px solid #000; padding:20px; margin-top:30px;'>";
     echo "Start Date: <input autocomplete='off' type='text' name='start_date' id='start_date'>";
@@ -134,7 +131,8 @@ window.onload = function() {
             dataPoints: [ 
 
                 <?php
-                    $results = $db->query( "select count(p.itemid) as 'count', sum(p.cost) as 'totalCost', p.itemid, i.name as 'name', i.type as 'type' from purchase_history p JOIN item i on p.itemid = i.id where p.Date between '$startDate' AND '$endDate' AND p.Cancelled is NULL group by p.itemid order by totalcost asc" );
+                $totalPurchasesTotalQuery = "select count(p.itemid) as 'count', sum(p.cost) as 'totalCost', p.itemid, i.name as 'name', i.type as 'type' from purchase_history p JOIN item i on p.itemid = i.id where p.Date between '$startDate' AND '$endDate' AND p.Cancelled is NULL group by p.itemid order by totalcost asc";
+                $results = $db->query( $totalPurchasesTotalQuery );
                     while ($row = $results->fetchArray()) {
                         $itemName = $row['name'];
                         $count = $row['count'];
@@ -173,7 +171,10 @@ window.onload = function() {
              <?php
 //                  $anonNames = ['Rabbit', 'Koala', 'Panda', 'Cat', 'Dog', 'Mouse', 'Porcupine', 'Monkey', 'Giraffe', 'Dolphin', 'Jaguar', 'Seal', 'Deer', 'Penguin', 'Lamb', 'Owl', 'Kangaroo', 'Fox', 'Hamster', 'Lion' ];
                  $anonCount = 0;
-                 $results = $db->query( "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum(p.cost) as 'Total' from Purchase_History p LEFT JOIN User u ON p.UserID = u.UserID WHERE p.Date between '$startDate' AND '$endDate' group by p.UserID order by total" );
+                 $totalPurchasesByUserQuery = "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum(p.cost) as 'Total' from Purchase_History p LEFT JOIN User u ON p.UserID = u.UserID WHERE p.Date between '$startDate' AND '$endDate' group by p.UserID order by total";
+                 $results = $db->query( $totalPurchasesByUserQuery );
+                 error_log( $totalPurchasesByUserQuery );
+                 
                  while ($row = $results->fetchArray()) {
                     $name = $row['FirstName'] . " " . $row['LastName'];
                     $total = $row['Total'];
@@ -223,24 +224,23 @@ window.onload = function() {
             $month = $splitDate[0];
             $year = $splitDate[1];
             
-            error_log("Time [$time] Month [$month] Year [$year]" );
-            
-            $userQuery = "select u.FirstName, u.LastName, u.AnonName, count(u.UserName) as UserCount from Purchase_History p JOIN User u ON p.userID = u.UserID WHERE p.ItemID = $itemID AND strftime(\"%m-%Y\", p.Date) = \"" . $month . "-" . $year . "\" GROUP BY u.UserName;";
+            $userQuery = "select u.FirstName, u.LastName, u.UserName, u.AnonName, count(u.UserName) as UserCount from Purchase_History p JOIN User u ON p.userID = u.UserID WHERE p.ItemID = $itemID AND strftime(\"%m-%Y\", p.Date) = \"" . $month . "-" . $year . "\" GROUP BY u.UserName;";
             $userResults = $db->query( $userQuery );
             
             $hoverInfo = "";
             while ($userRow = $userResults->fetchArray()) {
-                $userName = $userRow['FirstName'] . " " . $userRow['LastName'];
+                $fullName = $userRow['FirstName'] . " " . $userRow['LastName'];
                 $userCount = $userRow['UserCount'];
+                $userName = $userRow['UserName'];
                 $anonName = $userRow['AnonName'];
                 
                 if( $isLoggedIn && $userName == $_SESSION['UserName'] ) {
-                    $userName = "(YOU)";
+                    $fullName = "(YOU)";
                 } else if( !$isLoggedInAdmin ) {
-                    $userName = $anonName;
+                    $fullName = $anonName;
                 }
                 
-                $hoverInfo = $hoverInfo . "$userName: $userCount units<br>";
+                $hoverInfo = $hoverInfo . "$fullName: $userCount units<br>";
             }
 
             if( $currentItem == -1 || $currentItem != $itemID ) {

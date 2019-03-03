@@ -2,11 +2,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
+    $itemType = $_GET['type'];
+
+    $trackingName =  "Purchase History - $itemType";
     include( "appendix.php" );
     $url = PURCHASE_HISTORY_LINK;
     include( HEADER_PATH );
-    
-    $itemType = $_GET['type'];
     
    
     if( $isLoggedInAdmin && isset($_GET['userid'] ) && isset($_GET['name'] )  ) {

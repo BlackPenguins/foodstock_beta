@@ -29,10 +29,14 @@
             
             if( $isCoop && !$startCoops ) {
                 echo "</table>";
+                echo "</div>";
+                echo "</div>";
                 openTable("Co-ops");
                 $startCoops = true;
             } else if( $isInactive && !$startInactives ) {
                 echo "</table>";
+                echo "</div>";
+                echo "</div>";
                 openTable("Inactives");
                 $startInactives = true;
             }
@@ -84,12 +88,17 @@
         }
         
         echo "</table>";
+        echo "</div>";
+        echo "</div>";
         echo "</span>";
     echo "</span>";
     
     function openTable( $tableLabel ) {
-        echo "<span class='soda_popout' style='display:inline-block; width:100%; margin-left: 10px; padding:5px;'><span style='font-size:26px;'>$tableLabel</span> <span style='font-size:0.8em;'></span></span>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px; margin-bottom:30px;'>";
+        echo "<div class='rounded_header'><span id='$tableLabel' class='title'>$tableLabel</span></div>";
+        
+        echo "<div class='center_piece'>";
+        echo "<div class='rounded_table'>";
+        echo "<table>";
         echo "<thead><tr class='table_header'>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";

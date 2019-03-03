@@ -29,7 +29,8 @@ if(isset($_POST['Purchase'])) {
         $errors = "";
         $purchaseMessage = "";
         $itemType = "UNKNOWN";
-
+        $itemsOutOfStock = array();
+        
         foreach( $itemsInCart as $itemID ) {
             $results = $db->query("SELECT * FROM Item WHERE ID =" . $itemID );
             $row = $results->fetchArray();
@@ -57,7 +58,7 @@ if(isset($_POST['Purchase'])) {
             } else {
                 
                 if( $shelfQuantity - 1 == 0 ) {
-                    sendSlackMessageToMatt( "*Item Name:* " . $itemName . "\n*Buyer:* " . $_SESSION['UserName'], ":negative_squared_cross_mark:", "OUT OF STOCK BY PURCHASE", "#791414" );
+                    $itemsOutOfStock[] = $itemName;
                 }
                 
                 $date = date('Y-m-d H:i:s', time());
@@ -127,11 +128,18 @@ if(isset($_POST['Purchase'])) {
             $userMessage = "Something went wrong - contact Matt!! " . $errors;
             sendSlackMessageToMatt( "Errors: " . $errors, ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
         }
+        
+        
+        if( count( $itemsOutOfStock) > 0 ) {
+            foreach($itemsOutOfStock  as $item ) {
+                sleep( 1 );
+                sendSlackMessageToMatt( "*Item Name:* " . $item . "\n*Buyer:* " . $_SESSION['UserName'], ":negative_squared_cross_mark:", "OUT OF STOCK BY PURCHASE", "#791414" );
+            }
+        }
     }
 
 } else if(isset($_POST['Request'])) {
     $itemType = trim($_POST["ItemTypeDropdown_Request"]);
-    $priority = trim($_POST["Priority_Request"]);
     $date = date('Y-m-d H:i:s');
     $itemName = $db->escapeString(trim($_POST["ItemName_Request"]));
     $note = $db->escapeString(trim($_POST["Note_Request"]));
@@ -147,7 +155,7 @@ if(isset($_POST['Purchase'])) {
 
     sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n*Item Name:* " . $itemName . "\n*Notes:* " . $note, ":ballot_box_with_ballot:", "REQUEST RECEIVED", "#863fbb" );
 
-    $db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType,Priority) VALUES($userID, '$itemName', '$date', '$note', '$itemType', '$priority')");
+    $db->exec("INSERT INTO Requests (UserID, ItemName, Date, Note, ItemType,Priority) VALUES($userID, '$itemName', '$date', '$note', '$itemType', '')");
 
     $userMessage = "Request submitted successfully.";
 } else if(isset($_POST['Shopping'])) {
@@ -447,10 +455,12 @@ if(isset($_POST['Purchase'])) {
     
                 if( $shelfQuantity > $shelfQuantityBefore ) {
                     //New item was added to the fridge
+                    $priceDisplay = getPriceDisplayWithHTML( $priceBefore, true /* no HTML */ );
+                    
                     $slackMessageItems = $slackMessageItems . "*" . $itemName . ":* " . $shelfQuantityBefore . " " . 
                             ( $shelfQuantityBefore == 1 ? $itemUnits : $itemUnitsPlural ) .
                             " --> *" . $shelfQuantity . " " . 
-                            ( $shelfQuantity == 1 ? $itemUnits : $itemUnitsPlural ) . "*\n";
+                            ( $shelfQuantity == 1 ? $itemUnits : $itemUnitsPlural ) . "*    ($priceDisplay)\n";
                 }
                 
                 $totalCansBefore = $backstockQuantityBefore + $shelfQuantityBefore;

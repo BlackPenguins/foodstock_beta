@@ -55,13 +55,13 @@
     echo "<div id='shopping' title='Add Shopping'>";
     echo "<form id='shopping_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<fieldset>";
-    echo "<label style='padding:5px 0px;' for='ItemDropdown'>Item</label>";
+    echo "<label for='ItemDropdown'>Item</label>";
     echo $shopping_item_dropdown;
-    echo "<label style='padding:5px 0px;' for='StoreDropdown'>Store</label>";
+    echo "<label for='StoreDropdown'>Store</label>";
     echo $store_dropdown;
-    echo "<label style='padding:5px 0px;' for='PackQuantity'>Pack Quantity</label>";
+    echo "<label for='PackQuantity'>Pack Quantity</label>";
     echo "<input style='font-size:1.8em;' type='tel' id='PackQuantity' name='PackQuantity' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label style='padding:5px 0px;' for='Price'>Price</label>";
+    echo "<label for='Price'>Price</label>";
     echo "<input style='font-size:1.8em;' type='tel' id='Price' name='Price' class='text ui-widget-content ui-corner-all'/>";
     
     echo "<div class='radio_status'>";
@@ -131,10 +131,10 @@
         "<input type='hidden' id='User_SnackBalance_$userID' value='$snackBalance'/>";
     }
      
-    $user_dropdown = "<select id='UserDropdown' name='UserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'><option value='0'>(Manual Count)</option>$user_options</select>";
-    $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$edit_user_options</select>";
+    $user_dropdown = "<select id='UserDropdown' name='UserDropdown' class='text ui-widget-content ui-corner-all'><option value='0'>(Manual Count)</option>$user_options</select>";
+    $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' class='text ui-widget-content ui-corner-all'>$edit_user_options</select>";
      
-    $method_dropdown = "<select id='MethodDropdown' name='MethodDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>" .
+    $method_dropdown = "<select id='MethodDropdown' name='MethodDropdown' class='text ui-widget-content ui-corner-all'>" .
             "<option value='None'>None</option>" .
             "<option value='Venmo'>Venmo</option>" .
             "<option value='Square Cash'>Square Cash</option>" .
@@ -165,22 +165,22 @@
         $monthsAgo++;
     }
     
-    $paymentMonth_dropdown = "<select id='MonthDropdown' name='MonthDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$paymentMonth_options</select>";
+    $paymentMonth_dropdown = "<select id='MonthDropdown' name='MonthDropdown' class='text ui-widget-content ui-corner-all'>$paymentMonth_options</select>";
     
     echo "<div id='payment' title='Add Payment' $hideForms>";
     echo "<form id='payment_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<fieldset>";
-    echo "<label style='padding:5px 0px;' for='UserDropdown'>User</label>";
+    echo "<label for='UserDropdown'>User</label>";
     echo $user_dropdown;
-    echo "<label style='padding:5px 0px;' for='MonthDropdown'>Payment Month</label>";
+    echo "<label for='MonthDropdown'>Payment Month</label>";
     echo $paymentMonth_dropdown;
-    echo "<label style='padding:5px 0px;' for='Method'>Method</label>";
+    echo "<label for='Method'>Method</label>";
     echo $method_dropdown;
-    echo "<label style='padding:5px 0px;' for='SodaAmount'>Soda Amount</label>";
+    echo "<label for='SodaAmount'>Soda Amount</label>";
     echo "<input style='font-size:2em;' type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label style='padding:5px 0px;' for='SnackAmount'>Snack Amount</label>";
+    echo "<label for='SnackAmount'>Snack Amount</label>";
     echo "<input style='font-size:2em;' type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
-//     echo "<label style='padding:5px 0px;' for='Note'>Note</label>";
+//     echo "<label for='Note'>Note</label>";
 //     echo "<input type='text' name='Note' class='text ui-widget-content ui-corner-all'/>";
     
     echo $user_info;
@@ -196,12 +196,12 @@
     // ------------------------------------
     echo "<div id='edit_user' title='Edit User' $hideForms>";
     echo "<form id='edit_user_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<label style='padding:5px 0px;' for='EditUserDropdown'>User</label>";
+    echo "<label for='EditUserDropdown'>User</label>";
     echo $edit_user_dropdown;
-    echo "<label style='padding:5px 0px;' for='SlackID'>Slack ID</label>";
+    echo "<label for='SlackID'>Slack ID</label>";
     echo "<input type='text' id='SlackID' name='SlackID' class='text ui-widget-content ui-corner-all'/>";
     
-    echo "<label style='padding:5px 0px;' for='AnonName'>Anon Name</label>";
+    echo "<label for='AnonName'>Anon Name</label>";
     echo "<input type='text' id='AnonName' name='AnonName' class='text ui-widget-content ui-corner-all'/>";
     
     echo "<div style='padding:5px 0px;'>";
@@ -288,11 +288,11 @@
         echo "<div id='add_item_" . $itemType . "' class='fancy' title='Add " . $itemType . "' $hideForms>";
         echo "<form id='add_item_" . $itemType . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
         echo "<fieldset>";
-        echo "<label style='padding:5px 0px;' for='ItemName'>Name</label>";
+        echo "<label for='ItemName'>Name</label>";
         echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='40'; name='ItemName' class='text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='ChartColor'>Color</label>";
+        echo "<label for='ChartColor'>Color</label>";
         echo "<input name='ChartColor' class='color text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='CurrentPrice'>Price of Can</label>";
+        echo "<label for='CurrentPrice'>Price of Can</label>";
         echo "<input type='tel' name='CurrentPrice' value='0.50' class='text ui-widget-content ui-corner-all'/>";
         
         echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
@@ -326,27 +326,27 @@
         echo "<div id='edit_item_" . $itemType . "' class='fancy' title='Edit " . $itemType . "' $hideForms>";
         echo "<form id='edit_item_" . $itemType . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
         echo "<fieldset>";
-        echo "<label style='padding:5px 0px;' for='ItemNameDropdown'>" . $itemType . "</label>";
+        echo "<label for='ItemNameDropdown'>" . $itemType . "</label>";
         echo $edit_dropdown;
-        echo "<label style='padding:5px 0px;' for='ItemName'>Name</label>";
+        echo "<label for='ItemName'>Name</label>";
         echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='30'; id='$editNameID' name='$editNameID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='ChartColor'>Color</label>";
+        echo "<label for='ChartColor'>Color</label>";
         echo "<input id='$editChartColorID' name='$editChartColorID' class='color text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='CurrentPrice'>Price</label>";
+        echo "<label for='CurrentPrice'>Price</label>";
         echo "<input type='tel' id='$editPriceID' name='$editPriceID' class='text ui-widget-content ui-corner-all'/>";
-        echo "<label style='padding:5px 0px;' for='CurrentPrice'>Discount Price</label>";
+        echo "<label for='CurrentPrice'>Discount Price</label>";
         echo "<input type='tel' id='$editDiscountPriceID' name='$editDiscountPriceID' class='text ui-widget-content ui-corner-all'/>";
-        echo "<label style='padding:5px 0px;' for='ImageURL'>Image URL</label>";
+        echo "<label for='ImageURL'>Image URL</label>";
         echo "<input id='$editImageURLID' name='$editImageURLID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='ThumbURL'>Thumb URL</label>";
+        echo "<label for='ThumbURL'>Thumb URL</label>";
         echo "<input id='$editThumbURLID' name='$editThumbURLID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='UnitName'>Unit Name</label>";
+        echo "<label for='UnitName'>Unit Name</label>";
         echo "<input id='$editUnitNameID' name='$editUnitNameID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='UnitNamePlural'>Unit Name (plural)</label>";
+        echo "<label for='UnitNamePlural'>Unit Name (plural)</label>";
         echo "<input id='$editUnitNamePluralID' name='$editUnitNamePluralID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='Alias'>Alias</label>";
+        echo "<label for='Alias'>Alias</label>";
         echo "<input id='$editAliasID' name='$editAliasID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label style='padding:5px 0px;' for='ExpirationDate'>Expiration Date</label>";
+        echo "<label for='ExpirationDate'>Expiration Date</label>";
         echo "<input id='$editExpirationDateID' name='$editExpirationDateID' class='text ui-widget-content ui-corner-all'>";
         echo "<div class='radio_status'>";
         echo "<input class='radio' type='radio' id='$editActiveID' name='$editStatusID' value='active' checked />";
@@ -370,21 +370,21 @@
         // ------------------------------------
         // RESTOCK ITEM MODAL
         // ------------------------------------
-        echo "<div id='restock_item_" . $itemType . "' title='Restock " . $itemType . "' $hideForms>";
+        echo "<div style='width:775px;' id='restock_item_" . $itemType . "' title='Restock " . $itemType . "' $hideForms>";
         echo "<form id='restock_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        echo "<label style='padding:5px 0px;' for='ItemNameDropdown'>" . $itemType . "</label>";
+        echo "<label for='ItemNameDropdown'>" . $itemType . "</label>";
         echo $restock_dropdown;
         echo "<table>";
         
         echo "<tr>";
         echo "<td>";
-        echo "<label style='padding:5px 0px;' for='NumberOfCans'>Number Of Units</label>";
+        echo "<label for='NumberOfCans'>Number Of Units</label>";
         echo "</td>";
         echo "<td>";
-        echo "<label style='padding:5px 0px;' for='Cost'>Cost for Pack</label>";
+        echo "<label for='Cost'>Cost for Pack</label>";
         echo "</td>";
         echo "<td>";
-        echo "<label style='padding:5px 0px;' for='Multiplier'>Multiplier</label>";
+        echo "<label for='Multiplier'>Multiplier</label>";
         echo "</td>";
         echo "</tr>";
         
@@ -426,10 +426,10 @@
         // ------------------------------------
         echo "<div id='defective_item_" . $itemType . "' title='Defective " . $itemType . "' $hideForms>";
         echo "<form id='defective_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        echo "<label style='padding:5px 0px;' for='ItemNameDropdown'>" . $itemType . "</label>";
+        echo "<label for='ItemNameDropdown'>" . $itemType . "</label>";
         echo $defective_dropdown;
         
-        echo "<label style='padding:5px 0px;' for='NumberOfUnits'>Number Of Units</label>";
+        echo "<label for='NumberOfUnits'>Number Of Units</label>";
         echo "<input type='tel' style='font-size: 2em;' name='NumberOfUnits' class='text ui-widget-content ui-corner-all'/>";
 
         echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/><br>";
@@ -451,7 +451,7 @@
         echo "<table>";
         echo "<tr><th>" . $itemType . "</th><th>Add to Shelf</th><th>Shelf Quantity</th><th>Backstock Quantity</th></tr>";
             
-        $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, ID FROM Item WHERE NOT Retired = 1 AND Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY ShelfQuantity DESC, Name asc, Retired");
+        $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, ID FROM Item WHERE Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY ShelfQuantity DESC, Name asc, Retired");
         $tabIndex = 1;
         while ($row = $results->fetchArray()) {
             $item_name = $row['Name'];
@@ -490,7 +490,7 @@
                         echo "$('#ShelfQuantity_$item_id').css('background-color', '#ff9b9b');";
                         
                         // Dont wan't to think changing from 6 to 7 will increase by 1, it will increase 7 again
-                        echo "$('#AddToShelf_$item_id').attr('placeholder', 'Incremented ' + incrementAmount + ' units');";
+                        echo "$('#AddToShelf_$item_id').attr('placeholder', '+' + incrementAmount + ' units');";
                         echo "$('#AddToShelf_$item_id').val('');";
                     echo "} else {";
                         echo "alert('There is not enough backstock available for [' + incrementAmount + '] units.');";
