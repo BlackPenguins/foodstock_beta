@@ -5,7 +5,7 @@ function Login($db) {
     session_start();
     
     if( isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'] == true ) {
-        // Already logged in
+        // Already logged in - Recache everything
         $results = $db->query("SELECT * FROM User WHERE UserName = '" . $_SESSION['UserName'] . "'");
         $row = $results->fetchArray();
         $_SESSION['SlackID'] = $row['SlackID'];
@@ -15,7 +15,7 @@ function Login($db) {
         error_log( "Recached SlackID [" . $_SESSION['SlackID'] . "] for [" . $_SESSION['UserName'] . "]" );
         return;
     }
-
+    
     if( !isset( $_POST['login_username'] ) || !isset( $_POST['login_password'] ) ) {
         // Missing fields - reject login
         $_SESSION['LoggedIn'] = false;
@@ -23,13 +23,24 @@ function Login($db) {
         return;
     }
     
-    session_destroy();
-    session_start();
-    
     $username = $db->escapeString( $_POST['login_username'] );
     $password_sha1 = sha1( $db->escapeString( $_POST['login_password'] ) );
     
-    $results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "' AND Password  = '" . $password_sha1 . "'");
+    LoginWithProxy( $db, false, $username, $password_sha1 );
+}
+
+function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
+    if (session_status() == PHP_SESSION_ACTIVE) {
+        session_destroy();
+    }
+    
+    session_start();
+    
+    if( $isProxy ) {
+        $results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "'" );
+    } else {
+        $results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "' AND Password  = '" . $password_sha1 . "'");
+    }
     
     $row = $results->fetchArray();
     $userExists = $row != false;

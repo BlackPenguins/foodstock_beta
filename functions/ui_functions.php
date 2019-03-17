@@ -72,7 +72,7 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
 }
 
 function getPriceDisplay($price) {
-    getPriceDisplayWithHTML( $price, false );
+    return getPriceDisplayWithHTML( $price, false );
 }
 
 function getPriceDisplayWithHTML($price, $noHTML ) {

@@ -274,9 +274,9 @@
 
                     if( IsLoggedIn() ) {
                         echo "<div class='actions'>";
-                            echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
+                            echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ", \"$isMobile\")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
                             echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
-                            echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
+                            echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ", \"$isMobile\")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
                         echo "</div>"; //actions
                     }
                 echo "</div>"; //post-content
@@ -529,9 +529,11 @@
         $itemPrices = array();
         $itemDiscountPrices = array();
         $itemNames = array();
+        $itemThumbs= array();
         
         $itemsInCart = json_decode($_POST['items']);
         $url = $_POST['url'];
+        $isMobile = $_POST['isMobile'];
 
         foreach( $itemsInCart as $itemID ) {
             if( array_key_exists( $itemID, $itemQuantities ) === false ) {
@@ -540,10 +542,12 @@
                 $itemName = $row['Name'];
                 $itemPrice = $row['Price'];
                 $itemDiscountPrice = $row['DiscountPrice'];
+                $itemImage = $row['ImageURL'];
                 
                 $itemQuantities[$itemID] = 1;
                 $itemNames[$itemID] = $itemName;
                 $itemPrices[$itemID] = $itemPrice;
+                $itemThumbs[$itemID] = $itemImage;
                 $itemDiscountPrices[$itemID] = $itemDiscountPrice;
             } else {
                 $itemQuantities[$itemID] = $itemQuantities[$itemID] + 1;
@@ -552,13 +556,23 @@
         
         $totalPrice = 0.0;
         $totalSavings = 0.0;
+        $totalQuantity = 0;
         
-        echo "<table style='border-collapse:collapse;'>";
-        echo "<tr><th style='color:#FFFFFF;'>Item</th><th style='color:#FFFFFF;'>Price</th></tr>";
+        echo "<h3>Shopping Cart</h3>";
+        
+        echo "<table style='border-collapse:collapse; width:100%;'>";
+        
+        echo "<tr style='border-bottom:1px solid #dddddd'>";
+        echo "<th style='color:#9c9e9c; width:50%;'>&nbsp;</th>";
+        echo "<th style='color:#9c9e9c; text-align:left;'>Price</th>";
+        echo "<th style='color:#9c9e9c;'>Quantity</th>";
+        echo "</tr>";
+        
         foreach( $itemQuantities as $itemID => $itemQuantity ) {
             $itemName = $itemNames[$itemID];
             $itemPrice = $itemPrices[$itemID];
             $itemDiscountPrice = $itemDiscountPrices[$itemID];
+            $itemImageURL = $itemThumbs[$itemID];
             $costDisplay = "";
             
             if( $itemDiscountPrice != "" ) {
@@ -566,26 +580,86 @@
                 $totalPriceForItem = ( $itemDiscountPrice * $itemQuantity);
                 $totalSavings += ( $itemPrice - $itemDiscountPrice ) * $itemQuantity;
             } else {
-                $costDisplay = number_format($itemPrice, 2);
+                $costDisplay = "$" . number_format($itemPrice, 2);
                 $totalPriceForItem = ( $itemPrice * $itemQuantity);
             }
             
             $totalPrice += $totalPriceForItem;
+            $totalQuantity += $itemQuantity;
             
-            echo "<tr><td style='color:#FFFFFF; padding: 5px 0px;'>" . $itemName . ( $itemQuantity > 1 ? " (x" . $itemQuantity . ")" : "" ) . "</td><td style='color:#FFFFFF; padding-left:15px;'>" . $costDisplay . "</td></tr>";
-            //echo "<div style='padding:10px;'>" . $itemName . ( $itemQuantity > 1 ? " (x" . $itemQuantity . ")" : "" ) . " = " .  '$' . number_format($totalPriceForItem, 2) . "</div>";
+            echo "<tr style='border-bottom:1px solid #dddddd; padding:20px 0px; font-weight:bold; min-height:100px;'>";
+            
+            echo "<td style='color:#0066c0; padding: 5px 0px; font-size:1.3em; width:100px;'>";
+            echo "<div style='float:left;'>";
+            
+            if( $itemImageURL != "" ) {
+                echo  "<img style='width: 50px;' src='" . PREVIEW_IMAGES_NORMAL . $itemImageURL . "' />";
+            } else {
+                echo  "<img style='width: 50px;' src='" . IMAGES_LINK . "no_image.png' />";
+            }
+            echo "</div>";
+            echo "<div style='float:left; margin-left:25px;'>";
+            echo $itemName;
+            echo "</div>";
+            echo "</td>";
+            
+            echo "<td style='color:#31961f;'>" . $costDisplay . "</td>";
+            
+            $quantityColor = $itemQuantity == 1 ? "#0066c0" : "#b50505";
+            echo "<td style='color:$quantityColor; margin: 5px 10px; text-align:center;'>";
+            echo $itemQuantity;
+            echo "</td>";
+            
+            echo "</tr>";
         }
         
-        echo "<tr><td style='color:#FFFFFF; padding-top:15px; border-top: 1px solid #FFF;'>TOTAL PRICE:</td><td style='color:#FFFFFF; font-weight:bold; padding-left:15px; padding-top:15px; border-top: 1px solid #FFF;'>" . '$' . number_format($totalPrice, 2) ."</td>";
-        echo "<tr><td style='color:#49c533; padding-top:5px;'>TOTAL SAVINGS:</td><td style='color:#49c533; font-weight:bold; padding-left:15px; padding-top:5px;'>" . '$' . number_format($totalSavings, 2) ."</td>";
+        $firstColSpan = "<td colspan='2'>&nbsp;</td> ";
+        $secondColSpan = "";
+        
+        if( $isMobile ) {
+            $firstColSpan = "";
+            $secondColSpan = "colspan='3'";
+        }
+        
+        echo "<tr>";
+        echo $firstColSpan;
+        echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:25px 20px;'>";
+        echo "<span>&bigstar; Savings: </span>";
+        echo "<span style='color:#1aa7d4;'>$" . number_format($totalSavings, 2) . "</span>";
+        echo "</td>";
+        echo "</tr>";
+        
+        echo "<tr>";
+        echo $firstColSpan;
+        echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px;'>";
+        echo "<span>Total ($totalQuantity items): </span>";
+        echo "<span style='color:#31961f;'>$" . number_format($totalPrice, 2) . "</span>";
+        echo "</td>";
+        echo "</tr>";
+
         echo "</table>";
         
-        echo "<form id='add_item_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        echo "<input type='hidden' name='items' value='" . json_encode($itemsInCart) . "'/><br>";
-        echo "<input type='hidden' name='Purchase' value='Purchase'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='$url'/><br>";
-        echo "<button class='quantity_button quantity_button_purchase' title='Purchase'>PURCHASE FOR $" . number_format($totalPrice, 2) . "</button>";
-        echo "<br><br><input type='checkbox' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px;' for='CashOnly'>Already purchased with cash - don't add this to my balance <span style='color:yellow;'>(please use the DISCOUNT prices)</span></label><br>";
+        echo "<form style='margin-top:20px;' id='add_item_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+        echo "<input type='hidden' name='items' value='" . json_encode($itemsInCart) . "'/>";
+        echo "<input type='hidden' name='Purchase' value='Purchase'/>";
+        echo "<input type='hidden' name='redirectURL' value='$url'/>";
+        echo "<div>";
+        
+        $rightSide = $isMobile ? "" : "style='margin-left:75%;'";
+        echo "<div $rightSide>";
+        
+        echo "<div style='text-align:right;'>";
+        echo "<button class='quantity_button quantity_button_purchase' title='Purchase'>PURCHASE</button>";
+        echo "</div>";
+        
+        echo "<div style='margin-top:15px;'>";
+        echo "<input type='checkbox' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px; font-weight:bold;' for='CashOnly'>I have already placed cash in the mug instead</label>";
+        echo "<div style='font-size:0.8em; font-style:italic; color:#6765c7; margin-top:5px;'>";
+        echo "This means I want to use the site to keep track of what I bought but I do not want this added to my balance. You can use the <span style='color:#b50505;'>discount prices</span> if you keep track through the site.</div>";
+        echo "</div>";
+        echo "</div>";
+        
+        echo "</div>";
         echo "</form>";
     }
 ?>

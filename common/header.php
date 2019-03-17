@@ -113,14 +113,20 @@
     if (!$db) die ($error);
         
     date_default_timezone_set('America/New_York');
-        
-    Login($db);
+       
+    if( $isAdminPage && isset($_GET['Proxy_x25'])) {
+        $proxyUsername = $_GET['Proxy_x25'];
+        LoginWithProxy( $db, true, $proxyUsername, "DOES NOT MATTER" );
+    } else {
+        Login($db);
+    }
 
     $isLoggedIn = IsLoggedIn();
     $isLoggedInAdmin = IsAdminLoggedIn();
     
     if( $isAdminPage && !$isLoggedInAdmin && $url != ADMIN_SHOPPING_GUIDE_LINK ) {
-        echo "You are not an admin. Shame!";
+        $_SESSION['UserMessage'] = "You are not an admin! SHAME! Redirecting you home...";
+        header( "Location:" . SODASTOCK_LINK );
         die();
     }
 

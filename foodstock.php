@@ -42,7 +42,7 @@ function main( $url, $itemType, $className, $location ) {
         }
     }
     
-    function addItemToCart(itemID) {
+    function addItemToCart(itemID, isMobile) {
         var quantityBefore = parseInt( $('#quantity_holder_' + itemID).html() );
         var maxQuantity = parseInt( $('#shelf_quantity_' + itemID).val() );
 
@@ -73,13 +73,14 @@ function main( $url, $itemType, $className, $location ) {
         $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'DrawCart',
                 items:JSON.stringify(itemsInCart),
+                isMobile:isMobile,
                 url:'<?php  echo $url; ?>'
             },function(data) {
                 $('#cart_area').html(data);
         });
     }
 
-    function removeItemFromCart(itemID) {
+    function removeItemFromCart(itemID, isMobile) {
         var quantityBefore = parseInt( $('#quantity_holder_' + itemID).html() );
 
         if( quantityBefore == 0 ) {
@@ -112,6 +113,7 @@ function main( $url, $itemType, $className, $location ) {
         $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'DrawCart',
                 items:JSON.stringify(itemsInCart),
+                isMobile:isMobile,
                 url:'<?php  echo $url; ?>'
             },function(data) {
                 $('#cart_area').html(data);
@@ -121,6 +123,33 @@ function main( $url, $itemType, $className, $location ) {
     function breakBulb(bulb) {
         $(bulb).addClass('dead');
     }
+
+    var totalTimeLeft = 900;
+    
+    var warningTimer = setInterval(function() {
+		totalTimeLeft--;
+
+		var minutes = Math.floor( totalTimeLeft / 60 );
+		var seconds = totalTimeLeft - (minutes * 60);
+
+		if( minutes < 10 ) { minutes = "0" + minutes; }
+		if( seconds < 10 ) { seconds = "0" + seconds; }
+		
+        $('#warning_time').html( minutes + ":" + seconds );
+
+        if( totalTimeLeft == 0 ) {
+            $("body").append("<div id='overlay' style='background-color:#000000; opacity:0.85; z-index:4000; width:100%; height: 100%; position:fixed; top:0; bottom:0; right:0; left:0;'>&nbsp;</div>");
+            $("body").append("<div id='bringing_down_the_hammer' style='padding:20px; border:5px #666f18 solid; background-color:#d0c21d; z-index:6000; width:500px; height: 186px; margin-top:-93px; margin-left:-250px; position:fixed; top:50%; left:50%;'>" + 
+					"<div style='text-align:center; font-size:3em; margin-bottom:15px; text-decoration:underline;'>Friendly Reminder</div>" + 
+					"<div style='text-align:center; font-size:1.3em;'>" +
+					"This site has been open for 15 minutes.<br>Did you forget to pay for something?" +
+					"</div>" +
+					"<div style='text-align:center;'><button style='font-size:1.7em; margin-top:20px;' onclick='$(\"#overlay\").hide(); $(\"#bringing_down_the_hammer\").hide();'>Close</button></div>" + 
+                    "</div>");
+//             alert("Friendly Reminder: The site has been open for 15 minutes without a purchase. Did you forget to pay?");
+            clearInterval(warningTimer);
+        }
+  	}, 1000);
 </script>
 <?php
 
@@ -158,7 +187,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.7 (February 25th, 2019)";
+    $version = "Version 5.9 (March 27th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -210,7 +239,11 @@ if(!$isMobile) {
     echo "<div></div>";
 }
 
-echo "<div id='cart_area' class='cart_area' style='position:relative; margin:5px 20px; padding:10px; color:#FFFFFF; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
+echo "<div style='position:relative; margin:5px 20px; padding:10px; color:#000000; background-color:#fffa5c; border: 3px #8e8b8b solid;'>";
+echo "<img width='30px' src='" . IMAGES_LINK . "timer.png'/>&nbsp;<span style='font-weight:bold;' id='warning_time'>Timer</span> - <u>I'm missing quite a bit of money for both soda and snacks.</u> So after 15 minutes of being idle the site will now ask if you forgot to pay for something. If you think you might have forgotten to pay between grabbing the item and making it back to your desk to pay you can now open the site before you leave and use this feature as a friendly reminder.";
+echo "</div>";
+
+echo "<div id='cart_area' class='cart_area' style='position:relative; margin:5px 20px; padding:10px; color:#000000; background-color:#FFFFFF; border: 3px #8e8b8b solid;'>";
 echo "<div style='display:flex; align-items:center;'>";
 echo "<img width='40px' src='" . IMAGES_LINK . "handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
 echo "</div>";
@@ -223,7 +256,7 @@ echo "</div>";
 if( !$isMobile && $itemType != "Snack" ) {
     $results = $db->query("SELECT ID, Name, ShelfQuantity, DateModified, ThumbURL, Hidden FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 ORDER BY DateModified DESC");
     
-    echo "<div style='margin:20px; padding:10px; background-color:#2f2f2f; border: 3px #8e8b8b dashed;'>";
+    echo "<div style='margin:20px; padding:10px; background-color:#2f2f2f; border: 3px #8e8b8b solid;'>";
     echo "<div style='color:#8e8b8b; font-weight:bold; padding-bottom:10px;'>The Shelf <span style='font-size:0.7em;'>(currently in the $location)</span></div>";
     $lastUpdated = "";
     while ($row = $results->fetchArray()) {
@@ -264,6 +297,13 @@ if( !$isMobile) {
     
     echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
+    
+    DisplayUpdate("Mar 4, 2019 (5.7)", $itemType, array(
+            "<span style='$adminClass'>Admin: Proxy as users for testing.</span>",
+            "Enhanced the cart (just copied the look of Amazon.com)",
+            "Addec user message for completed purchase.",
+            "After 15 minutes there is a pop-up reminding you that you might have forgotten to pay for something.",
+    ) );
     
     DisplayUpdate("Feb 25, 2019 (5.7)", $itemType, array(
             "Larger labels in all modals and inputs.",

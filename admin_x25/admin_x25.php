@@ -42,6 +42,7 @@
             }
             
             echo "<tr class='$rowClass'>";
+            echo "<td style='padding:5px; border:1px #000 solid;'><a href='" . ADMIN_LINK . "?Proxy_x25=" . $row['UserName'] . "'>[Proxy]</a></td>";
             $fullName = $row['FirstName'] . " " . $row['LastName'];
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['UserName'] . "</td>";
@@ -100,6 +101,7 @@
         echo "<div class='rounded_table'>";
         echo "<table>";
         echo "<thead><tr class='table_header'>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>&nbsp;</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Anon Name</th>";

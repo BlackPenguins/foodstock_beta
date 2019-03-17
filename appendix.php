@@ -1,10 +1,11 @@
 <?php 
     date_default_timezone_set('America/New_York');
-    $isTestServer = $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26";
+    $isTestServer = $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
     
     // LINKS ARE CLIENT SIDE - THEY USE THE URL (links, scripts, css)
     // PATHS ARE SERVER SIDE - THEY USE THE COMPUTER LOCATION (includes, db)
     
+    error_log("INC[" . $_SERVER['SERVER_ADDR'] . "]");
     $slash = "/";
     $subdomain = "";
 

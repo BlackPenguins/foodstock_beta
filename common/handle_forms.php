@@ -122,7 +122,8 @@ if(isset($_POST['Purchase'])) {
         }
 
         sendSlackMessageToMatt( "*(" . strtoupper($_SESSION['UserName']) . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb" );
-
+        $userMessage = "Purchase Completed";
+        
         if( $errors != "" ) {
             error_log( "ERROR: [" . $_SESSION['UserID'] . "]" . $errors );
             $userMessage = "Something went wrong - contact Matt!! " . $errors;

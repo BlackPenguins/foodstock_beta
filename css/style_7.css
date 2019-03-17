@@ -154,18 +154,16 @@ body { font-family: Helvetica, Arial, Sans-Serif; margin:0 auto; width:100%; hei
 }
 
 .quantity_button_add_disabled {
-    margin-left: 10px;
     background-color:#475f47;
 }
 
 .quantity_button_purchase {
-    margin-left: 10px;
-    background-color:#97ad22;
+    background-color:#31ad22;
     width:230px;
 }
 
 .quantity_button_purchase:hover {
-    background-color:#c6d674;
+    background-color:#6bda5e;
 }
 
 .register:visited {
