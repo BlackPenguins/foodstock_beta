@@ -27,7 +27,7 @@
         }
         
         $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses," .
-        "DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate " .
+        "DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, OutOfStock, OutOfStockReporter, OutOfStockDate " .
         "FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
         
         if( IsLoggedIn() ) {
@@ -36,7 +36,7 @@
             // then inside those groups it sorts by frequency, then shelf, then backstock
             $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, " .
             "ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
-            " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i " . 
+            " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i " . 
             "WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 " . 
             "ORDER BY CASE WHEN Retired = 1 AND ShelfQuantity = 0 THEN '3' WHEN Frequency > 0 AND Retired = 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfQuantity DESC, BackstockQuantity DESC"; 
         }
@@ -227,6 +227,11 @@
                     echo "<div class='category category-$cardClass $amountClass'>$amountLeft</div>";
                       
                     echo "<h1 class='title'>" . $row['Name'] . "</h1>";
+                    
+                    $currentFlavor = $row['CurrentFlavor'];
+                    if( $currentFlavor != "" ) {
+                        echo "<h1 class='sub_title'><u>Current Flavor:</u> <i>$currentFlavor</i></h1>";
+                    }
 
                     $income = $row['TotalIncome'];
                     $expense = $row['TotalExpenses'];

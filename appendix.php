@@ -19,7 +19,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_7.css" );
+        define( "CSS_LINK", "$subdomain/css/style_9.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
@@ -98,5 +98,13 @@
     
     if( !defined("CSS_PATH")) {
         define( "CSS_PATH",   __DIR__ . $slash . "css" . $slash . "style_locator.php" );
+    }
+
+    if( !defined("IMAGES_NORMAL_PATH")) {
+        define( "IMAGES_NORMAL_PATH",   __DIR__ . $slash . "preview_images" . $slash . "normal" . $slash );
+    }
+
+    if( !defined("IMAGES_THUMBNAILS_PATH")) {
+        define( "IMAGES_THUMBNAILS_PATH",   __DIR__ . $slash . "preview_images" . $slash . "thumbnails" . $slash );
     }
 ?>

@@ -80,9 +80,11 @@
     echo "</form>";
     echo "</div>";
 
+    echo "<div id= 'container'>";
     drawTable($db, $isLoggedInAdmin, "Requests", "'Soda','Snack'");
     drawTable($db, $isLoggedInAdmin, "Feature Requests", "'Feature'");
     drawTable($db, $isLoggedInAdmin, "Bug Reports", "'Bug'");
+    echo "</div>";
 
     
     function drawTable( $db, $isLoggedInAdmin, $title, $type ) {
@@ -114,17 +116,17 @@
         echo "<div class='rounded_table' style='margin-left: 2%; margin-right: 2%;'>";
         echo "<table style='table-layout: fixed;'>";
         echo "<thead><tr>";
-        echo "<th style='width:$column1Width%; padding-left: 0px;'>&nbsp;</th>";
-        echo "<th style='width:$column2Width%;'>Priority</th>";
-        echo "<th style='width:$column3Width%;'>Item Name</th>";
+        echo "<th class='requests_blank_column' style='width:$column1Width%; padding-left: 0px;'>&nbsp;</th>";
+        echo "<th class='requests_priority_column' style='width:$column2Width%;'>Priority</th>";
+        echo "<th class='requests_item_column' style='width:$column3Width%;'>Item Name</th>";
         
         if( $title == "Requests" ) {
-            echo "<th style='width:$column4Width%;'>Item Type</th>";
+            echo "<th class='requests_type_column' style='width:$column4Width%;'>Item Type</th>";
         }
         
-        echo "<th style='width:$column5Width%;'>Requested By</th>";
-        echo "<th style='width:$column6Width%;'>Date</th>";
-        echo "<th style='width:$column7Width%; word-break:break-word;'>Note</th>";
+        echo "<th class='requests_requested_by_column' style='width:$column5Width%;'>Requested By</th>";
+        echo "<th class='requests_date_column' style='width:$column6Width%;'>Date</th>";
+        echo "<th class='requests_note_column' style='width:$column7Width%; word-break:break-word;'>Note</th>";
         
         echo "</tr></thead>";
         
@@ -159,7 +161,7 @@
                 $onClick = " onclick='toggleCompleted(" . $row['ID'] . ");'";
             }
         
-            echo "<td style='padding-left: 0px; width:$column1Width%; font-size:1.6em; cursor:pointer; text-align:center; font-weight:bold; color: $completedMarkColor;'> <span$onClick>$completedMark </span></td>";
+            echo "<td class='requests_blank_column' style='padding-left: 0px; width:$column1Width%; font-size:1.6em; cursor:pointer; text-align:center; font-weight:bold; color: $completedMarkColor;'> <span$onClick>$completedMark </span></td>";
         
             $priority = $row['Priority'];
             
@@ -173,7 +175,7 @@
                 $priorityColor = "background-color:#b2d8ff;";
             }
             
-            echo "<td style='width:$column2Width%; $priorityColor'>";
+            echo "<td class='requests_priority_column' style='width:$column2Width%; $priorityColor'>";
             
             
             if( $isLoggedInAdmin ) {
@@ -189,17 +191,17 @@
             
             echo "</td>";
             
-            echo "<td style='width:$column3Width%;'>" . $row['ItemName'] . "</td>";
+            echo "<td class='requests_item_column' style='width:$column3Width%;'>" . $row['ItemName'] . "</td>";
             
             if( $title == "Requests" ) {
-                echo "<td style='width:$column4Width%;'>" . $row['ItemType'] . "</td>";
+                echo "<td class='requests_type_column' style='width:$column4Width%;'>" . $row['ItemType'] . "</td>";
             }
             
             $fullName = $row['FirstName'] . " " . $row['LastName'];
-            echo "<td style='width:$column5Width%;'>" . $fullName . "</td>";
+            echo "<td class='requests_requested_by_column' style='width:$column5Width%;'>" . $fullName . "</td>";
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-            echo "<td style='width:$column6Width%;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "$dateCompleted</td>";
-            echo "<td style='width:$column7Width%; word-break:break-word;'>" . $row['Note'] . "</td>";
+            echo "<td class='requests_date_column' style='width:$column6Width%;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "$dateCompleted</td>";
+            echo "<td class='requests_note_column' style='width:$column7Width%; word-break:break-word;'>" . $row['Note'] . "</td>";
             echo "</tr>";
         }
         

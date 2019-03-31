@@ -67,8 +67,8 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
     } else {
         $_SESSION['LoggedIn'] = false;
         $_SESSION['UserName'] = null;
-        
-        echo "<div style='padding:30px; font-weight:bold; font-size:1.3em;'>Incorrect password!</div>";
+
+        $_SESSION['UserMessage'] = "Incorrect Password";
     }
 }
 

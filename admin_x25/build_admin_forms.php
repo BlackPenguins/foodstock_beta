@@ -230,7 +230,7 @@
     
     function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
         // Build Item Dropdown
-        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by retired asc, name asc");
+        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by retired asc, name asc");
         $item_options = "";
         $item_options_no_discontinued = "";
         $item_info = "";
@@ -246,6 +246,7 @@
             $item_unit_name = $row['UnitName'];
             $item_unit_name_plural = $row['UnitNamePlural'];
             $item_alias = $row['Alias'];
+            $item_currentFlavor = $row['CurrentFlavor'];
             $item_expiration_date= $row['ExpirationDate'];
             if(strlen($item_name) > 30) {
                 $item_name = substr($item_name, 0, 30)."...";
@@ -270,6 +271,7 @@
             "<input type='hidden' id='Item_" . $itemType . "_UnitName_$item_id' value='$item_unit_name'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_UnitNamePlural_$item_id' value='$item_unit_name_plural'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_Alias_$item_id' value='$item_alias'/>" .
+            "<input type='hidden' id='Item_" . $itemType . "_CurrentFlavor_$item_id' value='$item_currentFlavor'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_ExpirationDate_$item_id' value='$item_expiration_date'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_Retired_$item_id' value='$item_retired'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_ChartColor_$item_id' value='$item_chart_color'/>";
@@ -318,6 +320,7 @@
         $editUnitNameID = "EditUnitName" . $itemType;
         $editUnitNamePluralID = "EditUnitNamePlural" . $itemType;
         $editAliasID = "EditAlias" . $itemType;
+        $editCurrentFlavorID = "EditCurrentFlavor" . $itemType;
         $editExpirationDateID = "EditExpirationDate" . $itemType;
         $editActiveID = "EditStatusActive" . $itemType;
         $editDiscontinuedID = "EditStatusDiscontinued" . $itemType;
@@ -336,10 +339,13 @@
         echo "<input type='tel' id='$editPriceID' name='$editPriceID' class='text ui-widget-content ui-corner-all'/>";
         echo "<label for='CurrentPrice'>Discount Price</label>";
         echo "<input type='tel' id='$editDiscountPriceID' name='$editDiscountPriceID' class='text ui-widget-content ui-corner-all'/>";
-        echo "<label for='ImageURL'>Image URL</label>";
-        echo "<input id='$editImageURLID' name='$editImageURLID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label for='ThumbURL'>Thumb URL</label>";
-        echo "<input id='$editThumbURLID' name='$editThumbURLID' class='text ui-widget-content ui-corner-all'>";
+
+        echo "<label style='display:inline-block' for='ImageURL'>Image URL</label> <span style='color:#55a4ff' id='$editImageURLID'></span>";
+        echo "<input style='padding-bottom:20px;' name='uploadedImage' type='file' />";
+
+        echo "<label style='display:inline-block' for='ThumbURL'>Thumb URL</label> <span style='color:#55a4ff' id='$editThumbURLID'></span>";
+        echo "<input style='padding-bottom:20px;' name='uploadedThumb' type='file' />";
+
         echo "<label for='UnitName'>Unit Name</label>";
         echo "<input id='$editUnitNameID' name='$editUnitNameID' class='text ui-widget-content ui-corner-all'>";
         echo "<label for='UnitNamePlural'>Unit Name (plural)</label>";
@@ -349,6 +355,8 @@
         echo "<label for='ExpirationDate'>Expiration Date</label>";
         echo "<input id='$editExpirationDateID' name='$editExpirationDateID' class='text ui-widget-content ui-corner-all'>";
         echo "<div class='radio_status'>";
+        echo "<label for='CurrentFlavor'>Current Flavor</label>";
+        echo "<input id='$editCurrentFlavorID' name='$editCurrentFlavorID' class='text ui-widget-content ui-corner-all'>";
         echo "<input class='radio' type='radio' id='$editActiveID' name='$editStatusID' value='active' checked />";
         echo "<label for='$editActiveID'>Active</label>";
         echo "<input class='radio' type='radio' id='$editDiscontinuedID' name='$editStatusID' value='discontinued' />";
@@ -402,7 +410,7 @@
         
         echo "</table>";
         
-        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
+        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
         $item_options = "";
         $item_options_no_discontinued = "";
         $item_info = "";
@@ -549,6 +557,7 @@ function setItemInfo( type ) {
     var itemUnitName = $('#Item_' + type + '_UnitName_' + itemID).val();
     var itemUnitNamePlural = $('#Item_' + type + '_UnitNamePlural_' + itemID).val();
     var itemAlias = $('#Item_' + type + '_Alias_' + itemID).val();
+    var itemCurrentFlavor = $('#Item_' + type + '_CurrentFlavor_' + itemID).val();
     var itemExpirationDate = $('#Item_' + type + '_ExpirationDate_' + itemID).val();
     var itemThumbURL = $('#Item_' + type + '_ThumbURL_' + itemID).val();
     var itemChartColor = $('#Item_' + type + '_ChartColor_' + itemID).val();
@@ -558,11 +567,12 @@ function setItemInfo( type ) {
     $("#EditItemName" + type).val(itemName);
     $("#EditPrice" + type).val(itemPrice);
     $("#EditDiscountPrice" + type).val(itemDiscountPrice);
-    $("#EditImageURL" + type).val(itemImageURL);
-    $("#EditThumbURL" + type).val(itemThumbURL);
+    $("#EditImageURL" + type).html("(" + itemImageURL + ")");
+    $("#EditThumbURL" + type).html("(" + itemThumbURL + ")");
     $("#EditUnitName" + type).val(itemUnitName);
     $("#EditUnitNamePlural" + type).val(itemUnitNamePlural);
     $("#EditAlias" + type).val(itemAlias);
+    $("#EditCurrentFlavor" + type).val(itemCurrentFlavor);
     $("#EditExpirationDate" + type).val(itemExpirationDate);
     $("#EditChartColor + type").val(itemChartColor);
     

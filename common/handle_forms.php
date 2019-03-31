@@ -221,13 +221,43 @@ if(isset($_POST['Purchase'])) {
             $unitName = trim($_POST["EditUnitName" . $itemType]);
             $unitNamePlural = trim($_POST["EditUnitNamePlural" . $itemType]);
             $alias = trim($_POST["EditAlias" . $itemType]);
+            $currentFlavor = trim($_POST["EditCurrentFlavor" . $itemType]);
             $status = trim($_POST["EditStatus" . $itemType]);
             $expirationDate = trim($_POST["EditExpirationDate" . $itemType]);
     
             error_log("Status: " . $status );
             $retired = $status == "active" ? 0 : 1;
-    
-            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired, ImageURL = '$imageURL', ThumbURL = '$thumbURL', UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias', ExpirationDate = '$expirationDate' where ID = $id";
+
+            $updateImageURL = "";
+            $updateThumbURL = "";
+
+            if ( is_uploaded_file($_FILES['uploadedImage']['tmp_name'] ) ) {
+                error_log( "FOUND TMP: [" .$_FILES['uploadedImage']['tmp_name'] . "]" );
+                error_log( "FOUND NAME: [" .$_FILES['uploadedImage']['name'] . "]" );
+                $targetFileName = basename( $_FILES['uploadedImage']['name'] );
+                error_log( "FOUND TARGET: [" .$targetFileName . "]" );
+                $target = IMAGES_NORMAL_PATH . $targetFileName;
+                error_log( "FOUND TARGET PATH: [" .$target . "]" );
+
+                if( !move_uploaded_file( $_FILES['uploadedImage']['tmp_name'], $target ) ) {
+                    error_log(" THERE WAS AN ERROR UPLOADING THIS IMAGE: " . $_FILES['uploadedImage']['tmp_name'] );
+                } else {
+                    $updateImageURL = ", ImageURL = '$targetFileName'";
+                    error_log( "FOUND UPDATE: [" .$updateImageURL . "]" );
+                }
+            }
+
+            if ( is_uploaded_file($_FILES['uploadedThumb']['tmp_name'] ) ) {
+                $targetFileName = basename( $_FILES['uploadedThumb']['name'] );
+                $target = IMAGES_THUMBNAILS_PATH . $targetFileName;
+                if( !move_uploaded_file( $_FILES['uploadedThumb']['tmp_name'], $target ) ) {
+                    error_log(" THERE WAS AN ERROR UPLOADING THIS THUMBNAIL: " . $_FILES['uploadedThumb']['tmp_name'] );
+                } else {
+                    $updateThumbURL = ", ThumbURL = '$targetFileName'";
+                }
+            }
+
+            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired $updateImageURL $updateThumbURL, UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias', CurrentFlavor = '$currentFlavor', ExpirationDate = '$expirationDate' where ID = $id";
             error_log("Edit Item Query: [" . $editItemQuery . "]" );
             $db->exec( $editItemQuery );
     
@@ -439,7 +469,7 @@ if(isset($_POST['Purchase'])) {
                 $itemName = "N/A";
     
     
-                $results = $db->query("SELECT ID, BackstockQuantity, ShelfQuantity, Price, Name, Type, UnitName, UnitNamePlural FROM Item WHERE ID = $id");
+                $results = $db->query("SELECT ID, BackstockQuantity, ShelfQuantity, Price, Name, Type, UnitName, UnitNamePlural, CurrentFlavor FROM Item WHERE ID = $id");
                 while ($row = $results->fetchArray()) {
                     $backstockQuantityBefore = $row['BackstockQuantity'];
                     $shelfQuantityBefore = $row['ShelfQuantity'];
@@ -448,6 +478,11 @@ if(isset($_POST['Purchase'])) {
                     $itemType = $row['Type'];
                     $itemUnits = $row['UnitName'];
                     $itemUnitsPlural = $row['UnitNamePlural'];
+                    $currentFlavor = $row['CurrentFlavor'];
+                    
+                    if( $currentFlavor != "" ) {
+                        $currentFlavor = "[" . $currentFlavor . "] ";
+                    }
                 }
     
                 if( $price == "") {
@@ -458,7 +493,7 @@ if(isset($_POST['Purchase'])) {
                     //New item was added to the fridge
                     $priceDisplay = getPriceDisplayWithHTML( $priceBefore, true /* no HTML */ );
                     
-                    $slackMessageItems = $slackMessageItems . "*" . $itemName . ":* " . $shelfQuantityBefore . " " . 
+                    $slackMessageItems = $slackMessageItems . "*" . $itemName . " $currentFlavor:* " . $shelfQuantityBefore . " " . 
                             ( $shelfQuantityBefore == 1 ? $itemUnits : $itemUnitsPlural ) .
                             " --> *" . $shelfQuantity . " " . 
                             ( $shelfQuantity == 1 ? $itemUnits : $itemUnitsPlural ) . "*    ($priceDisplay)\n";

@@ -21,6 +21,8 @@
     // ------------------------------------
     // PURCHASE HISTORY TABLE
     // ------------------------------------
+    echo "<div id= 'container'>";
+
     echo "<div class='rounded_header'><span class='title'>Purchase History for <b>$name</b></span>";
     $totalSavings = 0.0;
     $totalBalance = 0.0;
@@ -36,7 +38,7 @@
         }
     }
     
-    echo  "<span style='float:right; padding-right:20px;'><b>Total Spent:</b> $". number_format($totalBalance,2) . "&nbsp;&nbsp;|&nbsp;&nbsp;<b>Total Savings:</b> $" . number_format($totalSavings, 2) . "</span>";
+    echo  "<span id='total_details_box'><b>Total Spent:</b> $". number_format($totalBalance,2) . "&nbsp;&nbsp;|&nbsp;&nbsp;<b>Total Savings:</b> $" . number_format($totalSavings, 2) . "</span>";
     
     echo "<div>";
     echo "View monthly statements in the <b>Billing</b> section (now at the top).";
@@ -112,6 +114,7 @@
     }
     
         echo "</table>";
+    echo "</div>";
     echo "</div>";
     echo "</div>";
 ?>
