@@ -14,67 +14,67 @@
         echo "<div class='rounded_header'><span class='title'>Item Inventory</span></div>";
         
         echo "<div class='center_piece'>";
-        echo "<div class='rounded_table'>";
+        echo "Black = Sold Out.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Discounted price = Yellow.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.";
+        echo "<div class='rounded_table_no_border'>";
         echo "<table>";
-        echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>ID</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Type</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price per Unit</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Discount Price per Unit</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Created</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Modified</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Chart Color</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Shelf Quantity</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Backstock Quantity</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Units Bought</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Income</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Expenses</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Discontinued</th>";
+        echo "<thead><tr>";
+        echo "<th align='left'>ID</th>";
+        echo "<th align='left'>Type</th>";
+        echo "<th align='left'>Name</th>";
+        echo "<th align='left'>Price per Unit</th>";
+        echo "<th align='left'>Discount Price per Unit</th>";
+        echo "<th align='left'>Date Created</th>";
+        echo "<th align='left'>Date Modified</th>";
+        echo "<th align='left'>Chart Color</th>";
+        echo "<th align='left'>Shelf Quantity</th>";
+        echo "<th align='left'>Backstock Quantity</th>";
+        echo "<th align='left'>Total Units Bought</th>";
+        echo "<th align='left'>Total Income</th>";
+        echo "<th align='left'>Total Expenses</th>";
+        echo "<th align='left'>Discontinued</th>";
         
         echo "</tr></thead>";
         
-        $rowClass = "odd";
+        $rowClass = "";
         
-        $results = $db->query("SELECT ID, Type, Name, OutOfStock, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item WHERE Hidden != 1 ORDER BY Retired, Type DESC, Total ASC");
+        $results = $db->query("SELECT ID, Type, Name, RefillTrigger, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item WHERE Hidden != 1 ORDER BY Retired, Type DESC, Total ASC");
         while ($row = $results->fetchArray()) {
             $isDiscontinued = $row['Retired'] == 1;
             
             if( $isDiscontinued ) {
-                $rowClass = "discontinued_row";
+                $rowClass = "class='discontinued_row'";
             }
             
             $colorPrice = "";
             $colorDiscount = "";
             
             if( $row['DiscountPrice'] == 0 ) {
-                $colorPrice = "background-color: #e7ea14;";
+                $colorPrice = "style = 'background-color: #fdff80; color:#000000;'";
             } else {
-                $colorDiscount = "background-color: #e7ea14;";
+                $colorDiscount = "style = 'background-color: #fdff80; color:#000000;'";
             }
             
             $colorSoldOut = "";
-            if( ( $row['Total'] == 0 || $row['OutOfStock'] == 1 ) && !$isDiscontinued ) {
-                $colorSoldOut = "background-color: #ea7714;";
+            if( ( $row['Total'] == 0 || $row['RefillTrigger'] == 1 ) && !$isDiscontinued ) {
+                $colorSoldOut = "style = 'background-color: #3c3c3c; color: #FFFFFF'";
             }
 
-            echo "<tr class='$rowClass'>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ID'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Type'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; $colorSoldOut'>" . $row['Name'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; $colorPrice'>$" . number_format( $row['Price'], 2) . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; $colorDiscount'>$" . number_format( $row['DiscountPrice'], 2) . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Date'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['DateModified'] . " (" . $row['ModifyType'] . ")</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ChartColor'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ShelfQuantity'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['BackstockQuantity'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['TotalCans'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $row['TotalIncome'], 2) . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $row['TotalExpenses'], 2) . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
+            echo "<tr $rowClass>";
+            echo "<td>" . $row['ID'] . "</td>";
+            echo "<td>" . $row['Type'] . "</td>";
+            echo "<td $colorSoldOut>" . $row['Name'] . "</td>";
+            echo "<td $colorPrice>$" . number_format( $row['Price'], 2) . "</td>";
+            echo "<td $colorDiscount>$" . number_format( $row['DiscountPrice'], 2) . "</td>";
+            echo "<td>" . $row['Date'] . "</td>";
+            echo "<td>" . $row['DateModified'] . " (" . $row['ModifyType'] . ")</td>";
+            echo "<td>" . $row['ChartColor'] . "</td>";
+            echo "<td>" . $row['ShelfQuantity'] . "</td>";
+            echo "<td>" . $row['BackstockQuantity'] . "</td>";
+            echo "<td>" . $row['TotalCans'] . "</td>";
+            echo "<td>$" . number_format( $row['TotalIncome'], 2) . "</td>";
+            echo "<td>$" . number_format( $row['TotalExpenses'], 2) . "</td>";
+            echo "<td>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
             echo "</tr>";
-            if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
         }
         
         echo "</table>";

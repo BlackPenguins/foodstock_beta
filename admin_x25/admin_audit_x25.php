@@ -1,7 +1,7 @@
 <?php
     include(__DIR__ . "/../appendix.php" );
     
-    $url = ADMIN_AUDIT_LINK;
+    $url = ADMIN_AUDIT_REPORT_LINK;
     include( HEADER_PATH );
     
     echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
@@ -11,20 +11,20 @@
         echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Item Inventory</span></span>";
         echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-bottom: 20px; margin-left: 10px;'>";
         echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>ID</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Type</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Sold</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Sold Through Site</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Total Sold Through Non-Site</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Income (Purchase History)</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Income (Non-Site)</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Income (Total Income)</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Income (on Card)</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Expenses (Restock)</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Expenses (on Card)</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Profit (Restock)</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Profit (on Card)</th>";
+        echo "<th align='left'>ID</th>";
+        echo "<th align='left'>Type</th>";
+        echo "<th align='left'>Name</th>";
+        echo "<th align='left'>Total Sold</th>";
+        echo "<th align='left'>Total Sold Through Site</th>";
+        echo "<th align='left'>Total Sold Through Non-Site</th>";
+        echo "<th align='left'>Income (Purchase History)</th>";
+        echo "<th align='left'>Income (Non-Site)</th>";
+        echo "<th align='left'>Income (Total Income)</th>";
+        echo "<th align='left'>Income (on Card)</th>";
+        echo "<th align='left'>Expenses (Restock)</th>";
+        echo "<th align='left'>Expenses (on Card)</th>";
+        echo "<th align='left'>Profit (Restock)</th>";
+        echo "<th align='left'>Profit (on Card)</th>";
         
         echo "</tr></thead>";
         
@@ -36,7 +36,7 @@
         
         $allExpenses = 0.0;
         $allExpensesCard = 0.0;
-        $results = $db->query("SELECT ID, Type, Name, OutOfStock, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item where hidden != 1 ORDER BY Hidden, Type DESC, Name ASC");
+        $results = $db->query("SELECT ID, Type, Name, RefillTrigger, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item where hidden != 1 ORDER BY Hidden, Type DESC, Name ASC");
         while ($row = $results->fetchArray()) {
             $type = $row['Type'];
             
@@ -96,20 +96,20 @@
             }
             
             echo "<tr class='$rowClass'>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['ID'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Type'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Name'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $totalUnits . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $inSiteCount . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $offSiteCount . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . $inSiteIncome . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . $offSiteIncome . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; background-color: $totalIncomeColor;'>$" . $totalIncome . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; background-color: $totalIncomeColor;'>$" . $totalIncomeCard . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; background-color: $totalExpensesColor;'>$" . $totalExpenses . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid; background-color: $totalExpensesColor;'>$" . $totalExpensesCard . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>&nbsp;</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>&nbsp;</td>";
+            echo "<td>" . $row['ID'] . "</td>";
+            echo "<td>" . $row['Type'] . "</td>";
+            echo "<td>" . $row['Name'] . "</td>";
+            echo "<td>" . $totalUnits . "</td>";
+            echo "<td>" . $inSiteCount . "</td>";
+            echo "<td>" . $offSiteCount . "</td>";
+            echo "<td>$" . $inSiteIncome . "</td>";
+            echo "<td>$" . $offSiteIncome . "</td>";
+            echo "<td style='background-color: $totalIncomeColor;'>$" . $totalIncome . "</td>";
+            echo "<td style='background-color: $totalIncomeColor;'>$" . $totalIncomeCard . "</td>";
+            echo "<td style='background-color: $totalExpensesColor;'>$" . $totalExpenses . "</td>";
+            echo "<td style='background-color: $totalExpensesColor;'>$" . $totalExpensesCard . "</td>";
+            echo "<td>&nbsp;</td>";
+            echo "<td>&nbsp;</td>";
             echo "</tr>";
             if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
         }
@@ -124,13 +124,13 @@
         $allProfit = $allIncome - $allExpenses;
         $allProfitCard = $allIncomeCard - $allExpensesCard;
         echo "<tr class='odd'>";
-        echo "<td colspan='8' style='padding:5px; border:1px #000 solid;'>TOTAL OVERALL</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . $allIncome . "</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . $allIncomeCard . "</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . $allExpenses . "</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . $allExpensesCard . "</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . $allProfit . "</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>$" . $allProfitCard . "</td>";
+        echo "<td colspan='8'>TOTAL OVERALL</td>";
+        echo "<td>$" . $allIncome . "</td>";
+        echo "<td>$" . $allIncomeCard . "</td>";
+        echo "<td>$" . $allExpenses . "</td>";
+        echo "<td>$" . $allExpensesCard . "</td>";
+        echo "<td>$" . $allProfit . "</td>";
+        echo "<td>$" . $allProfitCard . "</td>";
         echo "</tr>";
 
         $allIncome = 0.0;
@@ -145,9 +145,9 @@
         }
 
         echo "<tr class='odd'>";
-        echo "<td colspan='2' style='padding:5px; border:1px #000 solid;'>&nbsp;</td>";
-        echo "<td style='padding:5px; border:1px #000 solid;'>Payments: $ $totalPayment</td>";
-        echo "<td colspan='11' style='padding:5px; border:1px #000 solid;'>&nbsp;</td>";
+        echo "<td colspan='2'>&nbsp;</td>";
+        echo "<td>Payments: $ $totalPayment</td>";
+        echo "<td colspan='11'>&nbsp;</td>";
         echo "</tr>";
     }
 ?>

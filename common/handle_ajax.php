@@ -27,7 +27,7 @@
         }
         
         $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses," .
-        "DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, OutOfStock, OutOfStockReporter, OutOfStockDate " .
+        "DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate " .
         "FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
         
         if( IsLoggedIn() ) {
@@ -36,7 +36,7 @@
             // then inside those groups it sorts by frequency, then shelf, then backstock
             $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, " .
             "ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
-            " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, OutOfStock, OutOfStockReporter, OutOfStockDate FROM Item i " . 
+            " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate FROM Item i " .
             "WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 " . 
             "ORDER BY CASE WHEN Retired = 1 AND ShelfQuantity = 0 THEN '3' WHEN Frequency > 0 AND Retired = 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfQuantity DESC, BackstockQuantity DESC"; 
         }
@@ -51,7 +51,7 @@
             
             $isLoggedIn = IsLoggedIn();
             
-            $outOfStock = $row['OutOfStock'];
+            $outOfStock = $row['RefillTrigger'];
             $outOfStockReporter = $row['OutOfStockReporter'];
             $item_id = $row['ID'];
             $item_name = $row['Name'];
@@ -180,13 +180,17 @@
             }
             
             $previewImage = "";
-            
-            if( $imageURL != "" ) {
+
+            $christianInTheHouse = isset( $_SESSION['UserName'] ) && $_SESSION['UserName'] == "cmartinez" && $item_id == 65;
+
+            if( $christianInTheHouse ) {
+                $previewImage = "<img class='preview_zoom' src='" . IMAGES_LINK . "babe_ruth.jpg' />";
+            } else if( $imageURL != "" ) {
                 $previewImage = "<img class='preview_zoom' src='" . PREVIEW_IMAGES_NORMAL . $imageURL . "' />";
             } else {
                 $previewImage = "<img class='preview_zoom' style='width: 100px; height: 100px; padding-top:70px;' src='" . IMAGES_LINK . "no_image.png' />";
             }
-            
+
             $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
             
             $resultsDefect = $db->query("SELECT Sum(Amount) as 'TotalDefect' From Defectives where ItemID = ". $row['ID']);
@@ -225,8 +229,12 @@
                     echo $reportButton;
                     echo "$outOfStockLabel";
                     echo "<div class='category category-$cardClass $amountClass'>$amountLeft</div>";
-                      
-                    echo "<h1 class='title'>" . $row['Name'] . "</h1>";
+
+                    if( $christianInTheHouse ) {
+                        echo "<h1 class='title'>Fun-Size Babe Ruths</h1>";
+                    } else {
+                        echo "<h1 class='title'>" . $row['Name'] . "</h1>";
+                    }
                     
                     $currentFlavor = $row['CurrentFlavor'];
                     if( $currentFlavor != "" ) {
@@ -401,8 +409,6 @@
         $backstockDelta = $backstockBefore - $backstockAfter;
         $shelfDelta = $shelfBefore - $shelfAfter;
         
-        error_log("[" . $quantityBefore . "][$quantityAfter]" );
-        
         $income = ($quantityBefore - $quantityAfter) * $price;
         
         $cancelSQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
@@ -525,7 +531,7 @@
         $itemName = $_POST['itemName'];
         $reporter = $_POST['reporter'];
         $date = date('Y-m-d H:i:s', time());
-        $db->exec( "UPDATE Item set OutOfStock = 1, OutOfStockDate = '$date', OutOfStockReporter = '$reporter' WHERE ID = $itemID" );
+        $db->exec( "UPDATE Item set RefillTrigger = 1, OutOfStockDate = '$date', OutOfStockReporter = '$reporter' WHERE ID = $itemID" );
         sendSlackMessageToMatt( "*Item Name:* " . $itemName . "\n*Reporter:* " . $reporter, ":negative_squared_cross_mark:", "OUT OF STOCK REPORT", "#791414" );
     }
     else if($type == "DrawCart" )

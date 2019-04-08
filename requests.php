@@ -113,7 +113,7 @@
         $column6Width = 5;
         $column7Width = 5;
         echo "<div class='center_piece'>";
-        echo "<div class='rounded_table' style='margin-left: 2%; margin-right: 2%;'>";
+        echo "<div class='rounded_table_no_border' style='margin-left: 2%; margin-right: 2%;'>";
         echo "<table style='table-layout: fixed;'>";
         echo "<thead><tr>";
         echo "<th class='requests_blank_column' style='width:$column1Width%; padding-left: 0px;'>&nbsp;</th>";
@@ -129,13 +129,16 @@
         echo "<th class='requests_note_column' style='width:$column7Width%; word-break:break-word;'>Note</th>";
         
         echo "</tr></thead>";
-        
-        $results = $db->query("SELECT r.ID, r.Priority, r.Completed, r.DateCompleted, u.FirstName, u.LastName, r.ItemName, r.ItemType, r.Date, r.Note  FROM REQUESTS r JOIN User u ON r.UserID = u.UserID WHERE r.ItemType in (" . $type . ") " . 
-                "ORDER BY Completed ASC, " .
-                "CASE WHEN Completed = 1 THEN DateCompleted ELSE " .
-                "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
-                "END DESC," .
-                "r.Date DESC");
+
+        $requestsQuery = "SELECT r.ID, r.Priority, r.Completed, r.DateCompleted, u.FirstName, u.LastName, r.ItemName, r.ItemType, r.Date, r.Note  FROM REQUESTS r JOIN User u ON r.UserID = u.UserID WHERE r.ItemType in (" . $type . ") " .
+            "ORDER BY " .
+            "CASE WHEN Completed == 0 OR Completed IS NULL THEN 1 ELSE 2 END ASC, " .
+            "CASE WHEN Completed = 1 THEN DateCompleted ELSE " .
+            "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
+            "END DESC," .
+            "r.Date DESC";
+        error_log("REQUESTS [$requestsQuery]");
+        $results = $db->query( $requestsQuery);
         while ($row = $results->fetchArray()) {
             $completedMark = "&#9746;";
             $completedClass = "in_progress";

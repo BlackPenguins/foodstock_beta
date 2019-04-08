@@ -56,9 +56,12 @@ if(isset($_POST['Purchase'])) {
             if( $shelfQuantity - 1 <= -1 ) {
                 $errors .= "Not enough " . $itemName . " in stock. Purchase of THAT ITEM cancelled. Contact Matt.\\n";
             } else {
-                
-                if( $shelfQuantity - 1 == 0 ) {
+
+                $refillTrigger = "";
+                if( $shelfQuantity - 1 <= 3 ) {
                     $itemsOutOfStock[] = $itemName;
+                    $date = date('Y-m-d H:i:s', time());
+                    $refillTrigger = " ,RefillTrigger = 1, OutOfStockDate = '$date', OutOfStockReporter='SodaBot'";
                 }
                 
                 $date = date('Y-m-d H:i:s', time());
@@ -75,7 +78,7 @@ if(isset($_POST['Purchase'])) {
                 $newTotalIncome = addToValue( $db, "Item", "TotalIncome", $itemPrice, "where ID = $itemID", true );
                 $itemQuery = "UPDATE Item SET TotalIncome = $newTotalIncome, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
                 
-                $itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 where ID = $itemID";
+                $itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 $refillTrigger where ID = $itemID";
                 
                 $newIncome = addToValue( $db, "Information", "Income", $itemPrice, "where ItemType = '$itemType'", true );
                 $informationQuery = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
@@ -316,11 +319,17 @@ if(isset($_POST['Purchase'])) {
                 $numberOfCans *= $multiplier;
                 $cost *= $multiplier;
             }
+
+            $restockTrigger = "";
+            if( $numberOfCans > 3 ) {
+                $date = date('Y-m-d H:i:s', time());
+                $restockTrigger = " RestockTrigger = '',";
+            }
     
             $db->exec("INSERT INTO Restock (ItemID, Date, NumberOfCans, Cost) VALUES($id, '$date', $numberOfCans, $cost)");
             
             $newTotalExpenses = addToValue( $db, "Item", "TotalExpenses", $cost, "where ID = $id", true );
-            $db->exec("UPDATE Item SET TotalExpenses = $newTotalExpenses, BackstockQuantity = BackstockQuantity + $numberOfCans, TotalCans = TotalCans + $numberOfCans where ID = $id");
+            $db->exec("UPDATE Item SET TotalExpenses = $newTotalExpenses, $restockTrigger BackstockQuantity = BackstockQuantity + $numberOfCans, TotalCans = TotalCans + $numberOfCans where ID = $id");
             
             $newExpenses = addToValue( $db, "Information", "Expenses", $cost, "where ItemType = '$itemType'", true );
             $db->exec("UPDATE Information SET Expenses = $newExpenses where ItemType = '$itemType'");
@@ -416,6 +425,7 @@ if(isset($_POST['Purchase'])) {
             }
     
             if( $isBalanceValid ) {
+                // DEV: Changing this code? Change the payment code for Auditing as well (above)
                 $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $sodaAmount, '$date', '$note', 'Soda', '$paymentMonth')");
                 $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $snackAmount, '$date', '$note', 'Snack', '$paymentMonth')");
     
@@ -446,6 +456,8 @@ if(isset($_POST['Purchase'])) {
             $date = date('Y-m-d H:i:s');
             $backstockQuantity_all = $_POST["BackstockQuantity"];
             $shelfQuantity_all = $_POST["ShelfQuantity"];
+            $auditAmount = $_POST["AuditAmount"];
+            $itemType = $_POST["ItemType"];
             $price_all = 0;
     
             if( isset($_POST['CurrentPrice']) ) {
@@ -456,7 +468,25 @@ if(isset($_POST['Purchase'])) {
             $backstockQuantityBefore = 0;
             $shelfQuantityBefore = 0;
             $priceBefore = 0;
-    
+            $auditID = 0;
+            $auditMessage = "";
+
+            if( $auditAmount != "" ) {
+                error_log(" Audit found [$auditAmount] - [$itemType]" );
+                $auditQuery = "INSERT INTO Audit (Date, MissingMoney, ItemType) VALUES('$date', 0.0, '$itemType')";
+                error_log(" Audit found [$auditQuery]" );
+                $db->exec( $auditQuery );
+                $auditID = $db->lastInsertRowID();
+                $auditMessage = "(AUDIT #$auditID)";
+
+                $firstOfMonth = mktime(0, 0, 0, date("m"), 1, date("Y") );
+                $monthLabel = date('F Y', $firstOfMonth);
+                $paymentQuery = "INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment, AuditID) VALUES(0, '', $auditAmount, '$date', 'Audited', '$itemType', '$monthLabel', $auditID)";
+                error_log(" Payment found [$paymentQuery]" );
+                $db->exec( $paymentQuery);
+                $newProfit = addToValue( $db, "Information", "ProfitActual", $auditAmount, "where ItemType = '$itemType'", true );
+                $db->exec("UPDATE Information SET ProfitActual = $newProfit where ItemType = '$itemType'");
+            }
     
             $slackMessageItems = "";
             $itemType = "";
@@ -488,7 +518,8 @@ if(isset($_POST['Purchase'])) {
                 if( $price == "") {
                     $price = $priceBefore;
                 }
-    
+
+                $refillTrigger = "";
                 if( $shelfQuantity > $shelfQuantityBefore ) {
                     //New item was added to the fridge
                     $priceDisplay = getPriceDisplayWithHTML( $priceBefore, true /* no HTML */ );
@@ -497,27 +528,39 @@ if(isset($_POST['Purchase'])) {
                             ( $shelfQuantityBefore == 1 ? $itemUnits : $itemUnitsPlural ) .
                             " --> *" . $shelfQuantity . " " . 
                             ( $shelfQuantity == 1 ? $itemUnits : $itemUnitsPlural ) . "*    ($priceDisplay)\n";
+
+                    // Only clear the trigger of the items that are refilled
+                    if( $shelfQuantity > 3 ) {
+                        $refillTrigger = "RefillTrigger = '',";
+                    }
                 }
                 
                 $totalCansBefore = $backstockQuantityBefore + $shelfQuantityBefore;
                 $totalCans = $backstockQuantity + $shelfQuantity;
                 
                 $income = ($totalCansBefore - $totalCans) * $priceBefore;
+
+                $restockTrigger = "";
+                if( $backstockQuantity <= 3 ) {
+                    $date = date('Y-m-d H:i:s', time());
+                    $restockTrigger = " RestockTrigger = 1, ";
+                }
     
-                $dailyAmountQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked, -3)";
+                $dailyAmountQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID, AuditID) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked, -3, $auditID)";
                 error_log("DA: [" . $dailyAmountQuery . "]" );
                 $db->exec( $dailyAmountQuery );
                 $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
                 
                 $newTotalIncome = addToValue( $db, "Item", "TotalIncome", $income, "where ID = $id", true );
-                $db->exec("UPDATE Item SET TotalIncome = $newTotalIncome, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, OutOfStock = '', DateModified = '$date', ModifyType = 'Counted' where ID = $id");
+                $db->exec("UPDATE Item SET TotalIncome = $newTotalIncome, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, $refillTrigger $restockTrigger DateModified = '$date', ModifyType = 'Counted' where ID = $id");
                 
                 $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", true );
                 $db->exec("UPDATE Information SET Income = $newIncome where ItemType = '$itemType'");
     
             }
-    
-            $userMessage = "Inventory was successful for " . count($id_all) . " items.";
+
+
+            $userMessage = "Inventory was successful for " . count($id_all) . " items. $auditMessage";
     
             $emoji = ":soda:";
             $location = "fridge";

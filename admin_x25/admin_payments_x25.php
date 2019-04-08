@@ -53,9 +53,6 @@
 
 <?php 
     echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
-        // ------------------------------------
-        // USER TABLE
-        // ------------------------------------
         echo "<span class='soda_popout' style='display:inline-block; width:100%; margin-left: 10px; padding:5px;'><span style='font-size:26px;'>User Payment Histories</span> <span style='font-size:0.8em;'></span></span>";
         echo "<span id='users'>";
         echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
@@ -117,18 +114,18 @@
         // ------------------------------------
         // PAYMENT TABLE
         // ------------------------------------
-        echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Payments</span></span>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
+        echo "<div class='center_piece'>";
+        echo "<div class='rounded_table_no_border'>";
+        echo "<table>";
         echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>&nbsp;</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Payment Month</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Amount</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Method</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Type</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Note</th>";
-        
+        echo "<th align='left'>&nbsp;</th>";
+        echo "<th align='left'>User Name</th>";
+        echo "<th align='left'>Payment Month</th>";
+        echo "<th align='left'>Amount</th>";
+        echo "<th align='left'>Method</th>";
+        echo "<th align='left'>Type</th>";
+        echo "<th align='left'>Date</th>";
+        echo "<th align='left'>Note</th>";
         echo "</tr></thead>";
         
         $rowClass = "odd";
@@ -154,22 +151,28 @@
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
 
             echo "<tr class='$rowClass'>";
+
+            echo "<td class='button_cell'>";
             if( $cancelled !=  1 ) {
-                echo "<td style='padding:5px; border:1px #000 solid;'><span onclick='cancelPayment($paymentID, \"$name\", \"$paymentMonth\");' class='nav_buttons nav_buttons_snack'>Cancel Payment</span></td>";
+                echo "<div onclick='cancelPayment($paymentID, \"$name\", \"$paymentMonth\");' class='nav_buttons nav_buttons_snack'>Cancel Payment</div>";
             } else {
-                echo "<td style='padding:5px; border:1px #000 solid;'>Cancelled</td>";
+                echo "<div style='font-weight:bold; text-align:center;'>Cancelled</div>";
             }
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $name . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $paymentMonth . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $amount, 2) . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $method . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $itemType . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $note . "</td>";
+            echo "</td>";
+            
+            echo "<td>" . $name . "</td>";
+            echo "<td>" . $paymentMonth . "</td>";
+            echo "<td>$" . number_format( $amount, 2) . "</td>";
+            echo "<td>" . $method . "</td>";
+            echo "<td>" . $itemType . "</td>";
+            echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+            echo "<td>" . $note . "</td>";
             echo "</tr>";
         }
         
         echo "</table>";
+        echo "</div>";
+        echo "</div>";
     echo "</span>";
     
     function getDateOfPreviousMonth( $xMonthsAgo ) {

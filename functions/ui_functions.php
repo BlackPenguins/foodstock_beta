@@ -59,13 +59,13 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
     $ago_text = "UNKNOWN";
 
     if($days_ago >= 1) {
-        $ago_text = $days_ago . " day". ( ( $days_ago == 1 )? (""):("s") ). "  ago...";
+        $ago_text = $days_ago . " day". ( ( $days_ago == 1 )? (""):("s") ). "  ago";
     } else if($hours_ago >= 1) {
-        $ago_text = $hours_ago . " hour". ( ( $hours_ago == 1 )? (""):("s") ). " ago...";
+        $ago_text = $hours_ago . " hour". ( ( $hours_ago == 1 )? (""):("s") ). " ago";
     } else if($minutes_ago >= 1) {
-        $ago_text = $minutes_ago . " minute". ( ( $minutes_ago == 1 )? (""):("s") ). "  ago...";
+        $ago_text = $minutes_ago . " minute". ( ( $minutes_ago == 1 )? (""):("s") ). "  ago";
     } else  if($seconds_ago >= 1) {
-        $ago_text = $seconds_ago . " second". ( ( $seconds_ago == 1 )? (""):("s") ). "  ago...";
+        $ago_text = $seconds_ago . " second". ( ( $seconds_ago == 1 )? (""):("s") ). "  ago";
     }
 
     return $ago_text;

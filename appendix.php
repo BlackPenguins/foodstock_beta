@@ -29,7 +29,8 @@
         define( "PREVIEW_IMAGES_THUMBS", "$subdomain/preview_images/thumbnails/" );
         define( "IMAGES_LINK", "$subdomain/images/" );
         
-        define( "ADMIN_AUDIT_LINK", "$subdomain/admin_x25/admin_audit_x25.php" );
+        define( "ADMIN_WEEKLY_AUDIT_LINK", "$subdomain/admin_x25/admin_weekly_audit_x25.php" );
+        define( "ADMIN_AUDIT_REPORT_LINK", "$subdomain/admin_x25/admin_audit_x25.php" );
         define( "ADMIN_BOT_LINK", "$subdomain/admin_x25/admin_bot_x25.php" );
         define( "ADMIN_LINK", "$subdomain/admin_x25/admin_x25.php" );
         define( "ADMIN_DEFECTIVES_LINK", "$subdomain/admin_x25/admin_defectives_x25.php" );
@@ -38,7 +39,8 @@
         define( "ADMIN_PAYMENTS_LINK", "$subdomain/admin_x25/admin_payments_x25.php" );
         define( "ADMIN_RESTOCK_LINK", "$subdomain/admin_x25/admin_restock_x25.php" );
         define( "ADMIN_SHOPPING_GUIDE_LINK", "$subdomain/admin_x25/admin_shopping_guide_x25.php" );
-        
+        define( "ADMIN_CHECKLIST_LINK", "$subdomain/admin_x25/admin_checklist_x25.php" );
+
         define( "HANDLE_FORMS_LINK", "$subdomain/common/handle_forms.php" );
         define( "AJAX_LINK", "$subdomain/common/handle_ajax.php" );
         

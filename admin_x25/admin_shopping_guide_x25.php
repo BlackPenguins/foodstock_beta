@@ -41,10 +41,10 @@
         
         $rowClass = "odd";
         $number = 1;
-        $results = $db->query("SELECT ID, Type, Name, OutOfStock, OutOfStockReporter, ImageURL, UnitName, UnitNamePlural, Date, DateModified, ModifyType, ChartColor, TotalCans, (BackstockQuantity + ShelfQuantity) as 'Total', Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item WHERE Retired = 0 AND Hidden != 1 ORDER BY Type DESC, OutOfStock ASC, Total ASC");
+        $results = $db->query("SELECT ID, Type, Name, RefillTrigger, OutOfStockReporter, ImageURL, UnitName, UnitNamePlural, Date, DateModified, ModifyType, ChartColor, TotalCans, (BackstockQuantity + ShelfQuantity) as 'Total', Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item WHERE Retired = 0 AND Hidden != 1 ORDER BY Type DESC, RefillTrigger ASC, Total ASC");
         while ($row = $results->fetchArray()) {
 
-            $outOfStock = $row['OutOfStock'];
+            $outOfStock = $row['RefillTrigger'];
             $item_id = $row['ID'];
             $item_name = $row['Name'];
             $price = $row['Price'];

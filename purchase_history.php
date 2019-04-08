@@ -48,7 +48,7 @@
     
     
     echo "<div class='center_piece'>";
-    echo "<div class='rounded_table'>";
+    echo "<div class='rounded_table_no_border'>";
     echo "<table>";
     echo "<thead><tr class='table_header'>";
     echo "<th>Item</th>";

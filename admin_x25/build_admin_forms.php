@@ -509,11 +509,16 @@
             echo "</script>";
         }
         echo "</table>";
-        echo "<input type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
-            
+        echo "<input style='display:inline-block;' type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
+        echo "<div style='margin-top: 10px;'>";
+        echo "Audit Amount: <input type='tel' style='width:30%;' id='AuditAmount' name='AuditAmount' class='text ui-corner-all'/>";
+        echo "</div>";
+
+
         echo "<input type='hidden' name='Inventory' value='Inventory'/><br>";
+        echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
         echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
-            
+
             
         if( $isMobile) {
             echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Add Inventory'/><br>";

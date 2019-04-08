@@ -16,10 +16,15 @@
     $bodyClass = "soda_body";
     
     switch( $url ) {
-        case ADMIN_AUDIT_LINK:
+        case ADMIN_AUDIT_REPORT_LINK:
             $isAdminPage = true;
-            $titleName = "Admin - Audit";
-            $trackingName = "Admin - Audit";
+            $titleName = "Admin - Audit Report";
+            $trackingName = "Admin - Audit Report";
+            break;
+        case ADMIN_WEEKLY_AUDIT_LINK:
+            $isAdminPage = true;
+            $titleName = "Admin - Weekly Audit";
+            $trackingName = "Admin - Weekly Audit";
             break;
         case ADMIN_BOT_LINK:
             $isAdminPage = true;
@@ -55,6 +60,11 @@
             $isAdminPage = true;
             $titleName = "Admin - Shopping Guide";
             $trackingName = "Admin - Shopping Guide";
+            break;
+        case ADMIN_CHECKLIST_LINK:
+            $isAdminPage = true;
+            $titleName = "Admin - Checklist";
+            $trackingName = "Admin - Checklist";
             break;
         case ADMIN_LINK:
             $isAdminPage = true;

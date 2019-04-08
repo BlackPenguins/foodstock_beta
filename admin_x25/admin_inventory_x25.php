@@ -43,27 +43,33 @@
         // ------------------------------------
         // INVENTORY TABLE
         // ------------------------------------
-        echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Inventory/Purchases Schedule</span></span>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
-        echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>&nbsp;</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Shelf Quantity</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Backstock Quantity</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price</th>";
+        echo "<div class='center_piece'>";
+        echo "Yellow = Inventory.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Blue = Refill.";
+        echo "<div class='rounded_table_no_border'>";
+        echo "<table>";
+        echo "<thead><tr>";
+        echo "<th align='left'>&nbsp;</th>";
+        echo "<th align='left'>Item</th>";
+        echo "<th align='left'>User Name</th>";
+        echo "<th align='left'>Date</th>";
+        echo "<th align='left'>Shelf Quantity</th>";
+        echo "<th align='left'>Backstock Quantity</th>";
+        echo "<th align='left'>Price</th>";
         
         echo "</tr></thead>";
         
-        $rowClass = "odd";
+        $rowClass = "odd_manual";
         $previousDate = "";
         
         $results = $db->query("SELECT p.CashOnly, i.Name, u.FirstName, u.LastName, r.Cancelled, r.ID, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.ShelfQuantityBefore, r.ShelfQuantity, r.Price FROM Daily_Amount r JOIN Item i ON r.itemID = i.id LEFT JOIN Purchase_History p ON r.ID = p.DailyAmountID LEFT JOIN User u on p.UserID = u.UserID WHERE r.Date >= date('now','-2 months') ORDER BY r.Date DESC");
         while ($row = $results->fetchArray()) {
-            
+
             if( $previousDate != "" && $previousDate != $row['Date'] ) {
-                if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
+                if( $rowClass == "odd_manual" ) {
+                    $rowClass = "even_manual";
+                } else {
+                    $rowClass = "odd_manual";
+                }
             }
 
             $name = $row['FirstName'] . " " . $row['LastName'];
@@ -85,28 +91,34 @@
             if( $shelfQuantityDelta != 0 || $backstockQuantityDelta != 0 ) {
                 if( $shelfQuantityDelta == ($backstockQuantityDelta * -1 ) ) {
                     $rowClass = "restock_row";
+                } else if( trim($name) == "" ) {
+                    $rowClass = "refill_row";
                 }
                 
                 echo "<tr class='$rowClass'>";
+
+                echo "<td class='button_cell'>";
                 if( $cashOnly == 1 ) {
-                    echo "<td style='padding:5px; border:1px #000 solid;'>Cash Only</td>";
+                    echo "Cash Only";
                 } else if( $cancelled != 1 ) {
                     if( trim($name) == "" ) {
-                        echo "<td style='padding:5px; border:1px #000 solid;'><span onclick='cancelInventory($dailyAmountID, \"$itemName\");' class='nav_buttons nav_buttons_snack'>Cancel Inventory</span></td>";
+                        echo "<div onclick='cancelInventory($dailyAmountID, \"$itemName\");' class='nav_buttons nav_buttons_snack'>Cancel Inventory</div>";
                     } else {
-                        echo "<td style='padding:5px; border:1px #000 solid;'><span onclick='cancelPurchase($dailyAmountID, \"$name - $itemName\");' class='nav_buttons nav_buttons_billing'>Cancel Purchase</span></td>";
+                        echo "<div onclick='cancelPurchase($dailyAmountID, \"$name - $itemName\");' class='nav_buttons nav_buttons_billing'>Cancel Purchase</div>";
                     }
                 } else {
                     if( trim($name) == "" ) {
-                        echo "<td style='padding:5px; border:1px #000 solid;'>Inventory Cancelled</td>";
+                        echo "<div style='font-weight:bold; text-align:center;'>Inventory Cancelled</div>";
                     } else {
-                        echo "<td style='padding:5px; border:1px #000 solid;'>Purchase Cancelled</td>";
+                        echo "<div style='font-weight:bold; text-align:center;'>Purchase Cancelled</div>";
                     }
                 }
-                echo "<td style='padding:5px; border:1px #000 solid;'>" . $itemName . "</td>";
-                echo "<td style='padding:5px; border:1px #000 solid;'>" . $name . "</td>";
+                echo "</td>";
+
+                echo "<td>" . $itemName . "</td>";
+                echo "<td>" . $name . "</td>";
                 $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-                echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+                echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
                 
                 $shelfQuantityDisplay = "&nbsp;";
                 $backstockQuantityDisplay = "&nbsp;";
@@ -122,9 +134,9 @@
                     $backstockQuantityDisplay = "$backstockQuantityBefore --> $backstockQuantityAfter <span style='float:right; font-size:1.5em;'>" . $backstockQuantityDelta . "</span>";
                 }
                 
-                echo "<td style='padding:5px; border:1px #000 solid;'>" . $shelfQuantityDisplay . "</td>";
-                echo "<td style='padding:5px; border:1px #000 solid;'>" . $backstockQuantityDisplay . "</td>";
-                echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $row['Price'], 2) . "</td>";
+                echo "<td>" . $shelfQuantityDisplay . "</td>";
+                echo "<td>" . $backstockQuantityDisplay . "</td>";
+                echo "<td>$" . number_format( $row['Price'], 2) . "</td>";
                 echo "</tr>";
             }
             
@@ -132,6 +144,8 @@
         }
         
         echo "</table>";
+        echo "</div>";
+        echo "</div>";
     echo "</span>";
 ?>
 

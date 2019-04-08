@@ -171,7 +171,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.9 (March 27th, 2019)";
+    $version = "Version 5.9 (April 7th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -260,11 +260,11 @@ if( !$isMobile && $itemType != "Snack" ) {
         }
     }
 
-
     $current_date = new DateTime();
+
     $ago_text = DisplayAgoTime($lastUpdated, $current_date);
             
-    echo "<div style='color:#8e8b8b; padding-top:10px;'><b>Last Updated:</b> $ago_text</div>";
+    echo "<div style='color:#8e8b8b; padding-top:10px;'><b>Last Updated:</b> $ago_text...</div>";
     echo "</div>";
 }
 
@@ -327,7 +327,17 @@ if( !$isMobile) {
     
     echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
-    
+
+    DisplayUpdate("Apr 7, 2019 (5.9)", $itemType, array(
+        DisplayItem("none", "Cleaned up CSS with tables."),
+        DisplayItem("admin", "New Page: Checklist. Notifications for refills and restocks. Automatic setting of triggers with purchases."),
+        DisplayItem("admin", "Changed the rest of the tables to the new look."),
+        DisplayItem("admin", "New Page: Audit. Calculates the amount of money that should be in the mug for each refill and reports loss."),
+        DisplayItem("none", "Christian Easter Egg."),
+        DisplayItem("none", "Fixed bug with priority ordering in Requests page."),
+        DisplayItem("none", "Added 'Check All Items' to Stats page. Report on the last puchase made for each item to determine what to discontinue."),
+    ) );
+
     DisplayUpdate("Mar 24, 2019 (5.8)", $itemType, array(
             DisplayItem("none", "Greatly improved mobile support! New hamburger icon opens a navigation drawer. Many pages have been improved for mobile and replaced with CSS tags. Fixed the horizontal scroll glitch on mobile where everything didn't fit on the screen slightly."),
             DisplayItem("db", "Database: Current flavor: For items like poptarts and muffins it will now display which flavor(s) are being sold (in restock slack messages too)."),

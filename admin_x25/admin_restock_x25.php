@@ -30,18 +30,20 @@
         // ------------------------------------
         // RESTOCK TABLE
         // ------------------------------------
-        echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Restock Schedule</span></span>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
+        echo "<div class='center_piece'>";
+        echo "Red = Lost Money on Purchase.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.";
+        echo "<div class='rounded_table_no_border'>";
+        echo "<table>";
         echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>&nbsp;</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Number of Units</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Retail Total Cost</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Retail Cost Each</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Current Price</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Discount Price</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Margin per Unit</th>";
+        echo "<th align='left'>&nbsp;</th>";
+        echo "<th align='left'>Item</th>";
+        echo "<th align='left'>Date</th>";
+        echo "<th align='left'>Number of Units</th>";
+        echo "<th align='left'>Retail Total Cost</th>";
+        echo "<th align='left'>Retail Cost Each</th>";
+        echo "<th align='left'>Current Price</th>";
+        echo "<th align='left'>Discount Price</th>";
+        echo "<th align='left'>Margin per Unit</th>";
         
         echo "</tr></thead>";
         
@@ -66,16 +68,20 @@
             
             
             echo "<tr class='$rowClass'>";
+
+            echo "<td class='button_cell'>";
             if( $cancelled !=  1 ) {
-                echo "<td style='padding:5px; border:1px #000 solid;'><span onclick='cancelRestock($restockID, \"$name\");' class='nav_buttons nav_buttons_snack'>Cancel Restock</span></td>";
+                echo "<div onclick='cancelRestock($restockID, \"$name\");' class='nav_buttons nav_buttons_snack'>Cancel Restock</div>";
             } else {
-                echo "<td style='padding:5px; border:1px #000 solid;'>Cancelled</td>";
+                echo "<div style='font-weight:bold; text-align:center;'>Cancelled</div>";
             }
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $name . "</td>";
+            echo "</td>";
+
+            echo "<td>" . $name . "</td>";
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-            echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['NumberOfCans'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $row['Cost'], 2) . "</td>";
+            echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+            echo "<td>" . $row['NumberOfCans'] . "</td>";
+            echo "<td>$" . number_format( $row['Cost'], 2) . "</td>";
             $costEach = $row['CostEach'];
             
             $lowestPrice = $row['Price'];
@@ -86,20 +92,22 @@
             
             $margin = $lowestPrice - $costEach;
             $marginColor = "";
-            
+
             if($margin < 0 ) {
-                $marginColor = "background-color: #8a3535;";
+                $marginColor = "background-color: #8a3535; color: #000000;";
             }
-            echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $costEach, 2 )  . "</td>";
-            echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $row['Price'], 2 )  . "</td>";
-            echo "<td style='padding:5px; $maxCostEach border:1px #000 solid;'>$" . number_format( $row['DiscountPrice'], 2 )  . "</td>";
-            echo "<td style='padding:5px; $maxCostEach border:1px #000 solid; $marginColor'>$" . number_format( $margin, 2 )  . "</td>";
+            echo "<td style='$maxCostEach border:0;'>$" . number_format( $costEach, 2 )  . "</td>";
+            echo "<td style='$maxCostEach border:0;'>$" . number_format( $row['Price'], 2 )  . "</td>";
+            echo "<td style='$maxCostEach border:0;'>$" . number_format( $row['DiscountPrice'], 2 )  . "</td>";
+            echo "<td style='$maxCostEach border:0; $marginColor'>$" . number_format( $margin, 2 )  . "</td>";
             echo "</tr>";
             
             $previousItem = $row['Name'];
         }
         
         echo "</table>";
+        echo "</div>";
+        echo "</div>";
     echo "</span>";
 ?>
 

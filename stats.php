@@ -75,7 +75,7 @@
         $itemID = $row['ID'];
         $isRetired = $row['Retired'] == 1;
         $fontStyle = $isRetired ? "style='font-weight:bold; color:#962222'" : "";
-        echo "<td><input type='checkbox' name='Item[]' value='$itemID'><span $fontStyle>$itemName</span></input></td>";
+        echo "<td><input type='checkbox' class='item_checkbox' name='Item[]' value='$itemID'><span $fontStyle>$itemName</span></input></td>";
         
         $itemCountInRow++;
         if( $itemCountInRow == 7 ) {
@@ -86,6 +86,9 @@
     echo "</table>";
     
     echo "<input type='submit' name='submit_items' value='Graph Items'/>";
+    echo "<div style='margin-top: 10px;'>";
+    echo "<input id='checkAll' type='checkbox' name='CheckAll'>Check All Items</input>";
+    echo "</div>";
     echo "</form>";
 
     echo "<div id='purchasesPerMonth' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
@@ -100,7 +103,14 @@
     
     ?>
     
-<script type="text/javascript"> 
+<script type="text/javascript">
+
+$("#checkAll").change(function(){
+    var status = $(this).is(":checked") ? true : false;
+    console.log("Changing to [" + status  + "]" );
+    $(".item_checkbox").prop("checked",status);
+});
+
 window.onload = function() {
 
     $("#purchasesPerMonth").CanvasJSChart({ 
@@ -199,7 +209,33 @@ window.onload = function() {
 <?php
     echo "<div id='topSnacks' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
     echo "<div id='topUsers' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
-    
+
+    echo "<div class='center_piece'>";
+    echo "This table shows when an item was last bought. Red rows are already discontinued. Used to determine which items to discontinue.";
+    echo "<div class='rounded_table'>";
+    echo "<table>";
+    echo "<thead><tr class='table_header'>";
+    echo "<th>Item</th>";
+    echo "<th>Last Bought</th>";
+    echo "</tr>";
+
+    $current_date = new DateTime();
+    $lastPurchaseByItemQuery = "select max(d.Date) as LastBought, i.Name as ItemName, i.Retired as Discontinued from Daily_Amount d JOIN Item i on d.ItemID = i.ID where d.ItemID in ($itemsToShow) and d.ShelfQuantityBefore > d.ShelfQuantity group by d.ItemID order by LastBought ASC";
+    $lastPurchaseByItemResults = $db->query( $lastPurchaseByItemQuery );
+    while ($lastPurchaseByItemRow = $lastPurchaseByItemResults->fetchArray()) {
+        $itemName = $lastPurchaseByItemRow['ItemName'];
+        $lastBought = $lastPurchaseByItemRow['LastBought'];
+        $isDiscontinued = $lastPurchaseByItemRow['Discontinued'] == 1;
+        $rowStyle = $isDiscontinued ? "class='discontinued_row'" : "";
+        echo "<tr $rowStyle>";
+        echo "<td>$itemName</td>";
+        echo "<td>$lastBought (" . DisplayAgoTime($lastBought, $current_date) . ")</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
+    echo "</div>";
+
+
 //     getData( $db, $itemsToShow, $isLoggedIn, $isLoggedInAdmin );
     echo "</div>";
     

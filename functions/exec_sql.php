@@ -3,6 +3,10 @@
 /*
  * 
  * DB UPDATES
+ * Apr 7, 2019
+ * Audit Table
+ * AuditID - Payments, Daily_Amount
+ * Rename OutOfStock to RefillTrigger - Item
  * Mar 17, 2019
  * Item - Add CurrentFlavor TEXT
  * Feb 24, 2019

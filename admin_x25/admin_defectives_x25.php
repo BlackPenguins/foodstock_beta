@@ -10,9 +10,10 @@
         // ------------------------------------
         // DEFECTIVES TABLE
         // ------------------------------------
-        echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Defectives</span></span>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
-        echo "<thead><tr class='table_header'>";
+        echo "<div class='center_piece'>";
+        echo "<div class='rounded_table'>";
+        echo "<table>";
+        echo "<thead><tr>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Amount</th>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price</th>";
@@ -37,6 +38,8 @@
         }
         
         echo "</table>";
+        echo "</div>";
+        echo "</div>";
     echo "</span>";
 ?>
 
