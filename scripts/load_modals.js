@@ -222,6 +222,33 @@ function loadSingleModals() {
                     }
                 ]
     });
+
+    $("#credit_user_button").click( function() {
+        $('#credit_user').dialog('open');
+        return false;
+    });
+
+    $( "#credit_user" ).dialog( {
+        autoOpen: false,
+        width: 500,
+        modal: true,
+        buttons: [
+            {
+                id: "Credit_User_Cancel",
+                text: "Cancel",
+                click: function() {
+                    $(this).dialog("close");
+                }
+            },
+            {
+                id:"Credit_User_Submit",
+                text: "Save",
+                click: function() {
+                    $("#credit_user_form").submit();
+                }
+            }
+        ]
+    });
 }
 
 function loadUserModals() {

@@ -2,7 +2,7 @@
 include(__DIR__ . "/../appendix.php" );
 
 function DisplayPaymentMethods() {
-    echo "<div style='margin:10px 15px; padding:5px; width: 95%;'>";
+    echo "<div style='margin:0px 15px; padding:5px;'>";
     echo "<div style='background-color: #bd7949; padding:5px; border-top: 3px solid #000; border-right: 3px solid #000; border-left: 3px solid #000; border-bottom: 2px solid #000; '>";
     echo "<span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span>"; 
     echo "</div>";
@@ -71,20 +71,79 @@ function DisplayAgoTime( $dateBefore, $dateNow ) {
     return $ago_text;
 }
 
-function getPriceDisplay($price) {
-    return getPriceDisplayWithHTML( $price, false );
+function getPriceDisplayWithSymbol($priceInWholeCents) {
+    return getPriceDisplayWithFormat( $priceInWholeCents, "symbol" );
 }
 
-function getPriceDisplayWithHTML($price, $noHTML ) {
-    if( $price >= 1.00 ) {
-        $price = "$" . number_format($price,2);
+function getPriceDisplayWithEnglish($priceInWholeCents) {
+    return getPriceDisplayWithFormat( $priceInWholeCents, "english" );
+}
+
+function getPriceDisplayWithDollars($priceInWholeCents) {
+    return getPriceDisplayWithFormat( $priceInWholeCents, "dollars" );
+}
+
+function getPriceDisplayWithDecimals($priceInWholeCents) {
+    return getPriceDisplayWithFormat( $priceInWholeCents, "decimals" );
+}
+
+function getPriceDisplayWithFormat($priceInWholeCents, $format ) {
+
+    if( $priceInWholeCents < 1 && $priceInWholeCents > 0 ) {
+        // Since we migrated to whole cents that means 1 cent is now '1'
+        // Anything less than 1 should not be possible
+        // Something could also be 1.10 (which would also be migration fail) but that's harder to test for
+        // Basically NOTHING should have decimals anymore
+        return "Migration Failed!! - Contact Dev [$format] [$priceInWholeCents]";
+    }
+    $dollars = 0;
+    $negativeSign = $priceInWholeCents < 0 ? "-" : "";
+
+    $priceInWholeCents = abs( $priceInWholeCents );
+
+    if( $priceInWholeCents >= 100 ) {
+        $dollars = floor( $priceInWholeCents / 100 );
+    }
+
+    $cents = $priceInWholeCents - ( $dollars * 100 );
+
+//    log_debug(" Whole Cents [$priceInWholeCents] Format [$format] Dollars [$dollars] Cents [$cents]");
+
+    $price = "Unknown Price - Contact Dev [$format] [$priceInWholeCents]";
+
+    if( $dollars >= 1 || $format == "dollars" || $format == "decimals" ) {
+        $paddedCents = sprintf('%02d', $cents);
+        $dollarSign =  $format == "decimals" ? "" : "$";
+        $dollarsWithThousandsComma = number_format( $dollars, 0 );
+        $price = $dollarSign . $negativeSign . $dollarsWithThousandsComma . "." . $paddedCents;
     } else {
-        $price = $price * 100;
-        $centSymbol = $noHTML ? " cents" : "&cent;";
-        $price = $price . $centSymbol;
+        if( $format == "symbol" ) {
+            $price = $negativeSign . $cents . "&cent;";
+        } else if( $format == "english" ) {
+            $price = $negativeSign . $cents . " cents";
+        }
     }
     
     return $price;
+}
+
+function convertDecimalToWholeCents( $decimal ) {
+    $valueInDollars = number_format( $decimal, 2 );
+    $valueInDollars = str_replace(",","", $valueInDollars );
+
+    $isNegative = substr( $valueInDollars, 0, 1 ) === "-";
+
+    $moneyPieces = explode(".", $valueInDollars);
+    $dollars = $moneyPieces[0];
+    $cents = $moneyPieces[1];
+
+    if( $isNegative ) {
+        $valueInWholeCents = ($dollars * 100) - $cents;
+    } else {
+        $valueInWholeCents = ($dollars * 100) + $cents;
+    }
+//    echo "Converted [$valueInDollars] --> [$valueInWholeCents]<br>";
+   return $valueInWholeCents;
 }
 
 function DisplayPreview($item_name, $soldOut, $imageURL) {
@@ -101,11 +160,11 @@ function DisplayPreview($item_name, $soldOut, $imageURL) {
     }
 }
 
-function DisplayShelfCan($item_name, $thumbURL) {
+function DisplayShelfCan($itemID, $item_name, $thumbURL) {
     if( $thumbURL == "" ) {
         echo "<img title='$item_name' style='padding:5px;' src='" . PREVIEW_IMAGES_THUMBS . "not_found_sm.png' />";
     } else {
-        echo "<img title='$item_name' style='padding:5px;' src='" . PREVIEW_IMAGES_THUMBS . $thumbURL . "' />";
+        echo "<img onclick='addItemToCart(" . $itemID . ", \"\")' title='$item_name' style='padding:5px;' src='" . PREVIEW_IMAGES_THUMBS . $thumbURL . "' />";
     }
 }
 
@@ -162,5 +221,34 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     $returnArray['SnackPaid'] = $snackTotalPaid;
     
     return $returnArray;
+}
+
+function getChecklistResults( $db, $checklistType, $selectType ) {
+    $specialWhere = "";
+    $specialSelect = "Type, Name, RefillTrigger, RestockTrigger, BackstockQuantity, ShelfQuantity, Price, Retired, Hidden";
+
+    if( $selectType == "COUNT" ) {
+        $specialSelect = "COUNT(*) as Count";
+    }
+
+    if( $checklistType == "RefillTrigger" ) {
+        // We don't care about refilling items that we dont have at the desk
+        $specialWhere = " AND BackstockQuantity > 0";
+    } else if( $checklistType == "RestockTrigger" ) {
+        // We don't care about discontinued items for store restock
+        $specialWhere = " AND Retired != 1";
+    }
+
+    return $db->query("SELECT $specialSelect FROM Item WHERE Hidden != 1 AND $checklistType = 1 $specialWhere ORDER BY Retired, Type DESC");
+}
+
+function getRefillCount($db) {
+    $row = getChecklistResults($db,  "RefillTrigger", "COUNT"  )->fetchArray();
+    return $row["Count"];
+}
+
+function getRestockCount($db) {
+    $row = getChecklistResults($db,  "RestockTrigger", "COUNT"  )->fetchArray();
+    return $row["Count"];
 }
 ?>

@@ -136,7 +136,7 @@
                 
                 echo "<td>" . $shelfQuantityDisplay . "</td>";
                 echo "<td>" . $backstockQuantityDisplay . "</td>";
-                echo "<td>$" . number_format( $row['Price'], 2) . "</td>";
+                echo "<td>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
                 echo "</tr>";
             }
             

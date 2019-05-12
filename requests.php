@@ -3,6 +3,7 @@
     
     $url = REQUESTS_LINK;
     include( HEADER_PATH );
+//    include_once( LOG_FUNCTIONS_PATH );
 ?>
 
 <script type="text/javascript">
@@ -134,10 +135,10 @@
             "ORDER BY " .
             "CASE WHEN Completed == 0 OR Completed IS NULL THEN 1 ELSE 2 END ASC, " .
             "CASE WHEN Completed = 1 THEN DateCompleted ELSE " .
-            "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
+            "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '6' WHEN Priority = 'In Progress' THEN '5' WHEN Priority = 'Quick' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
             "END DESC," .
             "r.Date DESC";
-        error_log("REQUESTS [$requestsQuery]");
+//        log_sql( "REQUESTS [$requestsQuery]" );
         $results = $db->query( $requestsQuery);
         while ($row = $results->fetchArray()) {
             $completedMark = "&#9746;";
@@ -169,8 +170,12 @@
             $priority = $row['Priority'];
             
             $priorityColor = "";
-            
-            if( $priority == "High" ) {
+
+            if( $priority == "In Progress" ) {
+                $priorityColor = "background-color:#e5b2ff;";
+            } else if( $priority == "Quick" ) {
+                $priorityColor = "background-color:#ffe567;";
+            } else if( $priority == "High" ) {
                 $priorityColor = "background-color:#ff9e9e;";
             } else if( $priority == "Medium" ) {
                 $priorityColor = "background-color:#fffca9;";
@@ -184,6 +189,8 @@
             if( $isLoggedInAdmin ) {
                 echo "<select onchange='togglePriority(" . $row['ID'] . ", this.value);' id='Priority_Request' name='Priority_Request' class='text ui-widget-content ui-corner-all'>";
                 echo "<option " . ( $priority == ""  ? "selected" : "" ) . " value='Unassigned'>Unassigned</option>";
+                echo "<option " . ( $priority == "In Progress"  ? "selected" : "" ) . " value='In Progress'>In Progress</option>";
+                echo "<option " . ( $priority == "Quick"  ? "selected" : "" ) . " value='Quick'>Quick</option>";
                 echo "<option " . ( $priority == "High"  ? "selected" : "" ) . " value='High'>High</option>";
                 echo "<option " . ( $priority == "Medium"  ? "selected" : "" ) . " value='Medium'>Medium</option>";
                 echo "<option " . ( $priority == "Low"  ? "selected" : "" ) . " value='Low'>Low</option>";

@@ -8,11 +8,11 @@
     include( HEADER_PATH );
     
     echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
-        DrawTable( $db, "RefillTrigger", "Needs Refill from Desk" );
-        DrawTable( $db, "RestockTrigger", "Needs Restock from Store" );
+    DrawChecklistTable( $db, "RefillTrigger", "Needs Refill from Desk" );
+    DrawChecklistTable( $db, "RestockTrigger", "Needs Restock from Store" );
     echo "</span>";
 
-    function DrawTable( $db, $checklistType, $title ) {
+    function DrawChecklistTable( $db, $checklistType, $title ) {
         echo "<div class='rounded_header'><span class='title'>$title</span></div>";
 
         echo "<div class='center_piece'>";
@@ -27,8 +27,7 @@
         echo "</tr></thead>";
 
         $rowClass = "";
-
-        $results = $db->query("SELECT Type, Name, RefillTrigger, RestockTrigger, BackstockQuantity, ShelfQuantity, Price, Retired, Hidden FROM Item WHERE Hidden != 1 AND $checklistType = 1 ORDER BY Retired, Type DESC");
+        $results = getChecklistResults($db, $checklistType, "LIST" );
         while ($row = $results->fetchArray()) {
             $isDiscontinued = $row['Retired'] == 1;
 

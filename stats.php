@@ -1,6 +1,7 @@
 <?php
     include( "appendix.php" );
-    
+    include_once( LOG_FUNCTIONS_PATH );
+
     $url = STATS_LINK;
     
     // Start Date - 1 Year Ago
@@ -93,7 +94,7 @@
 
     echo "<div id='purchasesPerMonth' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
     
-    error_log("Start Date [$startDate] End Date [$endDate]");
+    log_debug("Start Date [$startDate] End Date [$endDate]");
     
     echo "<form enctype='multipart/form-data' action='" . STATS_LINK . "' method='POST' style='background-color:#b9b9b9; border:2px solid #000; padding:20px; margin-top:30px;'>";
     echo "Start Date: <input autocomplete='off' type='text' name='start_date' id='start_date'>";
@@ -146,7 +147,7 @@ window.onload = function() {
                     while ($row = $results->fetchArray()) {
                         $itemName = $row['name'];
                         $count = $row['count'];
-                        $totalCost = $row['totalCost'];
+                        $totalCost = getPriceDisplayWithDecimals( $row['totalCost'] );
                         $itemType = $row['type'];
                           
                         echo "{ label: '$itemName ($count units)', y: $totalCost  }, ";
@@ -178,12 +179,12 @@ window.onload = function() {
             yValueFormatString: "$#,###.00",
             dataPoints: [ 
 
-             <?php
+            <?php
 //                  $anonNames = ['Rabbit', 'Koala', 'Panda', 'Cat', 'Dog', 'Mouse', 'Porcupine', 'Monkey', 'Giraffe', 'Dolphin', 'Jaguar', 'Seal', 'Deer', 'Penguin', 'Lamb', 'Owl', 'Kangaroo', 'Fox', 'Hamster', 'Lion' ];
                  $anonCount = 0;
                  $totalPurchasesByUserQuery = "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum(p.cost) as 'Total' from Purchase_History p LEFT JOIN User u ON p.UserID = u.UserID WHERE p.Date between '$startDate' AND '$endDate' group by p.UserID order by total";
                  $results = $db->query( $totalPurchasesByUserQuery );
-                 error_log( $totalPurchasesByUserQuery );
+                log_sql( $totalPurchasesByUserQuery );
                  
                  while ($row = $results->fetchArray()) {
                     $name = $row['FirstName'] . " " . $row['LastName'];

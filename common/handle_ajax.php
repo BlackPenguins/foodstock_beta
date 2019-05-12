@@ -3,13 +3,14 @@
     include( SESSION_FUNCTIONS_PATH );
     include(UI_FUNCTIONS_PATH);
     include(SLACK_FUNCTIONS_PATH);
-    
+    include_once(LOG_FUNCTIONS_PATH);
+
     session_start();
     date_default_timezone_set('America/New_York');
 
     $type = $_POST['type'];
         
-    $db = new SQLite3(DB_PATH);
+    $db = new SQLite3( getDB() );
     if (!$db) die ($error);
 
     if($type == "CardArea" ) 
@@ -76,11 +77,11 @@
             $price_background_color = "#025F00";
             
             // On sale - YELLOW
-            if($price < 0.50) {
+            if($price < 50) {
                 $price_color = "#000000";
                 $price_background_color = "#FFD500";
                 // Expensive - RED
-            } else if( $price > 1.00) {
+            } else if( $price > 100) {
                 $price_color = "#FFFFFF";
                 $price_background_color = "#5f0000";
             }
@@ -92,9 +93,9 @@
             $priceDisplay = "";
             
             if( $isLoggedIn && $hasDiscount == true ) {
-                $priceDisplay = getPriceDisplay ( $discountPrice );
+                $priceDisplay = getPriceDisplayWithSymbol ( $discountPrice );
             } else {
-                $priceDisplay = getPriceDisplay( $price );
+                $priceDisplay = getPriceDisplayWithSymbol( $price );
             }
             
             $unitName = "[UNKNOWN]";
@@ -208,7 +209,16 @@
             
             $outOfStockLabel = "";
             if( $outOfStock == "1" ) {
-                $outOfStockLabel = "<div class='out-of-stock-label'>Reported as out of stock by " . $outOfStockReporter . "!</div>";
+                $reportType = "out of stock";
+                $reportClass = "out_of_stock";
+                if( $outOfStockReporter == "SodaBot" ) {
+                    if( $cold_item > 0 ) {
+                        $reportType = "running low";
+                        $reportClass = "running_low";
+                    }
+                }
+
+                $outOfStockLabel = "<div class='report-label $reportClass'>Reported as $reportType by " . $outOfStockReporter . "!</div>";
             }
             
             // ------------------
@@ -244,25 +254,24 @@
                     $income = $row['TotalIncome'];
                     $expense = $row['TotalExpenses'];
                     
-                    $profit = number_format(($income-$expense), 2);
+                    $profit = $income - $expense;
                     $profitClass = $profit > 0 ? "income" : "expenses";
                     
                     if( IsAdminLoggedIn() ) {
-                        $profitSign = $profit >= 0 ? "$" : "-$";
 
                         echo "<div class='stats'>";
                             echo "<span class='box box-expenses' title='Total Expenses'>";
-                                echo "<span class='value'>$" . number_format($expense, 2) . "</span>";
+                                echo "<span class='value'>" . getPriceDisplayWithDollars( $expense ) . "</span>";
                                 echo "<span class='parameter'>Expenses</span>";
                             echo "</span>";
                             
                             echo "<span style='border: 2px solid #000;' class='box box-$profitClass' title='Total Profit'>";
-                                echo "<span class='value'>$profitSign" . number_format(abs($profit), 2) . "</span>";
+                                echo "<span class='value'>" . getPriceDisplayWithDollars( $profit ) . "</span>";
                                 echo "<span class='parameter'>Profit</span>";
                             echo "</span>";
                             
                             echo "<span class='box box-income' title='Total Income'>";
-                                echo "<span class='value'>$" . number_format($income, 2) . "</span>";
+                                echo "<span class='value'>" . getPriceDisplayWithDollars ($income ) . "</span>";
                                 echo "<span class='parameter'>Income</span>";
                             echo "</span>";
                         echo "</div>";
@@ -348,24 +357,24 @@
         
         $actualPrice = $discountPrice == 0.0 ? $price : $discountPrice;
         
-        $savings = round( $price - $discountPrice, 2 );
+        $savings = $price - $discountPrice;
         
         $cancelDailySQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
-        error_log("Cancel Daily Amount SQL: [" . $cancelDailySQL . "]" );
+        log_sql("Cancel Daily Amount SQL: [" . $cancelDailySQL . "]" );
         $db->exec( $cancelDailySQL );
         
         $cancelPurchaseSQL = "UPDATE Purchase_History SET Cancelled = 1 WHERE DailyAmountID = $dailyAmountID";
-        error_log("Cancel SQL: [" . $cancelPurchaseSQL . "]" );
+        log_sql("Cancel SQL: [" . $cancelPurchaseSQL . "]" );
         $db->exec( $cancelPurchaseSQL );
         
         $newIncome = addToValue( $db, "Item", "TotalIncome", $actualPrice, "where ID = $itemID", false );
         $itemQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity + 1, TotalIncome = $newIncome, DateModified = '$date', ModifyType = 'Cancelled' where ID = $itemID";
-        error_log("Item SQL: [" . $itemQuery . "]" );
+        log_sql("Item SQL: [" . $itemQuery . "]" );
         $db->exec( $itemQuery );
         
         $newIncome = addToValue( $db, "Information", "Income", $actualPrice, "where ItemType = '$itemType'", false );
         $infoQuery = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
-        error_log("Info SQL: [" . $infoQuery . "]" );
+        log_sql("Info SQL: [" . $infoQuery . "]" );
         $db->exec( $infoQuery );
         
         $typeOfBalance = $itemType . "Balance";
@@ -374,11 +383,11 @@
         $newBalance = addToValue( $db, "User", $typeOfBalance, $actualPrice, "where UserID = $userID", false );
         $newSavings = addToValue( $db, "User", $typeOfSavings, $savings, "where UserID = $userID", false );
         $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $newBalance, $typeOfSavings = $newSavings where UserID = $userID";
-        
-        error_log("Balance Update SQL [" . $balanceUpdateQuery . "]" );
+
+        log_sql("Balance Update SQL [" . $balanceUpdateQuery . "]" );
         $db->exec( $balanceUpdateQuery );
         
-        $purchaseMessage = $itemName . " (+ $" . number_format($actualPrice, 2) . ")";
+        $purchaseMessage = $itemName . " (+ " . getPriceDisplayWithDollars( $actualPrice ) . ")";
         
         if( $slackID == "" ) {
             sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
@@ -412,18 +421,18 @@
         $income = ($quantityBefore - $quantityAfter) * $price;
         
         $cancelSQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
-        error_log("Cancel SQL: [" . $cancelSQL . "]" );
+        log_sql("Cancel SQL: [" . $cancelSQL . "]" );
         $db->exec( $cancelSQL );
         
         $newIncome = addToValue( $db, "Item", "TotalIncome", $income, "where ID = $itemID", false );
         $itemSQL = "UPDATE Item SET TotalIncome = $newIncome, BackstockQuantity = BackstockQuantity + $backstockDelta, ShelfQuantity = ShelfQuantity + $shelfDelta, ModifyType = 'Cancelled', DateModified = '$date' where ID = $itemID";
-        error_log("Item SQL: [" . $itemSQL . "]" );
+        log_sql("Item SQL: [" . $itemSQL . "]" );
         $db->exec( $itemSQL );
         
         $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", false );
         $infoSQL = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
-        
-        error_log("Info SQL: [" . $infoSQL . "]" );
+
+        log_sql("Info SQL: [" . $infoSQL . "]" );
         $db->exec( $infoSQL );
     }
     else if( $type == "CancelRestock" ) {
@@ -438,17 +447,17 @@
         $itemID = $row['ItemID'];
 
         $cancelSQL = "UPDATE Restock SET Cancelled = 1 where RestockID = $restockID";
-        error_log( "Cancel SQL [$cancelSQL]" );
+        log_sql( "Cancel SQL [$cancelSQL]" );
         $db->exec( $cancelSQL );
         
         $newTotalExpenses = addToValue( $db, "Item", "TotalExpenses", $cost, "where ID = $itemID", false );
         $itemSQL = "UPDATE Item SET TotalExpenses = $newTotalExpenses, BackstockQuantity = BackstockQuantity - $numberOfCans, TotalCans = TotalCans - $numberOfCans where ID = $itemID";
-        error_log( "Item SQL [$itemSQL]" );
+        log_sql( "Item SQL [$itemSQL]" );
         $db->exec( $itemSQL );
         
         $newExpenses = addToValue( $db, "Information", "Expenses", $cost, "where ItemType = '$itemType'", false );
         $infoSQL = "UPDATE Information SET Expenses = $newExpenses where ItemType = '$itemType'";
-        error_log( "Info SQL [$infoSQL]" );
+        log_sql( "Info SQL [$infoSQL]" );
         $db->exec( $infoSQL );
     }
     else if( $type == "CancelPayment" ) {
@@ -465,23 +474,23 @@
         $isUserPayment = $userID > 0;
         
         $cancelSQL = "Update Payments SET Cancelled = 1 WHERE PaymentID = $paymentID";
-        error_log("Cancel [$cancelSQL]");
+        log_sql("Cancel [$cancelSQL]");
         
         $db->exec( $cancelSQL );
     
         if( $isUserPayment ) {
             $balanceType = $itemType . "Balance";
             
-            $newBalance = addToValue( $db, "User", $balanceType, round($amount, 2), "where UserID = $userID", true );
+            $newBalance = addToValue( $db, "User", $balanceType, $amount, "where UserID = $userID", true );
             $balanceSQL = "UPDATE User SET $balanceType = " . $newBalance . " where UserID = $userID";
-            error_log("UserBalance [$balanceSQL]");
+            log_sql("UserBalance [$balanceSQL]");
             $db->exec( $balanceSQL );
         }
     
         $newProfit = addToValue( $db, "Information", "ProfitActual", $amount, "where ItemType = '$itemType'", false );
         $infoSQL = "UPDATE Information SET ProfitActual = $newProfit where ItemType = '$itemType'";
-        
-        error_log("Info [$infoSQL]");
+
+        log_sql("Info [$infoSQL]");
         $db->exec( $infoSQL );
         
         $db->exec();
@@ -492,14 +501,20 @@
         $displayMonth = trim($_POST["displayMonth"]);
         
         $results = $db->query("SELECT UserID, UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User" );
-        error_log( "Notifying Users..." );
+        log_debug( "Notifying Users..." );
         
         while ($row = $results->fetchArray()) {
+
+
             $userName = $row['UserName'];
             $slackID = $row['SlackID'];
             $userID = $row['UserID'];
             $name = $row["FirstName"] . " " . $row['LastName'];
-            
+
+//            if( $userName != "mmiles" ) {
+//                continue;
+//            }
+
             $totalArray = getTotalsForUser( $db, $userID, $month, $year, $displayMonth );
             
             $sodaTotal = $totalArray['SodaTotal'];
@@ -507,20 +522,20 @@
             $sodaPaid = $totalArray['SodaPaid'];
             $snackPaid = $totalArray['SnackPaid'];
             
-            $sodaTotalUnpaid = round( $sodaTotal - $sodaPaid, 2);
-            $snackTotalUnpaid = round( $snackTotal - $snackPaid, 2);
+            $sodaTotalUnpaid = $sodaTotal - $sodaPaid;
+            $snackTotalUnpaid = $snackTotal - $snackPaid;
             
-            error_log("User[$userName]Month[$month]Year[$year]Soda Total[$sodaTotal]Snack Total[$snackTotal][Soda Paid[$sodaTotalUnpaid]SnackPaid[$snackTotalUnpaid]");
+            log_debug("User[$userName]Month[$month]Year[$year]Soda Total[$sodaTotal]Snack Total[$snackTotal][Soda Paid[$sodaTotalUnpaid]SnackPaid[$snackTotalUnpaid]");
             
             
-            $totalBalance = round( $sodaTotalUnpaid + $snackTotalUnpaid, 2);
+            $totalBalance = $sodaTotalUnpaid + $snackTotalUnpaid ;
             
             if( $totalBalance > 0 ) {
                 $slackMessage = "Good morning, $name! It's a new month. Here is your FoodStock Balance for $displayMonth:\n" .
-                "*_Soda Balance:_* $" . number_format( $sodaTotalUnpaid, 2) . "\n" .
-                "*_Snack Balance:_* $" . number_format( $snackTotalUnpaid, 2) . "\n\n" .
-                        "*Total Balance Owed:* $" . number_format( $totalBalance, 2) . "\n\n" .
-                        "You can view more details on the <http://penguinore.net/billing.php|Billing Page>. Have a great day! :grin:";
+                "*_Soda Balance:_* " . getPriceDisplayWithDollars( $sodaTotalUnpaid ) . "\n" .
+                "*_Snack Balance:_* " . getPriceDisplayWithDollars( $snackTotalUnpaid ) . "\n\n" .
+                        "*Total Balance Owed:* " . getPriceDisplayWithDollars( $totalBalance ) . "\n\n" .
+                        "You can view more details on the <http://penguinore.net/purchase_history.php|Purchase/Payment History Page>. Have a great day! :grin:";
                 
                 sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a" );
             }
@@ -578,7 +593,11 @@
         echo "<th style='color:#9c9e9c; text-align:left;'>Price</th>";
         echo "<th style='color:#9c9e9c;'>Quantity</th>";
         echo "</tr>";
-        
+
+        $creditsOfUser = $_SESSION['Credits'];
+        $creditsLeft = $creditsOfUser;
+        $creditsUsed = 0;
+
         foreach( $itemQuantities as $itemID => $itemQuantity ) {
             $itemName = $itemNames[$itemID];
             $itemPrice = $itemPrices[$itemID];
@@ -587,16 +606,32 @@
             $costDisplay = "";
             
             if( $itemDiscountPrice != "" ) {
-                $costDisplay = "<span class='red_price'>$" . number_format($itemPrice, 2) . "</span> $" . number_format($itemDiscountPrice,2);
+                $costDisplay = "<span class='red_price'>" . getPriceDisplayWithDollars( $itemPrice ) . "</span> " . getPriceDisplayWithDollars( $itemDiscountPrice );
                 $totalPriceForItem = ( $itemDiscountPrice * $itemQuantity);
                 $totalSavings += ( $itemPrice - $itemDiscountPrice ) * $itemQuantity;
             } else {
-                $costDisplay = "$" . number_format($itemPrice, 2);
+                $costDisplay = getPriceDisplayWithDollars( $itemPrice );
                 $totalPriceForItem = ( $itemPrice * $itemQuantity);
             }
-            
+
+
             $totalPrice += $totalPriceForItem;
             $totalQuantity += $itemQuantity;
+
+            if( $creditsLeft > 0 ) {
+                $creditsLeft = $creditsLeft - $totalPrice;
+
+                if( $creditsLeft < 0 ) {
+                    // If the credits are in the negative, that means that they spent them all and the negative amount is now a balance
+                    $totalPrice = abs( $creditsLeft );
+                    $creditsUsed = $creditsOfUser;
+                } else {
+                    // No total, everything is paid in credits
+                    $creditsUsed += $totalPrice;
+                    $totalPrice = 0;
+
+                }
+            }
             
             echo "<tr style='border-bottom:1px solid #dddddd; padding:20px 0px; font-weight:bold; min-height:100px;'>";
             
@@ -636,17 +671,33 @@
         echo $firstColSpan;
         echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:25px 20px;'>";
         echo "<span>&bigstar; Savings: </span>";
-        echo "<span style='color:#1aa7d4;'>$" . number_format($totalSavings, 2) . "</span>";
+        echo "<span style='color:#1aa7d4;'>" . getPriceDisplayWithDollars( $totalSavings ) . "</span>";
         echo "</td>";
         echo "</tr>";
-        
+
+        $totalStrikeout = "";
+
+        if( $totalPrice == 0 ) {
+            $totalStrikeout = "text-decoration: line-through; opacity: 0.40;";
+        }
+
         echo "<tr>";
         echo $firstColSpan;
-        echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px;'>";
+        echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px; $totalStrikeout'>";
         echo "<span>Total ($totalQuantity items): </span>";
-        echo "<span style='color:#31961f;'>$" . number_format($totalPrice, 2) . "</span>";
+        echo "<span style='color:#31961f;'>" . getPriceDisplayWithDollars( $totalPrice ) . "</span>";
         echo "</td>";
         echo "</tr>";
+
+        if( $creditsUsed > 0 ) {
+            echo "<tr>";
+            echo $firstColSpan;
+            echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px;'>";
+            echo "<span>Credits Used: </span>";
+            echo "<span style='color:#ceaf0d;'>" . getPriceDisplayWithDollars($creditsUsed) . "</span>";
+            echo "</td>";
+            echo "</tr>";
+        }
 
         echo "</table>";
         

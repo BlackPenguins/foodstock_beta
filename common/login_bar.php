@@ -46,7 +46,7 @@
             $totalPurchases = $row['Total'];
 
             echo "<li><span id='register_box'>";
-            echo "<a class='register' href='" . REGISTER_LINK . "'>Register for a Discount!<a/> (We have $totalActiveUsers active users with a total of $" . number_format($totalSavings, 2) . " in savings and " . $totalPurchases . " total purchases)";
+            echo "<a class='register' href='" . REGISTER_LINK . "'>Register for a Discount!<a/> (We have $totalActiveUsers active users with a total of " . getPriceDisplayWithDollars( $totalSavings ) . " in savings and " . $totalPurchases . " total purchases)";
             echo "</span></li>";
 
         } else {
@@ -63,9 +63,40 @@
                 echo "<li><a style='text-decoration:none;' href='" . ADMIN_LINK . "'><span class='nav_buttons nav_buttons_admin'>Administration $noMobileSupport</span></a><li>";
             }
 
-            echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "?type=Soda'><span class='nav_buttons nav_buttons_soda'>Soda Balance: $" .  number_format($_SESSION['SodaBalance'], 2) . "</span></a><li>";
-            echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "?type=Snack'><span class='nav_buttons nav_buttons_snack'>Snack Balance: $" .  number_format($_SESSION['SnackBalance'], 2) . "</span></a><li>";
-            echo "<li><a style='text-decoration:none;' href='" . BILLING_LINK . "'><span class='nav_buttons nav_buttons_billing'>Billing $noMobileSupport</span></a><li>";
+            $totalBalance = $_SESSION['SodaBalance'] + $_SESSION['SnackBalance'];
+            $credits = $_SESSION['Credits'];
+
+            $creditsGreyedOut = "";
+
+            if( $credits <= 0 ) {
+                $creditsGreyedOut = "opacity: 0.45;";
+            }
+
+            echo "<li><a style='text-decoration:none; $creditsGreyedOut' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_admin'>Credits: " .  getPriceDisplayWithDollars( $credits ) . "</span></a><li>";
+            echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_billing'>Balance: " .  getPriceDisplayWithDollars( $totalBalance ) . "</span></a><li>";
+
+            if( $isLoggedInAdmin ) {
+                $refillCount = getRefillCount($db);
+                $restockCount =  getRestockCount($db);
+                $refillText = "";
+                $restockText = "";
+
+                if( $refillCount > 0 ) {
+                    $refillText .= "<a style='text-decoration:none;' href='" . ADMIN_CHECKLIST_LINK . "'><span style='padding: 5px 10px; font-size: 0.8em; border: 1px dashed #000000; font-weight: bold; background-color: #f7ff03; color: #b30f0e; margin-left: 20px;'>";
+                    $refillText .= "Desk Refill ($refillCount)";
+                    $refillText .= "</span>";
+                }
+
+                if( $restockCount > 0 ) {
+                    $restockText .= "<a style='text-decoration:none;' href='" . ADMIN_CHECKLIST_LINK . "'><span style='padding: 5px 10px; font-size: 0.8em; border: 1px dashed #000000; font-weight: bold; background-color: #953bce; color: #FFFFFF; margin-left: 20px;'>";
+                    $restockText .= "Store Restock ($restockCount)";
+                    $restockText .= "</span>";
+                }
+
+                if( $refillText != "" || $restockText != "" ) {
+                    echo "<li><span style='margin-left: 105px;'>$refillText $restockText</span></a><li>";
+                }
+            }
         }
         echo "</ul>";
 

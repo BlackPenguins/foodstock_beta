@@ -63,16 +63,16 @@
             echo "<td>" . $row['ID'] . "</td>";
             echo "<td>" . $row['Type'] . "</td>";
             echo "<td $colorSoldOut>" . $row['Name'] . "</td>";
-            echo "<td $colorPrice>$" . number_format( $row['Price'], 2) . "</td>";
-            echo "<td $colorDiscount>$" . number_format( $row['DiscountPrice'], 2) . "</td>";
+            echo "<td $colorPrice>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
+            echo "<td $colorDiscount>" . getPriceDisplayWithDollars( $row['DiscountPrice'] ) . "</td>";
             echo "<td>" . $row['Date'] . "</td>";
             echo "<td>" . $row['DateModified'] . " (" . $row['ModifyType'] . ")</td>";
             echo "<td>" . $row['ChartColor'] . "</td>";
             echo "<td>" . $row['ShelfQuantity'] . "</td>";
             echo "<td>" . $row['BackstockQuantity'] . "</td>";
             echo "<td>" . $row['TotalCans'] . "</td>";
-            echo "<td>$" . number_format( $row['TotalIncome'], 2) . "</td>";
-            echo "<td>$" . number_format( $row['TotalExpenses'], 2) . "</td>";
+            echo "<td>" . getPriceDisplayWithDollars( $row['TotalIncome'] ) . "</td>";
+            echo "<td>" . getPriceDisplayWithDollars( $row['TotalExpenses'] ) . "</td>";
             echo "<td>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
             echo "</tr>";
         }

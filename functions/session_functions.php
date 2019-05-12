@@ -1,5 +1,6 @@
 <?php
 include(__DIR__ . "/../appendix.php" );
+include_once( LOG_FUNCTIONS_PATH );
 
 function Login($db) {
     session_start();
@@ -11,8 +12,9 @@ function Login($db) {
         $_SESSION['SlackID'] = $row['SlackID'];
         $_SESSION['SodaBalance'] = $row['SodaBalance'];
         $_SESSION['SnackBalance'] = $row['SnackBalance'];
+        $_SESSION['Credits'] = $row['Credits'];
         $_SESSION['InactiveUser'] = $row['Inactive'] == 1;
-        error_log( "Recached SlackID [" . $_SESSION['SlackID'] . "] for [" . $_SESSION['UserName'] . "]" );
+        log_debug( "Recached SlackID [" . $_SESSION['SlackID'] . "] for [" . $_SESSION['UserName'] . "]" );
         return;
     }
     
@@ -51,9 +53,10 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $userID = $row['UserID'];
         $sodaBalance = $row['SodaBalance'];
         $snackBalance = $row['SnackBalance'];
+        $credits = $row['Credits'];
         $slackID = $row['SlackID'];
         $inactiveUser = $row['Inactive'] == 1;
-        error_log("Logging in with [$username] [$userID] [$sodaBalance][$snackBalance]");
+        log_debug("Logging in with [$username] [$userID] [$sodaBalance][$snackBalance]");
         $_SESSION['LoggedIn'] = true;
         $_SESSION['UserName'] = $username;
         $_SESSION['FirstName'] = $firstName;
@@ -61,6 +64,7 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $_SESSION['UserID'] = $userID;
         $_SESSION['SodaBalance'] = $sodaBalance;
         $_SESSION['SnackBalance'] = $snackBalance;
+        $_SESSION['Credits'] = $credits;
         $_SESSION['SlackID'] = $slackID;
         $_SESSION['InactiveUser'] = $inactiveUser;
         $_SESSION['IsAdmin'] = $username == 'mmiles';
@@ -117,20 +121,20 @@ function TrackVisit($db, $title){
     }
 }
 
-function addToValue( $db, $tableName, $columnName, $valueToAdd, $whereClause, $doAdd ) {
-    $results = $db->query("SELECT $columnName FROM $tableName $whereClause" );
+function addToValue( $db, $tableName, $columnName, $valueToAdd, $whereClause, $doAdd )
+{
+    $results = $db->query("SELECT $columnName FROM $tableName $whereClause");
     $row = $results->fetchArray();
     $columnValue = $row[$columnName];
-    
-    $finalValue;
-    if( $doAdd ) {
-        $finalValue = round( $columnValue + $valueToAdd, 2 );
+
+    if ($doAdd) {
+        $finalValue = $columnValue + $valueToAdd;
     } else {
-        $finalValue = round( $columnValue - $valueToAdd, 2 );
+        $finalValue = $columnValue - $valueToAdd;
     }
-    
-    error_log( "[$tableName/$columnName] TABLE COLUMN --- [$columnValue] " . ( $doAdd ? "+" : "-" ) . " [$valueToAdd] = [$finalValue]" );
-    
+
+    log_sql("[$tableName/$columnName] TABLE COLUMN --- [$columnValue] " . ($doAdd ? "+" : "-") . " [$valueToAdd] = [$finalValue]");
+
     return $finalValue;
 }
 ?>

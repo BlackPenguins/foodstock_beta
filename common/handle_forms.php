@@ -1,18 +1,20 @@
 <?php
 include(__DIR__ . "/../appendix.php" );
-$db = new SQLite3(DB_PATH);
+$db = new SQLite3( getDB() );
 if (!$db) die ($error);
 
 
 include( SESSION_FUNCTIONS_PATH );
 include(UI_FUNCTIONS_PATH);
 include(SLACK_FUNCTIONS_PATH);
+include_once(LOG_FUNCTIONS_PATH);
 date_default_timezone_set('America/New_York');
 
 Login($db);
 
 $userMessage = "";
 
+$startTime = time();
 // ------------------------------------
 // HANDLE USER QUERIES
 // ------------------------------------
@@ -30,8 +32,12 @@ if(isset($_POST['Purchase'])) {
         $purchaseMessage = "";
         $itemType = "UNKNOWN";
         $itemsOutOfStock = array();
+
+        $creditsOfUser = $_SESSION['Credits'];
+        $creditsLeftOfUser = $creditsOfUser;
         
         foreach( $itemsInCart as $itemID ) {
+            $startTimeItem = time();
             $results = $db->query("SELECT * FROM Item WHERE ID =" . $itemID );
             $row = $results->fetchArray();
             $itemPrice = $row['Price'];
@@ -65,7 +71,22 @@ if(isset($_POST['Purchase'])) {
                 }
                 
                 $date = date('Y-m-d H:i:s', time());
-                $totalPrice += $itemPrice;
+                $useCredits = 0;
+
+                if( $creditsLeftOfUser > 0 ) {
+                    $useCredits = $creditsLeftOfUser;
+                    $creditsLeftOfUser -= $itemPrice;
+
+                    if( $creditsLeftOfUser < 0 ) {
+                        // If we went over their credit limit, we need to add it to their balance now
+                        $totalPrice += abs( $creditsLeftOfUser );
+                        $creditsLeftOfUser = 0;
+                    } else {
+                        $useCredits = $itemPrice;
+                    }
+                } else {
+                    $totalPrice += $itemPrice;
+                }
 
                 $cashOnlyInteger = $cashOnly ? 1 : 0;
                 
@@ -73,7 +94,7 @@ if(isset($_POST['Purchase'])) {
                 $db->exec( $inventoryQuery );
                 $dailyAmountID = $db->lastInsertRowID();
                 
-                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date, CashOnly, DailyAmountID) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "'," . $cashOnlyInteger .  ", " . $dailyAmountID . ")";
+                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date, CashOnly, DailyAmountID, UseCredits) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "'," . $cashOnlyInteger .  ", " . $dailyAmountID . ",$useCredits)";
                 
                 $newTotalIncome = addToValue( $db, "Item", "TotalIncome", $itemPrice, "where ID = $itemID", true );
                 $itemQuery = "UPDATE Item SET TotalIncome = $newTotalIncome, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
@@ -90,30 +111,31 @@ if(isset($_POST['Purchase'])) {
                 $db->exec( $informationQuery );
 
 
-                $purchaseMessage = $purchaseMessage . "- " . $itemName . " ($" . number_format($itemPrice, 2) . ")\n";
+                $purchaseMessage = $purchaseMessage . "- " . $itemName . " (" . getPriceDisplayWithDollars( $itemPrice ) . ")\n";
             }
+            $stopTimeItem = time();
+            $totalTimeItem = $stopTimeItem - $startTimeItem;
+
+            log_benchmark( "Time to complete purchase for [$itemName]: $totalTimeItem seconds" );
         }
         
-        $totalPrice = round( $totalPrice, 2 );
-        $totalSavings = round( $totalSavings, 2);
-
         if( !$cashOnly ) {
             $typeOfBalance = $itemType . "Balance";
             $typeOfSavings = $itemType . "Savings";
 
             $newBalance = addToValue( $db, "User", $typeOfBalance, $totalPrice, "where UserID = " . $_SESSION['UserID'], true );
             $newSavings = addToValue( $db, "User", $typeOfSavings, $totalSavings, "where UserID = " . $_SESSION['UserID'], true );
-            $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $newBalance , $typeOfSavings = $newSavings where UserID = " . $_SESSION['UserID'];
-            error_log("Balance Update [" . $balanceUpdateQuery . "]" );
+            $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $newBalance , $typeOfSavings = $newSavings, Credits = $creditsLeftOfUser where UserID = " . $_SESSION['UserID'];
+            log_sql("Balance Update [" . $balanceUpdateQuery . "]" );
             $db->exec( $balanceUpdateQuery );
 
             $_SESSION[$typeOfBalance] = $_SESSION[$typeOfBalance] + $totalPrice;
         }
 
-        $purchaseMessage = $purchaseMessage . "*Total Price:* $" . number_format($totalPrice, 2) . "\n";
+        $purchaseMessage = $purchaseMessage . "*Total Price:* " . getPriceDisplayWithDollars( $totalPrice ) . "\n";
 
         if( !$cashOnly ) {
-            $purchaseMessage = $purchaseMessage . "*Your " . $itemType . " Balance:* $" . number_format($_SESSION[$typeOfBalance],2) . "\n";
+            $purchaseMessage = $purchaseMessage . "*Your " . $itemType . " Balance:* " . getPriceDisplayWithDollars( $_SESSION[$typeOfBalance] ) . "\n";
         } else {
             $purchaseMessage = $purchaseMessage . "*THIS PURCHASE WAS CASH-ONLY*\n";
         }
@@ -126,14 +148,13 @@ if(isset($_POST['Purchase'])) {
 
         sendSlackMessageToMatt( "*(" . strtoupper($_SESSION['UserName']) . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb" );
         $userMessage = "Purchase Completed";
-        
+
         if( $errors != "" ) {
             error_log( "ERROR: [" . $_SESSION['UserID'] . "]" . $errors );
             $userMessage = "Something went wrong - contact Matt!! " . $errors;
             sendSlackMessageToMatt( "Errors: " . $errors, ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
         }
-        
-        
+
         if( count( $itemsOutOfStock) > 0 ) {
             foreach($itemsOutOfStock  as $item ) {
                 sleep( 1 );
@@ -150,7 +171,7 @@ if(isset($_POST['Purchase'])) {
     $userID = $_SESSION['UserID'];
     $username = $_SESSION['UserName'];
     $slackID = $_SESSION['SlackID'];
-        
+
     if( $slackID == "" ) {
         sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f"  );
     } else {
@@ -167,7 +188,7 @@ if(isset($_POST['Purchase'])) {
         $store = trim($_POST["StoreDropdown"]);
         $date = date('Y-m-d H:i:s');
         $packQuantity = trim($_POST["PackQuantity"]);
-        $price = trim($_POST["Price"]);
+        $price = convertDecimalToWholeCents( trim($_POST["Price"]) );
         $priceType = trim($_POST["PriceType"]);
         $submitter = trim($_POST["Submitter"]);
     
@@ -191,7 +212,7 @@ if(isset($_POST['Purchase'])) {
     
     
         $shoppingQuery = "INSERT INTO Shopping_Guide (ItemID, PackQuantity, RegularPrice, SalePrice, Store, User, Date) VALUES($itemID, $packQuantity, $regularPrice, $salePrice, $store, '$submitter', '$date')";
-        error_log("Shopping Query: [" . $shoppingQuery . "]" );
+        log_sql("Shopping Query: [" . $shoppingQuery . "]" );
         $db->exec( $shoppingQuery );
 } else {
     // ------------------------------------
@@ -201,24 +222,15 @@ if(isset($_POST['Purchase'])) {
         $userMessage = "YOU ARE NOT LOGGED IN AS ADMIN!";
     } else {
         if(isset($_POST['AddItem'])) {
-            $name = trim($_POST["ItemName"]);
-            $date = date('Y-m-d H:i:s');
-            $chartColor = trim($_POST["ChartColor"]);
-            $price = trim($_POST["CurrentPrice"]);
-            $itemType = trim($_POST["ItemType"]);
-    
-            $addItemQuery = "INSERT INTO Item (Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Type) VALUES( '$name', '$date', '$chartColor', 0, 0, 0, $price, 0.00, 0.00, '$itemType')";
-            $db->exec( $addItemQuery );
-    
-            $userMessage = "Item \"$name\" added successfully.";
+            $userMessage = addItem( $db, $_POST["ItemName"], $_POST["ChartColor"], $_POST["CurrentPrice"], $_POST["ItemType"] );
         } else if(isset($_POST['EditItem'])) {
             $itemType = trim($_POST["ItemType"]);
-    
+
             $id = trim($_POST["Edit" . $itemType . "Dropdown"]);
             $name = trim($_POST["EditItemName" . $itemType]);
             $chartColor = trim($_POST["EditChartColor" . $itemType]);
-            $price = trim($_POST["EditPrice" . $itemType]);
-            $discountPrice = trim($_POST["EditDiscountPrice" . $itemType]);
+            $price = convertDecimalToWholeCents( trim($_POST["EditPrice" . $itemType]) );
+            $discountPrice = convertDecimalToWholeCents( trim($_POST["EditDiscountPrice" . $itemType]) );
             $imageURL = trim($_POST["EditImageURL" . $itemType]);
             $thumbURL = trim($_POST["EditThumbURL" . $itemType]);
             $unitName = trim($_POST["EditUnitName" . $itemType]);
@@ -227,26 +239,25 @@ if(isset($_POST['Purchase'])) {
             $currentFlavor = trim($_POST["EditCurrentFlavor" . $itemType]);
             $status = trim($_POST["EditStatus" . $itemType]);
             $expirationDate = trim($_POST["EditExpirationDate" . $itemType]);
-    
-            error_log("Status: " . $status );
+
             $retired = $status == "active" ? 0 : 1;
 
             $updateImageURL = "";
             $updateThumbURL = "";
 
             if ( is_uploaded_file($_FILES['uploadedImage']['tmp_name'] ) ) {
-                error_log( "FOUND TMP: [" .$_FILES['uploadedImage']['tmp_name'] . "]" );
-                error_log( "FOUND NAME: [" .$_FILES['uploadedImage']['name'] . "]" );
+                log_debug( "FOUND TMP: [" .$_FILES['uploadedImage']['tmp_name'] . "]" );
+                log_debug( "FOUND NAME: [" .$_FILES['uploadedImage']['name'] . "]" );
                 $targetFileName = basename( $_FILES['uploadedImage']['name'] );
-                error_log( "FOUND TARGET: [" .$targetFileName . "]" );
+                log_debug( "FOUND TARGET: [" .$targetFileName . "]" );
                 $target = IMAGES_NORMAL_PATH . $targetFileName;
-                error_log( "FOUND TARGET PATH: [" .$target . "]" );
+                log_debug( "FOUND TARGET PATH: [" .$target . "]" );
 
                 if( !move_uploaded_file( $_FILES['uploadedImage']['tmp_name'], $target ) ) {
                     error_log(" THERE WAS AN ERROR UPLOADING THIS IMAGE: " . $_FILES['uploadedImage']['tmp_name'] );
                 } else {
                     $updateImageURL = ", ImageURL = '$targetFileName'";
-                    error_log( "FOUND UPDATE: [" .$updateImageURL . "]" );
+                    log_debug( "FOUND UPDATE: [" .$updateImageURL . "]" );
                 }
             }
 
@@ -260,10 +271,10 @@ if(isset($_POST['Purchase'])) {
                 }
             }
 
-            $editItemQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired $updateImageURL $updateThumbURL, UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias', CurrentFlavor = '$currentFlavor', ExpirationDate = '$expirationDate' where ID = $id";
-            error_log("Edit Item Query: [" . $editItemQuery . "]" );
-            $db->exec( $editItemQuery );
-    
+            $editUserQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired $updateImageURL $updateThumbURL, UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias', CurrentFlavor = '$currentFlavor', ExpirationDate = '$expirationDate' where ID = $id";
+            log_sql("Edit Item Query: [" . $editUserQuery . "]" );
+            $db->exec( $editUserQuery );
+
             $userMessage = "Item \"$name\" edited successfully.";
         } else if(isset($_POST['SendBot'])) {
             $botMessage = trim($_POST["BotMessage"]);
@@ -297,22 +308,55 @@ if(isset($_POST['Purchase'])) {
             $resetPasswordQuery = "";
     
             if( $resetPassword == true ) {
-                error_log("restting");
+                log_debug("Resetting Password");
                 $resetPasswordQuery = " Password='" . sha1($uniqueID) . "',";
                 $userMessage = $userMessage . "Password for user was reset to \"$uniqueID\". ";
             }
     
-            $editItemQuery = "UPDATE User SET SlackID='$slackID', AnonName='$anonName', $resetPasswordQuery Inactive = $inactive, IsCoop = $isCoop where UserID = $id";
-            error_log("Edit User Query: [" . $editItemQuery . "]" );
-            $db->exec( $editItemQuery );
+            $editUserQuery = "UPDATE User SET SlackID='$slackID', AnonName='$anonName', $resetPasswordQuery Inactive = $inactive, IsCoop = $isCoop where UserID = $id";
+            log_sql("Edit User Query: [" . $editUserQuery . "]" );
+            $db->exec( $editUserQuery );
     
             $userMessage = $userMessage . "User edited successfully.";
+        } else if(isset($_POST['CreditUser'])) {
+            $id = trim($_POST["EditUserDropdown"]);
+            $creditAmountInDecimal = trim($_POST["CreditAmount"]);
+            $creditAmountWholeCents = convertDecimalToWholeCents( $creditAmountInDecimal );
+
+            $returnCredits = false;
+            $validCredits = true;
+
+            if( isset($_POST["ReturnCredits"]) ) {
+                $creditResults = $db->query("SELECT Credits From User where UserID = $id");
+                $creditRow = $creditResults->fetchArray();
+                $currentCredits = $creditRow['Credits'];
+
+                if( $currentCredits - $creditAmountWholeCents < 0 ) {
+                    $validCredits = false;
+                    $userMessage = $userMessage . "Failure! User only has $currentCredits cents -  cannot subtract $creditAmountWholeCents cents!";
+                }
+                $creditAmountWholeCents = $creditAmountWholeCents * -1;
+            }
+
+            if( $validCredits ) {
+                $editUserQuery = "UPDATE User SET Credits=Credits + $creditAmountWholeCents where UserID = $id";
+                log_sql("Edit User Query: [" . $editUserQuery . "]");
+                $db->exec($editUserQuery);
+
+                $date = date('Y-m-d H:i:s', time());
+
+                $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, Date ) VALUES ($id, " . CREDIT_ID . ", $creditAmountWholeCents,'" . $date . "')";
+                log_sql("Update Purchase_History Query: [" . $purchaseHistoryQuery . "]");
+                $db->exec($purchaseHistoryQuery);
+
+                $userMessage = $userMessage . "User credited successfully with " . getPriceDisplayWithDollars($creditAmountWholeCents);
+            }
         } else if(isset($_POST['Restock'])) {
             $id = trim($_POST["RestockDropdown"]);
             $itemType = trim($_POST["ItemType"]);
             $date = date('Y-m-d H:i:s');
             $numberOfCans = trim($_POST["NumberOfCans"]);
-            $cost = trim($_POST["Cost"]);
+            $cost = convertDecimalToWholeCents(  trim($_POST["Cost"] ) );
             $multiplier = trim($_POST["Multiplier"]);
             
             if( $multiplier > 1 ) {
@@ -343,7 +387,7 @@ if(isset($_POST['Purchase'])) {
             
             $results = $db->query("SELECT Price, BackstockQuantity, ShelfQuantity From Item where ID = $id");
             $row = $results->fetchArray();
-            $price = round($row['Price'], 2);
+            $price = $row['Price'];
             $shelfQuantity = $row['ShelfQuantity'];
             $backstockQuantity = $row['BackstockQuantity'];
             
@@ -367,52 +411,51 @@ if(isset($_POST['Purchase'])) {
                 $userMessage = "Defectives successfully.";
             }
         } else if(isset($_POST['Payment'])) {
-            error_log( "Incoming payment." );
-            $userID = trim($_POST["UserDropdown"]);
-            $paymentMonth = trim($_POST["MonthDropdown"]);
+            log_payment( "Incoming payment." );
+            $userID = trim($_POST["UserID"]);
+            $paymentMonth = trim($_POST["Month"]);
             $date = date('Y-m-d H:i:s');
-            $snackAmount = trim($_POST["SnackAmount"]);
-            $sodaAmount = trim($_POST["SodaAmount"]);
+            $snackAmount = convertDecimalToWholeCents( trim($_POST["SnackAmount"]) );
+            $sodaAmount = convertDecimalToWholeCents( trim($_POST["SodaAmount"]) );
             $note = trim($_POST["Note"]);
             $method = trim($_POST["MethodDropdown"]);
              
-            $isUserPayment = $userID > 0;
-            $isBalanceValid = true;
-    
-            if( $isUserPayment ) {
-                error_log( "User payment found." );
+            if( $userID > 0 ) {
+                log_payment( "User payment found." );
                 $results = $db->query("SELECT SodaBalance, SnackBalance, SlackID, UserName From User where UserID = $userID");
                 $row = $results->fetchArray();
-                $sodaBalance = round($row['SodaBalance'], 2);
-                $snackBalance = round($row['SnackBalance'], 2);
+                $sodaBalance = $row['SodaBalance'];
+                $snackBalance = $row['SnackBalance'];
                 $slackID = $row['SlackID'];
                 $username = $row['UserName'];
+
+                $isBalanceValid = true;
     
                 if( $sodaAmount > $sodaBalance ) {
                     $isBalanceValid = false;
                     error_log( "Bad Soda balance. Amount: [" . $sodaAmount . "] Balance: [" . $sodaBalance . "]" );
-                    $userMessage = "This payment [$" . number_format($sodaAmount, 2) . "] is larger than the user\"s Soda Balance of [$" . number_format($sodaBalance,2) . "]. Payment denied!";
+                    $userMessage = "This payment [" . getPriceDisplayWithDollars( $sodaAmount ) . "] is larger than the user\"s Soda Balance of [" . getPriceDisplayWithDollars( $sodaBalance ) . "]. Payment denied!";
                 }
 
                 if( $snackAmount > $snackBalance) {
                     $isBalanceValid = false;
                     error_log( "Bad Snack balance. Amount: [" . $snackAmount . "] Balance: [" . $snackBalance . "]" );
-                    $userMessage = "This payment [$" . number_format($snackAmount, 2) . "] is larger than the user\"s Snack Balance of [$" . number_format($snackBalance,2) . "]. Payment denied!";
+                    $userMessage = "This payment [" . getPriceDisplayWithDollars( $snackAmount ) . "] is larger than the user\"s Snack Balance of [" . getPriceDisplayWithDollars( $snackBalance ) . "]. Payment denied!";
                 }
                 
                 if( $isBalanceValid ) {
                     $newSodaBalance = $sodaBalance - $sodaAmount;
-                    error_log( "Reduced Soda balance [" . $newSodaBalance . "] is [" . $sodaBalance . " - " . $sodaAmount . "]" );
-                    
-                    $newSnackBalance = $snackBalance - $snackAmount;
-                    error_log( "Reduced Snack balance [" . $newSnackBalance . "] is [" . $snackBalance . " - " . $snackAmount . "]" );
-                    
-                    $paymentMessage = "Your payment was received for $paymentMonth.\n\n" .
-                    "Your Current Soda Balance: *$" . number_format($newSodaBalance,2) . "*       (*$" . number_format($sodaBalance,2) . "* original balance  -  *$" . number_format($sodaAmount,2) . "* payment)\n" .
-                    "Your Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*       (*$" . number_format($snackBalance,2) . "* original balance  -  *$" . number_format($snackAmount,2) . "* payment)";
-//                     "Final Snack Balance: *$" . number_format($sodaBalance,2) . " - $" . number_format($sodaAmount,2) . "= $" . number_format($newSodaBalance,2) . "\n\n" .
-//                     "Snack Payment: *$" . number_format($snackAmount,2) . "*\nTheir Current Snack Balance: *$" . number_format($newSnackBalance,2) . "*";
+                    log_payment( "Reduced Soda balance [" . $newSodaBalance . "] is [" . $sodaBalance . " - " . $sodaAmount . "]" );
 
+                    $newSnackBalance = $snackBalance - $snackAmount;
+                    log_payment( "Reduced Snack balance [" . $newSnackBalance . "] is [" . $snackBalance . " - " . $snackAmount . "]" );
+
+                    $newTotalBalance = $newSodaBalance + $newSnackBalance;
+                    $balance = $sodaBalance + $snackBalance;
+                    $amount = $sodaAmount + $snackAmount;
+
+                    $paymentMessage = "Your payment was received for $paymentMonth.\n\n" .
+                    "Your Current Balance: *" . getPriceDisplayWithDollars( $newTotalBalance ) . "*       (*" . getPriceDisplayWithDollars( $balance ) . "* original balance  -  *" . getPriceDisplayWithDollars( $amount ) . "* payment)";
                     
                     if( $slackID == "" ) {
                         sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!", "#bb3f3f");
@@ -421,29 +464,25 @@ if(isset($_POST['Purchase'])) {
                     }
                     
                     sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n$paymentMessage", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
-                }
-            }
-    
-            if( $isBalanceValid ) {
-                // DEV: Changing this code? Change the payment code for Auditing as well (above)
-                $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $sodaAmount, '$date', '$note', 'Soda', '$paymentMonth')");
-                $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $snackAmount, '$date', '$note', 'Snack', '$paymentMonth')");
-    
-                if( $isUserPayment ) {
-                    $newSodaBalance = addToValue( $db, "User", "SodaBalance", round($sodaAmount, 2), "where UserID = $userID", false );
-                    $newSnackBalance = addToValue( $db, "User", "SnackBalance", round($snackAmount, 2), "where UserID = $userID", false );
-                    
+
+                    // DEV: Changing this code? Change the payment code for Auditing as well (above)
+                    $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $sodaAmount, '$date', '$note', 'Soda', '$paymentMonth')");
+                    $db->exec("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment) VALUES($userID, '$method', $snackAmount, '$date', '$note', 'Snack', '$paymentMonth')");
+
+                    $newSodaBalance = addToValue( $db, "User", "SodaBalance", $sodaAmount, "where UserID = $userID", false );
+                    $newSnackBalance = addToValue( $db, "User", "SnackBalance", $snackAmount,  "where UserID = $userID", false );
+
                     $db->exec("UPDATE User SET SodaBalance = $newSodaBalance where UserID = $userID");
                     $db->exec("UPDATE User SET SnackBalance = $newSnackBalance where UserID = $userID");
+
+                    $newProfitSoda = addToValue( $db, "Information", "ProfitActual", $sodaAmount, "where ItemType = 'Soda'", true );
+                    $newProfitSnack = addToValue( $db, "Information", "ProfitActual", $snackAmount, "where ItemType = 'Snack'", true );
+
+                    $db->exec("UPDATE Information SET ProfitActual = $newProfitSoda where ItemType = 'Soda'");
+                    $db->exec("UPDATE Information SET ProfitActual = $newProfitSnack where ItemType = 'Snack'");
+
+                    $userMessage = "Payment added successfully.";
                 }
-    
-                $newProfitSoda = addToValue( $db, "Information", "ProfitActual", $sodaAmount, "where ItemType = 'Soda'", true );
-                $newProfitSnack = addToValue( $db, "Information", "ProfitActual", $snackAmount, "where ItemType = 'Snack'", true );
-                
-                $db->exec("UPDATE Information SET ProfitActual = $newProfitSoda where ItemType = 'Soda'");
-                $db->exec("UPDATE Information SET ProfitActual = $newProfitSnack where ItemType = 'Snack'");
-    
-                $userMessage = "Payment added successfully.";
             }
         } else if(isset($_POST['Inventory'])) {
             $id_all = $_POST["ItemID"];
@@ -456,7 +495,7 @@ if(isset($_POST['Purchase'])) {
             $date = date('Y-m-d H:i:s');
             $backstockQuantity_all = $_POST["BackstockQuantity"];
             $shelfQuantity_all = $_POST["ShelfQuantity"];
-            $auditAmount = $_POST["AuditAmount"];
+            $auditAmount = convertDecimalToWholeCents( $_POST["AuditAmount"] );
             $itemType = $_POST["ItemType"];
             $price_all = 0;
     
@@ -472,9 +511,9 @@ if(isset($_POST['Purchase'])) {
             $auditMessage = "";
 
             if( $auditAmount != "" ) {
-                error_log(" Audit found [$auditAmount] - [$itemType]" );
-                $auditQuery = "INSERT INTO Audit (Date, MissingMoney, ItemType) VALUES('$date', 0.0, '$itemType')";
-                error_log(" Audit found [$auditQuery]" );
+                log_debug(" Audit found [$auditAmount] - [$itemType]" );
+                $auditQuery = "INSERT INTO Audit (Date, MissingMoney, ItemType) VALUES('$date', 0, '$itemType')";
+                log_sql(" Audit Query [$auditQuery]" );
                 $db->exec( $auditQuery );
                 $auditID = $db->lastInsertRowID();
                 $auditMessage = "(AUDIT #$auditID)";
@@ -482,7 +521,7 @@ if(isset($_POST['Purchase'])) {
                 $firstOfMonth = mktime(0, 0, 0, date("m"), 1, date("Y") );
                 $monthLabel = date('F Y', $firstOfMonth);
                 $paymentQuery = "INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment, AuditID) VALUES(0, '', $auditAmount, '$date', 'Audited', '$itemType', '$monthLabel', $auditID)";
-                error_log(" Payment found [$paymentQuery]" );
+                log_sql(" Payment Query [$paymentQuery]" );
                 $db->exec( $paymentQuery);
                 $newProfit = addToValue( $db, "Information", "ProfitActual", $auditAmount, "where ItemType = '$itemType'", true );
                 $db->exec("UPDATE Information SET ProfitActual = $newProfit where ItemType = '$itemType'");
@@ -492,10 +531,11 @@ if(isset($_POST['Purchase'])) {
             $itemType = "";
     
             for ($i = 0; $i < count($id_all); $i++) {
+                $startTimeItem = time();
                 $id = $id_all[$i];
                 $backstockQuantity = $backstockQuantity_all[$i];
                 $shelfQuantity = $shelfQuantity_all[$i];
-                $price = $price_all == 0 ? "" : $price_all[$i];
+                $price = $price_all == 0 ? "" : convertDecimalToWholeCents( $price_all[$i] );
                 $itemName = "N/A";
     
     
@@ -522,7 +562,7 @@ if(isset($_POST['Purchase'])) {
                 $refillTrigger = "";
                 if( $shelfQuantity > $shelfQuantityBefore ) {
                     //New item was added to the fridge
-                    $priceDisplay = getPriceDisplayWithHTML( $priceBefore, true /* no HTML */ );
+                    $priceDisplay = getPriceDisplayWithEnglish( $priceBefore );
                     
                     $slackMessageItems = $slackMessageItems . "*" . $itemName . " $currentFlavor:* " . $shelfQuantityBefore . " " . 
                             ( $shelfQuantityBefore == 1 ? $itemUnits : $itemUnitsPlural ) .
@@ -545,9 +585,14 @@ if(isset($_POST['Purchase'])) {
                     $date = date('Y-m-d H:i:s', time());
                     $restockTrigger = " RestockTrigger = 1, ";
                 }
+
+                if( $shelfQuantity <= 3 ) {
+                    $date = date('Y-m-d H:i:s', time());
+                    $refillTrigger = " RefillTrigger = 1, ";
+                }
     
                 $dailyAmountQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID, AuditID) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked, -3, $auditID)";
-                error_log("DA: [" . $dailyAmountQuery . "]" );
+                log_sql("DA Query: [" . $dailyAmountQuery . "]" );
                 $db->exec( $dailyAmountQuery );
                 $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
                 
@@ -556,7 +601,11 @@ if(isset($_POST['Purchase'])) {
                 
                 $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", true );
                 $db->exec("UPDATE Information SET Income = $newIncome where ItemType = '$itemType'");
-    
+
+                $stopTimeItem = time();
+                $totalTimeItem = $stopTimeItem - $startTimeItem;
+
+                log_benchmark( "Time to complete purchase for [$itemName]: $totalTimeItem seconds" );
             }
 
 
@@ -580,6 +629,10 @@ if(isset($_POST['Purchase'])) {
     }
 }
 
+$stopTime = time();
+$totalTime = $stopTime - $startTime;
+log_benchmark( "Time to complete handle_forms: $totalTime seconds" );
+
 if( isset( $_POST['redirectURL'] ) ) {
     
     if( $userMessage != "" ) {
@@ -588,5 +641,18 @@ if( isset( $_POST['redirectURL'] ) ) {
     
     // Redirect to page
     header( "Location:" . $_POST['redirectURL'] );
+}
+
+function addItem( $db, $name, $chartColor, $price, $itemType ) {
+    $name = trim($name);
+    $date = date('Y-m-d H:i:s');
+    $chartColor = trim($chartColor);
+    $price = convertDecimalToWholeCents( trim( $price  ) );
+    $itemType = trim( $itemType );
+
+    $addItemQuery = "INSERT INTO Item (Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, Type) VALUES( '$name', '$date', '$chartColor', 0, 0, 0, $price, 0.00, 0.00, '$itemType')";
+    $db->exec( $addItemQuery );
+
+    return "Item \"$name\" added successfully.";
 }
 ?>

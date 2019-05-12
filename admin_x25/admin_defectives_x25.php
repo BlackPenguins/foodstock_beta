@@ -31,7 +31,7 @@
             echo "<tr class='$rowClass'>";
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $itemName . "</td>";
             echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Amount'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>$" . number_format( $row['Price'], 2) . "</td>";
+            echo "<td style='padding:5px; border:1px #000 solid;'>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
             echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
             echo "</tr>";

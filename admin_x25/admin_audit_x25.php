@@ -65,8 +65,8 @@
             $offSiteCount = $totalUnits - $inSiteCount;
             $offSiteIncome = $offSiteCount * $row['Price'];
             
-            $totalIncome = number_format( $offSiteIncome + $inSiteIncome, 2);
-            $totalIncomeCard = number_format( $row['TotalIncome'], 2);
+            $totalIncome = getPriceDisplayWithDollars( $offSiteIncome + $inSiteIncome );
+            $totalIncomeCard = getPriceDisplayWithDollars( $row['TotalIncome'] );
             
             $allIncome += $totalIncome;
             $allIncomeCard += $totalIncomeCard;
@@ -86,12 +86,12 @@
             }
             
             $totalExpensesColor = "#42c2ff";
-            $totalExpensesCard = number_format( $row['TotalExpenses'], 2);
+            $totalExpensesCard = getPriceDisplayWithDollars( $row['TotalExpenses'] );
             
             $allExpenses += $totalExpenses;
             $allExpensesCard += $totalExpensesCard;
             
-            if( round( $totalExpenses - $totalExpensesCard ) != 0) {
+            if( $totalExpenses - $totalExpensesCard != 0) {
                 $totalExpensesColor = "#ff4242";
             }
             

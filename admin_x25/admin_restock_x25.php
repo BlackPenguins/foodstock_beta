@@ -81,8 +81,8 @@
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
             echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
             echo "<td>" . $row['NumberOfCans'] . "</td>";
-            echo "<td>$" . number_format( $row['Cost'], 2) . "</td>";
-            $costEach = $row['CostEach'];
+            echo "<td>" . getPriceDisplayWithDollars( $row['Cost'] ) . "</td>";
+            $costEach = round( $row['CostEach'] );
             
             $lowestPrice = $row['Price'];
             
@@ -96,10 +96,10 @@
             if($margin < 0 ) {
                 $marginColor = "background-color: #8a3535; color: #000000;";
             }
-            echo "<td style='$maxCostEach border:0;'>$" . number_format( $costEach, 2 )  . "</td>";
-            echo "<td style='$maxCostEach border:0;'>$" . number_format( $row['Price'], 2 )  . "</td>";
-            echo "<td style='$maxCostEach border:0;'>$" . number_format( $row['DiscountPrice'], 2 )  . "</td>";
-            echo "<td style='$maxCostEach border:0; $marginColor'>$" . number_format( $margin, 2 )  . "</td>";
+            echo "<td style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $costEach )  . "</td>";
+            echo "<td style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $row['Price'] )  . "</td>";
+            echo "<td style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $row['DiscountPrice'] )  . "</td>";
+            echo "<td style='$maxCostEach border:0; $marginColor'>" . getPriceDisplayWithDollars( $margin  )  . "</td>";
             echo "</tr>";
             
             $previousItem = $row['Name'];

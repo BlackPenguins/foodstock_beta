@@ -171,7 +171,7 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 5.9 (April 7th, 2019)";
+    $version = "Version 6.0 !!! (May 5th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -195,15 +195,15 @@ if(!$isMobile) {
     echo "<tr>";
     echo "<td rowspan='2'><img src='" . IMAGES_LINK . "logo.jpg'/></td>";
     echo "<td class='version'><a href='#change_log'>$version</a></td>";
-    echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> $". number_format($profitPerDay, 2)."</td>";
+    echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> ". getPriceDisplayWithDollars( $profitPerDay )."</td>";
     echo "<td style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px solid;'><b>Days Active: </b>". $days_ago ." days</td>";
     
     if( $isLoggedInAdmin ) {
         echo "<td>&nbsp;</td>";
         echo "<td style='text-align:right; font-weight:bold;'>Calculated:</td>";
-        echo "<td style='color:black; background-color:#90EE90; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> $". number_format($total_income, 2)."</td>";
-        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> $". number_format($total_profit, 2)."</td>";
-        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> $". number_format($total_expense, 2)."</td>";
+        echo "<td style='color:black; background-color:#90EE90; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> ". getPriceDisplayWithDollars( $total_income )."</td>";
+        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> ". getPriceDisplayWithDollars( $total_profit )."</td>";
+        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> ". getPriceDisplayWithDollars( $total_expense )."</td>";
     }
     echo "</tr>";
     
@@ -211,11 +211,11 @@ if(!$isMobile) {
         echo "<tr>";
         echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
         echo "<td style='text-align:right; font-weight:bold;'>Payments:</td>";
-        echo "<td style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> $". number_format($total_income_actual, 2)."</td>";
+        echo "<td style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> ". getPriceDisplayWithDollars( $total_income_actual )."</td>";
         $actualProfit = $total_income - $total_income_actual;
         $actualDebt = $total_income_actual - $total_expense;
-        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Owed Money:</b> $". number_format($actualProfit, 2)."</td>";
-        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Actual Debt:</b> $". number_format($actualDebt, 2)."</td>";
+        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Owed Money:</b> ". getPriceDisplayWithDollars( $actualProfit )."</td>";
+        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Actual Debt:</b> ". getPriceDisplayWithDollars( $actualDebt )."</td>";
         echo "</tr>";
     }
     echo "</table>";
@@ -247,7 +247,9 @@ if( !$isMobile && $itemType != "Snack" ) {
     $lastUpdated = "";
     while ($row = $results->fetchArray()) {
         $name = $row['Name'];
+        $id = $row['ID'];
         $shelf = $row['ShelfQuantity'];
+        $thumbURL = $row['ThumbURL'];
         
         if( $lastUpdated == "") {
             $lastUpdated = $row['DateModified'];
@@ -255,7 +257,7 @@ if( !$isMobile && $itemType != "Snack" ) {
         
         if( $shelf > 0 ) {
             for($i = 0; $i < $shelf; $i++) {
-                DisplayShelfCan($name, $row['ThumbURL']);
+                DisplayShelfCan($id, $name, $thumbURL );
             }
         }
     }
@@ -306,8 +308,6 @@ if( !$isMobile) {
         global $dbClass;
         $style = "";
 
-        error_log("CLASS[$adminClass]" );
-
         if( $type == "admin" ) {
             $style = "style='$adminClass'";
         } else if( $type == "request" ) {
@@ -328,14 +328,39 @@ if( !$isMobile) {
     echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
+    // Admin, DB, Request, None
+    DisplayUpdate("May 5, 2019 (6.0 - THE BIG ONE)", $itemType, array(
+        DisplayItem("none", "This obnoxious rainbow cycle animation for the version box."),
+        DisplayItem("db", "Changed every single price in the DB (about 14,000 of them across 22 db columns - please...no bugs) from dollars to whole cents. Example: $1.58 --> 158 cents. This solves the problem of floating point mathematical bugs (those negative balances) because there are no more decimals. Instead everything is converted to a decimal string using several centralized money string format functions just before it is displayed in the UI."),
+        DisplayItem("request", "Added Credits (new yellow box in the header): the ability to buy credits upfront and use those for purchases instead. The cart has been updated to mimic Amazon's handing of amazon points. Once you run out the rest of the cost will go towards your balance. There is no option to opt-out of using the credits for the cart if there are any left (unlike Amazon). This means less needing to pay a balance at the end of the month if you bought enough credits to handle the month. So you could technically buy $40 of credits and not need to make a payment for about 5 months. There is also the ability to refund credits as well for the co-ops who leave and want their money back. Future uses of this could be sending credits to each other. (John T and Nick ask)"),
+        DisplayItem("none", "Combined Snack and Soda amounts into one in the header, admin pages, slack messages, and purchase history page. With the addition of credits having both balances would have been confusing. And besides me, do you really care where your purchases are going?"),
+        DisplayItem("none", "RIP Billing page. It has been removed and condensed into the Purchase History page. The only place that it will tell you the soda/snack balance breakdown will be on this page."),
+        DisplayItem("none", "Payment History - the improved page has the billing section at the top in a cleaner table. The page will only show the information for one month at a time. You can select a month to view by clicking a link from the Billing section at the top. The detailed information for a month will only display for the current month. All months that require payment will always show - the rest can be collapsed. Payment method is now shown for each payment."),
+        DisplayItem("none", "Purchase History - the improved page has the same Purchase History at the bottom. The purchase and refund of credits are shown in the purchase history. The amount of credits used for each purchase (partial too) is shown on the right side of each item in the table. The week divider now includes the Year. The Date column has been moved to the first column to mimic the Chase Bank transaction page."),
+        DisplayItem("none", "Wrote my own logging methods (because PHP's sucks) so the error_log only has errors and everything else goes into own category (payment, sql, debug, slack). Now if that error_log is full I'll know something is wrong. Mimicked the RSA logging discussion and have the logs roll based on a 5 MB limit wth the date placed in the rolled log's filename."),
+        DisplayItem("none", "BUG-FIX: SodaBot now marks something as 'running low' (yellow) instead of 'out of stock' (red)."),
+        DisplayItem("request", "Clicking an item in the shelf adds one to your cart (Nick and Christian ask)"),
+        DisplayItem("request", "Added Rick and Mike P. milestones below. (Nick ask)"),
+        DisplayItem("request", "Added 'Quick' and 'In Progress' statuses to request page."),
+        DisplayItem("none", "Using Nick's the_nerd_herd_test slack channel for testing instead of SlackBot."),
+        DisplayItem("db", "Created upgrade process/zip script - no more manual moving of php files."),
+        DisplayItem("admin", "Migration Page: Ability to upgrade a database (add columns, change values) without manual work."),
+        DisplayItem("db", "Renamed the database to test_db for the testing server so that when I copy over files I cant accidentally overwrite the production database with the testing one."),
+        DisplayItem("admin", "Simplified the payments page into just 'total balance' and 'money owed'. Removed old payment modal. Made most of new modal read-only using retrieved payment information from that month."),
+        DisplayItem("admin", "Started created automated tests. The crushinator has a rival."),
+        DisplayItem("admin", "Audit page has new label explaining missing money."),
+        DisplayItem("admin", "Less intrusive 'Restock' notification badge."),
+
+    ) );
+
     DisplayUpdate("Apr 7, 2019 (5.9)", $itemType, array(
         DisplayItem("none", "Cleaned up CSS with tables."),
         DisplayItem("admin", "New Page: Checklist. Notifications for refills and restocks. Automatic setting of triggers with purchases."),
-        DisplayItem("admin", "Changed the rest of the tables to the new look."),
         DisplayItem("admin", "New Page: Audit. Calculates the amount of money that should be in the mug for each refill and reports loss."),
-        DisplayItem("none", "Christian Easter Egg."),
-        DisplayItem("none", "Fixed bug with priority ordering in Requests page."),
-        DisplayItem("none", "Added 'Check All Items' to Stats page. Report on the last puchase made for each item to determine what to discontinue."),
+        DisplayItem("admin", "Changed the rest of the tables to the new look."),
+        DisplayItem("none", "Christian Easter Egg ;)"),
+        DisplayItem("none", "Fixed bug with priority order in Requests page."),
+        DisplayItem("none", "Added 'Check All Items' to Stats page. Displays the date of last purchase for each item to determine what to discontinue."),
     ) );
 
     DisplayUpdate("Mar 24, 2019 (5.8)", $itemType, array(
@@ -514,6 +539,8 @@ if( !$isMobile) {
             DisplayItem("none", "Started selling snacks - created SnackStock&trade;."),
             DisplayItem("db", "DB: Storing images and unit names in DB."),
     ) );
+
+    echo "<div style='$milestoneClass'><b>MILESTONE:</b> Mike P stops supplying snacks and hands the duty over to me. (Feb 2017)</div>";
     
     DisplayUpdate("Jan 22, 2017", $itemType, array(
             DisplayItem("db", "I have no Idea what this was: Bunch of changes. TBA."),
@@ -573,6 +600,8 @@ if( !$isMobile) {
     DisplayUpdate("Nov 11, 2014", $itemType, array(
             DisplayItem("none", "Started selling soda at RSA."),
     ) );
+
+    echo "<div style='$milestoneClass'><b>MILESTONE:</b> Rick Schreiber leaves RSA: the original supplier of Soda. (Jan 2014)</div>";
 
     echo "</ul>";
 }

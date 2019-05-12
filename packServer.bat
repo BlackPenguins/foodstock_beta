@@ -1,0 +1,2 @@
+del "D:\Apache Software Foundation\Apache2.4\blue_space\foodstock_beta\packed_server.zip"
+"C:\Program Files\7-Zip\7z.exe" a -tzip "D:\Apache Software Foundation\Apache2.4\blue_space\foodstock_beta\packed_server.zip" "D:\Apache Software Foundation\Apache2.4\blue_space\foodstock_beta\*" -mx0 -xr!.git -xr!.idea -xr!test_db -xr!preview_images -xr!legacy -xr!packed_server.zip

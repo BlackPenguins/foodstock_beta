@@ -9,12 +9,20 @@
 ?>
 
 <script type="text/javascript">
-    function openPaymentModal( user, month, method, sodaAmount, snackAmount ) {
+    function openPaymentModal( user, userID, month, method, sodaAmount, snackAmount ) {
         $('#payment').dialog('open');
-        $('#UserDropdown').val(user);
-        $('#MonthDropdown').val(month);
+        $('#UserIDLabel').html(user);
+        $('#UserID').val(userID);
+        $('#Month').val(month);
+        $('#MonthLabel').html(month);
         $('#SodaAmount').val(sodaAmount);
         $('#SnackAmount').val(snackAmount);
+        $('#SodaUnpaid').val(sodaAmount);
+        $('#SnackUnpaid').val(snackAmount);
+
+        $totalAmount = ( sodaAmount + snackAmount ).toFixed( 2 );
+        console.log("So [" + sodaAmount + "] Sn [" + snackAmount + "] Tot [" + $totalAmount + "]" );
+        $('#TotalAmount').val($totalAmount);
     }
 
     function notifyUsersOfPayments( month, year, displayMonth ) {
@@ -101,7 +109,7 @@
                 
                 $monthLabel = $monthDate->format( 'F Y' );
                 
-                echo displayMonthForUser( $db, $userID, $month, $year, $monthLabel );
+                echo displayMonthForUser( $db, $fullName, $userID, $month, $year, $monthLabel );
             }
             
             echo "</tr>";
@@ -162,7 +170,7 @@
             
             echo "<td>" . $name . "</td>";
             echo "<td>" . $paymentMonth . "</td>";
-            echo "<td>$" . number_format( $amount, 2) . "</td>";
+            echo "<td>" . getPriceDisplayWithDollars( $amount ) . "</td>";
             echo "<td>" . $method . "</td>";
             echo "<td>" . $itemType . "</td>";
             echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
@@ -180,61 +188,37 @@
         return strtotime( '-' . $xMonthsAgo . ' months', strtotime( $today ) );
     }
     
-    function displayMonthForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
+    function displayMonthForUser( $db, $userFullName, $userID, $monthNumber, $year, $monthLabel ) {
         $totalArray = getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel );
         
         $currentMonthSodaTotal = $totalArray['SodaTotal'];
         $currentMonthSnackTotal = $totalArray['SnackTotal'];
+        $currentMonthTotal = $currentMonthSodaTotal + $currentMonthSnackTotal;
+
         $sodaTotalPaid = $totalArray['SodaPaid'];
         $snackTotalPaid = $totalArray['SnackPaid'];
+
+        $sodaTotalUnpaid = $currentMonthSodaTotal - $sodaTotalPaid;
+        $snackTotalUnpaid = $currentMonthSnackTotal - $snackTotalPaid;
+        $totalUnpaid = $sodaTotalUnpaid + $snackTotalUnpaid;
         
-        $sodaTotalUnpaid = round( $currentMonthSodaTotal - $sodaTotalPaid, 2);
-        $snackTotalUnpaid = round( $currentMonthSnackTotal - $snackTotalPaid, 2);
-        
-        $totalPurchases = $currentMonthSodaTotal + $currentMonthSnackTotal;
         $totalBalanceColor = "";
         
-        if( $sodaTotalUnpaid != 0.0 || $snackTotalUnpaid != 0.0 ) {
+        if( $totalUnpaid != 0.0 ) {
             $totalBalanceColor = "background-color:#fdff7a;";
         }
-        
-        
-        $sodaAmount = number_format( $currentMonthSodaTotal, 2 );
-        $snackAmount = number_format( $currentMonthSnackTotal, 2 );
-        
-        $onclick = "openPaymentModal(\"$userID\", \"$monthLabel\", \"None\", \"$sodaTotalUnpaid\", \"$snackTotalUnpaid\");";
+
+        $onclick = "openPaymentModal(\"$userFullName\", \"$userID\", \"$monthLabel\", \"None\", " . getPriceDisplayWithDecimals( $sodaTotalUnpaid ) . ", " . getPriceDisplayWithDecimals( $snackTotalUnpaid ) . ");";
         
         return "<td style='padding:5px; $totalBalanceColor border:1px #000 solid; cursor:pointer;'>"
-                . "<table onclick='$onclick' style='width:100%'>"
-                    
-                . "<tr>"
-                . "<td style='text-align:center; padding-bottom:15px; padding-top:10px;' colspan='3'>"
-                . "<span style='padding:5px; border: 1px dashed #000;'>"
-                . "Total: $". number_format( $totalPurchases, 2 )
-                . "</span>"
-                . "</td>"
-                . "</tr>"
-                
-                . "<tr>"
-                . "<td>"
-                . "</td>"
-                . "<td>Soda</td>"
-                . "<td>Snack</td>"
-                . "</tr>"
-                    
-                . "<tr>"
-                . "<td>Total</td>"
-                . "<td>$" . $sodaAmount . "</td>"
-                . "<td>$" . $snackAmount ."</td>"
-                . "</tr>"
-                        
-                . "<tr style='font-weight:bold; '>"
-                . "<td style='border-top: dashed 1px #000; padding-top:10px;'>Unpaid</td>"
-                . "<td style='border-top: dashed 1px #000; padding-top:10px;'> $". number_format( $sodaTotalUnpaid, 2 ) . "</td>"
-                . "<td style='border-top: dashed 1px #000; padding-top:10px;'> $". number_format( $snackTotalUnpaid, 2 ) . "</td>"
-                . "</tr>"
-        
-                . "</table>"
+                . "<div onclick='$onclick' style='width:100%'>"
+                . "<div style='padding:5px; border: 1px dashed #000; font-size: 1.1em; margin: 0px 20px; font-weight: bold; text-align: center;'>"
+                . "Owed: ". getPriceDisplayWithDollars( $totalUnpaid )
+                . "</div>"
+
+                . "<div style='padding:5px; margin-top: 30px; font-size: 0.9em; text-align: center;'>"
+                . "Total Amount: ". getPriceDisplayWithDollars( $currentMonthTotal )
+                . "</div>"
                 . "</td>";
     }
 ?>

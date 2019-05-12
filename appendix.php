@@ -1,25 +1,60 @@
-<?php 
+<?php
+    if(!function_exists('getDB')) {
+        function getDB() {
+            if (isTestServer()) {
+                return __DIR__ . getSlash() . "test_db" . getSlash() . "item.db";
+            } else {
+                return __DIR__ . getSlash() . "db" . getSlash() . "item.db";
+            }
+        }
+    }
+
+    if(!function_exists('getTestDB')) {
+        function getTestDB() {
+            if (isTestServer()) {
+                return __DIR__ . getSlash() . "test_db" . getSlash() . "item_unit_testing.db";
+            }
+        }
+    }
+
+    if(!function_exists('getSlash')) {
+        function getSlash() {
+            if (isTestServer()) {
+                return "\\";
+            } else {
+                return "/";
+            }
+        }
+    }
+
+    if(!function_exists('isTestServer')) {
+        function isTestServer() {
+            return $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
+        }
+    }
+
+    if( !defined("CREDIT_ID")) {
+        define("CREDIT_ID", 4000);
+    }
+
     date_default_timezone_set('America/New_York');
-    $isTestServer = $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
+    $isTestServer = isTestServer();
     
     // LINKS ARE CLIENT SIDE - THEY USE THE URL (links, scripts, css)
     // PATHS ARE SERVER SIDE - THEY USE THE COMPUTER LOCATION (includes, db)
-    
-    error_log("INC[" . $_SERVER['SERVER_ADDR'] . "]");
-    $slash = "/";
+    $slash = getSlash();
     $subdomain = "";
 
     if( $isTestServer ) {
-//         error_log("TEST SERVER WAS FOUND - USING FOODSTOCK_BETA PATHS." );
+//         log_debug("TEST SERVER WAS FOUND - USING FOODSTOCK_BETA PATHS." );
         $subdomain = "/foodstock_beta";
-        $slash = "\\";
     } else if( strpos( $_SERVER['PHP_SELF'], "staging_x27" ) !== false ) {
         error_log("STAGING SERVER WAS FOUND - USING STAGING_X27 PATHS." );
         $subdomain = "/staging_x27";
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_9.css" );
+        define( "CSS_LINK", "$subdomain/css/style_12.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
@@ -40,11 +75,11 @@
         define( "ADMIN_RESTOCK_LINK", "$subdomain/admin_x25/admin_restock_x25.php" );
         define( "ADMIN_SHOPPING_GUIDE_LINK", "$subdomain/admin_x25/admin_shopping_guide_x25.php" );
         define( "ADMIN_CHECKLIST_LINK", "$subdomain/admin_x25/admin_checklist_x25.php" );
+        define( "ADMIN_MIGRATION_LINK", "$subdomain/admin_x25/admin_migration_x25.php" );
 
         define( "HANDLE_FORMS_LINK", "$subdomain/common/handle_forms.php" );
         define( "AJAX_LINK", "$subdomain/common/handle_ajax.php" );
         
-        define( "BILLING_LINK", "$subdomain/billing.php" );
         define( "LOGOUT_LINK", "$subdomain/logout.php" );
         define( "PURCHASE_HISTORY_LINK", "$subdomain/purchase_history.php" );
         define( "REGISTER_LINK", "$subdomain/register.php" );
@@ -61,9 +96,9 @@
     if( !defined("SLACK_FUNCTIONS_PATH")) {
         define( "SLACK_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "slack_functions.php" );
     }
-    
-    if( !defined("DB_PATH")) {
-        define( "DB_PATH", __DIR__ . $slash . "db" . $slash . "item.db" );
+
+    if( !defined("LOG_FUNCTIONS_PATH")) {
+        define( "LOG_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "log_functions.php" );
     }
     
     if( !defined("MOBILE_DETECTION_PATH")) {
@@ -72,6 +107,10 @@
     
     if( !defined("SESSION_FUNCTIONS_PATH")) {
         define( "SESSION_FUNCTIONS_PATH", __DIR__ .$slash . "functions" . $slash . "session_functions.php" );
+    }
+
+    if( !defined("HANDLE_FORMS_PATH")) {
+        define( "HANDLE_FORMS_PATH", __DIR__ .$slash . "common" . $slash . "handle_forms.php" );
     }
     
     if( !defined("BUILD_ADMIN_FORMS_PATH")) {
@@ -91,7 +130,7 @@
     }
 
     if( !defined("SQL_PATH")) {
-        define( "SQL_PATH",   __DIR__ . $slash . "functions" . $slash . "exec_sql.php" );
+        define( "SQL_PATH", __DIR__ . $slash);
     }
     
     if( !defined("FOODSTOCK_PATH")) {

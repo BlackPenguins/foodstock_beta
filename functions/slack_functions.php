@@ -1,4 +1,6 @@
 <?php
+    include_once ( LOG_FUNCTIONS_PATH );
+
     function sendSlackMessageToMatt( $slackMessage, $emoji, $botName, $color ) {
             sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, $color );
     //     sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
@@ -16,6 +18,10 @@
     function sendSlackMessageToNerdHerd( $slackMessage, $emoji, $botName ) {
         sendSlackMessagePOST( "#the_nerd_herd", $emoji, $botName, $slackMessage, true );
     }
+
+    function sendSlackMessageToNerdHerdTest( $slackMessage, $emoji, $botName ) {
+        sendSlackMessagePOST( "#the_nerd_herd_test", $emoji, $botName, $slackMessage, true );
+    }
     
     function sendSlackMessageToSlackBot( $slackMessage, $emoji, $botName ) {
        sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage, false );
@@ -23,40 +29,38 @@
     
     
     function sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color  ){
-        if( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) {
-            $fakeSendMessage = "";
-            if( $slackID != "U1FEGH4U9" ) {
-                $fakeSendMessage = " - sent to $slackID";
-            }
-            $slackMessage = "`[TEST SERVER$fakeSendMessage]`\n" . $slackMessage;
-            $slackID = "U1FEGH4U9";
-        }
-        
-        $response = sendRequestToSlack( "https://slack.com/api/im.open?user=" . $slackID );
-        $responseJSON = json_decode( $response );
-        $sessionID = $responseJSON->channel->id;
-        
-        $fallbackMessage = str_replace("*", "", $slackMessage);
-        $fallbackMessage = str_replace("`", "", $fallbackMessage);
-        
-        $attachmentParams = array([
+        if( isTestServer() ) {
+            $slackMessage = "`[sent to $slackID]`\n" . $slackMessage;
+
+            sendSlackMessageToNerdHerdTest($slackMessage, $emoji, $botName );
+        } else {
+
+            $response = sendRequestToSlack("https://slack.com/api/im.open?user=" . $slackID);
+            $responseJSON = json_decode($response);
+            $sessionID = $responseJSON->channel->id;
+
+            $fallbackMessage = str_replace("*", "", $slackMessage);
+            $fallbackMessage = str_replace("`", "", $fallbackMessage);
+
+            $attachmentParams = array([
                 "fallback" => $fallbackMessage,
                 "text" => $slackMessage,
                 "color" => $color,
                 "mrkdwn_in" => "[\"text\"]"
-                ]);
-         
-         
-        $emoji = urlencode( $emoji );
-        $botName = urlencode( $botName );
-        $attachmentEncoded = urlencode( json_encode( $attachmentParams ) );
-         
-        error_log("Sending DM:\nSlack ID: [" . $slackID . "]\nSession ID:[" . $sessionID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $attachmentEncoded . "]" );
-        
-        $chatMessage = "https://slack.com/api/chat.postMessage?as_user=false&username=" . $botName . "&attachments=" . $attachmentEncoded . "&icon_emoji=" . $emoji . "&channel=" . $sessionID;
-         
-        $response = sendRequestToSlack( $chatMessage );
-        error_log("Message [" .  $response . "]" );
+            ]);
+
+
+            $emoji = urlencode($emoji);
+            $botName = urlencode($botName);
+            $attachmentEncoded = urlencode(json_encode($attachmentParams));
+
+            log_slack("Sending DM:\nSlack ID: [" . $slackID . "]\nSession ID:[" . $sessionID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $attachmentEncoded . "]");
+
+            $chatMessage = "https://slack.com/api/chat.postMessage?as_user=false&username=" . $botName . "&attachments=" . $attachmentEncoded . "&icon_emoji=" . $emoji . "&channel=" . $sessionID;
+
+            $response = sendRequestToSlack($chatMessage);
+            log_slack("Message [" . $response . "]");
+        }
     }
     
     function sendRequestToSlack( $url ) {
@@ -65,8 +69,8 @@
     
         // open connection
         $ch = curl_init();
-        
-        error_log( "REQUEST URL: [" . $finalURL . "]" );
+
+        log_slack( "REQUEST URL: [" . $finalURL . "]" );
         
         // set the url, number of POST vars, POST data
         curl_setopt($ch, CURLOPT_URL, $finalURL);
@@ -74,8 +78,8 @@
         
         // execute post
         $result = curl_exec($ch);
-        
-        error_log( "RESPONSE: [" . $result . "] [" . curl_error($ch) . "]" );
+
+        log_slack( "RESPONSE: [" . $result . "] [" . curl_error($ch) . "]" );
         // close connection
         curl_close($ch);
         
@@ -88,8 +92,8 @@
         if( $bypassTestServer == false && ( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) ) {
             sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, "#000000" );
         } else {
-        
-            error_log("Sending SlackBot/Channel Message:\nSlack ID: [" . $slackID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $slackMessage . "]" );
+
+            log_slack("Sending SlackBot/Channel Message:\nSlack ID: [" . $slackID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $slackMessage . "]" );
             $params = array( "channel" => $slackID, "icon_emoji" => $emoji , "username" => $botName, "text" => $slackMessage);
         
             $url = 'https://hooks.slack.com/services/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';

@@ -71,11 +71,6 @@
             $titleName = "Admin - Home";
             $trackingName = "Admin - Home";
             break;
-        case BILLING_LINK:
-            $isAdminPage = false;
-            $titleName = "Billing";
-            $trackingName = "Billing";
-            break;
         case SODASTOCK_LINK:
             $isAdminPage = false;
             $titleName = "SodaStock - " . date('Y');
@@ -119,7 +114,7 @@
     include( SLACK_FUNCTIONS_PATH );
     require_once( MOBILE_DETECTION_PATH );
     
-    $db = new SQLite3(DB_PATH);
+    $db = new SQLite3( getDB() );
     if (!$db) die ($error);
         
     date_default_timezone_set('America/New_York');

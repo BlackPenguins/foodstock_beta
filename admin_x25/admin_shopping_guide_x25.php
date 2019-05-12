@@ -94,7 +94,7 @@
                         $rowStyle = " style='color:white; background-color:#232323;' ";
                     }
             
-                    $STORE_PRICES_TABLE .= "<tr><td $rowStyle>$store</td><td $rowStyle>$packQuantity</td><td $rowStyle>$" . number_format( $regularPrice, 2 ) . "</td><td $rowStyle>$" . number_format( $salePrice, 2 ) . "</td><td $rowStyle>$" . number_format( $costEach, 2 ) . "</td></tr>";
+                    $STORE_PRICES_TABLE .= "<tr><td $rowStyle>$store</td><td $rowStyle>$packQuantity</td><td $rowStyle>" . getPriceDisplayWithDollars( $regularPrice ) . "</td><td $rowStyle>" . getPriceDisplayWithDollars( $salePrice ) . "</td><td $rowStyle>" . getPriceDisplayWithDollars( $costEach ) . "</td></tr>";
                 } while ($rowQuantity = $resultsQuantity->fetchArray() );
             
                 $STORE_PRICES_TABLE .= "</table>";
@@ -117,7 +117,7 @@
             
             echo "<div style='height:220px;'>";
             
-            echo "<span style='height: 8%; font-size:1em; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>". getPriceDisplay( $price ) ."</span>";
+            echo "<span style='height: 8%; font-size:1em; color:$price_color; padding:5px; font-weight:bold; background-color:$price_background_color; border: 2px solid #6b6b6b; float:right;'>". getPriceDisplayWithSymbol( $price ) ."</span>";
 
             if( $outOfStock == 1 ) {
                 $reporter = $row['OutOfStockReporter'];
@@ -167,7 +167,7 @@
                 do {
                     $packQuantity = $rowQuantity['PackQuantity'];
                     $totalPrice = $price * $packQuantity;
-                    echo "<tr><td>$packQuantity</td><td>$" . number_format( $totalPrice, 2 ) . "</td></tr>"; 
+                    echo "<tr><td>$packQuantity</td><td>" . getPriceDisplayWithDollars( $totalPrice ) . "</td></tr>";
                 } while ($rowQuantity = $resultsQuantity->fetchArray() );
                 
                 echo "</table>";

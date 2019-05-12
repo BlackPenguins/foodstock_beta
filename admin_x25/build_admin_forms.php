@@ -110,13 +110,9 @@
         $inactive = $row['Inactive'];
         $isCoop = $row['IsCoop'];
         $anonName = $row['AnonName'];
-        $sodaBalance = number_format( round( $row['SodaBalance'], 2), 2);
-        $snackBalance = number_format( round( $row['SnackBalance'], 2), 2);
         $inactive_strikethrough = "";
         
-        if( $inactive != "1" ) {
-            $user_options = $user_options . "<option value='$userID'>$fullName</option>";
-        } else {
+        if( $inactive == "1" ) {
             $inactive_strikethrough = " style='font-weight:bold; color:#9b0909'";
         }
         
@@ -126,12 +122,9 @@
         "<input type='hidden' id='User_SlackID_$userID' value='$slackID'/>" . 
         "<input type='hidden' id='User_AnonName_$userID' value='$anonName'/>" . 
         "<input type='hidden' id='User_Inactive_$userID' value='$inactive'/>" .
-        "<input type='hidden' id='User_IsCoop_$userID' value='$isCoop'/>" .
-        "<input type='hidden' id='User_SodaBalance_$userID' value='$sodaBalance'/>" .
-        "<input type='hidden' id='User_SnackBalance_$userID' value='$snackBalance'/>";
+        "<input type='hidden' id='User_IsCoop_$userID' value='$isCoop'/>";
     }
      
-    $user_dropdown = "<select id='UserDropdown' name='UserDropdown' class='text ui-widget-content ui-corner-all'><option value='0'>(Manual Count)</option>$user_options</select>";
     $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' class='text ui-widget-content ui-corner-all'>$edit_user_options</select>";
      
     $method_dropdown = "<select id='MethodDropdown' name='MethodDropdown' class='text ui-widget-content ui-corner-all'>" .
@@ -153,36 +146,31 @@
 //     $dateObject = DateTime::createFromFormat( 'Y-m-d H:i:s', time() );
 //     $monthLabel = $dateObject->format('F Y');
     
-    
-    $paymentMonth_options = "";
-    $monthLabel = "";
-    $monthsAgo = 0;
-    
-    while ($monthLabel != "March 2018" ) {
-        $firstOfMonth = mktime(0, 0, 0, date("m") - $monthsAgo, 1, date("Y") );
-        $monthLabel = date('F Y', $firstOfMonth);
-        $paymentMonth_options = $paymentMonth_options . "<option value='$monthLabel'>$monthLabel</option>";
-        $monthsAgo++;
-    }
-    
-    $paymentMonth_dropdown = "<select id='MonthDropdown' name='MonthDropdown' class='text ui-widget-content ui-corner-all'>$paymentMonth_options</select>";
-    
+
     echo "<div id='payment' title='Add Payment' $hideForms>";
     echo "<form id='payment_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<fieldset>";
-    echo "<label for='UserDropdown'>User</label>";
-    echo $user_dropdown;
-    echo "<label for='MonthDropdown'>Payment Month</label>";
-    echo $paymentMonth_dropdown;
+
+    echo "<label for='UserID'>User</label>";
+    echo "<input type='hidden' id='UserID' name='UserID' value='-1'/>";
+    echo "<div style='margin-bottom: 20px; font-size: 1.5em;' id='UserIDLabel'></div>";
+
+    echo "<label for='Month'>Payment Month</label>";
+    echo "<input type='hidden' id='Month' name='Month' value='-1'/>";
+    echo "<div style='margin-bottom: 20px; font-size: 1.5em;' id='MonthLabel'></div>";
+
     echo "<label for='Method'>Method</label>";
     echo $method_dropdown;
-    echo "<label for='SodaAmount'>Soda Amount</label>";
-    echo "<input style='font-size:2em;' type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label for='SnackAmount'>Snack Amount</label>";
-    echo "<input style='font-size:2em;' type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
-//     echo "<label for='Note'>Note</label>";
-//     echo "<input type='text' name='Note' class='text ui-widget-content ui-corner-all'/>";
-    
+
+    echo "<label for='TotalAmount'>Payment Amount</label>";
+    echo "<input style='font-size:2em;' type='tel' id='TotalAmount' class='text ui-widget-content ui-corner-all'/>";
+
+    echo "<input type='hidden' id='SodaUnpaid' value='-1'/>";
+    echo "<input type='hidden' id='SnackUnpaid' value='-1'/>";
+
+    echo "Payment for Soda: <input style='font-size:1em;' readonly type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
+    echo "Payment for Snack: <input style='font-size:1em;' readonly type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
+
     echo $user_info;
     echo "<input type='hidden' name='Payment' value='Payment'/><br>";
     echo "<input type='hidden' name='redirectURL' value='" . ADMIN_PAYMENTS_LINK . "'/><br>";
@@ -226,6 +214,29 @@
     echo "</form>";
     echo "</div>";
 
+    // ------------------------------------
+    // CREDIT USER MODAL
+    // ------------------------------------
+    echo "<div id='credit_user' title='Credit User' $hideForms>";
+    echo "<form id='credit_user_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+    echo "<label for='EditUserDropdown'>User</label>";
+    echo $edit_user_dropdown;
+
+    echo "<label for='CreditAmount'>Credits</label>";
+    echo "<input type='text' id='CreditAmount' name='CreditAmount' class='text ui-widget-content ui-corner-all'/>";
+
+    echo "<div style='padding:5px 0px;'>";
+    echo "<label style='display:inline;' for='IsCoop'>Credits being Returned</label>";
+    echo "<input style='display:inline;' type='checkbox' id='ReturnCredits' name='ReturnCredits'/>";
+    echo "</div>";
+
+    echo "<input type='hidden' name='CreditUser' value='EditUser'/><br>";
+    echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
+
+    echo "</fieldset>";
+    echo "</form>";
+    echo "</div>";
+
     
     
     function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
@@ -264,8 +275,8 @@
             }
         
             $item_info = $item_info . "<input type='hidden' id='Item_" . $itemType . "_Name_$item_id' value='$item_name'/>" .
-            "<input type='hidden' id='Item_" . $itemType . "_Price_$item_id' value='$item_price'/>" .
-            "<input type='hidden' id='Item_" . $itemType . "_DiscountPrice_$item_id' value='$item_discount_price'/>" .
+            "<input type='hidden' id='Item_" . $itemType . "_Price_$item_id' value='" . getPriceDisplayWithDecimals( $item_price ) . "'/>" .
+            "<input type='hidden' id='Item_" . $itemType . "_DiscountPrice_$item_id' value='" . getPriceDisplayWithDecimals( $item_discount_price ) . "'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_ImageURL_$item_id' value='$item_imageURL'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_ThumbURL_$item_id' value='$item_thumbURL'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_UnitName_$item_id' value='$item_unit_name'/>" .
@@ -542,10 +553,6 @@ $( document ).ready( function() {
         setUserInfo();
     });
 
-    $('#UserDropdown').change(function () {
-        setUserPaymentInfo();
-    });
-
     $('#EditExpirationDateSnack').datepicker();
 
     setItemInfo('Soda');
@@ -613,12 +620,34 @@ function setUserInfo() {
     }
 }
 
-function setUserPaymentInfo() {
-    var userID = parseInt($('#UserDropdown').val());
-    var sodaBalance = $('#User_SodaBalance_' + userID).val();
-    var snackBalance = $('#User_SnackBalance_' + userID).val();
-    
-    $("#SodaAmount").val(sodaBalance);
-    $("#SnackAmount").val(snackBalance);
-}
+$('#TotalAmount').change(function() {
+    var sodaAmount = 0.0;
+    var snackAmount = 0.0;
+
+    var amount = $('#TotalAmount').val();
+    var sodaBalance =  parseFloat( $('#SodaUnpaid').val() );
+    var snackBalance =  parseFloat( $('#SnackUnpaid').val() );
+    var totalBalance = (sodaBalance + snackBalance );
+    if( amount  > totalBalance ) {
+        sodaAmount = parseFloat(sodaBalance);
+        snackAmount = parseFloat(snackBalance);
+        $('#TotalAmount').val( totalBalance );
+    } else if( amount > sodaBalance ) {
+        // Zero out the balance, take remainder from Snack
+        sodaAmount = parseFloat(sodaBalance);
+        snackAmount = parseFloat(amount - sodaAmount);
+    } else {
+        // Take it all from soda, leave snack unchanged
+        sodaAmount = parseFloat(amount);
+        snackAmount = parseFloat(0.0);
+    }
+
+    console.log("Calc Payments: Sod [" + sodaAmount + "] Sna [" + snackAmount + "]" );
+
+    sodaAmount = sodaAmount.toFixed( 2 );
+    snackAmount = snackAmount.toFixed( 2 );
+
+    $('#SodaAmount').val( sodaAmount );
+    $('#SnackAmount').val( snackAmount );
+} );
 </script>
