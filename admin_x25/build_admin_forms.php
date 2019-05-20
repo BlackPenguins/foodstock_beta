@@ -3,6 +3,20 @@
     if(!$isLoggedIn) {
         return;
     }
+
+    // I want the modals back in the mobile sites
+    $hideForms = "style='display:none;'";
+
+    //    if( $url == ADMIN_SHOPPING_GUIDE_LINK ) {
+    //        $hideForms = "style='display:none;'";
+    //    } else {
+    //        $hideForms = "";
+    //    }
+
+    //     if( !$isMobile ) {
+    //             $hideForms = "";
+    //     }
+
     // ------------------------------------
     // SHOPPING MODAL - We want Nick to access this form
     // ------------------------------------
@@ -52,7 +66,7 @@
           
     $store_dropdown = $store_dropdown ."</select>";
     
-    echo "<div id='shopping' title='Add Shopping'>";
+    echo "<div id='shopping' title='Add Shopping' $hideForms>";
     echo "<form id='shopping_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<fieldset>";
     echo "<label for='ItemDropdown'>Item</label>";
@@ -85,18 +99,6 @@
         return;
     }
     
-    // I want the modals back in the mobile sites
-    
-    if( $url == ADMIN_SHOPPING_GUIDE_LINK ) {
-        $hideForms = "style='display:none;'";
-    } else {
-        $hideForms = "";
-    }
-        
-//     if( !$isMobile ) {
-//             $hideForms = "";
-//     }
-
     $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive, IsCoop, SodaBalance, SnackBalance, AnonName From User Order By FirstName Asc");
     $user_info = "";
     
@@ -389,7 +391,7 @@
         // ------------------------------------
         // RESTOCK ITEM MODAL
         // ------------------------------------
-        echo "<div style='width:775px;' id='restock_item_" . $itemType . "' title='Restock " . $itemType . "' $hideForms>";
+        echo "<div style='width:775px; display:none;' id='restock_item_" . $itemType . "' title='Restock " . $itemType . "' $hideForms>";
         echo "<form id='restock_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
         echo "<label for='ItemNameDropdown'>" . $itemType . "</label>";
         echo $restock_dropdown;
@@ -468,7 +470,11 @@
         echo "<form id='inventory_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
         
         echo "<table>";
-        echo "<tr><th>" . $itemType . "</th><th>Add to Shelf</th><th>Shelf Quantity</th><th>Backstock Quantity</th></tr>";
+        echo "<tr>";
+        echo "<th class='admin_header_column'>" . $itemType . "</th>";
+        echo "<th class='admin_header_column'>Add to Shelf</th>";
+        echo "<th class='admin_header_column'>Shelf Quantity</th>";
+        echo "<th class='admin_header_column'>Backstock Quantity</th></tr>";
             
         $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, ID FROM Item WHERE Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY ShelfQuantity DESC, Name asc, Retired");
         $tabIndex = 1;
@@ -478,7 +484,7 @@
             $shelfquantity = $row['ShelfQuantity'];
             $item_id = $row['ID'];
             echo "<tr>";
-            echo "<td><b>$item_name</b></td>";
+            echo "<td class='admin_header_column'><b>$item_name</b></td>";
             echo "<input type='hidden' id='item_$item_id' name='ItemID[]' value='$item_id'/>";
             echo "<td><input type='tel' onClick='this.select();' tabindex=$tabIndex id='AddToShelf_$item_id' value='0' name='AddToShelf[]' class='text ui-corner-all'/></td>";
             echo "<td><input type='tel' onClick='this.select();' tabindex=0 id='ShelfQuantity_$item_id' value='$shelfquantity' name='ShelfQuantity[]' class='text ui-corner-all'/></td>";

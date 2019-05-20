@@ -47,6 +47,9 @@
                 case "6.0":
                     v6_0($db);
                     break;
+                case "6.1":
+                    v6_1($db);
+                    break;
                 default:
                     echo "There is no migration for version [$version]!";
                     break;
@@ -65,6 +68,12 @@
 
     } else {
         echo " Welcome to migration page. You need to select a version!";
+    }
+
+    function v6_1( $db )
+    {
+        executeStatement($db, "ALTER TABLE ITEM ADD COLUMN IsBought INTEGER;");
+        executeStatement($db, "UPDATE ITEM Set RestockTrigger = 1 WHERE BackstockQuantity < 3;");
     }
 
     function v6_0( $db ) {

@@ -225,7 +225,7 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
 
 function getChecklistResults( $db, $checklistType, $selectType ) {
     $specialWhere = "";
-    $specialSelect = "Type, Name, RefillTrigger, RestockTrigger, BackstockQuantity, ShelfQuantity, Price, Retired, Hidden";
+    $specialSelect = "ID, Type, Name, RefillTrigger, RestockTrigger, BackstockQuantity, ShelfQuantity, Price, Retired, Hidden, IsBought";
 
     if( $selectType == "COUNT" ) {
         $specialSelect = "COUNT(*) as Count";
@@ -239,7 +239,7 @@ function getChecklistResults( $db, $checklistType, $selectType ) {
         $specialWhere = " AND Retired != 1";
     }
 
-    return $db->query("SELECT $specialSelect FROM Item WHERE Hidden != 1 AND $checklistType = 1 $specialWhere ORDER BY Retired, Type DESC");
+    return $db->query("SELECT $specialSelect FROM Item WHERE Hidden != 1 AND $checklistType = 1 $specialWhere ORDER BY Type DESC, Retired, ShelfQuantity DESC");
 }
 
 function getRefillCount($db) {
@@ -250,5 +250,32 @@ function getRefillCount($db) {
 function getRestockCount($db) {
     $row = getChecklistResults($db,  "RestockTrigger", "COUNT"  )->fetchArray();
     return $row["Count"];
+}
+
+function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued) {
+    $completedMark = "&#9746;";
+    $completedMarkColor = "#6b1010";
+
+    error_log("Enterning with [$isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued]" );
+    if( $isBought == 1 ) {
+        $completedMark = "&#9745;";
+        $completedClass = "completed";
+        $completedMarkColor = "#0b562d";
+    }
+
+    $typeColor = "#403ecc";
+
+    if( $itemType == "Snack" ) {
+        $typeColor = "#cc3e3e";
+    }
+
+    $onClick = " onclick='toggleCompleted( $itemID );'";
+
+    echo "<td style='padding-left: 0px; font-size:1.6em; cursor:pointer; text-align:center; font-weight:bold; color: $completedMarkColor;'> <span$onClick>$completedMark </span></td>";
+    echo "<td style='color:$typeColor'>$itemName</td>";
+    echo "<td style='color:$typeColor'>$itemType</td>";
+    echo "<td style='color:$typeColor'>$shelfQuantity</td>";
+    echo "<td style='color:$typeColor'>$backstockQuantity</td>";
+
 }
 ?>

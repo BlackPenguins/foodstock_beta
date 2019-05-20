@@ -7,7 +7,7 @@
     $url = ADMIN_LINK;
     include( HEADER_PATH );
     
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
         // ------------------------------------
         // USER TABLE
         // ------------------------------------
@@ -42,28 +42,30 @@
             }
             
             echo "<tr class='$rowClass'>";
-            echo "<td style='padding:5px; border:1px #000 solid;'><a href='" . ADMIN_LINK . "?Proxy_x25=" . $row['UserName'] . "'>[Proxy]</a></td>";
             $fullName = $row['FirstName'] . " " . $row['LastName'];
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['UserName'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['AnonName'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['SlackID'] . "</td>";
+
             $phoneNumber = $row['PhoneNumber'];
             
             if( strlen( $phoneNumber ) == 10 ) {
                 $phoneNumber = "(" . substr( $phoneNumber, 0, 3 ) . ") " . substr( $phoneNumber, 3, 3 ) . "-" . substr( $phoneNumber, 6, 4 ); 
             }
             
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $phoneNumber . "</td>";
+
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateCreated']);
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "</td>";
 
 
             $sodaBalance = floatval( $row['SodaBalance'] );
             $snackBalance = floatval( $row['SnackBalance'] );
             $totalBalance = $sodaBalance + $snackBalance;
+            $totalCredits = $row['Credits'];
 
-            echo "<td style='padding:5px; border:1px #000 solid;'>" .  getPriceDisplayWithDollars( $row['Credits'] ) . "</td>";
+            $creditColor = "";
+
+            if( $totalCredits > 0 ) {
+                $creditColor = "style='background-color:#fdff7a;'";
+            }
+
+
 
             $purchaseHistoryURL = "<a href='" . PURCHASE_HISTORY_LINK . "?name=" . $fullName . "&userid=" . $row['UserID'] . "'>" .  getPriceDisplayWithDollars($totalBalance ) . "</a>";
 
@@ -73,6 +75,14 @@
                 $balanceColor = "background-color:#fdff7a;";
             }
 
+            echo "<td><a href='" . ADMIN_LINK . "?Proxy_x25=" . $row['UserName'] . "'>[Proxy]</a></td>";
+            echo "<td>" . $fullName . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['UserName'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['AnonName'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['SlackID'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $phoneNumber . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $date_object->format('m/d/Y  [h:i:s A]') . "</td>";
+            echo "<td $creditColor>" .  getPriceDisplayWithDollars( $totalCredits ) . "</td>";
             echo "<td style='padding:5px; $balanceColor border:1px #000 solid;'>" . $purchaseHistoryURL . "</td>";
             echo "</tr>";
             
@@ -92,15 +102,15 @@
         echo "<div class='rounded_table'>";
         echo "<table>";
         echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>&nbsp;</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>User Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Anon Name</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Slack ID</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Phone Number</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date Created</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Credits</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Balance</th>";
+        echo "<th class='admin_header_column'>&nbsp;</th>";
+        echo "<th class='admin_header_column'>Name</th>";
+        echo "<th class='admin_header_column hidden_mobile_column'>User Name</th>";
+        echo "<th class='admin_header_column hidden_mobile_column'>Anon Name</th>";
+        echo "<th class='admin_header_column hidden_mobile_column'>Slack ID</th>";
+        echo "<th class='admin_header_column hidden_mobile_column'>Phone Number</th>";
+        echo "<th class='admin_header_column hidden_mobile_column'>Date Created</th>";
+        echo "<th class='admin_header_column'>Credits</th>";
+        echo "<th class='admin_header_column'>Balance</th>";
 
         echo "</tr></thead>";
     }

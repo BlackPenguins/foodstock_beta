@@ -7,31 +7,31 @@
     $url = ADMIN_ITEMS_LINK;
     include( HEADER_PATH );
     
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
         // ------------------------------------
         // ITEM TABLE
         // ------------------------------------
         echo "<div class='rounded_header'><span class='title'>Item Inventory</span></div>";
         
         echo "<div class='center_piece'>";
-        echo "Black = Sold Out.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Discounted price = Yellow.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.";
+        echo "<span class='hidden_mobile_section'>Black = Sold Out.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Discounted price = Yellow.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.</span>";
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr>";
-        echo "<th align='left'>ID</th>";
-        echo "<th align='left'>Type</th>";
-        echo "<th align='left'>Name</th>";
-        echo "<th align='left'>Price per Unit</th>";
-        echo "<th align='left'>Discount Price per Unit</th>";
-        echo "<th align='left'>Date Created</th>";
-        echo "<th align='left'>Date Modified</th>";
-        echo "<th align='left'>Chart Color</th>";
-        echo "<th align='left'>Shelf Quantity</th>";
-        echo "<th align='left'>Backstock Quantity</th>";
-        echo "<th align='left'>Total Units Bought</th>";
-        echo "<th align='left'>Total Income</th>";
-        echo "<th align='left'>Total Expenses</th>";
-        echo "<th align='left'>Discontinued</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>ID</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Type</th>";
+        echo "<th class='admin_header_column' align='left'>Name</th>";
+        echo "<th class='admin_header_column' align='left'>Price per Unit</th>";
+        echo "<th class='admin_header_column' align='left'>Discount Price per Unit</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Date Created</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Date Modified</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Chart Color</th>";
+        echo "<th class='admin_header_column' align='left'>Shelf Quantity</th>";
+        echo "<th class='admin_header_column' align='left'>Backstock Quantity</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Total Units Bought</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Total Income</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Total Expenses</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Discontinued</th>";
         
         echo "</tr></thead>";
         
@@ -60,20 +60,20 @@
             }
 
             echo "<tr $rowClass>";
-            echo "<td>" . $row['ID'] . "</td>";
-            echo "<td>" . $row['Type'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['ID'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['Type'] . "</td>";
             echo "<td $colorSoldOut>" . $row['Name'] . "</td>";
             echo "<td $colorPrice>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
             echo "<td $colorDiscount>" . getPriceDisplayWithDollars( $row['DiscountPrice'] ) . "</td>";
-            echo "<td>" . $row['Date'] . "</td>";
-            echo "<td>" . $row['DateModified'] . " (" . $row['ModifyType'] . ")</td>";
-            echo "<td>" . $row['ChartColor'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['Date'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['DateModified'] . " (" . $row['ModifyType'] . ")</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['ChartColor'] . "</td>";
             echo "<td>" . $row['ShelfQuantity'] . "</td>";
             echo "<td>" . $row['BackstockQuantity'] . "</td>";
-            echo "<td>" . $row['TotalCans'] . "</td>";
-            echo "<td>" . getPriceDisplayWithDollars( $row['TotalIncome'] ) . "</td>";
-            echo "<td>" . getPriceDisplayWithDollars( $row['TotalExpenses'] ) . "</td>";
-            echo "<td>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $row['TotalCans'] . "</td>";
+            echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['TotalIncome'] ) . "</td>";
+            echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['TotalExpenses'] ) . "</td>";
+            echo "<td class='hidden_mobile_column'>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
             echo "</tr>";
         }
         

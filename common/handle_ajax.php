@@ -549,27 +549,26 @@
         $db->exec( "UPDATE Item set RefillTrigger = 1, OutOfStockDate = '$date', OutOfStockReporter = '$reporter' WHERE ID = $itemID" );
         sendSlackMessageToMatt( "*Item Name:* " . $itemName . "\n*Reporter:* " . $reporter, ":negative_squared_cross_mark:", "OUT OF STOCK REPORT", "#791414" );
     }
-    else if($type == "DrawCart" )
-    {
+    else if($type == "DrawCart" ) {
         $itemQuantities = array();
         $itemPrices = array();
         $itemDiscountPrices = array();
         $itemNames = array();
-        $itemThumbs= array();
-        
+        $itemThumbs = array();
+
         $itemsInCart = json_decode($_POST['items']);
         $url = $_POST['url'];
         $isMobile = $_POST['isMobile'];
 
-        foreach( $itemsInCart as $itemID ) {
-            if( array_key_exists( $itemID, $itemQuantities ) === false ) {
-                $results = $db->query("SELECT * FROM Item WHERE ID =" . $itemID );
+        foreach ($itemsInCart as $itemID) {
+            if (array_key_exists($itemID, $itemQuantities) === false) {
+                $results = $db->query("SELECT * FROM Item WHERE ID =" . $itemID);
                 $row = $results->fetchArray();
                 $itemName = $row['Name'];
                 $itemPrice = $row['Price'];
                 $itemDiscountPrice = $row['DiscountPrice'];
                 $itemImage = $row['ImageURL'];
-                
+
                 $itemQuantities[$itemID] = 1;
                 $itemNames[$itemID] = $itemName;
                 $itemPrices[$itemID] = $itemPrice;
@@ -579,15 +578,15 @@
                 $itemQuantities[$itemID] = $itemQuantities[$itemID] + 1;
             }
         }
-        
+
         $totalPrice = 0.0;
         $totalSavings = 0.0;
         $totalQuantity = 0;
-        
+
         echo "<h3>Shopping Cart</h3>";
-        
+
         echo "<table style='border-collapse:collapse; width:100%;'>";
-        
+
         echo "<tr style='border-bottom:1px solid #dddddd'>";
         echo "<th style='color:#9c9e9c; width:50%;'>&nbsp;</th>";
         echo "<th style='color:#9c9e9c; text-align:left;'>Price</th>";
@@ -598,32 +597,32 @@
         $creditsLeft = $creditsOfUser;
         $creditsUsed = 0;
 
-        foreach( $itemQuantities as $itemID => $itemQuantity ) {
+        foreach ($itemQuantities as $itemID => $itemQuantity) {
             $itemName = $itemNames[$itemID];
             $itemPrice = $itemPrices[$itemID];
             $itemDiscountPrice = $itemDiscountPrices[$itemID];
             $itemImageURL = $itemThumbs[$itemID];
             $costDisplay = "";
-            
-            if( $itemDiscountPrice != "" ) {
-                $costDisplay = "<span class='red_price'>" . getPriceDisplayWithDollars( $itemPrice ) . "</span> " . getPriceDisplayWithDollars( $itemDiscountPrice );
-                $totalPriceForItem = ( $itemDiscountPrice * $itemQuantity);
-                $totalSavings += ( $itemPrice - $itemDiscountPrice ) * $itemQuantity;
+
+            if ($itemDiscountPrice != "") {
+                $costDisplay = "<span class='red_price'>" . getPriceDisplayWithDollars($itemPrice) . "</span> " . getPriceDisplayWithDollars($itemDiscountPrice);
+                $totalPriceForItem = ($itemDiscountPrice * $itemQuantity);
+                $totalSavings += ($itemPrice - $itemDiscountPrice) * $itemQuantity;
             } else {
-                $costDisplay = getPriceDisplayWithDollars( $itemPrice );
-                $totalPriceForItem = ( $itemPrice * $itemQuantity);
+                $costDisplay = getPriceDisplayWithDollars($itemPrice);
+                $totalPriceForItem = ($itemPrice * $itemQuantity);
             }
 
 
             $totalPrice += $totalPriceForItem;
             $totalQuantity += $itemQuantity;
 
-            if( $creditsLeft > 0 ) {
+            if ($creditsLeft > 0) {
                 $creditsLeft = $creditsLeft - $totalPrice;
 
-                if( $creditsLeft < 0 ) {
+                if ($creditsLeft < 0) {
                     // If the credits are in the negative, that means that they spent them all and the negative amount is now a balance
-                    $totalPrice = abs( $creditsLeft );
+                    $totalPrice = abs($creditsLeft);
                     $creditsUsed = $creditsOfUser;
                 } else {
                     // No total, everything is paid in credits
@@ -632,65 +631,65 @@
 
                 }
             }
-            
+
             echo "<tr style='border-bottom:1px solid #dddddd; padding:20px 0px; font-weight:bold; min-height:100px;'>";
-            
+
             echo "<td style='color:#0066c0; padding: 5px 0px; font-size:1.3em; width:100px;'>";
             echo "<div style='float:left;'>";
-            
-            if( $itemImageURL != "" ) {
-                echo  "<img style='width: 50px;' src='" . PREVIEW_IMAGES_NORMAL . $itemImageURL . "' />";
+
+            if ($itemImageURL != "") {
+                echo "<img style='width: 50px;' src='" . PREVIEW_IMAGES_NORMAL . $itemImageURL . "' />";
             } else {
-                echo  "<img style='width: 50px;' src='" . IMAGES_LINK . "no_image.png' />";
+                echo "<img style='width: 50px;' src='" . IMAGES_LINK . "no_image.png' />";
             }
             echo "</div>";
             echo "<div style='float:left; margin-left:25px;'>";
             echo $itemName;
             echo "</div>";
             echo "</td>";
-            
+
             echo "<td style='color:#31961f;'>" . $costDisplay . "</td>";
-            
+
             $quantityColor = $itemQuantity == 1 ? "#0066c0" : "#b50505";
             echo "<td style='color:$quantityColor; margin: 5px 10px; text-align:center;'>";
             echo $itemQuantity;
             echo "</td>";
-            
+
             echo "</tr>";
         }
-        
+
         $firstColSpan = "<td colspan='2'>&nbsp;</td> ";
         $secondColSpan = "";
-        
-        if( $isMobile ) {
+
+        if ($isMobile) {
             $firstColSpan = "";
             $secondColSpan = "colspan='3'";
         }
-        
+
         echo "<tr>";
         echo $firstColSpan;
         echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:25px 20px;'>";
         echo "<span>&bigstar; Savings: </span>";
-        echo "<span style='color:#1aa7d4;'>" . getPriceDisplayWithDollars( $totalSavings ) . "</span>";
+        echo "<span style='color:#1aa7d4;'>" . getPriceDisplayWithDollars($totalSavings) . "</span>";
         echo "</td>";
         echo "</tr>";
 
         $totalStrikeout = "";
 
-        if( $totalPrice == 0 ) {
+        if ($totalPrice == 0) {
             $totalStrikeout = "text-decoration: line-through; opacity: 0.40;";
         }
 
-        echo "<tr>";
+        echo "<tr class='hide_with_cash_only'>";
         echo $firstColSpan;
         echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px; $totalStrikeout'>";
         echo "<span>Total ($totalQuantity items): </span>";
-        echo "<span style='color:#31961f;'>" . getPriceDisplayWithDollars( $totalPrice ) . "</span>";
+        echo "<span style='color:#31961f;'>" . getPriceDisplayWithDollars($totalPrice) . "</span>";
         echo "</td>";
         echo "</tr>";
 
-        if( $creditsUsed > 0 ) {
-            echo "<tr>";
+        if ($creditsUsed > 0) {
+            echo "<tr class='hide_with_cash_only'>";
             echo $firstColSpan;
             echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px;'>";
             echo "<span>Credits Used: </span>";
@@ -700,28 +699,55 @@
         }
 
         echo "</table>";
-        
+
         echo "<form style='margin-top:20px;' id='add_item_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
         echo "<input type='hidden' name='items' value='" . json_encode($itemsInCart) . "'/>";
         echo "<input type='hidden' name='Purchase' value='Purchase'/>";
         echo "<input type='hidden' name='redirectURL' value='$url'/>";
         echo "<div>";
-        
+
         $rightSide = $isMobile ? "" : "style='margin-left:75%;'";
         echo "<div $rightSide>";
-        
+
         echo "<div style='text-align:right;'>";
         echo "<button class='quantity_button quantity_button_purchase' title='Purchase'>PURCHASE</button>";
         echo "</div>";
-        
+
         echo "<div style='margin-top:15px;'>";
-        echo "<input type='checkbox' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px; font-weight:bold;' for='CashOnly'>I have already placed cash in the mug instead</label>";
+        echo "<input onclick='checkCashOnly()' type='checkbox' id='CashOnly' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px; font-weight:bold;' for='CashOnly'>I have already placed cash in the mug instead</label>";
         echo "<div style='font-size:0.8em; font-style:italic; color:#6765c7; margin-top:5px;'>";
         echo "This means I want to use the site to keep track of what I bought but I do not want this added to my balance. You can use the <span style='color:#b50505;'>discount prices</span> if you keep track through the site.</div>";
         echo "</div>";
         echo "</div>";
-        
+
         echo "</div>";
         echo "</form>";
+    } else if($type == "UpdateChecklist" )
+    {
+        $itemID = $_POST['id'];
+        $isBought = 0;
+
+        $results = $db->query("SELECT IsBought, Name, Type, ShelfQuantity, BackstockQuantity, Retired FROM Item WHERE ID =" . $itemID );
+        $row = $results->fetchArray();
+
+        if( $row['IsBought'] == 1 ) {
+            $db->exec( "UPDATE Item set IsBought = 0 WHERE ID = " . $itemID );
+            $isBought = 0;
+        } else {
+            $db->exec( "UPDATE Item set IsBought = 1 WHERE ID = " . $itemID );
+            $isBought = 1;
+        }
+
+        drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfQuantity'], $row['BackstockQuantity'], $row['Retired'] );
+        die();
     }
 ?>
+
+<script>
+    function checkCashOnly() {
+        if( $('#CashOnly').prop('checked') ) {
+            $('.hide_with_cash_only').hide();
+        } else {
+            $('.hide_with_cash_only').show();
+        }
+    }

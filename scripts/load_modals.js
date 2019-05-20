@@ -169,6 +169,7 @@ function loadShoppingModal() {
 }
 
 function loadSingleModals() {
+    console.log("Loading Single Modals.");
     $("#payment_button").click( function() {
         $('#payment').dialog('open');
          return false;

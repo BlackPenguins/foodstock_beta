@@ -29,7 +29,7 @@
 
     if(!function_exists('isTestServer')) {
         function isTestServer() {
-            return $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
+            return $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.234" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
         }
     }
 
@@ -54,7 +54,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_12.css" );
+        define( "CSS_LINK", "$subdomain/css/style_6_1.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );

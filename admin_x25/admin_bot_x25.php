@@ -4,7 +4,7 @@
     $url = ADMIN_BOT_LINK;
     include( HEADER_PATH );
     
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
     echo "<form style='display:inline;' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
     echo "<textarea name='BotMessage' rows='10' cols='100'></textarea><br>";
     echo "Bot Name: <input name='BotName' value='FoodStockBot'/><br>";

@@ -144,35 +144,36 @@
     }
     
     echo "<script src='" . JS_COLOR_LINK . "'></script>";
-    
-    if( !$isMobile) {
-        echo "<script src='" . LOAD_MODALS_LINK . "'></script>";
-    }
-    
+    echo "<script src='" . LOAD_MODALS_LINK . "'></script>";
+
     echo "<title>$titleName</title>";
-    echo "<link rel='icon' type='image/png' href='soda_can_icon.png' />";
+
+    if( $isAdminPage ) {
+        echo "<link rel='icon' type='image/png' href='" . IMAGES_LINK . "admin.png' />";
+    } else {
+        echo "<link rel='icon' type='image/png' href='" . IMAGES_LINK . "soda_can_icon.png' />";
+    }
     
     // LOAD THE ADMIN MODALS
-    if(!$isMobile ) {
-        echo "<script type='text/javascript'>";
-        echo "$( document ).ready( function() {";
-        
-            if( $isAdminPage ) {
-                echo "loadSingleModals();\n";
-                echo "loadItemModals('Soda');\n";
-                echo "loadItemModals('Snack');\n";
-            }
-            
-            if( $url == ADMIN_SHOPPING_GUIDE_LINK ) {
-                echo "loadShoppingModal();\n";
-            }
-            
-            if( $url == REQUESTS_LINK ) {
-                echo "loadUserModals();\n";
-            }
-        echo "});";
-        echo "</script>";
-    }
+
+    echo "<script type='text/javascript'>";
+    echo "$( document ).ready( function() {";
+
+        if( $isAdminPage ) {
+            echo "loadSingleModals();\n";
+            echo "loadItemModals('Soda');\n";
+            echo "loadItemModals('Snack');\n";
+        }
+
+        if( $url == ADMIN_SHOPPING_GUIDE_LINK ) {
+            echo "loadShoppingModal();\n";
+        }
+
+        if( $url == REQUESTS_LINK ) {
+            echo "loadUserModals();\n";
+        }
+    echo "});";
+    echo "</script>";
 ?>
 </head>
 
@@ -195,8 +196,9 @@
     DisplayUserMessage();
     
     // For these pages display the Admin sidebar
-    if ( $isLoggedInAdmin && $isAdminPage ) {
-        echo "<span style='width:11%; vertical-align:top; display:inline-block; padding: 10px; background-color:#4d544e; border: 0px solid #000;'>";
+    if ( $isLoggedInAdmin  ) {
+        $className = $isAdminPage ? "admin_side_nav" : "admin_side_nav_not_admin_page";
+        echo "<span class='$className'>";
         include ADMIN_NAV_BAR_PATH;
         echo "</span>";
     }

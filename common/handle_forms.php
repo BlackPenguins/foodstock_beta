@@ -26,6 +26,7 @@ if(isset($_POST['Purchase'])) {
         $cashOnly = isset( $_POST['CashOnly'] );
 
         $totalPrice = 0.0;
+        $totalCredits = 0.0;
         $totalSavings = 0.0;
 
         $errors = "";
@@ -35,7 +36,7 @@ if(isset($_POST['Purchase'])) {
 
         $creditsOfUser = $_SESSION['Credits'];
         $creditsLeftOfUser = $creditsOfUser;
-        
+
         foreach( $itemsInCart as $itemID ) {
             $startTimeItem = time();
             $results = $db->query("SELECT * FROM Item WHERE ID =" . $itemID );
@@ -63,47 +64,53 @@ if(isset($_POST['Purchase'])) {
                 $errors .= "Not enough " . $itemName . " in stock. Purchase of THAT ITEM cancelled. Contact Matt.\\n";
             } else {
 
+                $refillTriggerAmount = $itemType == "Snack" ? 3 : 1;
                 $refillTrigger = "";
-                if( $shelfQuantity - 1 <= 3 ) {
-                    $itemsOutOfStock[] = $itemName;
+                if( $shelfQuantity - 1 <= $refillTriggerAmount ) {
+
+                    if( $shelfQuantity - 1 <= 0  ) {
+                        $itemsOutOfStock[] = $itemName;
+                    }
                     $date = date('Y-m-d H:i:s', time());
                     $refillTrigger = " ,RefillTrigger = 1, OutOfStockDate = '$date', OutOfStockReporter='SodaBot'";
                 }
-                
+
                 $date = date('Y-m-d H:i:s', time());
                 $useCredits = 0;
 
-                if( $creditsLeftOfUser > 0 ) {
+                if( $creditsLeftOfUser > 0 && !$cashOnly ) {
                     $useCredits = $creditsLeftOfUser;
                     $creditsLeftOfUser -= $itemPrice;
 
                     if( $creditsLeftOfUser < 0 ) {
                         // If we went over their credit limit, we need to add it to their balance now
                         $totalPrice += abs( $creditsLeftOfUser );
+                        $totalCredits += $useCredits;
                         $creditsLeftOfUser = 0;
                     } else {
                         $useCredits = $itemPrice;
+                        $totalCredits += $itemPrice;
                     }
                 } else {
                     $totalPrice += $itemPrice;
                 }
 
                 $cashOnlyInteger = $cashOnly ? 1 : 0;
-                
+
                 $inventoryQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID) VALUES($itemID, '$date', $backstockQuantity, $backstockQuantity, $shelfQuantity," . ($shelfQuantity - 1) . ", $itemPrice, 0, -2)";
                 $db->exec( $inventoryQuery );
                 $dailyAmountID = $db->lastInsertRowID();
-                
+
                 $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, DiscountCost, Date, CashOnly, DailyAmountID, UseCredits) VALUES (" . $_SESSION['UserID'] . "," . $itemID . "," . $originalItemPrice . "," . $discountItemPrice . ",'" . $date . "'," . $cashOnlyInteger .  ", " . $dailyAmountID . ",$useCredits)";
-                
+
                 $newTotalIncome = addToValue( $db, "Item", "TotalIncome", $itemPrice, "where ID = $itemID", true );
                 $itemQuery = "UPDATE Item SET TotalIncome = $newTotalIncome, DateModified = '$date', ModifyType = 'Purchased by " . $_SESSION['UserID'] . "' where ID = $itemID";
-                
+
                 $itemCountQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity - 1 $refillTrigger where ID = $itemID";
-                
+
                 $newIncome = addToValue( $db, "Information", "Income", $itemPrice, "where ItemType = '$itemType'", true );
                 $informationQuery = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
-                
+
 
                 $db->exec( $purchaseHistoryQuery );
                 $db->exec( $itemCountQuery );
@@ -118,7 +125,7 @@ if(isset($_POST['Purchase'])) {
 
             log_benchmark( "Time to complete purchase for [$itemName]: $totalTimeItem seconds" );
         }
-        
+
         if( !$cashOnly ) {
             $typeOfBalance = $itemType . "Balance";
             $typeOfSavings = $itemType . "Savings";
@@ -132,10 +139,17 @@ if(isset($_POST['Purchase'])) {
             $_SESSION[$typeOfBalance] = $_SESSION[$typeOfBalance] + $totalPrice;
         }
 
-        $purchaseMessage = $purchaseMessage . "*Total Price:* " . getPriceDisplayWithDollars( $totalPrice ) . "\n";
+        if( $totalCredits > 0 ) {
+            $purchaseMessage = $purchaseMessage . "*Total Credits:* " . getPriceDisplayWithDollars( $totalCredits ) . "\n";
+        }
+
+        if( $totalPrice > 0 ) {
+            $purchaseMessage = $purchaseMessage . "*Total Price:* " . getPriceDisplayWithDollars($totalPrice) . "\n";
+        }
 
         if( !$cashOnly ) {
-            $purchaseMessage = $purchaseMessage . "*Your " . $itemType . " Balance:* " . getPriceDisplayWithDollars( $_SESSION[$typeOfBalance] ) . "\n";
+            $totalBalance = $_SESSION['SodaBalance'] + $_SESSION['SnackBalance'];
+            $purchaseMessage = $purchaseMessage . "*Your Balance:* " . getPriceDisplayWithDollars( $totalBalance ) . "\n";
         } else {
             $purchaseMessage = $purchaseMessage . "*THIS PURCHASE WAS CASH-ONLY*\n";
         }
@@ -191,17 +205,17 @@ if(isset($_POST['Purchase'])) {
         $price = convertDecimalToWholeCents( trim($_POST["Price"]) );
         $priceType = trim($_POST["PriceType"]);
         $submitter = trim($_POST["Submitter"]);
-    
+
         $regularPrice = "null";
         $salePrice = "null";
-    
-    
+
+
         if( $priceType == "sale" ) {
             $salePrice = $price;
         } else {
             $regularPrice = $price;
         }
-    
+
         if( $store == "BestProfits" ) {
             $store = "null";
             $regularPrice = "null";
@@ -209,8 +223,8 @@ if(isset($_POST['Purchase'])) {
         } else {
             $store = "'$store'";
         }
-    
-    
+
+
         $shoppingQuery = "INSERT INTO Shopping_Guide (ItemID, PackQuantity, RegularPrice, SalePrice, Store, User, Date) VALUES($itemID, $packQuantity, $regularPrice, $salePrice, $store, '$submitter', '$date')";
         log_sql("Shopping Query: [" . $shoppingQuery . "]" );
         $db->exec( $shoppingQuery );
@@ -281,42 +295,42 @@ if(isset($_POST['Purchase'])) {
             $emoji = trim($_POST["Emoji"]);
             $botName = trim($_POST["BotName"]);
             $emoji = str_replace(":", "", $emoji );
-            
+
             sendSlackMessageToNerdHerd($botMessage, ":$emoji:", $botName );
         } else if(isset($_POST['EditUser'])) {
             $id = trim($_POST["EditUserDropdown"]);
             $slackID = trim($_POST["SlackID"]);
             $anonName = trim($_POST["AnonName"]);
-    
+
             $inactive = 0;
             $resetPassword = false;
             $isCoop = 0;
-    
+
             if( isset($_POST["Inactive"]) ) {
                 $inactive = 1;
             }
-            
+
             if( isset($_POST["IsCoop"]) ) {
                 $isCoop = 1;
             }
-    
+
             if( isset($_POST["ResetPassword"]) ) {
                 $resetPassword = true;
             }
-    
+
             $uniqueID = uniqid();
             $resetPasswordQuery = "";
-    
+
             if( $resetPassword == true ) {
                 log_debug("Resetting Password");
                 $resetPasswordQuery = " Password='" . sha1($uniqueID) . "',";
                 $userMessage = $userMessage . "Password for user was reset to \"$uniqueID\". ";
             }
-    
+
             $editUserQuery = "UPDATE User SET SlackID='$slackID', AnonName='$anonName', $resetPasswordQuery Inactive = $inactive, IsCoop = $isCoop where UserID = $id";
             log_sql("Edit User Query: [" . $editUserQuery . "]" );
             $db->exec( $editUserQuery );
-    
+
             $userMessage = $userMessage . "User edited successfully.";
         } else if(isset($_POST['CreditUser'])) {
             $id = trim($_POST["EditUserDropdown"]);
@@ -358,7 +372,7 @@ if(isset($_POST['Purchase'])) {
             $numberOfCans = trim($_POST["NumberOfCans"]);
             $cost = convertDecimalToWholeCents(  trim($_POST["Cost"] ) );
             $multiplier = trim($_POST["Multiplier"]);
-            
+
             if( $multiplier > 1 ) {
                 $numberOfCans *= $multiplier;
                 $cost *= $multiplier;
@@ -367,45 +381,45 @@ if(isset($_POST['Purchase'])) {
             $restockTrigger = "";
             if( $numberOfCans > 3 ) {
                 $date = date('Y-m-d H:i:s', time());
-                $restockTrigger = " RestockTrigger = '',";
+                $restockTrigger = " RestockTrigger = '', IsBought = '',";
             }
-    
+
             $db->exec("INSERT INTO Restock (ItemID, Date, NumberOfCans, Cost) VALUES($id, '$date', $numberOfCans, $cost)");
-            
+
             $newTotalExpenses = addToValue( $db, "Item", "TotalExpenses", $cost, "where ID = $id", true );
             $db->exec("UPDATE Item SET TotalExpenses = $newTotalExpenses, $restockTrigger BackstockQuantity = BackstockQuantity + $numberOfCans, TotalCans = TotalCans + $numberOfCans where ID = $id");
-            
+
             $newExpenses = addToValue( $db, "Information", "Expenses", $cost, "where ItemType = '$itemType'", true );
             $db->exec("UPDATE Information SET Expenses = $newExpenses where ItemType = '$itemType'");
-    
+
             $userMessage = "Restocked successfully.";
         }  else if(isset($_POST['Defective'])) {
             $id = trim($_POST["DefectiveDropdown"]);
             $itemType = trim($_POST["ItemType"]);
             $date = date('Y-m-d H:i:s');
             $numberOfCans = trim($_POST["NumberOfUnits"]);
-            
+
             $results = $db->query("SELECT Price, BackstockQuantity, ShelfQuantity From Item where ID = $id");
             $row = $results->fetchArray();
             $price = $row['Price'];
             $shelfQuantity = $row['ShelfQuantity'];
             $backstockQuantity = $row['BackstockQuantity'];
-            
+
             $totalQuantity = $shelfQuantity + $backstockQuantity;
-            
+
             if( $numberOfCans > $totalQuantity ) {
                 $userMessage = "Error: Trying to defect out more than you have.";
             } else {
                 $shelfDecrement = 0;
                 $backstockDecrement = 0;
-                
+
                 if( $numberOfCans > $shelfQuantity ) {
                     $backstockDecrement = $numberOfCans -  $shelfQuantity;
                     $shelfDecrement  = $shelfQuantity;
                 } else {
                     $shelfDecrement = $numberOfCans;
                 }
-                
+
                 $db->exec("INSERT INTO Defectives (ItemID, Date, Amount, Price) VALUES($id, '$date', $numberOfCans, $price)");
                 $db->exec("UPDATE Item SET ShelfQuantity=ShelfQuantity-$shelfDecrement, BackstockQuantity=BackstockQuantity-$backstockDecrement WHERE ID = $id");
                 $userMessage = "Defectives successfully.";
@@ -419,7 +433,7 @@ if(isset($_POST['Purchase'])) {
             $sodaAmount = convertDecimalToWholeCents( trim($_POST["SodaAmount"]) );
             $note = trim($_POST["Note"]);
             $method = trim($_POST["MethodDropdown"]);
-             
+
             if( $userID > 0 ) {
                 log_payment( "User payment found." );
                 $results = $db->query("SELECT SodaBalance, SnackBalance, SlackID, UserName From User where UserID = $userID");
@@ -430,7 +444,7 @@ if(isset($_POST['Purchase'])) {
                 $username = $row['UserName'];
 
                 $isBalanceValid = true;
-    
+
                 if( $sodaAmount > $sodaBalance ) {
                     $isBalanceValid = false;
                     error_log( "Bad Soda balance. Amount: [" . $sodaAmount . "] Balance: [" . $sodaBalance . "]" );
@@ -442,7 +456,7 @@ if(isset($_POST['Purchase'])) {
                     error_log( "Bad Snack balance. Amount: [" . $snackAmount . "] Balance: [" . $snackBalance . "]" );
                     $userMessage = "This payment [" . getPriceDisplayWithDollars( $snackAmount ) . "] is larger than the user\"s Snack Balance of [" . getPriceDisplayWithDollars( $snackBalance ) . "]. Payment denied!";
                 }
-                
+
                 if( $isBalanceValid ) {
                     $newSodaBalance = $sodaBalance - $sodaAmount;
                     log_payment( "Reduced Soda balance [" . $newSodaBalance . "] is [" . $sodaBalance . " - " . $sodaAmount . "]" );
@@ -454,15 +468,15 @@ if(isset($_POST['Purchase'])) {
                     $balance = $sodaBalance + $snackBalance;
                     $amount = $sodaAmount + $snackAmount;
 
-                    $paymentMessage = "Your payment was received for $paymentMonth.\n\n" .
+                    $paymentMessage = "Your payment from $method was received for $paymentMonth.\n\n" .
                     "Your Current Balance: *" . getPriceDisplayWithDollars( $newTotalBalance ) . "*       (*" . getPriceDisplayWithDollars( $balance ) . "* original balance  -  *" . getPriceDisplayWithDollars( $amount ) . "* payment)";
-                    
+
                     if( $slackID == "" ) {
                         sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!", "#bb3f3f");
                     } else {
                         sendSlackMessageToUser( $slackID,  $paymentMessage, ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
                     }
-                    
+
                     sendSlackMessageToMatt( "*(" . strtoupper($username) . ")*\n$paymentMessage", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
 
                     // DEV: Changing this code? Change the payment code for Auditing as well (above)
@@ -487,23 +501,23 @@ if(isset($_POST['Purchase'])) {
         } else if(isset($_POST['Inventory'])) {
             $id_all = $_POST["ItemID"];
             $sendToSlack = false;
-    
+
             if( isset($_POST['SendToSlack']) && $_POST['SendToSlack'] == 'on') {
                 $sendToSlack = true;
             }
-    
+
             $date = date('Y-m-d H:i:s');
             $backstockQuantity_all = $_POST["BackstockQuantity"];
             $shelfQuantity_all = $_POST["ShelfQuantity"];
             $auditAmount = convertDecimalToWholeCents( $_POST["AuditAmount"] );
             $itemType = $_POST["ItemType"];
             $price_all = 0;
-    
+
             if( isset($_POST['CurrentPrice']) ) {
                 $price_all = $_POST["CurrentPrice"];
             }
             $restocked = 0;
-    
+
             $backstockQuantityBefore = 0;
             $shelfQuantityBefore = 0;
             $priceBefore = 0;
@@ -526,10 +540,10 @@ if(isset($_POST['Purchase'])) {
                 $newProfit = addToValue( $db, "Information", "ProfitActual", $auditAmount, "where ItemType = '$itemType'", true );
                 $db->exec("UPDATE Information SET ProfitActual = $newProfit where ItemType = '$itemType'");
             }
-    
+
             $slackMessageItems = "";
             $itemType = "";
-    
+
             for ($i = 0; $i < count($id_all); $i++) {
                 $startTimeItem = time();
                 $id = $id_all[$i];
@@ -537,8 +551,8 @@ if(isset($_POST['Purchase'])) {
                 $shelfQuantity = $shelfQuantity_all[$i];
                 $price = $price_all == 0 ? "" : convertDecimalToWholeCents( $price_all[$i] );
                 $itemName = "N/A";
-    
-    
+
+
                 $results = $db->query("SELECT ID, BackstockQuantity, ShelfQuantity, Price, Name, Type, UnitName, UnitNamePlural, CurrentFlavor FROM Item WHERE ID = $id");
                 while ($row = $results->fetchArray()) {
                     $backstockQuantityBefore = $row['BackstockQuantity'];
@@ -549,12 +563,12 @@ if(isset($_POST['Purchase'])) {
                     $itemUnits = $row['UnitName'];
                     $itemUnitsPlural = $row['UnitNamePlural'];
                     $currentFlavor = $row['CurrentFlavor'];
-                    
+
                     if( $currentFlavor != "" ) {
                         $currentFlavor = "[" . $currentFlavor . "] ";
                     }
                 }
-    
+
                 if( $price == "") {
                     $price = $priceBefore;
                 }
@@ -563,21 +577,21 @@ if(isset($_POST['Purchase'])) {
                 if( $shelfQuantity > $shelfQuantityBefore ) {
                     //New item was added to the fridge
                     $priceDisplay = getPriceDisplayWithEnglish( $priceBefore );
-                    
-                    $slackMessageItems = $slackMessageItems . "*" . $itemName . " $currentFlavor:* " . $shelfQuantityBefore . " " . 
+
+                    $slackMessageItems = $slackMessageItems . "*" . $itemName . " $currentFlavor:* " . $shelfQuantityBefore . " " .
                             ( $shelfQuantityBefore == 1 ? $itemUnits : $itemUnitsPlural ) .
-                            " --> *" . $shelfQuantity . " " . 
+                            " --> *" . $shelfQuantity . " " .
                             ( $shelfQuantity == 1 ? $itemUnits : $itemUnitsPlural ) . "*    ($priceDisplay)\n";
 
                     // Only clear the trigger of the items that are refilled
                     if( $shelfQuantity > 3 ) {
-                        $refillTrigger = "RefillTrigger = '',";
+                        $refillTrigger = "RefillTrigger = '', IsBought='',";
                     }
                 }
-                
+
                 $totalCansBefore = $backstockQuantityBefore + $shelfQuantityBefore;
                 $totalCans = $backstockQuantity + $shelfQuantity;
-                
+
                 $income = ($totalCansBefore - $totalCans) * $priceBefore;
 
                 $restockTrigger = "";
@@ -586,19 +600,21 @@ if(isset($_POST['Purchase'])) {
                     $restockTrigger = " RestockTrigger = 1, ";
                 }
 
-                if( $shelfQuantity <= 3 ) {
+                $refillTriggerAmount = $itemType == "Snack" ? 3 : 1;
+
+                if( $shelfQuantity <= $refillTriggerAmount ) {
                     $date = date('Y-m-d H:i:s', time());
                     $refillTrigger = " RefillTrigger = 1, ";
                 }
-    
+
                 $dailyAmountQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID, AuditID) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked, -3, $auditID)";
                 log_sql("DA Query: [" . $dailyAmountQuery . "]" );
                 $db->exec( $dailyAmountQuery );
                 $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
-                
+
                 $newTotalIncome = addToValue( $db, "Item", "TotalIncome", $income, "where ID = $id", true );
                 $db->exec("UPDATE Item SET TotalIncome = $newTotalIncome, BackstockQuantity = $backstockQuantity, ShelfQuantity = $shelfQuantity, $refillTrigger $restockTrigger DateModified = '$date', ModifyType = 'Counted' where ID = $id");
-                
+
                 $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", true );
                 $db->exec("UPDATE Information SET Income = $newIncome where ItemType = '$itemType'");
 
@@ -610,11 +626,11 @@ if(isset($_POST['Purchase'])) {
 
 
             $userMessage = "Inventory was successful for " . count($id_all) . " items. $auditMessage";
-    
+
             $emoji = ":soda:";
             $location = "fridge";
             $page = SODASTOCK_LINK;
-    
+
             if( $itemType == "Snack" ) {
                 $emoji = ":cookie:";
                 $location = "cabinet";
@@ -622,7 +638,7 @@ if(isset($_POST['Purchase'])) {
             }
             if( $slackMessageItems != "" && $sendToSlack == true) {
                 $slackMessage = $slackMessageItems ."\n\nVisit <http://penguinore.net$page|Foodstock> to see the prices and inventory of all snacks & sodas.";
-    
+
                 sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - REFILL" );
             }
         }
@@ -634,11 +650,11 @@ $totalTime = $stopTime - $startTime;
 log_benchmark( "Time to complete handle_forms: $totalTime seconds" );
 
 if( isset( $_POST['redirectURL'] ) ) {
-    
+
     if( $userMessage != "" ) {
         $_SESSION['UserMessage'] = $userMessage;
     }
-    
+
     // Redirect to page
     header( "Location:" . $_POST['redirectURL'] );
 }

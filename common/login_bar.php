@@ -8,6 +8,25 @@
         $noMobileSupport = "<span class='unsupported_mobile'>(no mobile support yet)</span>";
         echo "<div id='navigation_bar'>";
 
+        if( $isLoggedInAdmin ) {
+            echo "<span id='hamburger_admin' onclick='openNavAdmin();'>";
+
+            echo "<svg style='width:26px; height: 26px;' aria-hidden='true' focusable='false' role='presentation' viewBox='0 0 26 26'>";
+            echo "<path style='fill:#90ff6c;' d='M 13 2 C 11.894531 2 11 2.894531 11 4 C 11 4.777344 11.445313 5.449219 12.09375 5.78125 L 8 14 L 3.53125 10.28125 C 3.820313 9.933594 4 9.488281 4 9 C 4 7.894531 3.105469 7 2 7 C 0.894531 7 0 7.894531 0 9 C 0 10.105469 0.894531 11 2 11 C 2.136719 11 2.277344 10.996094 2.40625 10.96875 L 4.09375 19 L 21.90625 19 L 23.59375 10.96875 C 23.722656 10.996094 23.863281 11 24 11 C 25.105469 11 26 10.105469 26 9 C 26 7.894531 25.105469 7 24 7 C 22.894531 7 22 7.894531 22 9 C 22 9.488281 22.179688 9.933594 22.46875 10.28125 L 18 14 L 13.90625 5.78125 C 14.554688 5.449219 15 4.777344 15 4 C 15 2.894531 14.105469 2 13 2 Z M 4 21 L 4 22.5 C 4 23.328125 4.671875 24 5.5 24 L 20.5 24 C 21.328125 24 22 23.328125 22 22.5 L 22 21 Z'></path>";
+            echo "</svg>";
+
+            echo "</span>";
+
+            echo "<span id='close_admin' onclick='closeNavAdmin();'>";
+
+            echo "<svg  style='width:32px; height: 32px;' viewPort='0 0 33 33' version='1.1' xmlns='http://www.w3.org/2000/svg'>";
+            echo "<line x1='13' y1='27' x2='32' y2='10' stroke='white' stroke-width='3'/>";
+            echo "<line x1='13' y1='10' x2='32' y2='27' stroke='white' stroke-width='3'/>";
+            echo "</svg>";
+
+            echo "</span>";
+        }
+
         DisplayLoggedIn("mobile", $isLoggedIn, $isLoggedInAdmin);
 
         echo "<span id='hamburger' onclick='openNav();'>";
@@ -60,7 +79,7 @@
             echo "<li><a style='text-decoration:none;' href='" . STATS_LINK . "'><span class='nav_buttons nav_buttons_stats'>Graphs $noMobileSupport</span></a><li>";
 
             if( $isLoggedInAdmin ) {
-                echo "<li><a style='text-decoration:none;' href='" . ADMIN_LINK . "'><span class='nav_buttons nav_buttons_admin'>Administration $noMobileSupport</span></a><li>";
+                echo "<li><a style='text-decoration:none;' href='" . ADMIN_LINK . "'><span class='nav_buttons nav_buttons_admin'>Administration</span></a><li>";
             }
 
             $totalBalance = $_SESSION['SodaBalance'] + $_SESSION['SnackBalance'];
@@ -72,8 +91,8 @@
                 $creditsGreyedOut = "opacity: 0.45;";
             }
 
-            echo "<li><a style='text-decoration:none; $creditsGreyedOut' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_admin'>Credits: " .  getPriceDisplayWithDollars( $credits ) . "</span></a><li>";
-            echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_billing'>Balance: " .  getPriceDisplayWithDollars( $totalBalance ) . "</span></a><li>";
+            echo "<li><a style='text-decoration:none; $creditsGreyedOut' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_admin'>Credits: " .  getPriceDisplayWithDollars( $credits ) . "$noMobileSupport</span></a><li>";
+            echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_billing'>Balance: " .  getPriceDisplayWithDollars( $totalBalance ) . "$noMobileSupport</span></a><li>";
 
             if( $isLoggedInAdmin ) {
                 $refillCount = getRefillCount($db);
@@ -82,13 +101,13 @@
                 $restockText = "";
 
                 if( $refillCount > 0 ) {
-                    $refillText .= "<a style='text-decoration:none;' href='" . ADMIN_CHECKLIST_LINK . "'><span style='padding: 5px 10px; font-size: 0.8em; border: 1px dashed #000000; font-weight: bold; background-color: #f7ff03; color: #b30f0e; margin-left: 20px;'>";
+                    $refillText .= "<a style='text-decoration:none;' href='" . ADMIN_CHECKLIST_LINK . "'><span class='nav_buttons nav_buttons_desk_refill'>";
                     $refillText .= "Desk Refill ($refillCount)";
                     $refillText .= "</span>";
                 }
 
                 if( $restockCount > 0 ) {
-                    $restockText .= "<a style='text-decoration:none;' href='" . ADMIN_CHECKLIST_LINK . "'><span style='padding: 5px 10px; font-size: 0.8em; border: 1px dashed #000000; font-weight: bold; background-color: #953bce; color: #FFFFFF; margin-left: 20px;'>";
+                    $restockText .= "<a style='text-decoration:none;' href='" . ADMIN_CHECKLIST_LINK . "'><span class='nav_buttons nav_buttons_store_restock'>";
                     $restockText .= "Store Restock ($restockCount)";
                     $restockText .= "</span>";
                 }
@@ -163,5 +182,17 @@ function closeNav() {
     $("#nav").removeClass("open-nav");
     $("#hamburger").show();
     $("#close").hide();
+}
+
+function openNavAdmin() {
+    $("#nav_admin").addClass("open-nav-admin");
+    $("#hamburger_admin").hide();
+    $("#close_admin").show();
+}
+
+function closeNavAdmin() {
+    $("#nav_admin").removeClass("open-nav-admin");
+    $("#hamburger_admin").show();
+    $("#close_admin").hide();
 }
 </script>

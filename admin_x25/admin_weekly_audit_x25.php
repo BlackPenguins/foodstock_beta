@@ -4,7 +4,7 @@
     $url = ADMIN_WEEKLY_AUDIT_LINK;
     include( HEADER_PATH );
 
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
 
     // ------------------------------------
     // INVENTORY MODAL - ALL ITEMS

@@ -7,7 +7,7 @@
     $url = ADMIN_CHECKLIST_LINK;
     include( HEADER_PATH );
     
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
     DrawChecklistTable( $db, "RefillTrigger", "Needs Refill from Desk" );
     DrawChecklistTable( $db, "RestockTrigger", "Needs Restock from Store" );
     echo "</span>";
@@ -19,27 +19,31 @@
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr>";
-        echo "<th align='left'>Name</th>";
-        echo "<th align='left'>Type</th>";
-        echo "<th align='left'>Shelf Quantity</th>";
-        echo "<th align='left'>Backstock Quantity</th>";
+        echo "<th class='admin_header_column' align='left'>&nbsp;</th>";
+        echo "<th class='admin_header_column' align='left'>Name</th>";
+        echo "<th class='admin_header_column' align='left'>Type</th>";
+        echo "<th class='admin_header_column' align='left'>Shelf Quantity</th>";
+        echo "<th class='admin_header_column' align='left'>Backstock Quantity</th>";
 
         echo "</tr></thead>";
 
-        $rowClass = "";
+
         $results = getChecklistResults($db, $checklistType, "LIST" );
         while ($row = $results->fetchArray()) {
             $isDiscontinued = $row['Retired'] == 1;
+            $isBought = $row['IsBought'] == 1;
+            $itemID = $row['ID'];
 
-            if( $isDiscontinued ) {
+            if( $isBought == 1 ) {
+                $rowClass = "class='completed'";
+            } else if( $isDiscontinued ) {
                 $rowClass = "class='discontinued_row'";
+            } else {
+                $rowClass = "";
             }
 
-            echo "<tr $rowClass>";
-            echo "<td>" . $row['Name'] . "</td>";
-            echo "<td>" . $row['Type'] . "</td>";
-            echo "<td>" . $row['ShelfQuantity'] . "</td>";
-            echo "<td>" . $row['BackstockQuantity'] . "</td>";
+            echo "<tr $rowClass id='checklist_row_$itemID'>";
+            drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfQuantity'], $row['BackstockQuantity'], $isDiscontinued );
             echo "</tr>";
         }
 
@@ -48,5 +52,28 @@
         echo "</div>";
     }
 ?>
+
+<script type="text/javascript">
+
+    function toggleCompleted( itemID ) {
+        $.post("<?php echo AJAX_LINK; ?>", {
+            type:'UpdateChecklist',
+            id:itemID,
+        },function(data) {
+            console.log("Updating row [" + itemID + "]" );
+            var checklistRow = $('#checklist_row_' + itemID);
+            checklistRow.html(data);
+
+           if( checklistRow.hasClass( "completed" ) ) {
+               checklistRow.removeClass( "completed" );
+           } else {
+               checklistRow.addClass( "completed" );
+               if( checklistRow.hasClass( "discontinued_row" ) ) {
+                   checklistRow.removeClass( "discontinued_row" );
+               }
+           }
+        });
+    }
+</script>
 
 </body>

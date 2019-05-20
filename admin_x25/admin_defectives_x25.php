@@ -6,7 +6,7 @@
     $url = ADMIN_DEFECTIVES_LINK;
     include( HEADER_PATH );
     
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
         // ------------------------------------
         // DEFECTIVES TABLE
         // ------------------------------------
@@ -14,10 +14,10 @@
         echo "<div class='rounded_table'>";
         echo "<table>";
         echo "<thead><tr>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Item</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Amount</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Price</th>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Date</th>";
+        echo "<th class='admin_header_column' align='left'>Item</th>";
+        echo "<th class='admin_header_column' align='left'>Amount</th>";
+        echo "<th class='admin_header_column' align='left'>Price</th>";
+        echo "<th class='admin_header_column' align='left'>Date</th>";
         echo "</tr></thead>";
         
         $rowClass = "odd";
@@ -29,11 +29,11 @@
 
             $itemName = $row['Name'];
             echo "<tr class='$rowClass'>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $itemName . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $row['Amount'] . "</td>";
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
+            echo "<td>" . $itemName . "</td>";
+            echo "<td>" . $row['Amount'] . "</td>";
+            echo "<td>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-            echo "<td style='padding:5px; border:1px #000 solid;'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+            echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
             echo "</tr>";
         }
         

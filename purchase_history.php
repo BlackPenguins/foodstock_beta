@@ -124,7 +124,7 @@ $currentMonthSnackCashOnlyCount = 0;
 $currentMonth = 0;
 $currentYear = 0;
 
-$results = $db->query("SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.Cancelled IS NULL AND p.UserID = $userID ORDER BY p.Date DESC");
+$results = $db->query("SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID, p.UseCredits FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.Cancelled IS NULL AND p.UserID = $userID ORDER BY p.Date DESC");
 while ($row = $results->fetchArray()) {
     $purchaseDateObject = DateTime::createFromFormat( 'Y-m-d H:i:s', $row['Date'] );
     $purchaseMonthLabel = $purchaseDateObject->format('F Y');
@@ -170,7 +170,7 @@ while ($row = $results->fetchArray()) {
     }
 
     // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
-    if( $row['CashOnly'] != 1 ) {
+    if( $row['CashOnly'] != 1 && $row['UseCredits'] == 0 ) {
         if( $row['Type'] == "Snack" ) {
             $currentMonthSnackTotal += $cost;
             $currentMonthSnackCount++;
@@ -412,7 +412,17 @@ function printNewBillMonth( $db, $selectedMonthLink, $currentMonthLink, $userID,
     }
 
     echo "<tr  class='$owedColor $hideRowClass' $hideRowStyle>";
-    echo "<td $selectedCellStyle><a href = 'purchase_history.php?month=$currentMonthLink'>$currentMonthLabel</a></td>";
+    $adminParameters = "";
+
+    if( isset( $_GET['name'] ) ) {
+        $adminParameters .= "&name=" . $_GET['name'];
+    }
+
+    if( isset( $_GET['userid'] ) ) {
+        $adminParameters .= "&userid=" . $_GET['userid'];
+    }
+
+    echo "<td $selectedCellStyle><a href = 'purchase_history.php?month=$currentMonthLink$adminParameters'>$currentMonthLabel</a></td>";
 
     echo "<td $selectedCellStyle>";
     echo getPriceDisplayWithDollars( $totalPurchased );
@@ -423,11 +433,11 @@ function printNewBillMonth( $db, $selectedMonthLink, $currentMonthLink, $userID,
         echo "<div style='font-size:0.8em; font-weight:normal; padding: 5px 0px;'><b>$currentMonthSnackCount Snacks:</b> " . getPriceDisplayWithDollars( $currentMonthSnackTotal ) . "</div>";
 
         if( $currentMonthSodaCashOnlyCount > 0 ) {
-            echo "<div style='font-size:0.8em; font-weight:normal; padding: 5px 0px;'><b>Cash-Only Soda ($currentMonthSodaCashOnlyCount items):</b> " . getPriceDisplayWithDollars( $currentMonthSodaCashOnlyTotal ) . " (already paid)</div>";
+            echo "<div style='font-size:0.8em; font-weight:normal; padding: 5px 0px;'><b>Cash-Only/Credited Soda ($currentMonthSodaCashOnlyCount items):</b> " . getPriceDisplayWithDollars( $currentMonthSodaCashOnlyTotal ) . " (already paid)</div>";
         }
 
         if( $currentMonthSnackCashOnlyCount > 0 ) {
-            echo "<div style='font-size:0.8em; font-weight:normal; padding: 5px 0px;'><b>Cash-Only Snacks ($currentMonthSnackCashOnlyCount items):</b> " . getPriceDisplayWithDollars( $currentMonthSnackCashOnlyTotal ) . " (already paid)</div>";
+            echo "<div style='font-size:0.8em; font-weight:normal; padding: 5px 0px;'><b>Cash-Only/Credited Snacks ($currentMonthSnackCashOnlyCount items):</b> " . getPriceDisplayWithDollars( $currentMonthSnackCashOnlyTotal ) . " (already paid)</div>";
         }
     }
 

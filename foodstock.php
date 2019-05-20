@@ -124,6 +124,10 @@ function main( $url, $itemType, $className, $location ) {
         $(bulb).addClass('dead');
     }
 
+    function setVersionCookie( version ) {
+        document.cookie = "version_viewed=" + version + "; expires=Fri, 1 Mar 2041 12:00:00 UTC";
+    }
+
     var totalTimeLeft = 300;
     
     var warningTimer = setInterval(function() {
@@ -171,7 +175,8 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "Version 6.0 !!! (May 5th, 2019)";
+    $version = "6.1";
+    $versionString = "Version $version !!! (May 19th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -194,7 +199,18 @@ if(!$isMobile) {
     echo "<table style='margin:0px 20px'>";
     echo "<tr>";
     echo "<td rowspan='2'><img src='" . IMAGES_LINK . "logo.jpg'/></td>";
-    echo "<td class='version'><a href='#change_log'>$version</a></td>";
+    echo "<td class='version'>";
+
+    $newIcon = "";
+
+
+    if ( !isset( $_COOKIE["version_viewed"] ) || isset( $_COOKIE["version_viewed"] ) && $_COOKIE["version_viewed"] != $version ) {
+        $newIcon = "<img style='vertical-align:middle; padding: 0px 5px;' width='32px' src='" .  IMAGES_LINK . "new.png'/>";
+    }
+
+    echo "$newIcon <a onclick='setVersionCookie(\"" . $version . "\");' href='#change_log'>$versionString</a>$newIcon ";
+
+    echo "</td>";
     echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> ". getPriceDisplayWithDollars( $profitPerDay )."</td>";
     echo "<td style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px solid;'><b>Days Active: </b>". $days_ago ." days</td>";
     
@@ -327,6 +343,10 @@ if( !$isMobile) {
     
     echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
+
+    // CREDIT: https://icons8.com/icon/2270/crown - CDN77
+    // https://i2kplay.com/icon-new/
+
 
     // Admin, DB, Request, None
     DisplayUpdate("May 5, 2019 (6.0 - THE BIG ONE)", $itemType, array(

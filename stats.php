@@ -26,8 +26,17 @@
             $itemsToShow = implode(",", $_POST['Item'] );
         }
     }
+
+    $itemNamesToShow = "";
+    $db = new SQLite3( getDB() );
+
+    $statQuery = "SELECT Name FROM Item WHERE ID in ($itemsToShow) Order BY Type DESC, NAME ASC";
+    $results = $db->query( $statQuery );
+    while ($row = $results->fetchArray()) {
+        $itemNamesToShow .= $row['Name'] . ",";
+    }
     
-    $trackingName = "Stats - $startDate : $endDate [$itemsToShow]";
+    $trackingName = "Stats - $startDate : $endDate [$itemNamesToShow]";
     
     include( HEADER_PATH );
 ?>
@@ -188,7 +197,7 @@ window.onload = function() {
                  
                  while ($row = $results->fetchArray()) {
                     $name = $row['FirstName'] . " " . $row['LastName'];
-                    $total = $row['Total'];
+                    $total = getPriceDisplayWithDecimals( $row['Total'] );
                     $userName = $row['UserName'];
                     $anonName = $row['AnonName'];
                      

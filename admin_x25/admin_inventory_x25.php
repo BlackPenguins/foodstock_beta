@@ -39,22 +39,22 @@
     </script>
     
     <?php 
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
         // ------------------------------------
         // INVENTORY TABLE
         // ------------------------------------
         echo "<div class='center_piece'>";
-        echo "Yellow = Inventory.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Blue = Refill.";
+        echo "<span class='hidden_mobile_section'>Yellow = Inventory.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Blue = Refill.</span>";
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr>";
-        echo "<th align='left'>&nbsp;</th>";
-        echo "<th align='left'>Item</th>";
-        echo "<th align='left'>User Name</th>";
-        echo "<th align='left'>Date</th>";
-        echo "<th align='left'>Shelf Quantity</th>";
-        echo "<th align='left'>Backstock Quantity</th>";
-        echo "<th align='left'>Price</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>&nbsp;</th>";
+        echo "<th class='admin_header_column' align='left'>Item</th>";
+        echo "<th class='admin_header_column' align='left'>User Name</th>";
+        echo "<th class='admin_header_column' align='left'>Date</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Shelf Quantity</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Backstock Quantity</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Price</th>";
         
         echo "</tr></thead>";
         
@@ -97,7 +97,23 @@
                 
                 echo "<tr class='$rowClass'>";
 
-                echo "<td class='button_cell'>";
+                $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
+
+                $shelfQuantityDisplay = "&nbsp;";
+                $backstockQuantityDisplay = "&nbsp;";
+
+                if( $shelfQuantityDelta != 0) {
+                    $sign = $shelfQuantityDelta > 0 ? "+" : "";
+                    $shelfQuantityDelta = $sign . $shelfQuantityDelta;
+                    $shelfQuantityDisplay = "$shelfQuantityBefore --> $shelfQuantityAfter <span style='float:right; font-size:1.5em;'>" . $shelfQuantityDelta . "</span>";
+                }
+                if( $backstockQuantityDelta != 0) {
+                    $sign = $backstockQuantityDelta > 0 ? "+" : "";
+                    $backstockQuantityDelta = $sign . $backstockQuantityDelta;
+                    $backstockQuantityDisplay = "$backstockQuantityBefore --> $backstockQuantityAfter <span style='float:right; font-size:1.5em;'>" . $backstockQuantityDelta . "</span>";
+                }
+
+                echo "<td class='hidden_mobile_column' class='button_cell'>";
                 if( $cashOnly == 1 ) {
                     echo "Cash Only";
                 } else if( $cancelled != 1 ) {
@@ -117,26 +133,10 @@
 
                 echo "<td>" . $itemName . "</td>";
                 echo "<td>" . $name . "</td>";
-                $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-                echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-                
-                $shelfQuantityDisplay = "&nbsp;";
-                $backstockQuantityDisplay = "&nbsp;";
-
-                if( $shelfQuantityDelta != 0) {
-                    $sign = $shelfQuantityDelta > 0 ? "+" : "";
-                    $shelfQuantityDelta = $sign . $shelfQuantityDelta;
-                    $shelfQuantityDisplay = "$shelfQuantityBefore --> $shelfQuantityAfter <span style='float:right; font-size:1.5em;'>" . $shelfQuantityDelta . "</span>";
-                }
-                if( $backstockQuantityDelta != 0) {
-                    $sign = $backstockQuantityDelta > 0 ? "+" : "";
-                    $backstockQuantityDelta = $sign . $backstockQuantityDelta;
-                    $backstockQuantityDisplay = "$backstockQuantityBefore --> $backstockQuantityAfter <span style='float:right; font-size:1.5em;'>" . $backstockQuantityDelta . "</span>";
-                }
-                
-                echo "<td>" . $shelfQuantityDisplay . "</td>";
-                echo "<td>" . $backstockQuantityDisplay . "</td>";
-                echo "<td>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
+                echo "<td>" . $date_object->format('m/d/Y  [h:i:s A]')."</td>";
+                echo "<td class='hidden_mobile_column'>" . $shelfQuantityDisplay . "</td>";
+                echo "<td class='hidden_mobile_column'>" . $backstockQuantityDisplay . "</td>";
+                echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
                 echo "</tr>";
             }
             

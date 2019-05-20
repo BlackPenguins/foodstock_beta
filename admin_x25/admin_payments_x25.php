@@ -60,10 +60,11 @@
 </script>
 
 <?php 
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
-        echo "<span class='soda_popout' style='display:inline-block; width:100%; margin-left: 10px; padding:5px;'><span style='font-size:26px;'>User Payment Histories</span> <span style='font-size:0.8em;'></span></span>";
-        echo "<span id='users'>";
-        echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-left: 10px;'>";
+    echo "<span class='admin_box'>";
+
+    echo "<span class='hidden_mobile_section' id='users'>";
+        echo "<div class='rounded_header'><span class='title'>User Payments</span></div>";
+        echo "<table style='font-size:12px; border-collapse:collapse; width:100%; margin-left: 10px;'>";
         echo "<thead><tr class='table_header'>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
         
@@ -126,14 +127,14 @@
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr class='table_header'>";
-        echo "<th align='left'>&nbsp;</th>";
-        echo "<th align='left'>User Name</th>";
-        echo "<th align='left'>Payment Month</th>";
-        echo "<th align='left'>Amount</th>";
-        echo "<th align='left'>Method</th>";
-        echo "<th align='left'>Type</th>";
-        echo "<th align='left'>Date</th>";
-        echo "<th align='left'>Note</th>";
+        echo "<th class='admin_header_column hidden_mobile_column' align='left'>&nbsp;</th>";
+        echo "<th class='admin_header_column' align='left'>User Name</th>";
+        echo "<th class='admin_header_column' align='left'>Payment Month</th>";
+        echo "<th class='admin_header_column' align='left'>Amount</th>";
+        echo "<th class='admin_header_column hidden_mobile_column' align='left'>Method</th>";
+        echo "<th class='admin_header_column' align='left'>Type</th>";
+        echo "<th class='admin_header_column hidden_mobile_column' align='left'>Date</th>";
+        echo "<th class='admin_header_column hidden_mobile_column' align='left'>Note</th>";
         echo "</tr></thead>";
         
         $rowClass = "odd";
@@ -160,7 +161,7 @@
 
             echo "<tr class='$rowClass'>";
 
-            echo "<td class='button_cell'>";
+            echo "<td class='button_cell hidden_mobile_column'>";
             if( $cancelled !=  1 ) {
                 echo "<div onclick='cancelPayment($paymentID, \"$name\", \"$paymentMonth\");' class='nav_buttons nav_buttons_snack'>Cancel Payment</div>";
             } else {
@@ -171,10 +172,10 @@
             echo "<td>" . $name . "</td>";
             echo "<td>" . $paymentMonth . "</td>";
             echo "<td>" . getPriceDisplayWithDollars( $amount ) . "</td>";
-            echo "<td>" . $method . "</td>";
+            echo "<td class='hidden_mobile_column'>" . $method . "</td>";
             echo "<td>" . $itemType . "</td>";
-            echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-            echo "<td>" . $note . "</td>";
+            echo "<td class='hidden_mobile_column'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+            echo "<td class='hidden_mobile_column'>" . $note . "</td>";
             echo "</tr>";
         }
         

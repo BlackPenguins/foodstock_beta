@@ -26,24 +26,24 @@
 </script>
 
 <?php
-    echo "<span style='width:86%; display:inline-block; border-left: 3px #000 solid;'>";
+    echo "<span class='admin_box'>";
         // ------------------------------------
         // RESTOCK TABLE
         // ------------------------------------
         echo "<div class='center_piece'>";
-        echo "Red = Lost Money on Purchase.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.";
+        echo "<span class='hidden_mobile_section'>Red = Lost Money on Purchase.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.</span>";
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr class='table_header'>";
-        echo "<th align='left'>&nbsp;</th>";
-        echo "<th align='left'>Item</th>";
-        echo "<th align='left'>Date</th>";
-        echo "<th align='left'>Number of Units</th>";
-        echo "<th align='left'>Retail Total Cost</th>";
-        echo "<th align='left'>Retail Cost Each</th>";
-        echo "<th align='left'>Current Price</th>";
-        echo "<th align='left'>Discount Price</th>";
-        echo "<th align='left'>Margin per Unit</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>&nbsp;</th>";
+        echo "<th class='admin_header_column' align='left'>Item</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Date</th>";
+        echo "<th class='admin_header_column' align='left'>Number of Units</th>";
+        echo "<th class='admin_header_column' align='left'>Retail Total Cost</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Retail Cost Each</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Current Price</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Discount Price</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Margin per Unit</th>";
         
         echo "</tr></thead>";
         
@@ -69,7 +69,7 @@
             
             echo "<tr class='$rowClass'>";
 
-            echo "<td class='button_cell'>";
+            echo "<td class='button_cell hidden_mobile_column'>";
             if( $cancelled !=  1 ) {
                 echo "<div onclick='cancelRestock($restockID, \"$name\");' class='nav_buttons nav_buttons_snack'>Cancel Restock</div>";
             } else {
@@ -77,11 +77,11 @@
             }
             echo "</td>";
 
-            echo "<td>" . $name . "</td>";
+            echo "<td >" . $name . "</td>";
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
-            echo "<td>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
-            echo "<td>" . $row['NumberOfCans'] . "</td>";
-            echo "<td>" . getPriceDisplayWithDollars( $row['Cost'] ) . "</td>";
+            echo "<td class='hidden_mobile_column'>".$date_object->format('m/d/Y  [h:i:s A]')."</td>";
+            echo "<td >" . $row['NumberOfCans'] . "</td>";
+            echo "<td >" . getPriceDisplayWithDollars( $row['Cost'] ) . "</td>";
             $costEach = round( $row['CostEach'] );
             
             $lowestPrice = $row['Price'];
@@ -96,10 +96,10 @@
             if($margin < 0 ) {
                 $marginColor = "background-color: #8a3535; color: #000000;";
             }
-            echo "<td style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $costEach )  . "</td>";
-            echo "<td style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $row['Price'] )  . "</td>";
-            echo "<td style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $row['DiscountPrice'] )  . "</td>";
-            echo "<td style='$maxCostEach border:0; $marginColor'>" . getPriceDisplayWithDollars( $margin  )  . "</td>";
+            echo "<td class='hidden_mobile_column' style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $costEach )  . "</td>";
+            echo "<td class='hidden_mobile_column' style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $row['Price'] )  . "</td>";
+            echo "<td class='hidden_mobile_column'style='$maxCostEach border:0;'>" . getPriceDisplayWithDollars( $row['DiscountPrice'] )  . "</td>";
+            echo "<td class='hidden_mobile_column'style='$maxCostEach border:0; $marginColor'>" . getPriceDisplayWithDollars( $margin  )  . "</td>";
             echo "</tr>";
             
             $previousItem = $row['Name'];
