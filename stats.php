@@ -151,7 +151,7 @@ window.onload = function() {
             dataPoints: [ 
 
                 <?php
-                $totalPurchasesTotalQuery = "select count(p.itemid) as 'count', sum(p.cost) as 'totalCost', p.itemid, i.name as 'name', i.type as 'type' from purchase_history p JOIN item i on p.itemid = i.id where p.Date between '$startDate' AND '$endDate' AND p.Cancelled is NULL group by p.itemid order by totalcost asc";
+                $totalPurchasesTotalQuery = "select count(p.itemid) as 'count', sum(CASE WHEN DiscountCost IS NULL OR DiscountCost = 0 THEN Cost ELSE DiscountCost END) as 'totalCost', p.itemid, i.name as 'name', i.type as 'type' from purchase_history p JOIN item i on p.itemid = i.id where p.Date between '$startDate' AND '$endDate' AND p.Cancelled is NULL group by p.itemid order by totalcost asc";
                 $results = $db->query( $totalPurchasesTotalQuery );
                     while ($row = $results->fetchArray()) {
                         $itemName = $row['name'];
@@ -191,13 +191,13 @@ window.onload = function() {
             <?php
 //                  $anonNames = ['Rabbit', 'Koala', 'Panda', 'Cat', 'Dog', 'Mouse', 'Porcupine', 'Monkey', 'Giraffe', 'Dolphin', 'Jaguar', 'Seal', 'Deer', 'Penguin', 'Lamb', 'Owl', 'Kangaroo', 'Fox', 'Hamster', 'Lion' ];
                  $anonCount = 0;
-                 $totalPurchasesByUserQuery = "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum(p.cost) as 'Total' from Purchase_History p LEFT JOIN User u ON p.UserID = u.UserID WHERE p.Date between '$startDate' AND '$endDate' group by p.UserID order by total";
+                 $totalPurchasesByUserQuery = "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum( CASE WHEN DiscountCost IS NULL OR DiscountCost = 0 THEN Cost ELSE DiscountCost END) as TheTotal, p.userID from Purchase_History p JOIN User u on p.UserID = u.UserID where p.cancelled is null and p.Date between '$startDate' AND '$endDate' group by u.UserID";
                  $results = $db->query( $totalPurchasesByUserQuery );
                 log_sql( $totalPurchasesByUserQuery );
                  
                  while ($row = $results->fetchArray()) {
                     $name = $row['FirstName'] . " " . $row['LastName'];
-                    $total = getPriceDisplayWithDecimals( $row['Total'] );
+                    $total = getPriceDisplayWithDecimals( $row['TheTotal'] );
                     $userName = $row['UserName'];
                     $anonName = $row['AnonName'];
                      

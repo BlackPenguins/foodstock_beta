@@ -185,7 +185,7 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     $currentMonthSodaTotal = 0.0;
     $currentMonthSnackTotal = 0.0;
 
-    $query = "SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' AND p.Cancelled IS NULL ORDER BY p.Date DESC";
+    $query = "SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.UseCredits, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' AND p.Cancelled IS NULL ORDER BY p.Date DESC";
     $results = $db->query( $query );
     while ($row = $results->fetchArray()) {
         
@@ -197,7 +197,7 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
         }
         
         // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
-        if( $row['CashOnly'] != 1 ) {
+        if( $row['CashOnly'] != 1 && $row['UseCredits'] == 0 ) {
             if( $row['Type'] == "Snack" ) {
                 $currentMonthSnackTotal += $cost;
             } else if( $row['Type'] == "Soda" ) {
@@ -236,10 +236,15 @@ function getChecklistResults( $db, $checklistType, $selectType ) {
         $specialWhere = " AND BackstockQuantity > 0";
     } else if( $checklistType == "RestockTrigger" ) {
         // We don't care about discontinued items for store restock
-        $specialWhere = " AND Retired != 1";
+        $specialWhere = " AND Retired != 1 ";
     }
 
-    return $db->query("SELECT $specialSelect FROM Item WHERE Hidden != 1 AND $checklistType = 1 $specialWhere ORDER BY Type DESC, Retired, ShelfQuantity DESC");
+    if( $selectType == "COUNT" ) {
+        $specialWhere .= " AND IsBought = 0 ";
+    }
+
+    $query = "SELECT $specialSelect FROM Item WHERE Hidden != 1 AND $checklistType = 1 $specialWhere ORDER BY Type DESC, Retired, ShelfQuantity DESC";
+    return $db->query( $query );
 }
 
 function getRefillCount($db) {
@@ -252,11 +257,11 @@ function getRestockCount($db) {
     return $row["Count"];
 }
 
-function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued) {
+function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued, $checklistType) {
     $completedMark = "&#9746;";
     $completedMarkColor = "#6b1010";
 
-    error_log("Enterning with [$isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued]" );
+    error_log("Entering with [$isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued]" );
     if( $isBought == 1 ) {
         $completedMark = "&#9745;";
         $completedClass = "completed";
@@ -269,7 +274,7 @@ function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuant
         $typeColor = "#cc3e3e";
     }
 
-    $onClick = " onclick='toggleCompleted( $itemID );'";
+    $onClick = " onclick='toggleCompleted( $itemID, \"$checklistType\" );'";
 
     echo "<td style='padding-left: 0px; font-size:1.6em; cursor:pointer; text-align:center; font-weight:bold; color: $completedMarkColor;'> <span$onClick>$completedMark </span></td>";
     echo "<td style='color:$typeColor'>$itemName</td>";

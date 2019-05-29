@@ -54,7 +54,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_6_1.css" );
+        define( "CSS_LINK", "$subdomain/css/style_6_2.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
@@ -84,6 +84,8 @@
         define( "PURCHASE_HISTORY_LINK", "$subdomain/purchase_history.php" );
         define( "REGISTER_LINK", "$subdomain/register.php" );
         define( "REQUESTS_LINK", "$subdomain/requests.php" );
+        define( "PREFERENCES_LINK", "$subdomain/preferences.php" );
+        define( "HELP_LINK", "$subdomain/help.php" );
         define( "SNACKSTOCK_LINK", "$subdomain/snackstock.php" );
         define( "SODASTOCK_LINK", "$subdomain/sodastock.php" );
         define( "STATS_LINK", "$subdomain/stats.php" );

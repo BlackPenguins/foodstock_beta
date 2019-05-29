@@ -130,30 +130,35 @@ function main( $url, $itemType, $className, $location ) {
 
     var totalTimeLeft = 300;
     
-    var warningTimer = setInterval(function() {
-		totalTimeLeft--;
+    var warningTimer = null;
 
-		var minutes = Math.floor( totalTimeLeft / 60 );
-		var seconds = totalTimeLeft - (minutes * 60);
+    function startReminderTimer() {
+        warningTimer = setInterval(function() {
+            totalTimeLeft--;
 
-		if( minutes < 10 ) { minutes = "0" + minutes; }
-		if( seconds < 10 ) { seconds = "0" + seconds; }
-		
-        $('#warning_time').html( minutes + ":" + seconds );
+            var minutes = Math.floor( totalTimeLeft / 60 );
+            var seconds = totalTimeLeft - (minutes * 60);
 
-        if( totalTimeLeft == 0 ) {
-            $("body").append("<div id='overlay' style='background-color:#000000; opacity:0.85; z-index:4000; width:100%; height: 100%; position:fixed; top:0; bottom:0; right:0; left:0;'>&nbsp;</div>");
-            $("body").append("<div id='bringing_down_the_hammer' style='padding:20px; border:5px #666f18 solid; background-color:#d0c21d; z-index:6000; width:500px; height: 186px; margin-top:-93px; margin-left:-250px; position:fixed; top:50%; left:50%;'>" + 
-					"<div style='text-align:center; font-size:3em; margin-bottom:15px; text-decoration:underline;'>Friendly Reminder</div>" + 
-					"<div style='text-align:center; font-size:1.3em;'>" +
-					"This site has been open for 5 minutes.<br>Did you forget to pay for something?" +
-					"</div>" +
-					"<div style='text-align:center;'><button style='font-size:1.7em; margin-top:20px;' onclick='$(\"#overlay\").hide(); $(\"#bringing_down_the_hammer\").hide();'>Close</button></div>" + 
+            if( minutes < 10 ) { minutes = "0" + minutes; }
+            if( seconds < 10 ) { seconds = "0" + seconds; }
+
+            $('#warning_time').html( minutes + ":" + seconds );
+
+            if( totalTimeLeft == 0 ) {
+                $("body").append("<div id='overlay' style='background-color:#000000; opacity:0.85; z-index:4000; width:100%; height: 100%; position:fixed; top:0; bottom:0; right:0; left:0;'>&nbsp;</div>");
+                $("body").append("<div id='bringing_down_the_hammer' style='padding:20px; border:5px #666f18 solid; background-color:#d0c21d; z-index:6000; width:550px; height: 255px; margin-top:-93px; margin-left:-250px; position:fixed; top:50%; left:50%;'>" +
+                    "<div style='text-align:center; font-size:3em; margin-bottom:15px; text-decoration:underline;'>Friendly Reminder</div>" +
+                    "<div style='text-align:center; font-size:1.3em;'>" +
+                    "This site has been open for 5 minutes without a purchase.<br><br>Did you forget to pay for something?" +
+                    "</div>" +
+                    "<div style='margin-top:10px; color: #931515; text-align:center; font-size: 0.7em'>I'm missing quite a bit of money for both soda and snacks.</u> So after 5 minutes of being idle the site will now ask if you forgot to pay for something. If you think you might have forgotten to pay between grabbing the item and making it back to your desk to pay you can now open the site before you leave and use this feature as a friendly reminder.</div>" +
+                    "<div style='text-align:center;'><button style='font-size:1.7em; margin-top:20px;' onclick='$(\"#overlay\").hide(); $(\"#bringing_down_the_hammer\").hide();'>Close</button></div>" +
                     "</div>");
 //             alert("Friendly Reminder: The site has been open for 5 minutes without a purchase. Did you forget to pay?");
-            clearInterval(warningTimer);
-        }
-  	}, 1000);
+                clearInterval(warningTimer);
+            }
+        }, 1000);
+    }
 </script>
 <?php
 // ------------------------------------
@@ -175,8 +180,8 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "6.1";
-    $versionString = "Version $version !!! (May 19th, 2019)";
+    $version = "6.2";
+    $versionString = "Version $version !!! (May 28th, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -199,21 +204,29 @@ if(!$isMobile) {
     echo "<table style='margin:0px 20px'>";
     echo "<tr>";
     echo "<td rowspan='2'><img src='" . IMAGES_LINK . "logo.jpg'/></td>";
-    echo "<td class='version'>";
 
     $newIcon = "";
+    $versionClass = "version_old";
 
 
     if ( !isset( $_COOKIE["version_viewed"] ) || isset( $_COOKIE["version_viewed"] ) && $_COOKIE["version_viewed"] != $version ) {
         $newIcon = "<img style='vertical-align:middle; padding: 0px 5px;' width='32px' src='" .  IMAGES_LINK . "new.png'/>";
+        $versionClass = "version";
     }
 
+    echo "<td class='$versionClass'>";
     echo "$newIcon <a onclick='setVersionCookie(\"" . $version . "\");' href='#change_log'>$versionString</a>$newIcon ";
-
     echo "</td>";
-    echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> ". getPriceDisplayWithDollars( $profitPerDay )."</td>";
+
+    if( $isLoggedInAdmin ) {
+        echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> " . getPriceDisplayWithDollars($profitPerDay) . "</td>";
+    }
+
     echo "<td style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px solid;'><b>Days Active: </b>". $days_ago ." days</td>";
-    
+    echo "<td style='color:black; background-color:#fffa5c; padding:5px 15px; border: #000 2px solid;' title='Purchase Reminder - After being idle for five minutes without a purchase it will ask if you forgot to pay for something.'>";
+    echo "<img style='vertical-align:middle;' width='30px' src='" . IMAGES_LINK . "timer.png'/>&nbsp;<span style='font-weight:bold;' id='warning_time'>-</span>";
+    echo "</td>";
+
     if( $isLoggedInAdmin ) {
         echo "<td>&nbsp;</td>";
         echo "<td style='text-align:right; font-weight:bold;'>Calculated:</td>";
@@ -225,7 +238,7 @@ if(!$isMobile) {
     
     if( $isLoggedInAdmin ) {
         echo "<tr>";
-        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
+        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
         echo "<td style='text-align:right; font-weight:bold;'>Payments:</td>";
         echo "<td style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> ". getPriceDisplayWithDollars( $total_income_actual )."</td>";
         $actualProfit = $total_income - $total_income_actual;
@@ -241,9 +254,11 @@ if(!$isMobile) {
 
 echo "<div id= 'container_squisher'>";
 
-echo "<div style='position:relative; margin-bottom:5px; padding:10px; color:#000000; background-color:#fffa5c; border: 3px #8e8b8b solid;'>";
-echo "<img width='30px' src='" . IMAGES_LINK . "timer.png'/>&nbsp;<span style='font-weight:bold;' id='warning_time'>Timer</span> - <u>I'm missing quite a bit of money for both soda and snacks.</u> So after 5 minutes of being idle the site will now ask if you forgot to pay for something. If you think you might have forgotten to pay between grabbing the item and making it back to your desk to pay you can now open the site before you leave and use this feature as a friendly reminder.";
-echo "</div>";
+if( isset( $_SESSION['PurchaseCompleted'] ) ) {
+    unset( $_SESSION['PurchaseCompleted'] );
+} else if( IsLoggedIn() ) {
+    echo "<script>startReminderTimer();</script>";
+}
 
 echo "<div id='cart_area' class='cart_area' style='position:relative; margin-bottom:5px; padding:10px; color:#000000; background-color:#FFFFFF; border: 3px #8e8b8b solid;'>";
 echo "<div style='display:flex; align-items:center;'>";
@@ -254,12 +269,17 @@ echo "<div style='display:flex; align-items:center;'>";
 echo "<img width='40px' src='" . IMAGES_LINK . "sale.png'/>&nbsp;Discounted prices are only available when you buy through the site.";
 echo "</div>";
 echo "</div>";
-    
-if( !$isMobile && $itemType != "Snack" ) {
+
+$showShelf = true;
+if( isset( $_SESSION['ShowShelf'] ) && $_SESSION['ShowShelf'] == 0 ) {
+    $showShelf = false;
+}
+
+if( !$isMobile && $itemType != "Snack" && $showShelf ) {
     $results = $db->query("SELECT ID, Name, ShelfQuantity, DateModified, ThumbURL, Hidden FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 ORDER BY DateModified DESC");
     
     echo "<div style='margin:20px; padding:10px; background-color:#2f2f2f; border: 3px #8e8b8b solid;'>";
-    echo "<div style='color:#8e8b8b; font-weight:bold; padding-bottom:10px;'>The Shelf <span style='font-size:0.7em;'>(currently in the $location)</span></div>";
+    echo "<div style='color:#8e8b8b; font-weight:bold; padding-bottom:10px;'>The Shelf <span style='font-size:0.7em;'>(currently in the $location, clicking these will also add one to your cart)</span></div>";
     $lastUpdated = "";
     while ($row = $results->fetchArray()) {
         $name = $row['Name'];
@@ -297,10 +317,12 @@ if( !$isMobile) {
     global $adminClass;
     global $requestClass;
     global $dbClass;
+    global $bugClass;
 
     $requestClass = 'color:#6328bd; font-weight:bold;';
     $adminClass = 'color:#bd2828; font-weight:bold;';
     $dbClass = 'color:#0f6d28; font-weight:bold;';
+    $bugClass = 'color:#ed561d; font-weight:bold;';
 
     function DisplayUpdate( $date, $itemType, $changes ) {
         $backgroundColor = "#c8e2ff";
@@ -322,6 +344,7 @@ if( !$isMobile) {
         global $adminClass;
         global $requestClass;
         global $dbClass;
+        global $bugClass;
         $style = "";
 
         if( $type == "admin" ) {
@@ -330,6 +353,8 @@ if( !$isMobile) {
             $style = "style='$requestClass'";
         } else if( $type == "db" ) {
             $style = "style='$dbClass'";
+        } else if( $type == "bug" ) {
+            $style = "style='$bugClass'";
         }
 
         return "<span $style>$message</span>";
@@ -341,12 +366,51 @@ if( !$isMobile) {
     $milestoneClass= "background-color: #f1ff1a; padding:5px; margin: 20px 0px; border:solid 3px #8c8e1d;";
 
     
-    echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span>)</span></span></div>";
+    echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span> | <span style='$bugClass'>Bug Fixes in Orange</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
     // CREDIT: https://icons8.com/icon/2270/crown - CDN77
     // https://i2kplay.com/icon-new/
 
+    // <div>Icons made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+    DisplayUpdate("May 28, 2019 (6.2)", $itemType, array(
+        DisplayItem("request", "Added Help section for new users (ask by Mike P)."),
+        DisplayItem("request", "Added Preferences page to make the UI simpler. By default for new users almost everything is off. For current users everything is left on except the shelf, cash-only, and subscriptions. You can now show/hide cash-only, discontinued items, credit, item stats, the shelf. You can configure your anon animal for graphs."),
+        DisplayItem("none", "Buying and selling credits are now in a slack notification to the user (like a receipt)."),
+        DisplayItem("none", "Five minute reminder will not appear if you have already purchased something - or if you are logged out."),
+        DisplayItem("none", "Five minute warning is condensed to just a timer in the top (to save space). The explanation of the timer has been moved to the popup itself and it's a hover-text of the timer."),
+        DisplayItem("none", "Profit/Day statistic is no longer shown. It's been incorrect."),
+        DisplayItem("none", "Added the ability to subscribe to restock messages. The same ones that are sent to #random."),
+        DisplayItem("bug", "Fixed bug where the discount prices were not used in graphs and cancelled purchases WERE being used."),
+        DisplayItem("bug", "Credits are no longer counted towards the balance in Billing Page."),
+        DisplayItem("bug", "Opening a side menu in mobile with another one already open will close the current one. Clicking the requests sub-pages will close the side menu in mobile."),
+        DisplayItem("bug", "Checklist was affecting both lists when checking off an item."),
+        DisplayItem("admin", "Checklist has ajax refresh for items being checked off."),
+        DisplayItem("admin", "First and Last Names used in slack notifications, instead of username."),
+        DisplayItem("admin", "Added Google Pay as payment method."),
+        DisplayItem("admin", "Bot persists fields between page refreshes."),
+    ) );
+
+    DisplayUpdate("May 19, 2019 (6.1)", $itemType, array(
+        DisplayItem("request", "Version box will display a NEW icon (Icon credit: https://i2kplay.com/icon-new/) with a bright blue background for updates you haven't seen. Once you click the link it will clear out the 'new' status via a cookie and use a dark blue background (inspired by Nick). Rainbow box is gone."),
+        DisplayItem("none", "Added 'bug-fixes' as category to change log."),
+        DisplayItem("request", "Choosing 'cash-only' in cart will hide the total and credit amount since it's not relevant (Nick ask)."),
+        DisplayItem("none", "Credits used are now shown in receipt. Total is not shown unless it is above $0 (the case where you didn't have enough credits to cover the purchase)."),
+        DisplayItem("none", "Payment method is now shown in the slack message."),
+        DisplayItem("none", "Running low trigger for soda is now 1 can instead of 3 cans (since usually it's a max of only 3 cans). Snacks are still 3 items for a trigger."),
+        DisplayItem("none", "Submitting a request now works in mobile."),
+        DisplayItem("bug", "Fixed bug where cash-only purchases tried using credits when it should be using balance."),
+        DisplayItem("bug", "Fixed bug where credits were contributing towards the balance on purchase history page. Credit totals are now shared with the cash only total."),
+        DisplayItem("bug", "Fixed bug where viewing links on other people's purchase histories was broken."),
+        DisplayItem("bug", "Fixed bug where stats page was still in whole cents (it said $1400 instead of $14)."),
+        DisplayItem("admin", "Most of Admin has mobile support and working forms. Admin pages are in a left side hamburger button (Crown icon credit: https://icons8.com/icon/2270/crown - CDN77.)"),
+        DisplayItem("admin", "Checklist has checkboxes that can be checked off and save until inventory is done."),
+        DisplayItem("admin", "Users who have credits are in a yellow box."),
+        DisplayItem("admin", "Admin pages has its own favicon."),
+
+
+    ) );
 
     // Admin, DB, Request, None
     DisplayUpdate("May 5, 2019 (6.0 - THE BIG ONE)", $itemType, array(
@@ -358,7 +422,7 @@ if( !$isMobile) {
         DisplayItem("none", "Payment History - the improved page has the billing section at the top in a cleaner table. The page will only show the information for one month at a time. You can select a month to view by clicking a link from the Billing section at the top. The detailed information for a month will only display for the current month. All months that require payment will always show - the rest can be collapsed. Payment method is now shown for each payment."),
         DisplayItem("none", "Purchase History - the improved page has the same Purchase History at the bottom. The purchase and refund of credits are shown in the purchase history. The amount of credits used for each purchase (partial too) is shown on the right side of each item in the table. The week divider now includes the Year. The Date column has been moved to the first column to mimic the Chase Bank transaction page."),
         DisplayItem("none", "Wrote my own logging methods (because PHP's sucks) so the error_log only has errors and everything else goes into own category (payment, sql, debug, slack). Now if that error_log is full I'll know something is wrong. Mimicked the RSA logging discussion and have the logs roll based on a 5 MB limit wth the date placed in the rolled log's filename."),
-        DisplayItem("none", "BUG-FIX: SodaBot now marks something as 'running low' (yellow) instead of 'out of stock' (red)."),
+        DisplayItem("bug", "BUG-FIX: SodaBot now marks something as 'running low' (yellow) instead of 'out of stock' (red)."),
         DisplayItem("request", "Clicking an item in the shelf adds one to your cart (Nick and Christian ask)"),
         DisplayItem("request", "Added Rick and Mike P. milestones below. (Nick ask)"),
         DisplayItem("request", "Added 'Quick' and 'In Progress' statuses to request page."),
@@ -379,7 +443,7 @@ if( !$isMobile) {
         DisplayItem("admin", "New Page: Audit. Calculates the amount of money that should be in the mug for each refill and reports loss."),
         DisplayItem("admin", "Changed the rest of the tables to the new look."),
         DisplayItem("none", "Christian Easter Egg ;)"),
-        DisplayItem("none", "Fixed bug with priority order in Requests page."),
+        DisplayItem("bug", "Fixed bug with priority order in Requests page."),
         DisplayItem("none", "Added 'Check All Items' to Stats page. Displays the date of last purchase for each item to determine what to discontinue."),
     ) );
 
@@ -423,14 +487,14 @@ if( !$isMobile) {
             DisplayItem("none", "New Statistic! Display the number of purchases of a certain item per month and on hover show who bought them that month. Finds trends in why items stop selling. Maybe a co-op left and they were the only ones buying it."),
             DisplayItem("none", "Improved the clarity of the 'Foodstock Collection Agency' message to only include money owed for that particular month."),
             DisplayItem("none", "Items about to be discontinued are now purple and have a quantity shown."),
-            DisplayItem("none", "BUG-FIX: Discontinued items were not all at the bottom of the page (because they were bought by the user at some point)."),
+            DisplayItem("bug", "BUG-FIX: Discontinued items were not all at the bottom of the page (because they were bought by the user at some point)."),
             DisplayItem("admin", "Admin: Improved the Payment page and added 'Notify' buttons for each month."),
             DisplayItem("admin", "Admin: Added IsCoop (to divide up the user list) and AnonName (to hide real names from the statistics) settings to each user. Each user will now have their own anonymous name (for the public) assigned to them instead of being randomized."),
     ) );
     
     DisplayUpdate("Jan 14, 2019 (5.4)", $itemType, array(
             DisplayItem("none", "Christmas theme removed."),
-            DisplayItem("none", "BUG FIX: Plural labels in Inventory slack announcement."),
+            DisplayItem("bug", "BUG FIX: Plural labels in Inventory slack announcement."),
             DisplayItem("none", "Fixed the floating point number arithmetic bug. A similar bug that actually <a href='https://en.wikipedia.org/wiki/MIM-104_Patriot#Failure_at_Dhahran'>killed 28 soldiers in 1991</a> I learned from Stack Overflow. My bug was...less tragic."),
     ) );
     
@@ -463,7 +527,7 @@ if( !$isMobile) {
             DisplayItem("admin", "Admin: Restock Form - improved UI, multiplier."),
             DisplayItem("admin", "Admin: Shopping Guide - order by Cost Each."),
             DisplayItem("db", "DB: Added 'Expiration Date' column to items."),
-            DisplayItem("none", "Misc bug fixes."),
+            DisplayItem("bug", "Misc bug fixes."),
     ) );
     
     DisplayUpdate("Aug 5, 2018", $itemType, array(
@@ -482,7 +546,7 @@ if( !$isMobile) {
     DisplayUpdate("Jul 29, 2018", $itemType, array(
             DisplayItem("db", "Directories: Reorganized directories for resources/images."),
             DisplayItem("admin", "Admin: Divided up Admin into separate pages."),
-            DisplayItem("none", "Fixed massive income bugs and miscountings.")
+            DisplayItem("bug", "Fixed massive income bugs and miscountings.")
     ) );
     
     DisplayUpdate("Jul 2, 2018", $itemType, array(

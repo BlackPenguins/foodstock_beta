@@ -49,6 +49,7 @@
         echo "<nav id='nav' role='navigation'>";
         echo "<ul>";
 
+        echo "<li><a style='text-decoration:none;' href='" . HELP_LINK . "'><span class='nav_buttons nav_buttons_help'><span id='help_text'>?</span><span id='help_text_mobile'>Help</span></span></a></li>";
         echo "<li><a style='text-decoration:none;' href='" . SODASTOCK_LINK . "'><span class='nav_buttons nav_buttons_soda'>Soda Home</span></a></li>";
         echo "<li><a style='text-decoration:none;' href='" . SNACKSTOCK_LINK . "'><span class='nav_buttons nav_buttons_snack'>Snack Home</span></a></li>";
 
@@ -72,15 +73,17 @@
             echo "<li><a style='text-decoration:none;' href='" . REQUESTS_LINK . "'><span class='nav_buttons nav_buttons_requests'>Requests</span></a></li>";
 
             if( $url == REQUESTS_LINK ) {
-                echo "<li><a style='text-decoration:none;' href='#Requests'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Requests</span></a><li>";
-                echo "<li><a style='text-decoration:none;' href='#Feature Requests'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Feature Requests</span></a><li>";
-                echo "<li><a style='text-decoration:none;' href='#Bug Reports'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Bug Reports</span></a><li>";
+                echo "<li><a style='text-decoration:none;' onclick='closeNav();' href='#Requests'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Requests</span></a><li>";
+                echo "<li><a style='text-decoration:none;' onclick='closeNav();' href='#Feature Requests'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Feature Requests</span></a><li>";
+                echo "<li><a style='text-decoration:none;' onclick='closeNav();' href='#Bug Reports'><span style='font-size:0.7em; background-color: #8e67a7;' class='nav_buttons nav_buttons_requests'>Bug Reports</span></a><li>";
             }
             echo "<li><a style='text-decoration:none;' href='" . STATS_LINK . "'><span class='nav_buttons nav_buttons_stats'>Graphs $noMobileSupport</span></a><li>";
 
             if( $isLoggedInAdmin ) {
                 echo "<li><a style='text-decoration:none;' href='" . ADMIN_LINK . "'><span class='nav_buttons nav_buttons_admin'>Administration</span></a><li>";
             }
+
+            echo "<li><a style='text-decoration:none;' href='" . PREFERENCES_LINK . "'><span class='nav_buttons nav_buttons_preferences'>Preferences</span></a></li>";
 
             $totalBalance = $_SESSION['SodaBalance'] + $_SESSION['SnackBalance'];
             $credits = $_SESSION['Credits'];
@@ -91,7 +94,10 @@
                 $creditsGreyedOut = "opacity: 0.45;";
             }
 
-            echo "<li><a style='text-decoration:none; $creditsGreyedOut' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_admin'>Credits: " .  getPriceDisplayWithDollars( $credits ) . "$noMobileSupport</span></a><li>";
+            if( $credits > 0 || $_SESSION['ShowCredit'] == 1 ) {
+                echo "<li><a style='text-decoration:none; $creditsGreyedOut' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_admin'>Credits: " . getPriceDisplayWithDollars($credits) . "$noMobileSupport</span></a><li>";
+            }
+
             echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_billing'>Balance: " .  getPriceDisplayWithDollars( $totalBalance ) . "$noMobileSupport</span></a><li>";
 
             if( $isLoggedInAdmin ) {
@@ -136,7 +142,7 @@
         if($isLoggedIn)
         {
             echo "<span id='display_name_$id'>";
-            echo "Logged in: <b><font color ='#FFFF00'>[" . $_SESSION['UserName'] . "]" . ( $isLoggedInAdmin ? " - Administrator" : "" ) . "</font></b>";
+            echo "Logged in: <b><span style='color:#FFFF00;'>[" . $_SESSION['UserName'] . "]" . ( $isLoggedInAdmin ? " - Administrator" : "" ) . "</span></b>";
             echo "</span>";
             DisplayLoggedOutLink($id, $isLoggedIn);
         }
@@ -173,6 +179,7 @@
 
 <script>
 function openNav() {
+    closeNavAdmin();
     $("#nav").addClass("open-nav");
     $("#hamburger").hide();
     $("#close").show();
@@ -185,6 +192,7 @@ function closeNav() {
 }
 
 function openNavAdmin() {
+    closeNav();
     $("#nav_admin").addClass("open-nav-admin");
     $("#hamburger_admin").hide();
     $("#close_admin").show();

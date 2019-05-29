@@ -42,8 +42,8 @@
                 $rowClass = "";
             }
 
-            echo "<tr $rowClass id='checklist_row_$itemID'>";
-            drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfQuantity'], $row['BackstockQuantity'], $isDiscontinued );
+            echo "<tr $rowClass id='checklist_" . $checklistType . "_row_$itemID'>";
+            drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfQuantity'], $row['BackstockQuantity'], $isDiscontinued, $checklistType );
             echo "</tr>";
         }
 
@@ -55,13 +55,15 @@
 
 <script type="text/javascript">
 
-    function toggleCompleted( itemID ) {
+    function toggleCompleted( itemID, checklistType ) {
         $.post("<?php echo AJAX_LINK; ?>", {
             type:'UpdateChecklist',
             id:itemID,
+            checklistType:checklistType,
         },function(data) {
-            console.log("Updating row [" + itemID + "]" );
-            var checklistRow = $('#checklist_row_' + itemID);
+            var rowID = '#checklist_' + checklistType + '_row_' + itemID;
+            console.log("Updating row [" + rowID + "] with [" + data + "]" );
+            var checklistRow = $(rowID);
             checklistRow.html(data);
 
            if( checklistRow.hasClass( "completed" ) ) {

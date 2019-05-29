@@ -33,7 +33,7 @@
                 if( $userExists ) {
                     $userError = "User <b>$username</b> already exists!";
                 } else {
-                    $db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance, SodaSavings, SnackSavings, AnonName, IsCoop, Inactive) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00, 0.00, 0.00, 'Penguin', 1, 0)");
+                    $db->exec("INSERT INTO User (UserName, Password, FirstName, LastName, PhoneNumber, DateCreated, SodaBalance, SnackBalance, SodaSavings, SnackSavings, AnonName, IsCoop, Inactive, Credits, ShowDiscontinued, ShowCashOnly, ShowCredit, ShowItemStats, ShowShelf, SubscribeRestocks) VALUES( '$username', '$password_sha1', '$firstName', '$lastName', '$phoneNumber', '$date', 0.00, 0.00, 0.00, 0.00, 'Penguin', 1, 0, 0.00, 0, 0, 0, 1, 0, 0)");
                     $userMessage = "Registration complete! User <b>$username</b> has been created.";
                     
                     sendSlackMessageToMatt( "*User Name:* " . $username . "\n*Name:* " . $firstName . " " . $lastName, ":busts_in_silhouette:", "NEW USER", "#b7ab1a" );

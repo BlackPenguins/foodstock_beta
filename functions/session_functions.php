@@ -55,6 +55,14 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $snackBalance = $row['SnackBalance'];
         $credits = $row['Credits'];
         $slackID = $row['SlackID'];
+        $anonName = $row['AnonName'];
+        $showDiscontinued = $row['ShowDiscontinued'];
+        $showCashOnly = $row['ShowCashOnly'];
+        $showCredit = $row['ShowCredit'];
+        $showItemStats = $row['ShowItemStats'];
+        $showShelf = $row['ShowShelf'];
+        $subscribeRestocks = $row['SubscribeRestocks'];
+
         $inactiveUser = $row['Inactive'] == 1;
         log_debug("Logging in with [$username] [$userID] [$sodaBalance][$snackBalance]");
         $_SESSION['LoggedIn'] = true;
@@ -67,6 +75,15 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $_SESSION['Credits'] = $credits;
         $_SESSION['SlackID'] = $slackID;
         $_SESSION['InactiveUser'] = $inactiveUser;
+
+        $_SESSION['AnonName'] = $anonName;
+        $_SESSION['ShowDiscontinued'] = $showDiscontinued;
+        $_SESSION['ShowCashOnly'] = $showCashOnly;
+        $_SESSION['ShowCredit'] = $showCredit;
+        $_SESSION['ShowItemStats'] = $showItemStats;
+        $_SESSION['ShowShelf'] = $showShelf;
+        $_SESSION['SubscribeRestocks'] = $subscribeRestocks;
+
         $_SESSION['IsAdmin'] = $username == 'mmiles';
     } else {
         $_SESSION['LoggedIn'] = false;
@@ -82,7 +99,7 @@ function DisplayUserMessage() {
     if( isset( $_SESSION['UserMessage'])) {
         echo "<div id='notification'>";
         echo $_SESSION['UserMessage'];
-        echo "<button style='float:right; margin: 10px;' onclick='$(\"#notification\").hide();' id='close-notification'>Close Messages</button>";
+        echo "<button onclick='$(\"#notification\").hide();' id='close-notification'>Close Messages</button>";
         echo "</div>";
         
 //         echo "<script>alert('" . $_SESSION['UserMessage'] . "');</script>";

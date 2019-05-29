@@ -96,6 +96,16 @@
             $titleName = "Requests";
             $trackingName = "Requests";
             break;
+        case PREFERENCES_LINK:
+            $isAdminPage = false;
+            $titleName = "Preferences";
+            $trackingName = "Preferences";
+            break;
+        case HELP_LINK:
+            $isAdminPage = false;
+            $titleName = "Help";
+            $trackingName = "Help";
+            break;
         case STATS_LINK:
             $isAdminPage = false;
             $titleName = "Stats";

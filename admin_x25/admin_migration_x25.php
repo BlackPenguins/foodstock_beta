@@ -50,6 +50,9 @@
                 case "6.1":
                     v6_1($db);
                     break;
+                case "6.2":
+                    v6_2($db);
+                    break;
                 default:
                     echo "There is no migration for version [$version]!";
                     break;
@@ -68,6 +71,27 @@
 
     } else {
         echo " Welcome to migration page. You need to select a version!";
+    }
+
+    function v6_2( $db )
+    {
+        executeStatement($db, "UPDATE ITEM Set RestockTrigger = 0  WHERE RestockTrigger Is Null;");
+        executeStatement($db, "UPDATE ITEM Set RefillTrigger = 0 WHERE RefillTrigger Is Null;");
+        executeStatement($db, "UPDATE ITEM Set IsBought = 0 WHERE IsBought Is Null;");
+
+        executeStatement($db, "UPDATE ITEM Set RestockTrigger = 0  WHERE RestockTrigger = '';");
+        executeStatement($db, "UPDATE ITEM Set RefillTrigger = 0 WHERE RefillTrigger = '';");
+        executeStatement($db, "UPDATE ITEM Set IsBought = 0 WHERE IsBought = '';");
+
+        executeStatement($db, "ALTER TABLE USER ADD COLUMN ShowDiscontinued INTEGER DEFAULT 1;");
+        executeStatement($db, "ALTER TABLE USER ADD COLUMN ShowItemStats INTEGER DEFAULT 1;");
+        executeStatement($db, "ALTER TABLE USER ADD COLUMN ShowShelf INTEGER DEFAULT 0;");
+        executeStatement($db, "ALTER TABLE USER ADD COLUMN ShowCashOnly INTEGER DEFAULT 0;");
+        executeStatement($db, "ALTER TABLE USER ADD COLUMN ShowCredit INTEGER DEFAULT 1;");
+        executeStatement($db, "ALTER TABLE USER ADD COLUMN SubscribeRestocks INTEGER DEFAULT 0;");
+
+        // LOG EVERYONE OUT
+        // unset($_SESSION['user_id'])
     }
 
     function v6_1( $db )

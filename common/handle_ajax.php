@@ -49,7 +49,19 @@
         //---------------------------------------
         $columnNumber = 1;
         while ($row = $results->fetchArray()) {
-            
+
+            $retired_item = $row['Retired'];
+
+            $hideDiscontinued = true;
+
+            if( isset( $_SESSION['ShowDiscontinued'] ) && $_SESSION['ShowDiscontinued'] != 0 ) {
+                $hideDiscontinued = false;
+            }
+
+            if( $retired_item == 1 && $hideDiscontinued ) {
+                continue;
+            }
+
             $isLoggedIn = IsLoggedIn();
             
             $outOfStock = $row['RefillTrigger'];
@@ -86,7 +98,6 @@
                 $price_background_color = "#5f0000";
             }
             
-            $retired_item = $row['Retired'];
             $cold_item = $row['ShelfQuantity'];
             $warm_item = $row['BackstockQuantity'];
             
@@ -256,46 +267,57 @@
                     
                     $profit = $income - $expense;
                     $profitClass = $profit > 0 ? "income" : "expenses";
-                    
-                    if( IsAdminLoggedIn() ) {
+
+                    $actionsClass = "actions_no_stats";
+
+                    $showItemStats = true;
+                    if( isset( $_SESSION['ShowShelf'] ) && $_SESSION['ShowItemStats'] == 0 ) {
+                        $showItemStats = false;
+                    }
+
+                    if( $showItemStats ) {
+                        $actionsClass = "actions";
+
+                        if (IsAdminLoggedIn()) {
+
+                            echo "<div class='stats'>";
+                            echo "<span class='box box-expenses' title='Total Expenses'>";
+                            echo "<span class='value'>" . getPriceDisplayWithDollars($expense) . "</span>";
+                            echo "<span class='parameter'>Expenses</span>";
+                            echo "</span>";
+
+                            echo "<span style='border: 2px solid #000;' class='box box-$profitClass' title='Total Profit'>";
+                            echo "<span class='value'>" . getPriceDisplayWithDollars($profit) . "</span>";
+                            echo "<span class='parameter'>Profit</span>";
+                            echo "</span>";
+
+                            echo "<span class='box box-income' title='Total Income'>";
+                            echo "<span class='value'>" . getPriceDisplayWithDollars($income) . "</span>";
+                            echo "<span class='parameter'>Income</span>";
+                            echo "</span>";
+                            echo "</div>";
+                        }
 
                         echo "<div class='stats'>";
-                            echo "<span class='box box-expenses' title='Total Expenses'>";
-                                echo "<span class='value'>" . getPriceDisplayWithDollars( $expense ) . "</span>";
-                                echo "<span class='parameter'>Expenses</span>";
-                            echo "</span>";
-                            
-                            echo "<span style='border: 2px solid #000;' class='box box-$profitClass' title='Total Profit'>";
-                                echo "<span class='value'>" . getPriceDisplayWithDollars( $profit ) . "</span>";
-                                echo "<span class='parameter'>Profit</span>";
-                            echo "</span>";
-                            
-                            echo "<span class='box box-income' title='Total Income'>";
-                                echo "<span class='value'>" . getPriceDisplayWithDollars ($income ) . "</span>";
-                                echo "<span class='parameter'>Income</span>";
-                            echo "</span>";
+                        echo "<span class='box box-$profitClass' title='You have bought this x times.'>";
+                        echo "<span class='value'>$frequencyBought</span>";
+                        echo "<span class='parameter'>Purchases</span>";
+                        echo "</span>";
+
+                        echo "<span class='box box-$profitClass' title='Restocked every x days.'>";
+                        echo "<span class='value'>$purchaseDayInterval</span>";
+                        echo "<span class='parameter'>Days</span>";
+                        echo "</span>";
+
+                        echo "<span class='box box-$profitClass' title='Total of x units sold.'>";
+                        echo "<span class='value'>$total_can_sold</span>";
+                        echo "<span class='parameter'>Total Sold</span>";
+                        echo "</span>";
                         echo "</div>";
                     }
-                    
-                    echo "<div class='stats'>";
-                    echo "<span class='box box-$profitClass' title='You have bought this x times.'>";
-                    echo "<span class='value'>$frequencyBought</span>";
-                    echo "<span class='parameter'>Purchases</span>";
-                    echo "</span>";
-                    
-                        echo "<span class='box box-$profitClass' title='Restocked every x days.'>";
-                    echo "<span class='value'>$purchaseDayInterval</span>";
-                            echo "<span class='parameter'>Days</span>";
-                    echo "</span>";
-                    
-                    echo "<span class='box box-$profitClass' title='Total of x units sold.'>";
-                    echo "<span class='value'>$total_can_sold</span>";
-                    echo "<span class='parameter'>Total Sold</span>";
-                    echo "</span>";
-                    echo "</div>";
 
                     if( IsLoggedIn() ) {
-                        echo "<div class='actions'>";
+                        echo "<div class='$actionsClass'>";
                             echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ", \"$isMobile\")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
                             echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
                             echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ", \"$isMobile\")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
@@ -338,14 +360,14 @@
     else if( $type == "CancelPurchase" ) {
         $dailyAmountID = trim($_POST["DailyAmountID"]);
         
-        $results = $db->query("SELECT u.UserName, u.SlackID, p.Cost, p.DiscountCost, p.UserID, i.Type, i.Name, d.ItemID, d.BackstockQuantityBefore, d.BackstockQuantity, d.ShelfQuantityBefore, d.ShelfQuantity, d.Price from Daily_Amount d JOIN Item i on d.ItemID =  i.ID JOIN Purchase_History p on d.ID = p.DailyAmountID JOIN User u on p.UserID = u.UserID WHERE d.ID = $dailyAmountID");
+        $results = $db->query("SELECT u.FirstName, u.LastName, u.SlackID, p.Cost, p.DiscountCost, p.UserID, i.Type, i.Name, d.ItemID, d.BackstockQuantityBefore, d.BackstockQuantity, d.ShelfQuantityBefore, d.ShelfQuantity, d.Price from Daily_Amount d JOIN Item i on d.ItemID =  i.ID JOIN Purchase_History p on d.ID = p.DailyAmountID JOIN User u on p.UserID = u.UserID WHERE d.ID = $dailyAmountID");
         $row = $results->fetchArray();
         
         $date = date('Y-m-d H:i:s');
         $itemID = $row['ItemID'];
         $itemName = $row['Name'];
         $userID = $row['UserID'];
-        $username = $row['UserName'];
+        $username = $row['FirstName'] . " " . $row['LastName'];
         $slackID = $row['SlackID'];
         $itemType = $row['Type'];
         $backstockBefore = $row['BackstockQuantityBefore'];
@@ -713,18 +735,21 @@
         echo "<button class='quantity_button quantity_button_purchase' title='Purchase'>PURCHASE</button>";
         echo "</div>";
 
-        echo "<div style='margin-top:15px;'>";
-        echo "<input onclick='checkCashOnly()' type='checkbox' id='CashOnly' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px; font-weight:bold;' for='CashOnly'>I have already placed cash in the mug instead</label>";
-        echo "<div style='font-size:0.8em; font-style:italic; color:#6765c7; margin-top:5px;'>";
-        echo "This means I want to use the site to keep track of what I bought but I do not want this added to my balance. You can use the <span style='color:#b50505;'>discount prices</span> if you keep track through the site.</div>";
-        echo "</div>";
-        echo "</div>";
+        if( $_SESSION['ShowCashOnly'] ==  1 ) {
+            echo "<div style='margin-top:15px;'>";
+            echo "<input onclick='checkCashOnly()' type='checkbox' id='CashOnly' name='CashOnly' value='CashOnly'/><label style='padding:5px 0px; font-weight:bold;' for='CashOnly'>I have already placed cash in the mug instead</label>";
+            echo "<div style='font-size:0.8em; font-style:italic; color:#6765c7; margin-top:5px;'>";
+            echo "This means I want to use the site to keep track of what I bought but I do not want this added to my balance. You can use the <span style='color:#b50505;'>discount prices</span> if you keep track through the site.</div>";
+            echo "</div>";
+            echo "</div>";
+        }
 
         echo "</div>";
         echo "</form>";
     } else if($type == "UpdateChecklist" )
     {
         $itemID = $_POST['id'];
+        $checklistType = $_POST['checklistType'];
         $isBought = 0;
 
         $results = $db->query("SELECT IsBought, Name, Type, ShelfQuantity, BackstockQuantity, Retired FROM Item WHERE ID =" . $itemID );
@@ -738,7 +763,7 @@
             $isBought = 1;
         }
 
-        drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfQuantity'], $row['BackstockQuantity'], $row['Retired'] );
+        drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfQuantity'], $row['BackstockQuantity'], $row['Retired'], $checklistType );
         die();
     }
 ?>
@@ -751,3 +776,4 @@
             $('.hide_with_cash_only').show();
         }
     }
+</script>

@@ -136,6 +136,7 @@
             "<option value='PayPal'>PayPal</option>" .
             "<option value='Cash'>Cash</option>" .
             "<option value='Refund'>Refund</option>" .
+            "<option value='Google Pay'>Google Pay</option>" .
             "<option value='Other'>Other</option>" .
             "</select>";
     
