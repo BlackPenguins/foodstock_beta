@@ -20,7 +20,7 @@
             <div style="margin-top: 150px; text-align: center;">
                     <img src="logo.png" alt="VULTR™" style="width: 100%; min-width: 100px; max-width: 502px; height: auto; padding: 16px; box-sizing: border-box;"/><br/>
                     <span style="text-decoration: none; color: #ffffff; font-size: 24px;">We are now hosted by Vultr.com!</span><br>
-                    <span style="text-decoration: none; color: #ffffff; font-size: 24px;">Find the new site here: <a href='http://penguinore.net/sodastock.php'>http://penguinore.net/sodastock.php</a></span>
+                    <span style="text-decoration: none; color: #ffffff; font-size: 24px;">Find the new site here: <a href='https://penguinore.net/sodastock.php'>http://penguinore.net/sodastock.php</a></span>
             </div>
 
         </div>

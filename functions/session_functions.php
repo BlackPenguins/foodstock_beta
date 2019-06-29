@@ -62,9 +62,10 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $showItemStats = $row['ShowItemStats'];
         $showShelf = $row['ShowShelf'];
         $subscribeRestocks = $row['SubscribeRestocks'];
+        $showTrending = $row['ShowTrending'];
 
         $inactiveUser = $row['Inactive'] == 1;
-        log_debug("Logging in with [$username] [$userID] [$sodaBalance][$snackBalance]");
+        log_debug("Logging in with [$username] UserID[$userID] Soda[$sodaBalance] Snack[$snackBalance]");
         $_SESSION['LoggedIn'] = true;
         $_SESSION['UserName'] = $username;
         $_SESSION['FirstName'] = $firstName;
@@ -83,6 +84,7 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $_SESSION['ShowItemStats'] = $showItemStats;
         $_SESSION['ShowShelf'] = $showShelf;
         $_SESSION['SubscribeRestocks'] = $subscribeRestocks;
+        $_SESSION['ShowTrending'] = $showTrending;
 
         $_SESSION['IsAdmin'] = $username == 'mmiles';
     } else {
@@ -107,8 +109,8 @@ function DisplayUserMessage() {
     }
 }
 
-function IsLoggedIn(){        
-       return $_SESSION['LoggedIn'];
+function IsLoggedIn(){
+    return isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'];
 }
 
 function IsAdminLoggedIn(){

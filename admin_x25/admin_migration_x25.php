@@ -53,6 +53,9 @@
                 case "6.2":
                     v6_2($db);
                     break;
+                case "6.3":
+                    v6_3($db);
+                    break;
                 default:
                     echo "There is no migration for version [$version]!";
                     break;
@@ -71,6 +74,10 @@
 
     } else {
         echo " Welcome to migration page. You need to select a version!";
+    }
+
+    function v6_3( $db ) {
+        executeStatement($db, "ALTER TABLE USER ADD COLUMN ShowTrending INTEGER DEFAULT 1;");
     }
 
     function v6_2( $db )

@@ -7,11 +7,12 @@
 ?>
 
 <?php
-    $results = $db->query("SELECT AnonName, ShowDiscontinued, ShowCashOnly, ShowCredit, SubscribeRestocks, ShowItemStats, ShowShelf FROM User where UserID = " . $_SESSION['UserID'] );
+    $results = $db->query("SELECT AnonName, ShowDiscontinued, ShowCashOnly, ShowCredit, SubscribeRestocks, ShowItemStats, ShowShelf, ShowTrending FROM User where UserID = " . $_SESSION['UserID'] );
     $row = $results->fetchArray();
     $showDiscontinuedChecked = $row['ShowDiscontinued'] == 1 ? "checked" : "";
     $showCashOnlyChecked = $row['ShowCashOnly'] == 1 ? "checked" : "";
     $showCreditChecked = $row['ShowCredit'] == 1 ? "checked" : "";
+    $showTrendingChecked = $row['ShowTrending'] == 1 ? "checked" : "";
     $subscribeRestocksChecked = $row['SubscribeRestocks'] == 1 ? "checked" : "";
     $showItemStatsChecked = $row['ShowItemStats'] == 1 ? "checked" : "";
     $showShelf = $row['ShowShelf'] == 1 ? "checked" : "";
@@ -59,6 +60,12 @@
     echo "<input style='display:inline;' $subscribeRestocksChecked type='checkbox' id='Preferences_SubscribeRestocks' name='Preferences_SubscribeRestocks'/>";
     echo "<label style='display:inline;' for='Preferences_SubscribeRestocks'>Subscribe to Restocks</label>";
     echo "<div style='font-size:0.9em; color:#3e3f3d; line-height:15px; margin-bottom:20px;'>Have restock information sent to you via FoodstockBot. The same message that would appear in the #random channel.</div>";
+    echo "</div>";
+
+    echo "<div style='padding:5px 0px;'>";
+    echo "<input style='display:inline;' $showTrendingChecked type='checkbox' id='Preferences_ShowTrending' name='Preferences_ShowTrending'/>";
+    echo "<label style='display:inline;' for='Preferences_ShowTrending'>Show Trending</label>";
+    echo "<div style='font-size:0.9em; color:#3e3f3d; line-height:15px; margin-bottom:20px;'>Show the green trending box at the top of the item list page. This box will tell you which items are selling the most for the current day.</div>";
     echo "</div>";
 
     echo "<input type='hidden' name='Preferences' value='Preferences'/><br>";

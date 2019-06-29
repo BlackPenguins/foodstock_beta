@@ -103,7 +103,7 @@
 
     echo "<div id='purchasesPerMonth' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
     
-    log_debug("Start Date [$startDate] End Date [$endDate]");
+    log_debug("Stats - Start Date [$startDate] End Date [$endDate]");
     
     echo "<form enctype='multipart/form-data' action='" . STATS_LINK . "' method='POST' style='background-color:#b9b9b9; border:2px solid #000; padding:20px; margin-top:30px;'>";
     echo "Start Date: <input autocomplete='off' type='text' name='start_date' id='start_date'>";
@@ -190,12 +190,12 @@ window.onload = function() {
 
             <?php
 //                  $anonNames = ['Rabbit', 'Koala', 'Panda', 'Cat', 'Dog', 'Mouse', 'Porcupine', 'Monkey', 'Giraffe', 'Dolphin', 'Jaguar', 'Seal', 'Deer', 'Penguin', 'Lamb', 'Owl', 'Kangaroo', 'Fox', 'Hamster', 'Lion' ];
-                 $anonCount = 0;
-                 $totalPurchasesByUserQuery = "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum( CASE WHEN DiscountCost IS NULL OR DiscountCost = 0 THEN Cost ELSE DiscountCost END) as TheTotal, p.userID from Purchase_History p JOIN User u on p.UserID = u.UserID where p.cancelled is null and p.Date between '$startDate' AND '$endDate' group by u.UserID";
-                 $results = $db->query( $totalPurchasesByUserQuery );
-                log_sql( $totalPurchasesByUserQuery );
+                $anonCount = 0;
+                $totalPurchasesByUserQuery = "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum( CASE WHEN DiscountCost IS NULL OR DiscountCost = 0 THEN Cost ELSE DiscountCost END) as TheTotal, p.userID from Purchase_History p JOIN User u on p.UserID = u.UserID where p.cancelled is null and p.Date between '$startDate' AND '$endDate' group by u.UserID";
+                $results = $db->query( $totalPurchasesByUserQuery );
+                log_sql( "Total Purchases SQL: [$totalPurchasesByUserQuery]" );
                  
-                 while ($row = $results->fetchArray()) {
+                while ($row = $results->fetchArray()) {
                     $name = $row['FirstName'] . " " . $row['LastName'];
                     $total = getPriceDisplayWithDecimals( $row['TheTotal'] );
                     $userName = $row['UserName'];
@@ -208,7 +208,7 @@ window.onload = function() {
                     }
                     
                     echo "{ label: '$name',  y: $total, legendText: '$name'}, ";
-                 }
+                }
             ?>
             ] 
         } 

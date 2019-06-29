@@ -180,8 +180,8 @@ $results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, Fi
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "6.2";
-    $versionString = "Version $version !!! (May 28th, 2019)";
+    $version = "6.3";
+    $versionString = "Version $version (Jun 23rd, 2019)";
 
     $total_income = 0;
     $total_expense = 0;
@@ -227,6 +227,31 @@ if(!$isMobile) {
     echo "<img style='vertical-align:middle;' width='30px' src='" . IMAGES_LINK . "timer.png'/>&nbsp;<span style='font-weight:bold;' id='warning_time'>-</span>";
     echo "</td>";
 
+    if(  !IsLoggedIn() || $_SESSION['ShowTrending'] == 1 ) {
+        $startTrendingHour = date('Y-m-d' ) . " 00:00:00";
+        $stopTrendingHour = date('Y-m-d' ) . " 23:59:59";
+        $trendingResults = $db->query("select p.itemID, i.Name, count(p.ItemID) as Amount, max(p.Date), i.Type, i.ImageURL from Purchase_History p JOIN Item i on p.ItemID = i.ID where p.Date > '$startTrendingHour' and p.Date < '$stopTrendingHour' and i.Type = '$itemType' group by p.ItemID order by count(p.itemID) desc");
+        $trendingRow = $trendingResults->fetchArray();
+        $trendingItem = $trendingRow['Name'];
+        $trendingAmount = $trendingRow['Amount'];
+        $trendingImage = $trendingRow['ImageURL'];
+
+        $trendingImageURL = "";
+        $trendingDisplay = "$trendingAmount $trendingItem";
+
+        if ($trendingItem == "") {
+            $trendingDisplay = "Nothing";
+        } else {
+            if ($trendingImage != "") {
+                $trendingImageURL = "<img style='width: 30px; vertical-align: middle;' src='" . PREVIEW_IMAGES_NORMAL . $trendingImage . "' />";
+            }
+        }
+
+        echo "<td style='color:black; background-color:#50ff5a; padding:5px 15px; border: #000 2px solid;' title=\"What's Trending\">";
+        echo "<span><b>Trending:</b> $trendingImageURL $trendingDisplay</span>";
+        echo "</td>";
+    }
+
     if( $isLoggedInAdmin ) {
         echo "<td>&nbsp;</td>";
         echo "<td style='text-align:right; font-weight:bold;'>Calculated:</td>";
@@ -238,7 +263,7 @@ if(!$isMobile) {
     
     if( $isLoggedInAdmin ) {
         echo "<tr>";
-        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
+        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
         echo "<td style='text-align:right; font-weight:bold;'>Payments:</td>";
         echo "<td style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> ". getPriceDisplayWithDollars( $total_income_actual )."</td>";
         $actualProfit = $total_income - $total_income_actual;
@@ -373,6 +398,20 @@ if( !$isMobile) {
     // https://i2kplay.com/icon-new/
 
     // <div>Icons made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+    DisplayUpdate("Jun 23, 2019 (6.3)", $itemType, array(
+        DisplayItem("request", "Site now supports HTTPS. Now Christian can leave me alone. I'm still working on a way to redirect the HTTP URLs to HTTPS. But after 3 hours of messing around with apache rewrite rules I gave up. <a href=\"https://penguinore.net/sodastock.php\">Try it here!</a>"),
+        DisplayItem("request", "Added \"What's Trending\" box at the top of the page next to the timer. It shows the most bought item of the current day (from all users). Can be turned off in your Preferences."),
+        DisplayItem("bug", "If you chose to hide Discontinued Items the 'Discontinued Soon' items were hidden as well."),
+        DisplayItem("bug", "Clicking the items in the shelf when logged out attempted to add that item to the cart with no user."),
+        DisplayItem("bug", "Fixed a bug where partial credit purchases were not reflected in the Billing page correctly. If a person bought an item with both credits and balance (because they ran out of Credits) it only showed up entirely as credits. So that balance part was left out of the final 'owed' amount. This is why one of our users had 38 cents in their balance after they made a payment. Because I was using the Billing page to determine that payment."),
+        DisplayItem("none", "New 'Report out of Stock' icon (a draining battery instead of a flag)."),
+        DisplayItem("none", "Refund rows in Purchase History are now a different color."),
+        DisplayItem("none", "The priority color isn't shown for completed items."),
+        DisplayItem("admin", "Added 'Profit' column to Audit page so even with the missing money I can tell if I'm losing money in terms of store purchase and income."),
+        DisplayItem("admin", "Priority dropdown doesn't display for completed items in Requests page."),
+        DisplayItem("admin", "Improved logging and fixed some warnings."),
+    ) );
 
     DisplayUpdate("May 28, 2019 (6.2)", $itemType, array(
         DisplayItem("request", "Added Help section for new users (ask by Mike P)."),

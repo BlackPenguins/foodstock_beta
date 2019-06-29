@@ -15,12 +15,12 @@
 
             <div style="margin-top: 150px; text-align: center;">
                 <div class='link' style='margin:30px;'>
-                                <a href="http://penguinore.net/sodastock.php">
+                                <a href="https://penguinore.net/sodastock.php">
                     <span style="text-decoration: none; color: #ffffff; font-size: 50px;">Go to SodaStock &gt;&gt;</span>
                 </a>
                                 </div>
                                 <div class='link' style='margin:30px;'>
-                                <a href="http://penguinore.net/snackstock.php">
+                                <a href="https://penguinore.net/snackstock.php">
                                         <span style="text-decoration: none; color: #ffffff; font-size: 50px;">Go to SnackStock &gt;&gt;</span>
                                 </a>
                                 </div>

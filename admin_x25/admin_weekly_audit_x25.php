@@ -17,14 +17,15 @@
     echo "<li>Items that were stolen from the cabinet or fridge</li>";
     echo "<li>User forgot to purchase the item on the site</li>";
     echo "<li>Matt miscounted the inventory</li>";
-    echo "<li><b>Newest issue:</b> They did a delayed purchase. So they took 4 sodas. I did the audit and saw them missing. But they then purchased them the week after the audit.</li>";
+    echo "<li><b>New issue:</b> They did a delayed purchase. So they took 4 sodas. I did the audit and saw them missing. But they then purchased them the week after the audit.</li>";
+    echo "<li><b>Newest issue:</b> A bug happens during purchasing so the entire thing is never logged in the site. (database locked with Matt on May 23rd)</li>";
     echo "</ul>";
 
     echo "<div class='center_piece'>";
     echo "<div class='rounded_table_no_border'>";
     echo "<table>";
     echo "<thead><tr>";
-    echo "<th>AuditID</th><th>Date</th><th>Money in Mug</th><th>Calculated Money</th><th>Missing Money</th>";
+    echo "<th>AuditID</th><th>Date</th><th>Money in Mug</th><th>Calculated Money</th><th>Missing Money</th><th>Profit</th>";
     echo "</tr>";
 
     $results = $db->query("SELECT a.AuditID, a.Date, a.MissingMoney, a.ItemType, p.Amount from Audit a JOIN Payments p ON a.auditID = p.auditID ORDER BY a.AuditID DESC");
@@ -47,8 +48,9 @@
         }
         $breakdownTable = "";
         $totalIncomeForAudit = 0.0;
+        $totalProfitForAudit = 0.0;
 
-        $shelfBeforeSQL = "SELECT before.ShelfQuantity as BeforeQuantity, before.Date, before.Price as BeforePrice, after.ShelfQuantity as AfterQuantity, after.Date, after.AuditID, item.price as AfterPrice, item.Name, " .
+        $shelfBeforeSQL = "SELECT before.ShelfQuantity as BeforeQuantity, before.Date, before.Price as BeforePrice, after.ShelfQuantity as AfterQuantity, after.Date, after.AuditID, item.DiscountPrice, item.Price, item.id  as ItemID, item.price as AfterPrice, item.Name, " .
             "(select count(*) from Purchase_History p where p.Date > before.Date and p.ItemID = item.ID AND p.Date < after.Date) SitePurchases, " .
             "(SELECT sum(d.ShelfQuantity-d.ShelfQuantityBefore) from Daily_Amount d WHERE d.ShelfQuantity > d.ShelfQuantityBefore AND d.ItemID = item.ID AND d.Date > before.Date AND d.Date < after.Date) Refills " .
             "from Daily_Amount before JOIN Daily_Amount after ON before.ItemID = after.ItemID AND after.AuditID = $auditID " .
@@ -60,17 +62,24 @@
         $breakdownTable .= "<div class='rounded_inner_table'>";
         $breakdownTable .= "<table>";
         $breakdownTable .= "<thead><tr>";
-        $breakdownTable .= "<th>Item</th><th>Amount Before</th><th>Total Refilled</th><th>Total Site Purchases</th><th>Amount After</th><th>Total <u>Non-Site</u> Purchases</th><th>Full Price</th><th>Total</th>";
+        $breakdownTable .= "<th>Item</th><th>Amount Before</th><th>Total Refilled</th><th>Total Site Purchases</th><th>Amount After</th><th>Total <u>Non-Site</u> Purchases</th><th>Full Price</th><th>Total</th><th>Profit</th>";
         $breakdownTable .= "</tr>";
 
         while ($rowShelfBefore = $resultsShelfBefore->fetchArray()) {
             $beforeQuantity = $rowShelfBefore['BeforeQuantity'];
             $afterQuantity = $rowShelfBefore['AfterQuantity'];
             $itemName = $rowShelfBefore['Name'];
+            $itemID = $rowShelfBefore['ItemID'];
             $beforePrice = $rowShelfBefore['BeforePrice'];
             $afterPrice = $rowShelfBefore['AfterPrice'];
             $sitePurchases = $rowShelfBefore['SitePurchases'];
             $refills = $rowShelfBefore['Refills'];
+
+            $restockResults = $db->query("SELECT (r.Cost/r.NumberOfCans) as 'CostEach' FROM Restock r JOIN Item s ON r.itemID = $itemID  ORDER BY r.Date DESC LIMIT 1");
+            $retailCostEach = $restockResults->fetchArray()['CostEach'];
+
+            $discountPrice = $rowShelfBefore['DiscountPrice'] != 0 ? $rowShelfBefore['DiscountPrice'] : $rowShelfBefore['Price'];
+            $price = $rowShelfBefore['Price'];
 
             if( $refills == "" ) { $refills = 0; }
 
@@ -81,10 +90,14 @@
 
             $totalNonSitePurchases = $beforeQuantity - ($afterQuantity - $refills ) - $sitePurchases;
             $totalNonSitePurchasesIncome = $totalNonSitePurchases * $beforePrice;
-            $rowType = $totalNonSitePurchases != 0 ? "" : "class='discontinued_row'";
+
+            $profit = ($sitePurchases * ($discountPrice - $retailCostEach) ) - ($totalNonSitePurchases * $retailCostEach );
+            $profitStyle = $profit < 0 ? "style='color:#890101; font-weight:bold;'" : "";
+
+            $rowType = $totalNonSitePurchases != 0 ? "style='background-color: #ffb2b2; color:#000000;'" : "style='background-color: #98ffd9;'";
             $refillColor = $refills > 0 ? "style='color:#07b91d; font-weight:bold;'" : "";
             $breakdownTable .= "<tr $rowType>";
-            $breakdownTable .= "<td><b>$itemName</b></td>";
+            $breakdownTable .= "<td><b>$itemName</b> ($itemID) (" . getPriceDisplayWithDollars( round( $retailCostEach ) ) . ")(" . getPriceDisplayWithDollars( round( $price ) ) . ")(" . getPriceDisplayWithDollars( round( $discountPrice ) ) . ")</td>";
             $breakdownTable .= "<td>$beforeQuantity</td>";
             $breakdownTable .= "<td $refillColor>$refills</td>";
             $breakdownTable .= "<td>$sitePurchases</td>";
@@ -92,14 +105,17 @@
             $breakdownTable .= "<td><b>$totalNonSitePurchases<b></td>";
             $breakdownTable .= "<td>" . getPriceDisplayWithDollars( $beforePrice ) . "$differentPriceWarning</td>";
             $breakdownTable .= "<td>" . getPriceDisplayWithDollars( $totalNonSitePurchasesIncome ) . "</td>";
+            $breakdownTable .= "<td $profitStyle>" . getPriceDisplayWithDollars( $profit ) . "</td>";
             $breakdownTable .= "</tr>";
 
             $totalIncomeForAudit += $totalNonSitePurchasesIncome;
+            $totalProfitForAudit += $profit;
         }
         $breakdownTable .= "</table>";
 
         $missingMoney = $totalIncomeForAudit - $income;
         $misingMoneyColor = $missingMoney > 0 ? "#b10505" : "#07b91d";
+        $profitColor = $totalProfitForAudit < 0 ? "#b10505" : "#07b91d";
 
         echo "<tr>";
         echo "<td><b>Audit Week #$auditID<br>Audit Week #$previousAuditID</b></td>";
@@ -107,6 +123,7 @@
         echo "<td><span>" . getPriceDisplayWithDollars( $income ) . "</span></td>";
         echo "<td><span>" . getPriceDisplayWithDollars( $totalIncomeForAudit ) . "</span></td>";
         echo "<td><span style='color:$misingMoneyColor; font-weight:bold; font-size: 2em;'>" . getPriceDisplayWithDollars( $missingMoney ) . "</span></td>";
+        echo "<td><span style='color:$profitColor; font-weight:bold; font-size: 2em;'>" . getPriceDisplayWithDollars( $totalProfitForAudit ) . "</span></td>";
         echo "</tr>";
         echo "<tr>";
         echo "<td colspan='7'>$breakdownTable</td>";

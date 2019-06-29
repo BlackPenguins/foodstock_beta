@@ -171,22 +171,24 @@
             
             $priorityColor = "";
 
-            if( $priority == "In Progress" ) {
-                $priorityColor = "background-color:#e5b2ff;";
-            } else if( $priority == "Quick" ) {
-                $priorityColor = "background-color:#ffe567;";
-            } else if( $priority == "High" ) {
-                $priorityColor = "background-color:#ff9e9e;";
-            } else if( $priority == "Medium" ) {
-                $priorityColor = "background-color:#fffca9;";
-            } else if( $priority == "Low" ) {
-                $priorityColor = "background-color:#b2d8ff;";
+            if( $row['Completed'] != 1 ) {
+                if ($priority == "In Progress") {
+                    $priorityColor = "background-color:#e5b2ff;";
+                } else if ($priority == "Quick") {
+                    $priorityColor = "background-color:#ffe567;";
+                } else if ($priority == "High") {
+                    $priorityColor = "background-color:#ff9e9e;";
+                } else if ($priority == "Medium") {
+                    $priorityColor = "background-color:#fffca9;";
+                } else if ($priority == "Low") {
+                    $priorityColor = "background-color:#b2d8ff;";
+                }
             }
             
             echo "<td class='hidden_mobile_column' style='width:$column2Width%; $priorityColor'>";
             
             
-            if( $isLoggedInAdmin ) {
+            if( $isLoggedInAdmin && $row['Completed'] != 1 ) {
                 echo "<select onchange='togglePriority(" . $row['ID'] . ", this.value);' id='Priority_Request' name='Priority_Request' class='text ui-widget-content ui-corner-all'>";
                 echo "<option " . ( $priority == ""  ? "selected" : "" ) . " value='Unassigned'>Unassigned</option>";
                 echo "<option " . ( $priority == "In Progress"  ? "selected" : "" ) . " value='In Progress'>In Progress</option>";

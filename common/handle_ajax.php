@@ -51,6 +51,8 @@
         while ($row = $results->fetchArray()) {
 
             $retired_item = $row['Retired'];
+            $cold_item = $row['ShelfQuantity'];
+            $warm_item = $row['BackstockQuantity'];
 
             $hideDiscontinued = true;
 
@@ -58,7 +60,7 @@
                 $hideDiscontinued = false;
             }
 
-            if( $retired_item == 1 && $hideDiscontinued ) {
+            if( $retired_item == 1 && $hideDiscontinued && $cold_item == 0 ) {
                 continue;
             }
 
@@ -97,10 +99,7 @@
                 $price_color = "#FFFFFF";
                 $price_background_color = "#5f0000";
             }
-            
-            $cold_item = $row['ShelfQuantity'];
-            $warm_item = $row['BackstockQuantity'];
-            
+
             $priceDisplay = "";
             
             if( $isLoggedIn && $hasDiscount == true ) {
@@ -215,7 +214,7 @@
             $reportButton = "";
             if( $isLoggedIn && $outOfStock != "1" ) {
                 $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
-                $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='" . IMAGES_LINK . "flag.png' title='Report Item Out of Stock'/></div>";
+                $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='" . IMAGES_LINK . "low.png' title='Report Item Out of Stock'/></div>";
             }
             
             $outOfStockLabel = "";
@@ -523,7 +522,7 @@
         $displayMonth = trim($_POST["displayMonth"]);
         
         $results = $db->query("SELECT UserID, UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User" );
-        log_debug( "Notifying Users..." );
+        log_debug( "Notifying Users of Payment..." );
         
         while ($row = $results->fetchArray()) {
 
@@ -547,7 +546,7 @@
             $sodaTotalUnpaid = $sodaTotal - $sodaPaid;
             $snackTotalUnpaid = $snackTotal - $snackPaid;
             
-            log_debug("User[$userName]Month[$month]Year[$year]Soda Total[$sodaTotal]Snack Total[$snackTotal][Soda Paid[$sodaTotalUnpaid]SnackPaid[$snackTotalUnpaid]");
+            log_debug("Notifying User[$userName] Month[$month] Year[$year] Soda Total[$sodaTotal] Snack Total[$snackTotal] Soda Paid[$sodaTotalUnpaid] SnackPaid[$snackTotalUnpaid]");
             
             
             $totalBalance = $sodaTotalUnpaid + $snackTotalUnpaid ;
@@ -557,7 +556,7 @@
                 "*_Soda Balance:_* " . getPriceDisplayWithDollars( $sodaTotalUnpaid ) . "\n" .
                 "*_Snack Balance:_* " . getPriceDisplayWithDollars( $snackTotalUnpaid ) . "\n\n" .
                         "*Total Balance Owed:* " . getPriceDisplayWithDollars( $totalBalance ) . "\n\n" .
-                        "You can view more details on the <http://penguinore.net/purchase_history.php|Purchase/Payment History Page>. Have a great day! :grin:";
+                        "You can view more details on the <https://penguinore.net/purchase_history.php|Purchase/Payment History Page>. Have a great day! :grin:";
                 
                 sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a" );
             }

@@ -128,22 +128,26 @@ function getPriceDisplayWithFormat($priceInWholeCents, $format ) {
 }
 
 function convertDecimalToWholeCents( $decimal ) {
-    $valueInDollars = number_format( $decimal, 2 );
-    $valueInDollars = str_replace(",","", $valueInDollars );
+    try {
+        $valueInDollars = number_format($decimal, 2);
+        $valueInDollars = str_replace(",", "", $valueInDollars);
 
-    $isNegative = substr( $valueInDollars, 0, 1 ) === "-";
+        $isNegative = substr($valueInDollars, 0, 1) === "-";
 
-    $moneyPieces = explode(".", $valueInDollars);
-    $dollars = $moneyPieces[0];
-    $cents = $moneyPieces[1];
+        $moneyPieces = explode(".", $valueInDollars);
+        $dollars = $moneyPieces[0];
+        $cents = $moneyPieces[1];
 
-    if( $isNegative ) {
-        $valueInWholeCents = ($dollars * 100) - $cents;
-    } else {
-        $valueInWholeCents = ($dollars * 100) + $cents;
-    }
+        if ($isNegative) {
+            $valueInWholeCents = ($dollars * 100) - $cents;
+        } else {
+            $valueInWholeCents = ($dollars * 100) + $cents;
+        }
 //    echo "Converted [$valueInDollars] --> [$valueInWholeCents]<br>";
-   return $valueInWholeCents;
+        return $valueInWholeCents;
+    } catch (Exception $e) {
+        error_log( "Failed to convert decimal to whole cents. Decimal [$decimal] Message: [" .  $e->getMessage() . "]" );
+    }
 }
 
 function DisplayPreview($item_name, $soldOut, $imageURL) {
@@ -161,10 +165,15 @@ function DisplayPreview($item_name, $soldOut, $imageURL) {
 }
 
 function DisplayShelfCan($itemID, $item_name, $thumbURL) {
+    $clickAddToCart = "";
+
+    if( IsLoggedIn() ) {
+        $clickAddToCart = "onclick='addItemToCart(" . $itemID . ", \"\")'";
+    }
     if( $thumbURL == "" ) {
         echo "<img title='$item_name' style='padding:5px;' src='" . PREVIEW_IMAGES_THUMBS . "not_found_sm.png' />";
     } else {
-        echo "<img onclick='addItemToCart(" . $itemID . ", \"\")' title='$item_name' style='padding:5px;' src='" . PREVIEW_IMAGES_THUMBS . $thumbURL . "' />";
+        echo "<img $clickAddToCart title='$item_name' style='padding:5px;' src='" . PREVIEW_IMAGES_THUMBS . $thumbURL . "' />";
     }
 }
 

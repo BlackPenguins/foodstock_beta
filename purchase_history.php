@@ -169,21 +169,38 @@ while ($row = $results->fetchArray()) {
         $cost = $row['Cost'];
     }
 
+    $creditOrCashOnlyCost= 0;
+    $balanceCost = 0;
+
+    $creditsUsed = $row['UseCredits'];
+    $partialCreditsUsed = $cost - $creditsUsed;
+
+    if( $partialCreditsUsed > 0 ) {
+        $balanceCost = $partialCreditsUsed;
+        $creditOrCashOnlyCost = $creditsUsed;
+    } else if( $row['CashOnly'] != 1 ) {
+        $creditOrCashOnlyCost = $cost;
+    } else if( $creditsUsed > 0 ) {
+        $creditOrCashOnlyCost = $creditsUsed;
+    }
+
     // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
-    if( $row['CashOnly'] != 1 && $row['UseCredits'] == 0 ) {
+    if( $balanceCost > 0 ) {
         if( $row['Type'] == "Snack" ) {
-            $currentMonthSnackTotal += $cost;
+            $currentMonthSnackTotal += $balanceCost;
             $currentMonthSnackCount++;
         } else if( $row['Type'] == "Soda" ) {
-            $currentMonthSodaTotal += $cost;
+            $currentMonthSodaTotal += $balanceCost;
             $currentMonthSodaCount++;
         }
-    } else {
+    }
+
+    if( $creditOrCashOnlyCost > 0 ) {
         if( $row['Type'] == "Snack" ) {
-            $currentMonthSnackCashOnlyTotal += $cost;
+            $currentMonthSnackCashOnlyTotal += $creditOrCashOnlyCost;
             $currentMonthSnackCashOnlyCount++;
         } else if( $row['Type'] == "Soda" ) {
-            $currentMonthSodaCashOnlyTotal += $cost;
+            $currentMonthSodaCashOnlyTotal += $creditOrCashOnlyCost;
             $currentMonthSodaCashOnlyCount++;
         }
     }
@@ -260,9 +277,8 @@ echo "</div>";
         $itemName = $row['Name'];
         $discountAmountDisplay = getPriceDisplayWithDollars( $row['DiscountCost'] );
         $costAmountDisplay = getPriceDisplayWithDollars( $row['Cost'] );
-        
+
         if( $isCancelled ) {
-            $rowClass = "discontinued_row";
             $discountAmountDisplay .= " (REFUNDED)";
             $costAmountDisplay .= " (REFUNDED)";
         }
@@ -295,7 +311,9 @@ echo "</div>";
         $rowClass = "";
         $itemType = $row['Type'];
 
-        if( $itemType == "Soda" ) {
+        if( $isCancelled ) {
+            $rowClass = "class='refund_row'";
+        } else  if( $itemType == "Soda" ) {
             $rowClass = "class='soda_row'";
         } else if( $itemType == "Snack" ) {
             $rowClass = "class='snack_row'";

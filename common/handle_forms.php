@@ -133,7 +133,7 @@ if(isset($_POST['Purchase'])) {
             $newBalance = addToValue( $db, "User", $typeOfBalance, $totalPrice, "where UserID = " . $_SESSION['UserID'], true );
             $newSavings = addToValue( $db, "User", $typeOfSavings, $totalSavings, "where UserID = " . $_SESSION['UserID'], true );
             $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $newBalance , $typeOfSavings = $newSavings, Credits = $creditsLeftOfUser where UserID = " . $_SESSION['UserID'];
-            log_sql("Balance Update [" . $balanceUpdateQuery . "]" );
+            log_sql("Balance Update SQL: [" . $balanceUpdateQuery . "]" );
             $db->exec( $balanceUpdateQuery );
 
             $_SESSION[$typeOfBalance] = $_SESSION[$typeOfBalance] + $totalPrice;
@@ -187,6 +187,7 @@ if(isset($_POST['Purchase'])) {
     $showShelf = 0;
     $showItemStats = 0;
     $subscribeRestocks = 0;
+    $showTrending = 0;
 
     if( isset($_POST["Preferences_ShowDiscontinued"]) ) {
         $showDiscontinued = 1;
@@ -212,6 +213,10 @@ if(isset($_POST['Purchase'])) {
         $subscribeRestocks = 1;
     }
 
+    if( isset($_POST["Preferences_ShowTrending"]) ) {
+        $showTrending = 1;
+    }
+
     $results = $db->query("SELECT count(*) as Total FROM User WHERE AnonName = '$anonAnimal' AND UserID != $userID" );
     $row = $results->fetchArray();
     $total = $row['Total'];
@@ -225,8 +230,8 @@ if(isset($_POST['Purchase'])) {
         $userMessage = "User Preferences saved.";
     }
 
-    $editUserQuery = "UPDATE User SET ShowDiscontinued=$showDiscontinued, ShowCashOnly=$showCashOnly, ShowCredit=$showCredit, ShowItemStats=$showItemStats, ShowShelf=$showShelf, SubscribeRestocks=$subscribeRestocks $anonNameUpdate where UserID = $userID";
-    log_sql("Edit User Query: [" . $editUserQuery . "]" );
+    $editUserQuery = "UPDATE User SET ShowDiscontinued=$showDiscontinued, ShowCashOnly=$showCashOnly, ShowCredit=$showCredit, ShowItemStats=$showItemStats, ShowShelf=$showShelf, SubscribeRestocks=$subscribeRestocks, ShowTrending=$showTrending $anonNameUpdate where UserID = $userID";
+    log_sql("Edit User SQL: [" . $editUserQuery . "]" );
     $db->exec( $editUserQuery );
 
     $_SESSION['ShowDiscontinued'] = $showDiscontinued;
@@ -235,12 +240,18 @@ if(isset($_POST['Purchase'])) {
     $_SESSION['ShowItemStats'] = $showItemStats;
     $_SESSION['ShowShelf'] = $showShelf;
     $_SESSION['SubscribeRestocks'] = $subscribeRestocks;
+    $_SESSION['ShowTrending'] = $showTrending;
 
 } else if(isset($_POST['Request'])) {
     $itemType = trim($_POST["ItemTypeDropdown_Request"]);
     $date = date('Y-m-d H:i:s');
     $itemName = $db->escapeString(trim($_POST["ItemName_Request"]));
-    $note = $db->escapeString(trim($_POST["Note_Request"]));
+    $note = "";
+
+    if( isset( $_POST["Note_Request"]) ) {
+        $note = $db->escapeString(trim($_POST["Note_Request"]));
+    }
+
     $userID = $_SESSION['UserID'];
     $username = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
     $slackID = $_SESSION['SlackID'];
@@ -285,7 +296,7 @@ if(isset($_POST['Purchase'])) {
 
 
         $shoppingQuery = "INSERT INTO Shopping_Guide (ItemID, PackQuantity, RegularPrice, SalePrice, Store, User, Date) VALUES($itemID, $packQuantity, $regularPrice, $salePrice, $store, '$submitter', '$date')";
-        log_sql("Shopping Query: [" . $shoppingQuery . "]" );
+        log_sql("Shopping SQL: [" . $shoppingQuery . "]" );
         $db->exec( $shoppingQuery );
 } else {
     // ------------------------------------
@@ -304,8 +315,18 @@ if(isset($_POST['Purchase'])) {
             $chartColor = trim($_POST["EditChartColor" . $itemType]);
             $price = convertDecimalToWholeCents( trim($_POST["EditPrice" . $itemType]) );
             $discountPrice = convertDecimalToWholeCents( trim($_POST["EditDiscountPrice" . $itemType]) );
-            $imageURL = trim($_POST["EditImageURL" . $itemType]);
-            $thumbURL = trim($_POST["EditThumbURL" . $itemType]);
+
+            $imageURL = "";
+            $thumbURL = "";
+
+            if( isset( $_POST["EditImageURL" . $itemType] ) ) {
+                $imageURL = trim($_POST["EditImageURL" . $itemType]);
+            }
+
+            if( isset( $_POST["EditThumbURL" . $itemType] ) ) {
+                $thumbURL = trim($_POST["EditThumbURL" . $itemType]);
+            }
+
             $unitName = trim($_POST["EditUnitName" . $itemType]);
             $unitNamePlural = trim($_POST["EditUnitNamePlural" . $itemType]);
             $alias = trim($_POST["EditAlias" . $itemType]);
@@ -345,7 +366,7 @@ if(isset($_POST['Purchase'])) {
             }
 
             $editUserQuery = "UPDATE Item SET Name='$name', ChartColor='$chartColor', Price = $price, DiscountPrice = $discountPrice, Retired = $retired $updateImageURL $updateThumbURL, UnitName = '$unitName', UnitNamePlural = '$unitNamePlural', Alias = '$alias', CurrentFlavor = '$currentFlavor', ExpirationDate = '$expirationDate' where ID = $id";
-            log_sql("Edit Item Query: [" . $editUserQuery . "]" );
+            log_sql("Edit Item SQL: [" . $editUserQuery . "]" );
             $db->exec( $editUserQuery );
 
             $userMessage = "Item \"$name\" edited successfully.";
@@ -389,7 +410,7 @@ if(isset($_POST['Purchase'])) {
             }
 
             $editUserQuery = "UPDATE User SET SlackID='$slackID', AnonName='$anonName', $resetPasswordQuery Inactive = $inactive, IsCoop = $isCoop where UserID = $id";
-            log_sql("Edit User Query: [" . $editUserQuery . "]" );
+            log_sql("Edit User SQL: [" . $editUserQuery . "]" );
             $db->exec( $editUserQuery );
 
             $userMessage = $userMessage . "User edited successfully.";
@@ -424,13 +445,13 @@ if(isset($_POST['Purchase'])) {
 
             if( $validCredits ) {
                 $editUserQuery = "UPDATE User SET Credits=Credits + $creditAmountWholeCents where UserID = $id";
-                log_sql("Edit User Query: [" . $editUserQuery . "]");
+                log_sql("Edit User SQL: [" . $editUserQuery . "]");
                 $db->exec($editUserQuery);
 
                 $date = date('Y-m-d H:i:s', time());
 
                 $purchaseHistoryQuery = "INSERT Into Purchase_History (UserID, ItemID, Cost, Date ) VALUES ($id, " . CREDIT_ID . ", $creditAmountWholeCents,'" . $date . "')";
-                log_sql("Update Purchase_History Query: [" . $purchaseHistoryQuery . "]");
+                log_sql("Update Purchase_History SQL: [" . $purchaseHistoryQuery . "]");
                 $db->exec($purchaseHistoryQuery);
 
                 $userMessage = $userMessage . "User credited successfully with " . getPriceDisplayWithDollars($creditAmountWholeCents);
@@ -503,7 +524,6 @@ if(isset($_POST['Purchase'])) {
                 $userMessage = "Defectives successfully.";
             }
         } else if(isset($_POST['Payment'])) {
-            log_payment( "Incoming payment." );
             $userID = trim($_POST["UserID"]);
             $paymentMonth = trim($_POST["Month"]);
             $date = date('Y-m-d H:i:s');
@@ -511,9 +531,10 @@ if(isset($_POST['Purchase'])) {
             $sodaAmount = convertDecimalToWholeCents( trim($_POST["SodaAmount"]) );
             $note = trim($_POST["Note"]);
             $method = trim($_POST["MethodDropdown"]);
+            log_payment( "Incoming payment for User [$userID] Month [$paymentMonth] Snack[$snackAmount] Soda[$sodaAmount]" );
 
             if( $userID > 0 ) {
-                log_payment( "User payment found." );
+                log_payment( "User payment found for [$userID]" );
                 $results = $db->query("SELECT SodaBalance, SnackBalance, SlackID, UserName, FirstName, LastName From User where UserID = $userID");
                 $row = $results->fetchArray();
                 $sodaBalance = $row['SodaBalance'];
@@ -537,10 +558,10 @@ if(isset($_POST['Purchase'])) {
 
                 if( $isBalanceValid ) {
                     $newSodaBalance = $sodaBalance - $sodaAmount;
-                    log_payment( "Reduced Soda balance [" . $newSodaBalance . "] is [" . $sodaBalance . " - " . $sodaAmount . "]" );
+                    log_payment( "Reduced Soda balance [" . $newSodaBalance . "] is [" . $sodaBalance . " Balance - " . $sodaAmount . " Amount]" );
 
                     $newSnackBalance = $snackBalance - $snackAmount;
-                    log_payment( "Reduced Snack balance [" . $newSnackBalance . "] is [" . $snackBalance . " - " . $snackAmount . "]" );
+                    log_payment( "Reduced Snack balance [" . $newSnackBalance . "] is [" . $snackBalance . " Balance - " . $snackAmount . " Amount]" );
 
                     $newTotalBalance = $newSodaBalance + $newSnackBalance;
                     $balance = $sodaBalance + $snackBalance;
@@ -605,7 +626,7 @@ if(isset($_POST['Purchase'])) {
             if( $auditAmount != "" ) {
                 log_debug(" Audit found [$auditAmount] - [$itemType]" );
                 $auditQuery = "INSERT INTO Audit (Date, MissingMoney, ItemType) VALUES('$date', 0, '$itemType')";
-                log_sql(" Audit Query [$auditQuery]" );
+                log_sql(" Audit SQL [$auditQuery]" );
                 $db->exec( $auditQuery );
                 $auditID = $db->lastInsertRowID();
                 $auditMessage = "(AUDIT #$auditID)";
@@ -613,7 +634,7 @@ if(isset($_POST['Purchase'])) {
                 $firstOfMonth = mktime(0, 0, 0, date("m"), 1, date("Y") );
                 $monthLabel = date('F Y', $firstOfMonth);
                 $paymentQuery = "INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment, AuditID) VALUES(0, '', $auditAmount, '$date', 'Audited', '$itemType', '$monthLabel', $auditID)";
-                log_sql(" Payment Query [$paymentQuery]" );
+                log_sql(" Payment SQL [$paymentQuery]" );
                 $db->exec( $paymentQuery);
                 $newProfit = addToValue( $db, "Information", "ProfitActual", $auditAmount, "where ItemType = '$itemType'", true );
                 $db->exec("UPDATE Information SET ProfitActual = $newProfit where ItemType = '$itemType'");
@@ -686,7 +707,7 @@ if(isset($_POST['Purchase'])) {
                 }
 
                 $dailyAmountQuery = "INSERT INTO Daily_Amount (ItemID, Date, BackstockQuantityBefore, BackstockQuantity, ShelfQuantityBefore, ShelfQuantity, Price, Restock, PurchaseID, AuditID) VALUES($id, '$date', $backstockQuantityBefore, $backstockQuantity, $shelfQuantityBefore, $shelfQuantity, $price, $restocked, -3, $auditID)";
-                log_sql("DA Query: [" . $dailyAmountQuery . "]" );
+                log_sql("Daily Amount SQL: [" . $dailyAmountQuery . "]" );
                 $db->exec( $dailyAmountQuery );
                 $db->exec("UPDATE Item SET Price = $price, DateModified = '$date' where ID = $id");
 
@@ -715,7 +736,7 @@ if(isset($_POST['Purchase'])) {
                 $page = SNACKSTOCK_LINK;
             }
             if( $slackMessageItems != "" && $sendToSlack == true) {
-                $slackMessage = $slackMessageItems ."\n\nVisit <http://penguinore.net$page|Foodstock> to see the prices and inventory of all snacks & sodas.";
+                $slackMessage = $slackMessageItems ."\n\nVisit <https://penguinore.net$page|Foodstock> to see the prices and inventory of all snacks & sodas.";
 
                 sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - REFILL" );
 
