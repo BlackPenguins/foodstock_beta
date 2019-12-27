@@ -61,7 +61,15 @@
         $rowClass = "odd_manual";
         $previousDate = "";
         
-        $results = $db->query("SELECT p.CashOnly, i.Name, u.FirstName, u.LastName, r.Cancelled, r.ID, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.ShelfQuantityBefore, r.ShelfQuantity, r.Price FROM Daily_Amount r JOIN Item i ON r.itemID = i.id LEFT JOIN Purchase_History p ON r.ID = p.DailyAmountID LEFT JOIN User u on p.UserID = u.UserID WHERE r.Date >= date('now','-2 months') ORDER BY r.Date DESC");
+        $statement = $db->prepare("SELECT p.CashOnly, i.Name, u.FirstName, u.LastName, r.Cancelled, r.ID, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.ShelfQuantityBefore, r.ShelfQuantity, r.Price " .
+            "FROM Inventory_History r ".
+            "JOIN Item i ON r.itemID = i.id " .
+            "LEFT JOIN Purchase_History p ON r.ID = p.DailyAmountID " .
+            "LEFT JOIN User u on p.UserID = u.UserID " .
+            "WHERE r.Date >= date('now','-2 months') " .
+            "ORDER BY r.Date DESC");
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
 
             if( $previousDate != "" && $previousDate != $row['Date'] ) {

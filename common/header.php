@@ -26,6 +26,11 @@
             $titleName = "Admin - Weekly Audit";
             $trackingName = "Admin - Weekly Audit";
             break;
+        case ADMIN_TESTING_LINK:
+            $isAdminPage = true;
+            $titleName = "Admin - Automation Testing";
+            $trackingName = "Admin - Automation Testing";
+            break;
         case ADMIN_BOT_LINK:
             $isAdminPage = true;
             $titleName = "Admin - Bot";
@@ -45,6 +50,11 @@
             $isAdminPage = true;
             $titleName = "Admin - Items";
             $trackingName = "Admin - Items";
+            break;
+        case ADMIN_ITEMS_IN_STOCK_LINK:
+            $isAdminPage = true;
+            $titleName = "Admin - Items in Stock";
+            $trackingName = "Admin - Items in Stock";
             break;
         case ADMIN_PAYMENTS_LINK:
             $isAdminPage = true;
@@ -119,9 +129,10 @@
     
     include( CSS_PATH );
 
-    include( SESSION_FUNCTIONS_PATH );
-    include( UI_FUNCTIONS_PATH );
-    include( SLACK_FUNCTIONS_PATH );
+    include_once( SESSION_FUNCTIONS_PATH );
+    include_once( UI_FUNCTIONS_PATH );
+    include_once( QUANTITY_FUNCTIONS_PATH );
+    include_once( SLACK_FUNCTIONS_PATH );
     require_once( MOBILE_DETECTION_PATH );
     
     $db = new SQLite3( getDB() );
@@ -175,7 +186,7 @@
             echo "loadItemModals('Snack');\n";
         }
 
-        if( $url == ADMIN_SHOPPING_GUIDE_LINK ) {
+        if( $url == ADMIN_SHOPPING_GUIDE_LINK || $url == ADMIN_CHECKLIST_LINK ) {
             echo "loadShoppingModal();\n";
         }
 

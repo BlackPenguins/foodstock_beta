@@ -36,7 +36,13 @@
         
         $allExpenses = 0.0;
         $allExpensesCard = 0.0;
-        $results = $db->query("SELECT ID, Type, Name, RefillTrigger, Date, DateModified, ModifyType, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item where hidden != 1 ORDER BY Hidden, Type DESC, Name ASC");
+        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, Date, ChartColor, TotalCans, " . getQuantityQuery() .
+            ",Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden " .
+            "FROM Item i " .
+            "WHERE hidden != 1 " .
+            "ORDER BY Hidden, Type DESC, Name ASC");
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
             $type = $row['Type'];
             
@@ -45,11 +51,14 @@
             }
             $previousType = $type;
             
-            $totalUnits = ($row['TotalCans'] - ($row['BackstockQuantity'] + $row['ShelfQuantity']));
+            $totalUnits = ($row['TotalCans'] - ($row['BackstockAmount'] + $row['ShelfAmount']));
             
             $inSiteIncome = 0.0;
             $inSiteCount = 0;
-            $resultsPurchases = $db->query("SELECT * from Purchase_History p where p.ItemID = " . $row['ID'] );
+            $statementPurchases = $db->prepare("SELECT * from Purchase_History p WHERE p.ItemID = :itemID" );
+            $statementPurchases->bindValue( ":itemID", $row['ID'] );
+            $resultsPurchases = $statementPurchases->execute();
+
             while ($rowPurchases = $resultsPurchases->fetchArray()) {
                 $discountPrice = $rowPurchases['DiscountCost'];
                 $regularPrice = $rowPurchases['Cost'];
@@ -79,7 +88,10 @@
             $totalExpenses = 0.0;
             $totalExpensesCount = 0;
             
-            $resultsRestock = $db->query("SELECT * from Restock p where p.ItemID = " . $row['ID'] );
+            $statementRestock = $db->prepare("SELECT * from Restock p WHERE p.ItemID = :itemID" );
+            $statementRestock->bindValue( ":itemID", $row['ID'] );
+            $resultsRestock = $statementRestock->execute();
+
             while ($rowRestock = $resultsRestock->fetchArray()) {
                 $totalExpenses += $rowRestock['Cost'];
                 $totalExpensesCount++;
@@ -118,7 +130,11 @@
         
         echo "</table>";
     echo "</span>";
-    
+
+    /**
+     * @param $db SQLite3
+     * @param $previousType
+     */
     function summary( $db, $previousType ) {
         global $allIncome, $allIncomeCard, $allExpenses, $allExpensesCard;
         $allProfit = $allIncome - $allExpenses;
@@ -139,7 +155,10 @@
         $allExpensesCard = 0.0;
 
         $totalPayment = 0.0;
-        $resultsPayment = $db->query("SELECT sum(amount) as 'amount' from Payments p where p.ItemType = '$previousType'" );
+        $statementPayment = $db->prepare("SELECT sum(amount) as 'amount' FROM Payments p WHERE p.ItemType = :previousType" );
+        $statementPayment->bindValue( ":previousType", $previousType );
+        $resultsPayment = $statementPayment->execute();
+
         while ($rowPayment = $resultsPayment->fetchArray()) {
             $totalPayment = $rowPayment['amount'];
         }

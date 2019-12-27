@@ -1,4 +1,3 @@
-<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
@@ -68,7 +67,7 @@
         echo "<thead><tr class='table_header'>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
         
-        $monthsMaxAgo = 5;
+        $monthsMaxAgo = 12;
         
         for( $monthsAgo = 0; $monthsAgo <= $monthsMaxAgo; $monthsAgo++ ) {
             
@@ -78,18 +77,22 @@
             $monthDate = new DateTime();
             $monthDate->setDate($year, $month, 1 );
             
-            $displayMonth = $monthDate->format( 'F Y' );
+            $displayMonth = $monthDate->format( 'M Y' );
             
             echo "<th style='padding:5px; font-size:1.4em; border:1px #000 solid;' valign='middle' align='left'>";
-            echo $displayMonth; 
-            echo "<span style='float:right;'><button onClick='notifyUsersOfPayments(\"$month\", \"$year\", \"$displayMonth\")'>Notify All</button></span>";
+            echo "<div style='font-size: 0.9em; text-align:center;'>$displayMonth</div>";
+            echo "<div style='text-align:center;'><button onClick='notifyUsersOfPayments(\"$month\", \"$year\", \"$displayMonth\")'>Notify All</button></div>";
             echo "</th>";
         }
         echo "</tr></thead>";
         
         $rowClass = "odd";
         
-        $results = $db->query('SELECT u.UserID, u.UserName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated, u.InActive FROM User u ORDER BY u.Inactive asc, lower(u.FirstName) ASC');
+        $statement = $db->prepare("SELECT u.UserID, u.UserName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.SodaBalance, u.SnackBalance, u.DateCreated, u.InActive " .
+          "FROM User u " .
+          "ORDER BY u.Inactive asc, lower(u.FirstName) ASC");
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
             if( $row['Inactive'] == 1 ) {
                 $rowClass = "discontinued_row";
@@ -140,7 +143,13 @@
         $rowClass = "odd";
         $previousDate = "";
         
-        $results = $db->query("SELECT p.PaymentID, u.FirstName, u.LastName, p.Cancelled, p.Method, p.Amount, p.Date, p.Note, p.ItemType, p.MonthForPayment FROM Payments p LEFT JOIN User u on p.UserID = u.UserID WHERE p.Date >= date('now','-12 months') ORDER BY p.Date DESC");
+        $statement = $db->prepare("SELECT p.PaymentID, u.FirstName, u.LastName, p.Cancelled, p.Method, p.Amount, p.Date, p.Note, p.ItemType, p.MonthForPayment " .
+            "FROM Payments p " .
+            "LEFT JOIN User u on p.UserID = u.UserID " .
+            "WHERE p.Date >= date('now','-12 months') " .
+            "ORDER BY p.Date DESC" );
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
         
             if( $previousDate != "" && $previousDate != $row['Date'] ) {

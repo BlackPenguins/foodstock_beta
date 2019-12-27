@@ -2,12 +2,18 @@
 include(__DIR__ . "/../appendix.php" );
 include_once( LOG_FUNCTIONS_PATH );
 
+/**
+ * @param $db SQLite3
+ */
 function Login($db) {
     session_start();
     
     if( isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'] == true ) {
         // Already logged in - Recache everything
-        $results = $db->query("SELECT * FROM User WHERE UserName = '" . $_SESSION['UserName'] . "'");
+        $statement = $db->prepare("SELECT * FROM User WHERE UserName = :userName");
+        $statement->bindValue( ":userName", $_SESSION['UserName'] );
+        $results = $statement->execute();
+
         $row = $results->fetchArray();
         $_SESSION['SlackID'] = $row['SlackID'];
         $_SESSION['SodaBalance'] = $row['SodaBalance'];
@@ -31,6 +37,12 @@ function Login($db) {
     LoginWithProxy( $db, false, $username, $password_sha1 );
 }
 
+/**
+ * @param $db SQLite3
+ * @param $isProxy
+ * @param $username
+ * @param $password_sha1
+ */
 function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
     if (session_status() == PHP_SESSION_ACTIVE) {
         session_destroy();
@@ -39,9 +51,14 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
     session_start();
     
     if( $isProxy ) {
-        $results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "'" );
+        $statement = $db->prepare("SELECT * FROM User WHERE UserName = :userName" );
+        $statement->bindValue( ":userName", $username );
+        $results = $statement->execute();
     } else {
-        $results = $db->query("SELECT * FROM User WHERE UserName = '" . $username . "' AND Password  = '" . $password_sha1 . "'");
+        $statement = $db->prepare("SELECT * FROM User WHERE UserName = :userName AND Password  = :password");
+        $statement->bindValue( ":userName", $username );
+        $statement->bindValue( ":password", $password_sha1 );
+        $results = $statement->execute();
     }
     
     $row = $results->fetchArray();
@@ -117,6 +134,10 @@ function IsAdminLoggedIn(){
     return isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
 }
 
+/**
+ * @param $db SQLite3
+ * @param $title
+ */
 function TrackVisit($db, $title){   
     if( IsAdminLoggedIn() || !IsLoggedIn() ) {
         // Don't track the admin, or logged out people
@@ -131,29 +152,17 @@ function TrackVisit($db, $title){
     if(isset($_SERVER['HTTP_USER_AGENT']) == true) {
         $agent = $_SERVER['HTTP_USER_AGENT'];
     }
-    
-    $db->exec("INSERT INTO Visits (IP, Date, Agent, Page) VALUES( '$ipAddress', '$date', '$agent', '$title')");
-    
+
+    $statement = $db->prepare( "INSERT INTO Visits (IP, Date, Agent, Page) VALUES( :ipAddress, :date, :agent, :title)" );
+    $statement->bindValue(":ipAddress", $ipAddress );
+    $statement->bindValue(":date", $date );
+    $statement->bindValue(":agent", $agent );
+    $statement->bindValue(":title", $title );
+    $statement->execute();
+
     // Ignore me
     if( $ipAddress != "192.9.200.54" && $ipAddress  != "::1" && $ipAddress != "72.225.38.26" ) {
         sendSlackMessageToSlackBot($title . " visited by [" . $ipAddress . "] on [" . $agent . "]", ":earth_americas:", "SITE VISIT" );
     }
-}
-
-function addToValue( $db, $tableName, $columnName, $valueToAdd, $whereClause, $doAdd )
-{
-    $results = $db->query("SELECT $columnName FROM $tableName $whereClause");
-    $row = $results->fetchArray();
-    $columnValue = $row[$columnName];
-
-    if ($doAdd) {
-        $finalValue = $columnValue + $valueToAdd;
-    } else {
-        $finalValue = $columnValue - $valueToAdd;
-    }
-
-    log_sql("[$tableName/$columnName] TABLE COLUMN --- [$columnValue] " . ($doAdd ? "+" : "-") . " [$valueToAdd] = [$finalValue]");
-
-    return $finalValue;
 }
 ?>

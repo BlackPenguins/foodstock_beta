@@ -177,6 +177,14 @@ function DisplayShelfCan($itemID, $item_name, $thumbURL) {
     }
 }
 
+/**
+ * @param $db SQLite3
+ * @param $userID
+ * @param $monthNumber
+ * @param $year
+ * @param $monthLabel
+ * @return array
+ */
 function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     $startDate = $year . "-" . $monthNumber . "-01";
     
@@ -194,33 +202,72 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     $currentMonthSodaTotal = 0.0;
     $currentMonthSnackTotal = 0.0;
 
-    $query = "SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.UseCredits, p.DiscountCost, p.Date, p.UserID FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' AND p.Cancelled IS NULL ORDER BY p.Date DESC";
-    $results = $db->query( $query );
+    $query = "SELECT i.Name, i.Type, p.Cost as LegacyPrice, p.CashOnly, p.UseCredits, p.DiscountCost as LegacyDiscountPrice, p.Date, p.UserID, p.ItemDetailsID, d.Price, d.DiscountPrice " .
+        "FROM Purchase_History p " .
+        "JOIN Item i on p.itemID = i.ID " .
+        "LEFT JOIN Item_Details d on p.ItemDetailsID = d.ItemDetailsID " .
+        "WHERE p.UserID = :userID AND p.Date >= :startDate AND p.Date < :endDate AND p.Cancelled IS NULL " .
+        "ORDER BY p.Date DESC";
+
+    log_sql( "Payment Month: [$query]" );
+    $statement = $db->prepare( $query );
+    $statement->bindValue( ":userID", $userID );
+    $statement->bindValue( ":startDate", $startDate );
+    $statement->bindValue( ":endDate", $endDate );
+    $results = $statement->execute();
+
     while ($row = $results->fetchArray()) {
-        
-        $cost = 0.0;
-        if( $row['DiscountCost'] != "" && $row['DiscountCost'] != 0 ) {
-            $cost = $row['DiscountCost'];
+
+        $itemDetailsID =  $row['ItemDetailsID'];
+
+        $discountCost = $row['LegacyDiscountPrice'];
+        $fullCost = $row['LegacyPrice'];
+
+        if( $itemDetailsID != null ) {
+            $discountCost = $row['DiscountPrice'];
+            $fullCost = $row['Price'];
+        }
+
+        if( $discountCost != "" && $discountCost != 0 ) {
+            $cost = $discountCost;
         } else {
-            $cost = $row['Cost'];
+            $cost = $fullCost;
         }
         
         // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
-        if( $row['CashOnly'] != 1 && $row['UseCredits'] == 0 ) {
+        if( $row['CashOnly'] != 1 ) {
+
+            $finalCost = $cost;
+
+            // Purchases that used credits might affect what was actually for balance
+            if( $row['UseCredits'] > 0 ) {
+                $finalCost -= $row["UseCredits"];
+            }
+
             if( $row['Type'] == "Snack" ) {
-                $currentMonthSnackTotal += $cost;
+                $currentMonthSnackTotal += $finalCost;
             } else if( $row['Type'] == "Soda" ) {
-                $currentMonthSodaTotal += $cost;
+                $currentMonthSodaTotal += $finalCost;
             }
         }
     }
     
-    $sodaQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND ItemType='Soda' AND Cancelled IS NULL";
-    $sodaResults = $db->query($sodaQuery);
+    $sodaQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL";
+    $sodaStatement = $db->prepare( $sodaQuery );
+    $sodaStatement->bindValue( ":userID", $userID );
+    $sodaStatement->bindValue( ":monthLabel", $monthLabel );
+    $sodaStatement->bindValue( ":itemType", "Soda" );
+    $sodaResults = $sodaStatement->execute();
+
     $sodaTotalPaid = $sodaResults->fetchArray()['TotalAmount'];
     
-    $snackQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = $userID AND MonthForPayment = '$monthLabel' AND ItemType='Snack' AND Cancelled IS NULL";
-    $snackResults = $db->query($snackQuery);
+    $snackQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL";
+    $snackStatement = $db->prepare( $snackQuery );
+    $snackStatement->bindValue( ":userID", $userID );
+    $snackStatement->bindValue( ":monthLabel", $monthLabel );
+    $snackStatement->bindValue( ":itemType", "Snack" );
+    $snackResults = $snackStatement->execute();
+
     $snackTotalPaid = $snackResults->fetchArray()['TotalAmount'];
     
     $returnArray = array();
@@ -228,21 +275,29 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     $returnArray['SnackTotal'] = $currentMonthSnackTotal;
     $returnArray['SodaPaid'] = $sodaTotalPaid;
     $returnArray['SnackPaid'] = $snackTotalPaid;
-    
+
+    log_debug( "Month [$monthLabel] User [$userID] Soda Total [$currentMonthSodaTotal] Snack Total [$currentMonthSnackTotal] Soda Paid: [$sodaTotalPaid] Snack Paid[$snackTotalPaid]" );
     return $returnArray;
 }
 
+/**
+ * @param $db SQLite3
+ * @param $checklistType
+ * @param $selectType
+ * @return mixed
+ */
 function getChecklistResults( $db, $checklistType, $selectType ) {
     $specialWhere = "";
-    $specialSelect = "ID, Type, Name, RefillTrigger, RestockTrigger, BackstockQuantity, ShelfQuantity, Price, Retired, Hidden, IsBought";
+    $specialSelect = "ID, Type, Name, RefillTrigger, RestockTrigger," . getQuantityQuery() .
+        ",Price, DiscountPrice, Retired, Hidden, IsBought";
 
     if( $selectType == "COUNT" ) {
-        $specialSelect = "COUNT(*) as Count";
+        $specialSelect = "COUNT(*) as Count," . getQuantityQuery();
     }
 
     if( $checklistType == "RefillTrigger" ) {
         // We don't care about refilling items that we dont have at the desk
-        $specialWhere = " AND BackstockQuantity > 0";
+        $specialWhere = " AND BackstockAmount > 0";
     } else if( $checklistType == "RestockTrigger" ) {
         // We don't care about discontinued items for store restock
         $specialWhere = " AND Retired != 1 ";
@@ -252,8 +307,8 @@ function getChecklistResults( $db, $checklistType, $selectType ) {
         $specialWhere .= " AND IsBought = 0 ";
     }
 
-    $query = "SELECT $specialSelect FROM Item WHERE Hidden != 1 AND $checklistType = 1 $specialWhere ORDER BY Type DESC, Retired, ShelfQuantity DESC";
-    return $db->query( $query );
+    $statement = $db->prepare( "SELECT $specialSelect FROM Item i WHERE Hidden != 1 AND $checklistType = 1 $specialWhere ORDER BY Type DESC, Retired, ShelfAmount DESC" );
+    return $statement->execute();
 }
 
 function getRefillCount($db) {
@@ -266,7 +321,8 @@ function getRestockCount($db) {
     return $row["Count"];
 }
 
-function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued, $checklistType) {
+
+function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuantity, $backstockQuantity, $isDiscontinued, $checklistType, $extraInfo) {
     $completedMark = "&#9746;";
     $completedMarkColor = "#6b1010";
 
@@ -286,7 +342,15 @@ function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuant
     $onClick = " onclick='toggleCompleted( $itemID, \"$checklistType\" );'";
 
     echo "<td style='padding-left: 0px; font-size:1.6em; cursor:pointer; text-align:center; font-weight:bold; color: $completedMarkColor;'> <span$onClick>$completedMark </span></td>";
-    echo "<td style='color:$typeColor'>$itemName</td>";
+    echo "<td style='color:$typeColor'>";
+
+    echo "$itemName";
+
+    if( $extraInfo != "" ) {
+        echo "<br>$extraInfo";
+    }
+
+    echo "</td>";
     echo "<td style='color:$typeColor'>$itemType</td>";
     echo "<td style='color:$typeColor'>$shelfQuantity</td>";
     echo "<td style='color:$typeColor'>$backstockQuantity</td>";

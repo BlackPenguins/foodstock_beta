@@ -1,4 +1,3 @@
-<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
@@ -22,7 +21,12 @@
         
         $rowClass = "odd";
         
-        $results = $db->query("SELECT i.Name, d.Amount, d.Date, d.Price FROM Defectives d JOIN Item i ON d.itemID = i.id ORDER BY d.Date DESC");
+        $statement = $db->prepare("SELECT i.Name, d.Amount, d.Date, d.Price " .
+            "FROM Defectives d " .
+            "JOIN Item i ON d.itemID = i.id " .
+            "ORDER BY d.Date DESC");
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
             
             if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }

@@ -1,4 +1,3 @@
-<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
@@ -18,7 +17,11 @@
         $startCoops = false;
         $startInactives = false;
         
-        $results = $db->query('SELECT u.SodaBalance, u.SnackBalance, u.Credits, u.UserID, u.UserName, u.AnonName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.DateCreated, u.InActive, u.IsCoop FROM User u ORDER BY u.Inactive asc, u.IsCoop, lower(u.FirstName) ASC');
+        $statement = $db->prepare("SELECT u.SodaBalance, u.SnackBalance, u.Credits, u.UserID, u.UserName, u.AnonName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.DateCreated, u.InActive, u.IsCoop " .
+          "FROM User u " .
+          "ORDER BY u.Inactive asc, u.IsCoop, lower(u.FirstName) ASC");
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
             $isCoop = $row['IsCoop'] == 1;
             $isInactive = $row['Inactive'] == 1;
@@ -92,6 +95,34 @@
         echo "</table>";
         echo "</div>";
         echo "</div>";
+
+        echo "<div class='rounded_header'><span id='Sessions' class='title'>SESSIONS</span></div>";
+
+        $sessionLocation = session_save_path();
+
+        if( $sessionLocation == "" ) {
+            echo "Could not locate session information. Checking here instead: [" . sys_get_temp_dir() . "]<br><br>";
+            $sessionLocation = sys_get_temp_dir();
+        }
+
+        $sessionNames = scandir($sessionLocation);
+
+        foreach ($sessionNames as $sessionName) {
+
+            $filepath = $sessionLocation . "/"  . $sessionName;
+
+            if ( strpos($sessionName, "sess_") === 0 ) { //This skips temp files that aren't sessions
+                $sessionName = str_replace("sess_", "", $sessionName);
+
+                echo "<b>Session [$sessionName]</b><br>";
+                $fh = fopen($filepath, 'r') or die("File does not exist or you lack permission to open it");
+                $line = fgets($fh);
+                echo $line;
+                fclose($fh);
+                echo "<hr>";
+            }
+        }
+
         echo "</span>";
     echo "</span>";
     

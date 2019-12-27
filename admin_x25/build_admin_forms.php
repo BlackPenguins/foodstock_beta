@@ -21,7 +21,12 @@
     // SHOPPING MODAL - We want Nick to access this form
     // ------------------------------------
     // Build Item Dropdown
-    $results = $db->query("SELECT ID, Name, Type FROM Item WHERE Hidden != 1 AND Retired != 1 order by type desc, name asc");
+    $statement = $db->prepare("SELECT ID, Name, Type " .
+        "FROM Item " .
+        "WHERE Hidden != 1 AND Retired != 1 " .
+        "ORDER BY type desc, name asc");
+    $results = $statement->execute();
+
     $item_options = "";
     $previousType = "";
     while ($row = $results->fetchArray()) {
@@ -38,7 +43,9 @@
         
     }
     
-    $results = $db->query("SELECT Store FROM Shopping_Guide Order by Date Desc LIMIT 1");
+    $statement = $db->prepare("SELECT Store FROM Shopping_Guide Order by Date Desc LIMIT 1");
+    $results = $statement->execute();
+
     $lastStore = $results->fetchArray()['Store'];
     
     if( $lastStore == "" ) { $lastStore = "BestProfits"; }
@@ -75,10 +82,10 @@
     echo $store_dropdown;
     echo "<label for='PackQuantity'>Pack Quantity</label>";
     echo "<input style='font-size:1.8em;' type='tel' id='PackQuantity' name='PackQuantity' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label for='Price'>Price</label>";
-    echo "<input style='font-size:1.8em;' type='tel' id='Price' name='Price' class='text ui-widget-content ui-corner-all'/>";
+    echo "<label style='display:none;' id='PriceLabel' for='Price'>Price</label>";
+    echo "<input style='display:none; font-size:1.8em;' type='tel' id='Price' name='Price' class='text ui-widget-content ui-corner-all'/>";
     
-    echo "<div class='radio_status'>";
+    echo "<div style='display:none;' id='PriceChoices' class='radio_status'>";
     echo "<input class='radio' type='radio' id='RegularPrice' name='PriceType' value='regular' checked />";
     echo "<label for='RegularPrice'>Regular Price</label>";
     echo "<input class='radio' type='radio' id='SalePrice' name='PriceType' value='sale' />";
@@ -87,9 +94,9 @@
     
     echo "<input type='hidden' name='Shopping' value='Shopping'/><br>";
     echo "<input type='hidden' name='Submitter' value='" . $_SESSION["UserName"] . "'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . ADMIN_SHOPPING_GUIDE_LINK . "'/><br>";
+    echo "<input type='hidden' name='redirectURL' value='" . ADMIN_CHECKLIST_LINK . "'/><br>";
     
-    echo "<input class='ui-button' style='padding:10px;' type='submit' name='Shopping_Submit' value='Add Shopping'/><br>";
+//    echo "<input class='ui-button' style='padding:10px;' type='submit' name='Shopping_Submit' value='Add Shopping'/><br>";
     
     echo "</fieldset>";
     echo "</form>";
@@ -99,7 +106,9 @@
         return;
     }
     
-    $results = $db->query("SELECT FirstName, LastName, UserID, SlackID, Inactive, IsCoop, SodaBalance, SnackBalance, AnonName From User Order By FirstName Asc");
+    $statement = $db->prepare("SELECT FirstName, LastName, UserID, SlackID, Inactive, IsCoop, SodaBalance, SnackBalance, AnonName From User Order By FirstName Asc");
+    $results = $statement->execute();
+
     $user_info = "";
     
     $user_options = "";
@@ -240,11 +249,22 @@
     echo "</form>";
     echo "</div>";
 
-    
-    
+
+    /**
+     * @param $db SQLite3
+     * @param $itemType
+     * @param $hideForms
+     * @param $isMobile
+     */
     function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
         // Build Item Dropdown
-        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by retired asc, name asc");
+        $statement = $db->prepare("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate " .
+            "FROM Item " .
+            "WHERE Type = :itemType AND Hidden != 1 " .
+            "ORDER BY retired asc, name asc");
+        $statement->bindValue( ":itemType", $itemType );
+        $results = $statement->execute();
+
         $item_options = "";
         $item_options_no_discontinued = "";
         $item_info = "";
@@ -308,8 +328,12 @@
         echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='40'; name='ItemName' class='text ui-widget-content ui-corner-all'>";
         echo "<label for='ChartColor'>Color</label>";
         echo "<input name='ChartColor' class='color text ui-widget-content ui-corner-all'>";
-        echo "<label for='CurrentPrice'>Price of Can</label>";
-        echo "<input type='tel' name='CurrentPrice' value='0.50' class='text ui-widget-content ui-corner-all'/>";
+
+        echo "<label for='CurrentPrice'>Price</label>";
+        echo "<input type='tel' name='CurrentPrice' class='text ui-widget-content ui-corner-all'/>";
+
+        echo "<label for='CurrentPrice'>Discount Price</label>";
+        echo "<input type='tel' name='CurrentDiscountPrice' class='text ui-widget-content ui-corner-all'/>";
         
         echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
         echo "<input type='hidden' name='AddItem' value='AddItem'/><br>";
@@ -421,10 +445,24 @@
         echo "<input type='tel' style='font-size: 2em; 'name='Multiplier' value='1' class='text ui-widget-content ui-corner-all'/>";
         echo "</td>";
         echo "</tr>";
+
+        echo "<tr>";
+        echo "<td>";
+        echo "<label for='ExpDate'>Exp. Date</label>";
+        echo "</td>";
+        echo "<td colspan='2'>";
+        echo "<input type='text' style='font-size: 2em;' name='ExpDate' class='text ui-widget-content ui-corner-all'/>";
+        echo "</td>";
         
         echo "</table>";
         
-        $results = $db->query("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 order by name asc");
+        $statement = $db->prepare("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate " .
+            "FROM Item " .
+            "WHERE Type = :itemType AND Hidden != 1 " .
+            "ORDER BY name asc");
+        $statement->bindValue( ":itemType", $itemType );
+        $results = $statement->execute();
+
         $item_options = "";
         $item_options_no_discontinued = "";
         $item_info = "";
@@ -467,60 +505,81 @@
         // ------------------------------------
         // INVENTORY MODAL - ALL ITEMS
         // ------------------------------------
-        echo "<div id='inventory_" . $itemType . "' title='Enter Inventory' $hideForms>";
-        echo "<form id='inventory_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        
+        buildInventoryModal( $db, $itemType, $hideForms, $isMobile );
+        buildRefillModal( $db, $itemType, $hideForms, $isMobile );
+    }
+
+    /**
+     * @param $db SQLite3
+     * @param $itemType
+     * @param $hideForms
+     * @param $isMobile
+     */
+    function buildRefillModal( $db, $itemType, $hideForms, $isMobile ) {
+        $prefix = "refill";
+        $label = "Refill";
+
+        echo "<div id='" . $prefix . "_" . $itemType . "' title='Enter $label' $hideForms>";
+        echo "<form id='" . $prefix . "_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
         echo "<table>";
         echo "<tr>";
         echo "<th class='admin_header_column'>" . $itemType . "</th>";
         echo "<th class='admin_header_column'>Add to Shelf</th>";
         echo "<th class='admin_header_column'>Shelf Quantity</th>";
         echo "<th class='admin_header_column'>Backstock Quantity</th></tr>";
-            
-        $results = $db->query("SELECT Name, BackstockQuantity, ShelfQuantity, ID FROM Item WHERE Hidden != 1 AND Type ='" . $itemType . "' AND (BackstockQuantity + ShelfQuantity) > 0 ORDER BY ShelfQuantity DESC, Name asc, Retired");
+
+        $statement = $db->prepare("SELECT Name," . getQuantityQuery() . ",ID FROM Item i " .
+            "WHERE Hidden != 1 AND Type = :itemType AND TotalAmount > 0 " .
+            "ORDER BY ShelfAmount DESC, Name asc, Retired");
+        $statement->bindValue( ":itemType", $itemType );
+        $results = $statement->execute();
+
         $tabIndex = 1;
         while ($row = $results->fetchArray()) {
             $item_name = $row['Name'];
-            $backstockquantity = $row['BackstockQuantity'];
-            $shelfquantity = $row['ShelfQuantity'];
+            $backstockquantity = $row['BackstockAmount'];
+            $shelfquantity = $row['ShelfAmount'];
             $item_id = $row['ID'];
             echo "<tr>";
             echo "<td class='admin_header_column'><b>$item_name</b></td>";
-            echo "<input type='hidden' id='item_$item_id' name='ItemID[]' value='$item_id'/>";
-            echo "<td><input type='tel' onClick='this.select();' tabindex=$tabIndex id='AddToShelf_$item_id' value='0' name='AddToShelf[]' class='text ui-corner-all'/></td>";
-            echo "<td><input type='tel' onClick='this.select();' tabindex=0 id='ShelfQuantity_$item_id' value='$shelfquantity' name='ShelfQuantity[]' class='text ui-corner-all'/></td>";
-            echo "<td><input type='tel' tabindex=0 id='BackstockQuantity_$item_id' value='$backstockquantity' name='BackstockQuantity[]' class='text  ui-corner-all'/></td>";
+            echo "<input type='hidden' id='item_$item_id' name='RefillItemID[]' value='$item_id'/>";
+            echo "<td><input type='tel' onClick='this.select();' tabindex=$tabIndex id='RefillAddToShelf_$item_id' value='0' name='RefillAddToShelf[]' class='text ui-corner-all'/></td>";
+            echo "<td><input type='tel' readonly onClick='this.select();' tabindex=0 id='RefillShelfQuantity_$item_id' value='$shelfquantity' name='RefillShelfQuantity[]' class='text ui-corner-all'/></td>";
+            echo "<td><input type='tel' readonly tabindex=0 id='RefillBackstockQuantity_$item_id' value='$backstockquantity' name='RefillBackstockQuantity[]' class='text  ui-corner-all'/></td>";
             echo "</tr>";
-    
+
             $tabIndex++;
-            
+
             // On change, update the backstock quantity if you are increasing the shelf quantity
             echo "<script type='text/javascript'>";
             echo "$( document ).ready( function() {";
 
-            echo "$('#AddToShelf_$item_id').change(function () {";
-                echo "var incrementAmount = parseInt($('#AddToShelf_$item_id').val());";
+            echo "$('#RefillAddToShelf_$item_id').change(function () {";
+                echo "var incrementAmount = parseInt($('#RefillAddToShelf_$item_id').val());";
                 echo "console.log('New Increment: [' + incrementAmount + ']');";
                 echo "if(incrementAmount > 0) {";
-                    
-                    echo "var backStockQuantity = parseInt($('#BackstockQuantity_$item_id').val());";
-                    echo "var shelfQuantity = parseInt($('#ShelfQuantity_$item_id').val());";
+
+                    echo "var backStockQuantity = parseInt($('#RefillBackstockQuantity_$item_id').val());";
+                    echo "var shelfQuantity = parseInt($('#RefillShelfQuantity_$item_id').val());";
                     echo "var newBackstockQuantity = backStockQuantity - incrementAmount;";
                     echo "var newShelfQuantity = shelfQuantity + incrementAmount;";
-        
+
                     echo "if(newBackstockQuantity >= 0) {";
-                        echo "$('#BackstockQuantity_$item_id').val(newBackstockQuantity);";
-                        echo "$('#ShelfQuantity_$item_id').val(newShelfQuantity);";
-                        
-                        echo "$('#BackstockQuantity_$item_id').css('background-color', '#a6ff9b');";
-                        echo "$('#ShelfQuantity_$item_id').css('background-color', '#ff9b9b');";
-                        
+                        echo "$('#RefillBackstockQuantity_$item_id').val(newBackstockQuantity);";
+                        echo "$('#RefillShelfQuantity_$item_id').val(newShelfQuantity);";
+
+                        echo "$('#RefillBackstockQuantity_$item_id').css('background-color', '#ff9b9b');";
+                        echo "$('#RefillShelfQuantity_$item_id').css('background-color', '#a6ff9b');";
+
                         // Dont wan't to think changing from 6 to 7 will increase by 1, it will increase 7 again
-                        echo "$('#AddToShelf_$item_id').attr('placeholder', '+' + incrementAmount + ' units');";
-                        echo "$('#AddToShelf_$item_id').val('');";
+                        echo "$('#RefillAddToShelf_$item_id').attr('placeholder', '+' + incrementAmount + ' units');";
+//                        echo "$('#RefillAddToShelf_$item_id').val('');";
                     echo "} else {";
                         echo "alert('There is not enough backstock available for [' + incrementAmount + '] units.');";
                     echo "}";
+               echo "} else {";
+                    echo "alert('Cannot have a negative refill.');";
                 echo "}";
             echo "});"; // On Change
             echo "});"; // Document Ready
@@ -528,18 +587,91 @@
         }
         echo "</table>";
         echo "<input style='display:inline-block;' type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
+
+        echo "<input type='hidden' name='$label' value='Refill'/><br>";
+        echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
+        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
+
+
+        if( $isMobile) {
+            echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Refill'/><br>";
+        }
+        echo "</form>";
+        echo "</div>";
+    }
+
+    /**
+     * @param $db SQLite3
+     * @param $itemType
+     * @param $hideForms
+     * @param $isMobile
+     */
+    function buildInventoryModal( $db, $itemType, $hideForms, $isMobile ) {
+        $prefix = "inventory";
+        $label = "Inventory";
+
+        echo "<div id='" . $prefix . "_" . $itemType . "' title='Enter $label' $hideForms>";
+        echo "<form id='" . $prefix . "_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<table>";
+        echo "<tr>";
+        echo "<th class='admin_header_column'>" . $itemType . "</th>";
+        echo "<th class='admin_header_column'>Shelf Quantity</th>";
+        echo "<th class='admin_header_column'>Backstock Quantity</th></tr>";
+
+        $statement = $db->prepare("SELECT Name," . getQuantityQuery() . ",ID FROM Item i " .
+            "WHERE Hidden != 1 AND Type = :itemType AND TotalAmount > 0 " .
+            "ORDER BY ShelfAmount DESC, Name asc, Retired");
+        $statement->bindValue( ":itemType", $itemType );
+        $results = $statement->execute();
+
+        $tabIndex = 1;
+        while ($row = $results->fetchArray()) {
+            $item_name = $row['Name'];
+            $backstockquantity = $row['BackstockAmount'];
+            $shelfquantity = $row['ShelfAmount'];
+            $item_id = $row['ID'];
+            echo "<tr>";
+            echo "<td class='admin_header_column'><b>$item_name</b></td>";
+            echo "<input type='hidden' id='item_$item_id' name='ItemID[]' value='$item_id'/>";
+            echo "<td><input type='tel' onClick='this.select();' tabindex=0 id='ShelfQuantity_$item_id' value='$shelfquantity' name='ShelfQuantity[]' class='text ui-corner-all'/>";
+            echo "<input type='hidden' id='ShelfQuantityOriginal_$item_id' value='$shelfquantity'/></td>";
+            echo "<td><input type='tel' disabled tabindex=0 id='BackstockQuantity_$item_id' value='$backstockquantity' name='BackstockQuantity[]' class='text  ui-corner-all'/></td>";
+            echo "</tr>";
+
+            $tabIndex++;
+
+            // On change, update the backstock quantity if you are increasing the shelf quantity
+            echo "<script type='text/javascript'>";
+            echo "$( document ).ready( function() {";
+
+            echo "$('#ShelfQuantity_$item_id').change(function () {";
+                echo "var originalAmount = parseInt($('#ShelfQuantityOriginal_$item_id').val());";
+                echo "var newAmount = parseInt($('#ShelfQuantity_$item_id').val());";
+
+                echo "if( newAmount < originalAmount ) {";
+                    echo "$('#ShelfQuantity_$item_id').css('background-color', '#ff9b9b');";
+                echo "} else {";
+                    echo "alert('You cannot increase shelf amount. Use Refill to do that.');";
+                    echo "$('#ShelfQuantity_$item_id').val(originalAmount);";
+                echo "}";
+            echo "});"; // On Change
+            echo "});"; // Document Ready
+            echo "</script>";
+        }
+        echo "</table>";
         echo "<div style='margin-top: 10px;'>";
         echo "Audit Amount: <input type='tel' style='width:30%;' id='AuditAmount' name='AuditAmount' class='text ui-corner-all'/>";
         echo "</div>";
 
 
-        echo "<input type='hidden' name='Inventory' value='Inventory'/><br>";
+        echo "<input type='hidden' name='$label' value='$label'/><br>";
         echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
         echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
 
-            
+
         if( $isMobile) {
-            echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Add Inventory'/><br>";
+            echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Add $label'/><br>";
         }
         echo "</form>";
         echo "</div>";
@@ -565,6 +697,7 @@ $( document ).ready( function() {
     setItemInfo('Soda');
     setItemInfo('Snack');
     setUserInfo();
+    updateStoreOptions();
 });
 
 function setItemInfo( type ) {
@@ -657,4 +790,28 @@ $('#TotalAmount').change(function() {
     $('#SodaAmount').val( sodaAmount );
     $('#SnackAmount').val( snackAmount );
 } );
+
+$('#StoreDropdown').change(function() {
+    updateStoreOptions();
+} );
+
+function updateStoreOptions() {
+    var store = $('#StoreDropdown').val();
+
+    if( store == "BestProfits" ) {
+        $("#Price").hide();
+        $("#PriceLabel").hide();
+        $("#PriceChoices").hide();
+        $("#RegularPrice").hide();
+        $("#SalePrice").hide();
+    } else {
+        $("#Price").show();
+        $("#PriceLabel").show();
+        $("#PriceChoices").show();
+        $("#RegularPrice").show();
+        $("#SalePrice").show();
+    }
+    console.log("Store [" + store + "]" );
+}
+
 </script>

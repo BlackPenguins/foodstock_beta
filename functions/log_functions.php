@@ -1,4 +1,6 @@
 <?php
+    $benchmarks = array();
+
     function log_slack( $message ) {
         logger( "slack", "slack.log", $message );
     }
@@ -17,6 +19,23 @@
 
     function log_benchmark( $message ) {
         logger( "benchmark", "benchmark.log", $message );
+    }
+
+    function benchmark_start( $name ) {
+        global $benchMarks;
+        $mt = explode(' ', microtime());
+        $startTime = ((int)$mt[1]) * 1000 + ((int)round($mt[0] * 1000));
+        $benchMarks[$name] = $startTime;
+    }
+
+    function benchmark_stop( $name ) {
+        global $benchMarks;
+        $mt = explode(' ', microtime());
+        $stopTime = ((int)$mt[1]) * 1000 + ((int)round($mt[0] * 1000));
+        $startTime = $benchMarks[$name];
+
+        log_benchmark( "BENCHMARK [$name] - [" . ($stopTime - $startTime ) . " ms]" );
+        unset( $benchMarks[$name] );
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
     include( "appendix.php" );
     include_once( LOG_FUNCTIONS_PATH );
+    include_once( QUANTITY_FUNCTIONS_PATH );
 
     $url = STATS_LINK;
     
@@ -18,26 +19,29 @@
         $endDate = $_POST['end_date'];
     }
     
-    $itemsToShow = "29,42,119";
+    $itemsToShow = [29,42,119];
     
     if(isset($_POST['submit_items'])){
         if(!empty($_POST['Item'])){
             // Loop to store and display values of individual checked checkbox.
-            $itemsToShow = implode(",", $_POST['Item'] );
+            $itemsToShow = $_POST['Item'];
         }
     }
 
     $itemNamesToShow = "";
     $db = new SQLite3( getDB() );
 
-    $statQuery = "SELECT Name FROM Item WHERE ID in ($itemsToShow) Order BY Type DESC, NAME ASC";
-    $results = $db->query( $statQuery );
+    $statQuery = "SELECT Name FROM Item WHERE ID in " . getPrepareStatementForInClause( count( $itemsToShow ) ) . " Order BY Type DESC, NAME ASC";
+    $statStatment = $db->prepare( $statQuery );
+    bindStatementsForInClause( $statStatment, $itemsToShow );
+    $results = $statStatment->execute();
+
     while ($row = $results->fetchArray()) {
         $itemNamesToShow .= $row['Name'] . ",";
     }
     
     $trackingName = "Stats - $startDate : $endDate [$itemNamesToShow]";
-    
+
     include( HEADER_PATH );
 ?>
 <script type="text/javascript">
@@ -70,8 +74,9 @@
     echo "<h1>Have an idea for a chart/graph? Let me know, I'll make it.</h1>";
     echo "<form enctype='multipart/form-data' action='" . STATS_LINK . "' method='POST' style='background-color:#b9b9b9; border:2px solid #000; padding:20px;' >";
     
-    $query = "SELECT ID, Name, Retired FROM Item WHERE Hidden != 1 Order BY Type DESC, NAME ASC";
-    $results = $db->query( $query );
+    $statement = $db->prepare( "SELECT ID, Name, Retired FROM Item WHERE Hidden != :hidden Order BY Type DESC, NAME ASC" );
+    $statement->bindValue( ":hidden", 1 );
+    $results =$statement->execute();
     
     //--------------------------------------------------------
     //--------------------------------------------------LAURIE DOESNT USE THE SITE THERE IS MISSING INFORMATION!!
@@ -151,8 +156,25 @@ window.onload = function() {
             dataPoints: [ 
 
                 <?php
-                $totalPurchasesTotalQuery = "select count(p.itemid) as 'count', sum(CASE WHEN DiscountCost IS NULL OR DiscountCost = 0 THEN Cost ELSE DiscountCost END) as 'totalCost', p.itemid, i.name as 'name', i.type as 'type' from purchase_history p JOIN item i on p.itemid = i.id where p.Date between '$startDate' AND '$endDate' AND p.Cancelled is NULL group by p.itemid order by totalcost asc";
-                $results = $db->query( $totalPurchasesTotalQuery );
+                $totalPurchasesTotalQuery = "SELECT count(p.itemid) as 'count', " .
+                    "sum(CASE " .
+                    "WHEN d.DiscountPrice IS NOT NULL AND d.DiscountPrice > 0 THEN d.DiscountPrice ".
+                    "WHEN d.Price IS NOT NULL THEN d.Price " .
+                    "WHEN p.DiscountCost IS NOT NULL AND p.DiscountCost > 0 THEN p.DiscountCost " .
+                    "WHEN p.Cost IS NOT NULL THEN p.Cost ".
+                    "ELSE 99999 END) as 'totalCost', " . // Make a bug very obvious if its not these cases
+                    "p.itemid, i.name as 'name', i.type as 'type' " .
+                    "FROM Purchase_History p " .
+                    "JOIN Item i on p.itemid = i.id  " .
+                    "LEFT JOIN Item_Details d on p.ItemDetailsID = d.ItemDetailsID  " .
+                    "WHERE p.Date BETWEEN :startDate AND :endDate AND p.Cancelled is NULL " .
+                    "GROUP BY p.itemid " .
+                    "ORDER BY totalcost asc";
+                $statement = $db->prepare( $totalPurchasesTotalQuery );
+                $statement->bindValue( ":startDate", $startDate );
+                $statement->bindValue( ":endDate", $endDate );
+                $results = $statement->execute();
+
                     while ($row = $results->fetchArray()) {
                         $itemName = $row['name'];
                         $count = $row['count'];
@@ -191,8 +213,25 @@ window.onload = function() {
             <?php
 //                  $anonNames = ['Rabbit', 'Koala', 'Panda', 'Cat', 'Dog', 'Mouse', 'Porcupine', 'Monkey', 'Giraffe', 'Dolphin', 'Jaguar', 'Seal', 'Deer', 'Penguin', 'Lamb', 'Owl', 'Kangaroo', 'Fox', 'Hamster', 'Lion' ];
                 $anonCount = 0;
-                $totalPurchasesByUserQuery = "select u.UserName, u.AnonName, u.FirstName, u.LastName, sum( CASE WHEN DiscountCost IS NULL OR DiscountCost = 0 THEN Cost ELSE DiscountCost END) as TheTotal, p.userID from Purchase_History p JOIN User u on p.UserID = u.UserID where p.cancelled is null and p.Date between '$startDate' AND '$endDate' group by u.UserID";
-                $results = $db->query( $totalPurchasesByUserQuery );
+                $totalPurchasesByUserQuery = "SELECT u.UserName, u.AnonName, u.FirstName, u.LastName, " .
+                "sum(CASE " .
+                    "WHEN d.DiscountPrice IS NOT NULL AND d.DiscountPrice > 0 THEN d.DiscountPrice ".
+                    "WHEN d.Price IS NOT NULL THEN d.Price " .
+                    "WHEN p.DiscountCost IS NOT NULL AND p.DiscountCost > 0 THEN p.DiscountCost " .
+                    "WHEN p.Cost IS NOT NULL THEN p.Cost ".
+                    "ELSE 99999 END) as 'TheTotal', " . // Make a bug very obvious if its not these cases
+                "p.userID " .
+                "FROM Purchase_History p " .
+                "JOIN User u on p.UserID = u.UserID " .
+                "LEFT JOIN Item_Details d ON p.ItemDetailsID = d.ItemDetailsID  " .
+                "WHERE p.cancelled is null and p.Date BETWEEN :startDate AND :endDate " .
+                "GROUP BY u.UserID " .
+                "ORDER BY TheTotal";
+                $totalPurchasesByUserStatement = $db->prepare( $totalPurchasesByUserQuery );
+                $totalPurchasesByUserStatement->bindValue( ":endDate", $endDate );
+                $totalPurchasesByUserStatement->bindValue( ":startDate", $startDate );
+                $results = $totalPurchasesByUserStatement->execute();
+
                 log_sql( "Total Purchases SQL: [$totalPurchasesByUserQuery]" );
                  
                 while ($row = $results->fetchArray()) {
@@ -230,8 +269,16 @@ window.onload = function() {
     echo "</tr>";
 
     $current_date = new DateTime();
-    $lastPurchaseByItemQuery = "select max(d.Date) as LastBought, i.Name as ItemName, i.Retired as Discontinued from Daily_Amount d JOIN Item i on d.ItemID = i.ID where d.ItemID in ($itemsToShow) and d.ShelfQuantityBefore > d.ShelfQuantity group by d.ItemID order by LastBought ASC";
-    $lastPurchaseByItemResults = $db->query( $lastPurchaseByItemQuery );
+    $lastPurchaseByItemQuery = "select max(d.Date) as LastBought, i.Name as ItemName, i.Retired as Discontinued " .
+     "FROM Inventory_History d " .
+     "JOIN Item i on d.ItemID = i.ID ".
+     "WHERE d.ItemID in " . getPrepareStatementForInClause( count( $itemsToShow ) ) . " and d.ShelfQuantityBefore > d.ShelfQuantity " .
+     "GROUP BY d.ItemID " .
+     "ORDER BY LastBought ASC";
+    $lastPurchaseByItemStatement = $db->prepare( $lastPurchaseByItemQuery );
+    bindStatementsForInClause( $lastPurchaseByItemStatement, $itemsToShow );
+    $lastPurchaseByItemResults = $lastPurchaseByItemStatement->execute();
+
     while ($lastPurchaseByItemRow = $lastPurchaseByItemResults->fetchArray()) {
         $itemName = $lastPurchaseByItemRow['ItemName'];
         $lastBought = $lastPurchaseByItemRow['LastBought'];
@@ -248,17 +295,25 @@ window.onload = function() {
 
 //     getData( $db, $itemsToShow, $isLoggedIn, $isLoggedInAdmin );
     echo "</div>";
-    
-    
-    
+
+
+/**
+ * @param $db SQLite3
+ * @param $itemsToShow
+ * @param $isLoggedIn
+ * @param $isLoggedInAdmin
+ */
     function getData( $db, $itemsToShow, $isLoggedIn, $isLoggedInAdmin ) {
-        $query = "select COUNT(p.ID) as TotalItems, i.Name, p.ItemID,
-           strftime(\"%m-%Y\", p.Date) as 'Time'
-           from Purchase_History p JOIN Item i on p.ItemID =  i.ID WHERE p.ItemID in ($itemsToShow) group by strftime(\"%m-%Y\", p.Date), p.ItemID ORDER BY p.ItemID, p.Date ASC";
-        $results = $db->query( $query );
-        
-        //echo "QUERY [ $query ]<br><br>";
-        
+        $query = "select COUNT(p.ID) as TotalItems, i.Name, p.ItemID, strftime(\"%m-%Y\", p.Date) as 'Time' " .
+            "FROM Purchase_History p " .
+            "JOIN Item i on p.ItemID =  i.ID " .
+            "WHERE p.ItemID in " . getPrepareStatementForInClause( count( $itemsToShow ) ) .
+            "GROUP BY strftime(\"%m-%Y\", p.Date), p.ItemID " .
+            "ORDER BY p.ItemID, p.Date ASC";
+        $statement = $db->prepare( $query );
+        bindStatementsForInClause( $statement, $itemsToShow );
+        $results = $statement->execute();
+
         $currentItem = -1;
         while ($row = $results->fetchArray()) {
             $totalItems = $row['TotalItems'];
@@ -270,9 +325,15 @@ window.onload = function() {
             $month = $splitDate[0];
             $year = $splitDate[1];
             
-            $userQuery = "select u.FirstName, u.LastName, u.UserName, u.AnonName, count(u.UserName) as UserCount from Purchase_History p JOIN User u ON p.userID = u.UserID WHERE p.ItemID = $itemID AND strftime(\"%m-%Y\", p.Date) = \"" . $month . "-" . $year . "\" GROUP BY u.UserName;";
-            $userResults = $db->query( $userQuery );
-            
+            $userQuery = "select u.FirstName, u.LastName, u.UserName, u.AnonName, count(u.UserName) as UserCount " .
+                "FROM Purchase_History p " .
+                "JOIN User u ON p.userID = u.UserID " .
+                "WHERE p.ItemID = :itemID AND strftime(\"%m-%Y\", p.Date) = :monthYear GROUP BY u.UserName;";
+            $userStatement = $db->prepare( $userQuery );
+            $userStatement->bindValue( ":itemID", $itemID );
+            $userStatement->bindValue( ":monthYear", $month . "-" . $year );
+            $userResults = $userStatement->execute();
+
             $hoverInfo = "";
             while ($userRow = $userResults->fetchArray()) {
                 $fullName = $userRow['FirstName'] . " " . $userRow['LastName'];

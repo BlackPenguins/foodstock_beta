@@ -2,12 +2,12 @@
     include_once ( LOG_FUNCTIONS_PATH );
 
     function sendSlackMessageToMatt( $slackMessage, $emoji, $botName, $color ) {
-            sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, $color );
+            sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, $color, "ADMIN" );
     //     sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
     }
     
-    function sendSlackMessageToUser( $slackID, $slackMessage, $emoji, $botName, $color ) {
-        sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color );
+    function sendSlackMessageToUser( $slackID, $slackMessage, $emoji, $botName, $color, $username ) {
+        sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color, $username );
     //     sendSlackMessagePOST( "@" . $slackID, $emoji, $botName, $slackMessage );
     }
     
@@ -28,9 +28,9 @@
     }
     
     
-    function sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color  ){
+    function sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color, $username ){
         if( isTestServer() ) {
-            $slackMessage = "`[sent to $slackID]`\n" . $slackMessage;
+            $slackMessage = "`[sent to $username]`\n" . $slackMessage;
 
             sendSlackMessageToNerdHerdTest($slackMessage, $emoji, $botName );
         } else {
@@ -90,7 +90,7 @@
     function sendSlackMessagePOST( $slackID, $emoji, $botName, $slackMessage, $bypassTestServer ) {
         
         if( $bypassTestServer == false && ( $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" ) ) {
-            sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, "#000000" );
+            sendMessageToBot( "U1FEGH4U9", $emoji, $botName, $slackMessage, "#000000", $slackID );
         } else {
 
             log_slack("Sending SlackBot/Channel Message:\nSlack ID: [" . $slackID . "]\nEmoji: [" . $emoji . "]\nBot Name: [" . $botName . "]\nMessage: [" . $slackMessage . "]" );

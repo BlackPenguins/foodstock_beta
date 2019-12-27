@@ -7,7 +7,10 @@
 ?>
 
 <?php
-    $results = $db->query("SELECT AnonName, ShowDiscontinued, ShowCashOnly, ShowCredit, SubscribeRestocks, ShowItemStats, ShowShelf, ShowTrending FROM User where UserID = " . $_SESSION['UserID'] );
+    $statement = $db->prepare("SELECT AnonName, ShowDiscontinued, ShowCashOnly, ShowCredit, SubscribeRestocks, ShowItemStats, ShowShelf, ShowTrending FROM User where UserID = :userID"  );
+    $statement->bindValue( ":userID", $_SESSION['UserID'] );
+    $results = $statement->execute();
+
     $row = $results->fetchArray();
     $showDiscontinuedChecked = $row['ShowDiscontinued'] == 1 ? "checked" : "";
     $showCashOnlyChecked = $row['ShowCashOnly'] == 1 ? "checked" : "";

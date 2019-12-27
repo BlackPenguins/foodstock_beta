@@ -19,6 +19,11 @@ function loadItemModals(type) {
             $('#inventory_' + type).dialog('open');
              return false;
     });
+
+    $("#refill_" + type + "_button").click( function() {
+            $('#refill_' + type).dialog('open');
+             return false;
+    });
     
     $("#defective_item_" + type + "_button").click( function() {
         $('#defective_item_' + type).dialog('open');
@@ -111,6 +116,28 @@ function loadItemModals(type) {
                             text: "Update " + type,
                             click: function() { 
                                 $("#inventory_" + type + "_form").submit();
+                            }
+                        }
+                    ]
+    });
+
+    $( "#refill_" + type ).dialog( {
+            autoOpen: false,
+            width: 800,
+            modal: true,
+            buttons: [
+                        {
+                            id: "Update_Item_" + type + "_Cancel",
+                            text: "Cancel",
+                            click: function() {
+                                $(this).dialog("close");
+                            }
+                        },
+                        {
+                            id:"Update_Item_" + type + "_Submit",
+                            text: "Update " + type,
+                            click: function() {
+                                $("#refill_" + type + "_form").submit();
                             }
                         }
                     ]

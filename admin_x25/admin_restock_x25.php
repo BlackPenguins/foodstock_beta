@@ -1,4 +1,3 @@
-<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
@@ -50,7 +49,12 @@
         $rowClass = "odd";
         $previousItem = "";
         
-        $results = $db->query("SELECT s.Name, r.RestockID, r.Cancelled, r.ItemID, r.Date, r.NumberOfCans, r.Cost, (r.Cost/r.NumberOfCans) as 'CostEach', s.Price, s.DiscountPrice, s.Retired FROM Restock r JOIN Item s ON r.itemID = s.id  ORDER BY r.Date DESC");
+        $statement = $db->prepare("SELECT s.Name, r.RestockID, r.Cancelled, r.ItemID, r.Date, r.NumberOfCans, r.Cost, (r.Cost/r.NumberOfCans) as 'CostEach', s.Price, s.DiscountPrice, s.Retired " .
+            "FROM Restock r " .
+            "JOIN Item s ON r.itemID = s.id " .
+            "ORDER BY r.Date DESC");
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
             $maxCostEach = "";
             if( $previousItem != "" && $previousItem != $row['Name'] ) {

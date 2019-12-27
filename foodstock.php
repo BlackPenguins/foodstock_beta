@@ -1,4 +1,3 @@
-<head>
 <meta name="viewport" content="width=device-width, initial-scale = 1.0,maximum-scale=1.0">
 
 <?php
@@ -76,6 +75,7 @@ function main( $url, $itemType, $className, $location ) {
                 isMobile:isMobile,
                 url:'<?php  echo $url; ?>'
             },function(data) {
+                $('#cart_area').show();
                 $('#cart_area').html(data);
         });
     }
@@ -116,6 +116,7 @@ function main( $url, $itemType, $className, $location ) {
                 isMobile:isMobile,
                 url:'<?php  echo $url; ?>'
             },function(data) {
+                $('#cart_area').show();
                 $('#cart_area').html(data);
         });
     }
@@ -142,7 +143,7 @@ function main( $url, $itemType, $className, $location ) {
             if( minutes < 10 ) { minutes = "0" + minutes; }
             if( seconds < 10 ) { seconds = "0" + seconds; }
 
-            $('#warning_time').html( minutes + ":" + seconds );
+            // $('#warning_time').html( minutes + ":" + seconds );
 
             if( totalTimeLeft == 0 ) {
                 $("body").append("<div id='overlay' style='background-color:#000000; opacity:0.85; z-index:4000; width:100%; height: 100%; position:fixed; top:0; bottom:0; right:0; left:0;'>&nbsp;</div>");
@@ -174,36 +175,50 @@ if( !$isMobile ) {
 
 echo "</div>";
 
-$results = $db->query("SELECT Income, Expenses, ProfitExpected, ProfitActual, FirstDay FROM Information WHERE ItemType ='" . $itemType . "'");
+/** @var  $db SQLite3 */
+$statement = $db->prepare("SELECT SiteIncome, SiteExpenses, SitePayments, SiteProfit, FirstDay, FirstRebornDay, SiteLoss FROM Information WHERE ItemType = :itemType");
+$statement->bindValue( ":itemType", $itemType );
+$results = $statement->execute();
 
 //---------------------------------------
 // BUILD TOP SECTION STATS
 //---------------------------------------
 if(!$isMobile) {
-    $version = "6.3";
-    $versionString = "Version $version (Jun 23rd, 2019)";
-
-    $total_income = 0;
-    $total_expense = 0;
+    $version = "7.0";
+    $versionString = "Version $version";
+    $versionDateString = "(Nov 22nd, 2019)";
 
     $row = $results->fetchArray();
-    $total_income = $row['Income'];
-    $total_expense = $row['Expenses'];
-    $total_profit = $total_income - $total_expense;
-    $total_income_actual = $row['ProfitActual']; // This is actually the INCOME - NOT PROFIT
+    $siteIncome = $row['SiteIncome']; // The amount of money that SHOULD be coming in
+    $siteExpenses = $row['SiteExpenses']; // The amount of money buying the product
+    $sitePayments = $row['SitePayments']; // The amount of money actually coming in
+    $siteProfit = $row['SiteProfit']; // The profit made (retail cost - cost)
+    $siteLoss = $row['SiteLoss']; // The money lost (expected vs actual for inventory)
+
+
     $dateNow = new DateTime();
     $firstDay = DateTime::createFromFormat('Y-m-d H:i:s', $row['FirstDay']);
-    
     $time_since = $dateNow->diff($firstDay);
     $days_ago = $time_since->format('%a');
 
-    $profitPerDay = $total_profit / $days_ago;
+    $firstRebornDay = DateTime::createFromFormat('Y-m-d H:i:s', $row['FirstRebornDay']);
+    $time_since_reborn = $dateNow->diff($firstRebornDay);
+    $reborn_days_ago = $time_since_reborn->format('%a');
+
+    $profitPerDay = $siteProfit / $reborn_days_ago / 100;
 
     echo "<div style='margin: auto;'>";
     
-    echo "<table style='margin:0px 20px'>";
+    echo "<table style='border-collapse:collapse; margin:0px 20px; border-right: 2px solid #000; border-left: 2px solid #000; border-bottom: 2px solid #000;'>";
     echo "<tr>";
-    echo "<td rowspan='2'><img src='" . IMAGES_LINK . "logo.jpg'/></td>";
+    $logoFile = "soda_logo.jpg";
+
+    if( $itemType == "Snack" ) {
+        $logoFile = "snack_logo.jpg";
+    }
+    echo "<td style='padding: 0px;' class='stat_box'>";
+    echo "<img style='height: 29%;' src='" . IMAGES_LINK . "$logoFile'/>";
+    echo "</td>";
 
     $newIcon = "";
     $versionClass = "version_old";
@@ -212,25 +227,20 @@ if(!$isMobile) {
     if ( !isset( $_COOKIE["version_viewed"] ) || isset( $_COOKIE["version_viewed"] ) && $_COOKIE["version_viewed"] != $version ) {
         $newIcon = "<img style='vertical-align:middle; padding: 0px 5px;' width='32px' src='" .  IMAGES_LINK . "new.png'/>";
         $versionClass = "version";
+    } else {
+        $versionDateString = "";
     }
-
-    echo "<td class='$versionClass'>";
-    echo "$newIcon <a onclick='setVersionCookie(\"" . $version . "\");' href='#change_log'>$versionString</a>$newIcon ";
-    echo "</td>";
-
-    if( $isLoggedInAdmin ) {
-        echo "<td style='color:black; background-color:#FFFFFF; padding:5px 15px; border: #000 2px solid;'><b>Profit / Day:</b> " . getPriceDisplayWithDollars($profitPerDay) . "</td>";
-    }
-
-    echo "<td style='color:black; background-color:#B888FF; padding:5px 15px; border: #000 2px solid;'><b>Days Active: </b>". $days_ago ." days</td>";
-    echo "<td style='color:black; background-color:#fffa5c; padding:5px 15px; border: #000 2px solid;' title='Purchase Reminder - After being idle for five minutes without a purchase it will ask if you forgot to pay for something.'>";
-    echo "<img style='vertical-align:middle;' width='30px' src='" . IMAGES_LINK . "timer.png'/>&nbsp;<span style='font-weight:bold;' id='warning_time'>-</span>";
-    echo "</td>";
 
     if(  !IsLoggedIn() || $_SESSION['ShowTrending'] == 1 ) {
-        $startTrendingHour = date('Y-m-d' ) . " 00:00:00";
-        $stopTrendingHour = date('Y-m-d' ) . " 23:59:59";
-        $trendingResults = $db->query("select p.itemID, i.Name, count(p.ItemID) as Amount, max(p.Date), i.Type, i.ImageURL from Purchase_History p JOIN Item i on p.ItemID = i.ID where p.Date > '$startTrendingHour' and p.Date < '$stopTrendingHour' and i.Type = '$itemType' group by p.ItemID order by count(p.itemID) desc");
+        $trendingStatement = $db->prepare("SELECT p.itemID, i.Name, count(p.ItemID) as Amount, max(p.Date), i.Type, i.ImageURL " .
+            "FROM Purchase_History p " .
+            "JOIN Item i on p.ItemID = i.ID " .
+            "WHERE p.Date > :startTrendingHour and p.Date < :stopTrendingHour and i.Type = :itemType group by p.ItemID order by count(p.itemID) desc");
+        $trendingStatement->bindValue( ":startTrendingHour", date('Y-m-d' ) . " 00:00:00" );
+        $trendingStatement->bindValue( ":stopTrendingHour", date('Y-m-d' ) . " 23:59:59" );
+        $trendingStatement->bindValue( ":itemType", $itemType );
+        $trendingResults = $trendingStatement->execute();
+
         $trendingRow = $trendingResults->fetchArray();
         $trendingItem = $trendingRow['Name'];
         $trendingAmount = $trendingRow['Amount'];
@@ -247,31 +257,58 @@ if(!$isMobile) {
             }
         }
 
-        echo "<td style='color:black; background-color:#50ff5a; padding:5px 15px; border: #000 2px solid;' title=\"What's Trending\">";
-        echo "<span><b>Trending:</b> $trendingImageURL $trendingDisplay</span>";
+        echo "<td class='stat_box'  title=\"What's Trending\">";
+        echo "<span><div style='font-weight:bold;'>Trending</div> <div style='font-size: 0.9em; padding-top:10px;'>$trendingImageURL $trendingDisplay</span>";
         echo "</td>";
-    }
 
-    if( $isLoggedInAdmin ) {
-        echo "<td>&nbsp;</td>";
-        echo "<td style='text-align:right; font-weight:bold;'>Calculated:</td>";
-        echo "<td style='color:black; background-color:#90EE90; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> ". getPriceDisplayWithDollars( $total_income )."</td>";
-        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> ". getPriceDisplayWithDollars( $total_profit )."</td>";
-        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> ". getPriceDisplayWithDollars( $total_expense )."</td>";
+        echo "<td class='stat_box' title=\"What's Trending\">";
+        echo "<span><div style='font-size: 0.9em; padding-top:10px;'>";
+
+        /** @var  $db SQLite3 */
+        $fridgeStatement = $db->prepare("SELECT SUM( SiteProfit ) as Sum FROM Information");
+        $fridgeResults = $fridgeStatement->execute();
+
+        $fridgeRow = $fridgeResults->fetchArray();
+        $siteProfitForAllTypes = $fridgeRow['Sum'];
+
+        $percentageComplete = round(($siteProfitForAllTypes / 18999) * 100);
+
+        if( $percentageComplete > 100 ) {
+            $percentageComplete = 100;
+        }
+
+        echo "<div>";
+
+        echo "<div style='font-size: 0.9em; padding-bottom: 10px; border-bottom: 1px solid #000000;'><span style='font-weight: bold;'>Profit per Day: </span>$" . round($profitPerDay, 2) . "</div>";
+        echo "<div style='font-size: 0.9em; padding-top: 5px; margin-top: 5px; padding-bottom: 5px;'><span style='font-weight: bold;'>Mini Fridge Goal: </span>$189.99</div>";
+
+        echo "<div class='goal_meter'>";
+        echo "<span class='goal_bar' style='width: $percentageComplete%'><span class='goal_bar' style='color: #000000; font-weight: bold; font-size: 0.8em; display:block; margin-top: 4px;'></span></span>";
+        echo "<span class='goal_banner'>" . getPriceDisplayWithDollars( $siteProfitForAllTypes ) . "</span>";
+        echo "</div>";
+
+        echo "</div>";
+        echo "</span>";
+        echo "</td>";
+
+        echo "<td class='stat_box' style='text-align:left; font-size:0.9em; width:100%;'>";
+
+        echo "<span class='version_box' style='padding:5px;'>";
+        echo "$newIcon <a onclick='setVersionCookie(\"" . $version . "\");' href='#change_log'>$versionString</a>&nbsp;&nbsp;$versionDateString";
+        echo "</span>";
+
+        echo "<div style='display:flex; align-items:center;'>";
+        echo "<img width='40px' src='" . IMAGES_LINK . "sale.png'/>&nbsp;Discounted prices are only available when you buy through the site.";
+        echo "</div>";
+
+        echo "<div style='display:flex; align-items:center;'>";
+        echo "<img width='40px' src='" . IMAGES_LINK . "handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
+        echo "</div>";
+
+        echo "</td>";
     }
     echo "</tr>";
     
-    if( $isLoggedInAdmin ) {
-        echo "<tr>";
-        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
-        echo "<td style='text-align:right; font-weight:bold;'>Payments:</td>";
-        echo "<td style='color:black; background-color:#ebb159; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> ". getPriceDisplayWithDollars( $total_income_actual )."</td>";
-        $actualProfit = $total_income - $total_income_actual;
-        $actualDebt = $total_income_actual - $total_expense;
-        echo "<td style='color:black; background-color:#EBEB59; padding:5px 15px; border: #000 2px solid;'><b>Owed Money:</b> ". getPriceDisplayWithDollars( $actualProfit )."</td>";
-        echo "<td style='color:black; background-color:#EE4545; padding:5px 15px; border: #000 2px solid;'><b>Actual Debt:</b> ". getPriceDisplayWithDollars( $actualDebt )."</td>";
-        echo "</tr>";
-    }
     echo "</table>";
     
     echo "<div></div>";
@@ -285,23 +322,29 @@ if( isset( $_SESSION['PurchaseCompleted'] ) ) {
     echo "<script>startReminderTimer();</script>";
 }
 
-echo "<div id='cart_area' class='cart_area' style='position:relative; margin-bottom:5px; padding:10px; color:#000000; background-color:#FFFFFF; border: 3px #8e8b8b solid;'>";
-echo "<div style='display:flex; align-items:center;'>";
-echo "<img width='40px' src='" . IMAGES_LINK . "handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
-echo "</div>";
 
-echo "<div style='display:flex; align-items:center;'>";
-echo "<img width='40px' src='" . IMAGES_LINK . "sale.png'/>&nbsp;Discounted prices are only available when you buy through the site.";
-echo "</div>";
-echo "</div>";
+if( $isLoggedInAdmin ) {
+    echo "<table>";
+    echo "<tr>";
+    echo "<td title='The amount of money that SHOULD be coming in. From both inventory and purchases.' style='color:black; background-color:#59daeb; padding:5px 15px; border: #000 2px solid;'><b>Income:</b> ". getPriceDisplayWithDollars( $siteIncome )."</td>";
+    echo "<td title='The amount of money spent on items. From the restocks.' style='color:black; background-color:#eb5e4b; padding:5px 15px; border: #000 2px solid;'><b>Expenses:</b> " . getPriceDisplayWithDollars( $siteExpenses )."</td>";
+    echo "<td title='The amount of money ACTUALLY coming in from payments only. Not the jar.' style='color:black; background-color:#1ab843; padding:5px 15px; border: #000 2px solid;'><b>Payments:</b> " . getPriceDisplayWithDollars( $sitePayments )."</td>";
+    echo "<td title='The profit being made across all items by taking into account items sold and the retail cost and price it was sold.' style='color:black; background-color:#d5ca41; padding:5px 15px; border: #000 2px solid;'><b>Profit:</b> " . getPriceDisplayWithDollars( $siteProfit )."</td>";
+    echo "<td title='The amount of money loss when doing inventory.' style='color:black; background-color:#424242; padding:5px 15px; border: #000 2px solid;'><b>Loss:</b> " . getPriceDisplayWithDollars( $siteLoss )."</td>";
+    echo "</tr>";
+    echo "</table>";
+}
 
+echo "<div id='cart_area'></div>";
 $showShelf = true;
 if( isset( $_SESSION['ShowShelf'] ) && $_SESSION['ShowShelf'] == 0 ) {
     $showShelf = false;
 }
 
 if( !$isMobile && $itemType != "Snack" && $showShelf ) {
-    $results = $db->query("SELECT ID, Name, ShelfQuantity, DateModified, ThumbURL, Hidden FROM Item WHERE Type ='" . $itemType . "' AND Hidden != 1 ORDER BY DateModified DESC");
+    $statement = $db->prepare("SELECT ID, Name," . getQuantityQuery() . ",DateModified, ThumbURL, Hidden FROM Item i WHERE Type =:itemType AND Hidden != 1 ORDER BY DateModified DESC");
+    $statement->bindValue( ":itemType", $itemType );
+    $results = $statement->execute();
     
     echo "<div style='margin:20px; padding:10px; background-color:#2f2f2f; border: 3px #8e8b8b solid;'>";
     echo "<div style='color:#8e8b8b; font-weight:bold; padding-bottom:10px;'>The Shelf <span style='font-size:0.7em;'>(currently in the $location, clicking these will also add one to your cart)</span></div>";
@@ -309,7 +352,7 @@ if( !$isMobile && $itemType != "Snack" && $showShelf ) {
     while ($row = $results->fetchArray()) {
         $name = $row['Name'];
         $id = $row['ID'];
-        $shelf = $row['ShelfQuantity'];
+        $shelf = $row['ShelfAmount'];
         $thumbURL = $row['ThumbURL'];
         
         if( $lastUpdated == "") {
@@ -331,7 +374,7 @@ if( !$isMobile && $itemType != "Snack" && $showShelf ) {
     echo "</div>";
 }
 
-echo "<input placeholder='Search Items' autofocus type='text' style='padding:5px; border-radius:20px; font-size:1.6em;' onChange=\"updateCardArea('$itemType', '$className', '$location', '$isMobile', this.value );\"/>";
+echo "<input placeholder='Search Items' autofocus type='text' style='padding:5px; border-radius:20px; font-size:1.6em;' onkeyup= \"updateCardArea('$itemType', '$className', '$location', '$isMobile', this.value );\"/>";
 
 echo "<div id='card_area'>";
 echo "<script>updateCardArea('$itemType', '$className', '$location', '$isMobile', '' );</script>";
@@ -394,10 +437,78 @@ if( !$isMobile) {
     echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span> | <span style='$bugClass'>Bug Fixes in Orange</span>)</span></span></div>";
     echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
+
+
+
+    // Lunch
+
+
     // CREDIT: https://icons8.com/icon/2270/crown - CDN77
     // https://i2kplay.com/icon-new/
 
     // <div>Icons made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+    DisplayUpdate("Dec 15, 2019 (7.0)", $itemType, array(
+        DisplayItem("none", "Christmas theme is back."),
+        DisplayItem("bug", "The Reese/Noah blunder: Added parameterized queries to prevent SQL injection from our own co-ops."),
+        DisplayItem("bug", "The 2nd Reese/Noah blunder: Stripped tags from requests and preference pages to prevent XSS attacks from our own co-ops who clearly don't have enough work."),
+        DisplayItem("request", "Added goal meter to show profit progress towards new fridge."),
+        DisplayItem("request", "Ask by Nick: Thermometer icon appears above the report button when a soda was added to the fridge less than 2 hours ago to warn you it might still be warm. Icons made by <a href='https://www.flaticon.com/authors/dinosoftlabs' title='DinosoftLabs'>DinosoftLabs</a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a>"),
+        DisplayItem("request", "Renamed SodaBot to StockBot."),
+        DisplayItem("request", "Searching items is done on every keystroke, not when you hit enter. Improves the mobile experience."),
+        DisplayItem("request", "Ask by everyone: On hover items zoom towards you, not away from you."),
+        DisplayItem("none", "Minimized the header and statistics. Removed warning timer. New logos."),
+        DisplayItem("none", "User pie graph on Graphs page is sorted by amounts."),
+        DisplayItem("none", "Smaller font for prices that are above a 99 cents so it will fit in the circle."),
+        DisplayItem("none", "The following items had <b>price increases</b> to improve margins and cover loss. Please no pitchforks:<ul>" .
+        "<li><u>No more discount for soda.</u> It's 50 cents for everyone. I did not take into account the can deposit so my margins were actually razor thin. And Nick is the one who returns the cans so I don't get that money back.</li> " .
+        "<li>Clear American Price: 30&cent; &#10142; 35&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Clear American Discount Price: 27&cent; &#10142; 30&cent;</li> " .
+        "<li>Cheezits Price: 35&cent; &#10142; 40&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Cheezits Discount Price: 34&cent; &#10142; 37&cent;</li> " .
+        "<li>Pop-tarts Price: 50&cent; &#10142; 60&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Pop-tarts Discount Price: 47&cent; &#10142; 55&cent;</li> " .
+        "<li>Oreos Price: 40&cent; &#10142; 50&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Oreos Discount Price: 40&cent; &#10142; 47&cent;</li> " .
+        "<li>Slim Jims (Small) Price: 20&cent; &#10142; 25&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Slim Jims (Small) Discount Price: 20&cent; &#10142; 21&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Muffins Discount Price: 65&cent; &#10142; 69&cent;</li> " .
+        "<li>Ritz Crackers Price: 35&cent; &#10142; 45&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Ritz Crackers Discount Price: 33&cent; &#10142; 40&cent;</li> " .
+        "<li>Cookies: 35&cent; &#10142; 40&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Cookies Discount Price: 35&cent; &#10142; 36&cent;</li> " .
+        "<li>Nutty Buddy Price: 35&cent; &#10142; 40&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Nutty Buddy Discount Price: 30&cent; &#10142; 36&cent;</li> " .
+        "<li>Spicy Doritos Price: 40&cent; &#10142; 45&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Spicy Doritos Discount Price: 35&cent; &#10142; 40&cent;</li> " .
+        "<li>Ramen Cup Price: 35&cent; &#10142; 40&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Ramen Cup Discount Price: 33&cent; &#10142; 37&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Progresso Soup Discount Price: $1.60 &#10142; $1.75</li> " .
+        "<li>Fudgicle Price: 25&cent; &#10142; 30&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Fudgicle Discount Price: 22&cent; &#10142; 25&cent;</li> " .
+        "<li>Ice Cream Sandwich Price: 25&cent; &#10142; 30&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Ice Cream Sandwich Discount Price: 22&cent; &#10142; 25&cent;</li> " .
+        "<li>Ice Cream Cone Price: 70&cent; &#10142; 75&cent;</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Ice Cream Cone Discount Price: 66&cent; &#10142; 70&cent;</li> " .
+        "<li>Slim Jim (Foot Long) Price: $1.10 &#10142; $1.15</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Slim Jim (Foot Long) Discount Price: $1.05 &#10142; $1.10</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Instant Ramen Soup Discount Price: $1.75 &#10142; $1.80</li> " .
+        "<li>Slim Jim (Monster) Price: $2.00 &#10142; $2.10</li> " .
+        "<li style='font-weight: bold; color:#3f81d2'>Slim Jim (Monster) Discount Price: $1.95 &#10142; $2.00</li> " .
+        "</ul>"),
+
+
+        DisplayItem("db", "Redid the quantity and inventory on the backend to improve the profit tracking (what took 4 months to finish this update)."),
+        DisplayItem("db", "Increased database transaction speed by using batch transactions. Migration went from 45 minutes to 20 seconds."),
+        DisplayItem("db", "New reborn date - first day of the site is now Dec 15th, 2019. Not Nov 11th, 2014. So the profit per day is correct since all income, expenses, profit, and lost amounts were reset to zero."),
+        DisplayItem("admin", "Added automated testing (only way I was confident with this massive overhaul of the DB tables)."),
+        DisplayItem("admin", "New admin features: Items in Stock, Refill form, Session debugging."),
+        DisplayItem("admin", "Added usernames to slack messages."),
+        DisplayItem("admin", "Added retail and profit amounts to each item in purchase history."),
+        DisplayItem("admin", "Migration page has start button."),
+        DisplayItem("admin", "Download a CSV of current items to print out for inventory."),
+        DisplayItem("admin", "Added store prices inline to the checklist."),
+    ) );
 
     DisplayUpdate("Jun 23, 2019 (6.3)", $itemType, array(
         DisplayItem("request", "Site now supports HTTPS. Now Christian can leave me alone. I'm still working on a way to redirect the HTTP URLs to HTTPS. But after 3 hours of messing around with apache rewrite rules I gave up. <a href=\"https://penguinore.net/sodastock.php\">Try it here!</a>"),

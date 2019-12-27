@@ -1,4 +1,3 @@
-<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
     function showHideMonths() {
@@ -56,23 +55,38 @@
     $totalSnackSavings = 0.0;
     $totalSnackBalance = 0.0;
 
-    $results = $db->query("SELECT p.Cost, i.Type, p.DiscountCost FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND Cancelled IS NULL");
+    $statement = $db->prepare( "SELECT d.Price, i.Type, d.DiscountPrice, d.ItemDetailsID, p.Cost as LegacyPrice, p.DiscountCost as LegacyDiscountPrice FROM Purchase_History p JOIN Item i on p.itemID = i.ID LEFT JOIN Item_Details d ON p.ItemDetailsID = d.ItemDetailsID WHERE p.UserID = :userID AND Cancelled IS NULL" );
+
+    $statement->bindValue(":userID", $userID );
+
+    $results = $statement->execute();
+
     while ($row = $results->fetchArray()) {
         $itemType = $row['Type'];
 
-        if( $row['DiscountCost'] != "" ) {
+        $itemDetailsID =  $row['ItemDetailsID'];
+
+        $discountCost = $row['LegacyDiscountPrice'];
+        $fullCost = $row['LegacyPrice'];
+
+        if( $itemDetailsID != null ) {
+            $discountCost = $row['DiscountPrice'];
+            $fullCost = $row['Price'];
+        }
+
+        if( $discountCost!= "" ) {
             if( $itemType == "Soda" ) {
-                $totalSodaSavings += ($row['Cost'] - $row['DiscountCost']);
-                $totalSodaBalance += $row['DiscountCost'];
+                $totalSodaSavings += ($fullCost - $discountCost);
+                $totalSodaBalance += $discountCost;
             } else if( $itemType == "Snack" ) {
-                $totalSnackSavings += ($row['Cost'] - $row['DiscountCost']);
-                $totalSnackBalance += $row['DiscountCost'];
+                $totalSnackSavings += ($fullCost -$discountCost);
+                $totalSnackBalance += $discountCost;
             }
         } else {
             if( $itemType == "Soda" ) {
-                $totalSodaBalance += $row['Cost'];
+                $totalSodaBalance += $fullCost;
             } else if( $itemType == "Snack" ) {
-                $totalSnackBalance += $row['Cost'];
+                $totalSnackBalance += $fullCost;
             }
         }
     }
@@ -83,7 +97,6 @@
     echo "<span style='color:#03af10'>The <b>Billing</b> section has been removed and condensed into this page.</span>";
     echo  "<span id='total_details_box'><b>Total Snack Spent:</b> ". getPriceDisplayWithDollars( $totalSnackBalance ) . "&nbsp;&nbsp;|&nbsp;&nbsp;<b>Total Snack Savings:</b> " . getPriceDisplayWithDollars( $totalSnackSavings ) . "</span>";
     echo "</div>";
-    
     echo "</div>";
 
 echo "<div class='center_piece'>";
@@ -124,7 +137,12 @@ $currentMonthSnackCashOnlyCount = 0;
 $currentMonth = 0;
 $currentYear = 0;
 
-$results = $db->query("SELECT i.Name, i.Type, p.Cost, p.CashOnly, p.DiscountCost, p.Date, p.UserID, p.UseCredits FROM Purchase_History p JOIN Item i on p.itemID = i.ID WHERE p.Cancelled IS NULL AND p.UserID = $userID ORDER BY p.Date DESC");
+
+$statement = $db->prepare( "SELECT i.Name, i.Type, d.Price, p.CashOnly, d.DiscountPrice, d.ItemDetailsID, p.Cost as LegacyPrice, p.DiscountCost as LegacyDiscountPrice, p.Date, p.UserID, p.UseCredits FROM Purchase_History p JOIN Item i on p.itemID = i.ID LEFT JOIN Item_Details d ON p.ItemDetailsID = d.ItemDetailsID WHERE p.Cancelled IS NULL AND p.UserID = :userID ORDER BY p.Date DESC" );
+
+$statement->bindValue(":userID", $userID );
+
+$results = $statement->execute();
 while ($row = $results->fetchArray()) {
     $purchaseDateObject = DateTime::createFromFormat( 'Y-m-d H:i:s', $row['Date'] );
     $purchaseMonthLabel = $purchaseDateObject->format('F Y');
@@ -163,23 +181,34 @@ while ($row = $results->fetchArray()) {
     }
 
     $cost = 0.0;
-    if( $row['DiscountCost'] != "" && $row['DiscountCost'] != 0 ) {
-        $cost = $row['DiscountCost'];
+    $itemDetailsID =  $row['ItemDetailsID'];
+
+    $discountCost = $row['LegacyDiscountPrice'];
+    $fullCost = $row['LegacyPrice'];
+
+    if( $itemDetailsID != null ) {
+        $discountCost = $row['DiscountPrice'];
+        $fullCost = $row['Price'];
+    }
+
+    if( $discountCost != "" && $discountCost != 0 ) {
+        $cost = $discountCost;
     } else {
-        $cost = $row['Cost'];
+        $cost = $fullCost;
     }
 
     $creditOrCashOnlyCost= 0;
     $balanceCost = 0;
 
     $creditsUsed = $row['UseCredits'];
-    $partialCreditsUsed = $cost - $creditsUsed;
+    $cashOnlyUsed = $row['CashOnly'];
+    $balanceWhenPartialCreditsUsed = $cost - $creditsUsed;
 
-    if( $partialCreditsUsed > 0 ) {
-        $balanceCost = $partialCreditsUsed;
-        $creditOrCashOnlyCost = $creditsUsed;
-    } else if( $row['CashOnly'] != 1 ) {
+    if( $cashOnlyUsed == 1 ) {
         $creditOrCashOnlyCost = $cost;
+    } else if( $balanceWhenPartialCreditsUsed > 0 ) {
+        $balanceCost = $balanceWhenPartialCreditsUsed;
+        $creditOrCashOnlyCost = $creditsUsed;
     } else if( $creditsUsed > 0 ) {
         $creditOrCashOnlyCost = $creditsUsed;
     }
@@ -189,9 +218,11 @@ while ($row = $results->fetchArray()) {
         if( $row['Type'] == "Snack" ) {
             $currentMonthSnackTotal += $balanceCost;
             $currentMonthSnackCount++;
+            log_debug( "Purchase Counts: [Snack] Balance: [$balanceCost] Count[$currentMonthSnackCount] New Total: [$currentMonthSnackTotal] Name: [" . $row['Name'] . "] Date: [" . $row['Date'] . "]" );
         } else if( $row['Type'] == "Soda" ) {
             $currentMonthSodaTotal += $balanceCost;
             $currentMonthSodaCount++;
+            log_debug( "Purchase Counts: [Soda] Balance: [$balanceCost] Count[$currentMonthSodaCount] New Total: [$currentMonthSodaTotal] Name: [" . $row['Name'] . "] Date: [" . $row['Date'] . "]" );
         }
     }
 
@@ -199,9 +230,11 @@ while ($row = $results->fetchArray()) {
         if( $row['Type'] == "Snack" ) {
             $currentMonthSnackCashOnlyTotal += $creditOrCashOnlyCost;
             $currentMonthSnackCashOnlyCount++;
+            log_debug( "Credit Counts: [Snack] Balance: [$creditOrCashOnlyCost] Count[$currentMonthSnackCashOnlyCount] New Total: [$currentMonthSnackCashOnlyTotal] Name: [" . $row['Name'] . "] Date: [" . $row['Date'] . "]" );
         } else if( $row['Type'] == "Soda" ) {
             $currentMonthSodaCashOnlyTotal += $creditOrCashOnlyCost;
             $currentMonthSodaCashOnlyCount++;
+            log_debug( "Credit Counts: [Soda] Balance: [$creditOrCashOnlyCost] Count[$currentMonthSodaCashOnlyCount] New Total: [$currentMonthSodaCashOnlyTotal] Name: [" . $row['Name'] . "] Date: [" . $row['Date'] . "]" );
         }
     }
 }
@@ -218,6 +251,10 @@ echo "</tr>";
 echo "</table>";
 echo "</div>";
 
+    $colSpan = 3;
+    if( IsAdminLoggedIn() ) {
+        $colSpan = 5;
+    }
 
     echo "<div style='margin-top:50px;' class='rounded_table_no_border'>";
     echo "<table>";
@@ -225,13 +262,17 @@ echo "</div>";
     echo "<thead>";
 
     echo "<tr>";
-    echo "<td style='text-align:center; background-color: #255420; color:#d8e41d; font-weight:bold; text-transform: uppercase;' colspan='3'>PURCHASE HISTORY - $monthHeader</td>";
+    echo "<td style='text-align:center; background-color: #255420; color:#d8e41d; font-weight:bold; text-transform: uppercase;' colspan='$colSpan'>PURCHASE HISTORY - $monthHeader</td>";
     echo "</tr>";
 
     echo "<tr class='table_header'>";
     echo "<th width='20%'>Date Purchased</th>";
     echo "<th>Item</th>";
     echo "<th>Cost</th>";
+    if( IsAdminLoggedIn() ) {
+        echo "<th>Retail Cost</th>";
+        echo "<th>Profit</th>";
+    }
     echo "</tr>";
 
     echo "</thead>";
@@ -252,7 +293,14 @@ echo "</div>";
     $endDate = $year . "-" . $monthNumber . "-01";
 
     // LEFT JOIN Item because Credits are ID 4000, and there is no corresponding Item in the Item table with that ID
-    $results = $db->query("SELECT p.itemID, i.Name, i.Type, p.Cancelled, p.Cost, p.DiscountCost, p.Date, p.UserID, p.CashOnly, p.UseCredits FROM Purchase_History p LEFT JOIN Item i on p.itemID = i.ID WHERE p.UserID = $userID AND p.Date >= '$startDate' AND p.Date < '$endDate' ORDER BY p.ID DESC");
+    $statement = $db->prepare( "SELECT p.itemID, i.Name, i.Type, p.Cancelled, d.Price, d.RetailPrice, d.DiscountPrice, d.ItemDetailsID, p.Cost as LegacyPrice, p.DiscountCost as LegacyDiscountPrice, p.Date, p.UserID, p.CashOnly, p.UseCredits FROM Purchase_History p LEFT JOIN Item i on p.itemID = i.ID LEFT JOIN Item_Details d ON p.ItemDetailsID = d.ItemDetailsID WHERE p.UserID = :userID AND p.Date >= :startDate AND p.Date < :endDate ORDER BY p.ID DESC" );
+
+    $statement->bindValue(":userID", $userID );
+    $statement->bindValue(":startDate", $startDate );
+    $statement->bindValue(":endDate", $endDate );
+
+    $results = $statement->execute();
+
     $currentWeek = "";
     while ($row = $results->fetchArray()) {
         $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
@@ -265,7 +313,7 @@ echo "</div>";
             if( $currentWeek != $weekOfPurchase ) {
                 // New week
                 echo "<tr>";
-                echo "<td class='section' colspan='3'>";
+                echo "<td class='section' colspan='$colSpan'>";
                 echo $weekOfPurchase;
                 echo "</td>";
                 echo "</tr>";
@@ -275,8 +323,19 @@ echo "</div>";
         }
         $isCancelled = $row['Cancelled'] === 1;
         $itemName = $row['Name'];
-        $discountAmountDisplay = getPriceDisplayWithDollars( $row['DiscountCost'] );
-        $costAmountDisplay = getPriceDisplayWithDollars( $row['Cost'] );
+
+        $itemDetailsID =  $row['ItemDetailsID'];
+
+        $discountCost = $row['LegacyDiscountPrice'];
+        $fullCost = $row['LegacyPrice'];
+
+        if( $itemDetailsID != null ) {
+            $discountCost = $row['DiscountPrice'];
+            $fullCost = $row['Price'];
+        }
+
+        $discountAmountDisplay = getPriceDisplayWithDollars( $discountCost );
+        $costAmountDisplay = getPriceDisplayWithDollars( $fullCost );
 
         if( $isCancelled ) {
             $discountAmountDisplay .= " (REFUNDED)";
@@ -285,10 +344,14 @@ echo "</div>";
 
         $costDisplay = "";
 
-        if( $row['DiscountCost'] != "" ) {
-            $costDisplay = "<span class='red_price'>" . getPriceDisplayWithDollars( $row['Cost'] ) . "</span>" . $discountAmountDisplay;
+        $cost = 0.0;
+
+        if( $discountCost != "" &&$discountCost != 0 ) {
+            $costDisplay = "<span class='red_price'>" . getPriceDisplayWithDollars( $fullCost ) . "</span>" . $discountAmountDisplay;
+            $cost = $discountCost;
         } else {
             $costDisplay = $costAmountDisplay;
+            $cost = $fullCost;
         }
 
         if( $row['CashOnly'] == 1 ) {
@@ -298,12 +361,10 @@ echo "</div>";
         if( $row['UseCredits'] > 0 ) {
             $partialCreditsLabel = "";
 
-            if( ( $row['DiscountCost'] != 0 && $row['UseCredits'] < $row['DiscountCost'] )
-                || ( $row['DiscountCost'] == 0 &&  $row['Cost'] != 0 &&  $row['UseCredits'] < $row['Cost'] ) ) {
+            if( ( $discountCost != 0 && $row['UseCredits'] < $discountCost )
+                || ( $discountCost == 0 &&  $fullCost != 0 &&  $row['UseCredits'] < $fullCost ) ) {
                 $partialCreditsLabel = " PARTIAL";
             }
-
-
 
             $costDisplay = $costDisplay . "<span style='float:right; font-weight: bold; color:#716e08;'>(WITH " . getPriceDisplayWithDollars( $row['UseCredits'] ) . "$partialCreditsLabel CREDITS)</span>";
         }
@@ -321,12 +382,14 @@ echo "</div>";
             $itemID = $row['ItemID'];
 
             if( $itemID == CREDIT_ID ) {
-                if( $row['Cost'] > 0 ) {
+                $creditDisplay = getPriceDisplayWithDollars( $row['LegacyPrice'] );
+
+                if( $row['LegacyPrice'] > 0 ) {
                     $rowClass = "class='add_credit_row'";
-                    $itemName = "Added Credits&nbsp;&nbsp;($costDisplay)";
+                    $itemName = "Added Credits&nbsp;&nbsp;($creditDisplay)";
                 } else {
                     $rowClass = "class='remove_credit_row'";
-                    $itemName = "Returned Credits&nbsp;&nbsp;($costDisplay)";
+                    $itemName = "Returned Credits&nbsp;&nbsp;($creditDisplay)";
                 }
 
                 $costDisplay = "---";
@@ -337,6 +400,13 @@ echo "</div>";
         echo "<td>" . $date_object->format('l m/d/Y  [h:i A]') . "</td>";
         echo "<td>" . $itemName . "</td>";
         echo "<td>" . $costDisplay ."</td>";
+
+        if( IsAdminLoggedIn() ) {
+            $retailPrice = $row['RetailPrice'];
+            $profit = $cost - $retailPrice;
+            echo "<td>" . getPriceDisplayWithDollars( $retailPrice ) . "</td>";
+            echo "<td>" . getPriceDisplayWithDollars( $profit ) . "</td>";
+        }
         echo "</tr>";
         
         if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
@@ -348,13 +418,34 @@ echo "</div>";
     echo "</div>";
 
 
+/**
+ * @param $db SQLite3
+ * @param $selectedMonthLink
+ * @param $currentMonthLink
+ * @param $userID
+ * @param $currentMonthLabel
+ * @param $currentMonthSodaTotal
+ * @param $currentMonthSnackTotal
+ * @param $currentMonthSodaCashOnlyTotal
+ * @param $currentMonthSnackCashOnlyTotal
+ * @param $currentMonthSodaCount
+ * @param $currentMonthSnackCount
+ * @param $currentMonthSodaCashOnlyCount
+ * @param $currentMonthSnackCashOnlyCount
+ */
 function printNewBillMonth( $db, $selectedMonthLink, $currentMonthLink, $userID, $currentMonthLabel,
                             $currentMonthSodaTotal, $currentMonthSnackTotal, $currentMonthSodaCashOnlyTotal, $currentMonthSnackCashOnlyTotal,
                             $currentMonthSodaCount, $currentMonthSnackCount, $currentMonthSodaCashOnlyCount, $currentMonthSnackCashOnlyCount ) {
 
     $totalPurchased = $currentMonthSodaTotal + $currentMonthSnackTotal;
 
-    $results = $db->query("SELECT Amount, Date, ItemType, Method FROM Payments WHERE UserID = $userID AND MonthForPayment = '$currentMonthLabel'  AND Cancelled is NULL ORDER BY Date DESC, ItemType ASC ");
+
+    $statement = $db->prepare( "SELECT Amount, Date, ItemType, Method FROM Payments WHERE UserID = :userID AND MonthForPayment = :currentMonthLabel  AND Cancelled is NULL ORDER BY Date DESC, ItemType ASC" );
+
+    $statement->bindValue(":userID", $userID );
+    $statement->bindValue(":currentMonthLabel", $currentMonthLabel );
+
+    $results = $statement->execute();
 
     $totalPaid = 0.0;
     $paymentDetails = "";

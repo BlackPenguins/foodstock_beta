@@ -20,15 +20,15 @@
  */
     include(__DIR__ . "/../appendix.php");
     include(UI_FUNCTIONS_PATH);
+    include(QUANTITY_FUNCTIONS_PATH);
 
     $db = new SQLite3( getDB() );
     if (!$db) die ($error);
 
     $testMigration = false;
 
-
-    if( isset( $_GET['version'] ) ) {
-        $version = $_GET['version'];
+    if(isset($_POST['StartMigration'])) {
+        $version = $_POST['VersionNumber'];
 
         echo "<h1>Version $version Migration</h1>";
 
@@ -42,6 +42,7 @@
         } else {
             ini_set('max_execution_time', 3600);
             $start = time();
+            error_log("------- MIGRATION BEGIN [$version]" );
 
             switch ($version) {
                 case "6.0":
@@ -56,6 +57,9 @@
                 case "6.3":
                     v6_3($db);
                     break;
+                case "7.0":
+                    v7_0($db);
+                    break;
                 default:
                     echo "There is no migration for version [$version]!";
                     break;
@@ -63,6 +67,8 @@
 
             $end = time();
             $totalTime = $end - $start;
+
+            error_log("------- MIGRATION END [$version] [$totalTime ms]" );
 
             echo "<div style='background-color:#ff4c81; padding: 15px; margin: 30px 0px; border: #ff171d solid 4px;'>";
             echo "<div style='padding: 10px; color: #ffcdd7;'>TOTAL TIME ($totalTime seconds)</div>";
@@ -73,7 +79,53 @@
         }
 
     } else {
-        echo " Welcome to migration page. You need to select a version!";
+        echo "<div style='margin: 0 auto;' class='fancy'>";
+        echo "<form style='width:400px; margin: 0 auto;' id='add_item_form' enctype='multipart/form-data' action='" . ADMIN_MIGRATION_LINK . "' method='POST'>";
+
+        echo "<label for='VersionNumber'>Version</label>";
+        echo "<input style='width:100%;' class='text ui-widget-content ui-corner-all' type='text' autocorrect='off' autocapitalize='off' maxlength='7'; name='VersionNumber'>";
+
+        echo "<input type='hidden' name='StartMigration' value='StartMigration'/>";
+
+        echo "<input class='ui-button' style='padding:10px; text-align:center; width:100%; margin: 40px 0px 0px 0px' type='submit' name='StartMigration' value='Start Migration'/><br>";
+
+        echo "</fieldset>";
+        echo "</form>";
+    }
+
+
+    function v7_0($db ) {
+        error_log( "Creating tables..." );
+        executeStatement( $db, "CREATE TABLE IF NOT EXISTS Items_In_Stock (StockID INTEGER PRIMARY KEY not null, ItemID INTEGER, ItemDetailsID INTEGER, IsBackstock INTEGER, Date TEXT)" );
+        executeStatement( $db, "CREATE TABLE IF NOT EXISTS Item_Details (ItemDetailsID INTEGER PRIMARY KEY not null, ItemID INTEGER not null, Price INTEGER, DiscountPrice INTEGER, RetailPrice INTEGER, ExpDate TEXT )" );
+
+        error_log( "Altering tables..." );
+        executeStatement( $db, "ALTER TABLE Daily_Amount RENAME TO Inventory_History;");
+        executeStatement( $db, "ALTER TABLE Inventory_History ADD COLUMN InventoryType TEXT;");
+        executeStatement( $db, "ALTER TABLE Inventory_History ADD COLUMN ItemDetailsID INTEGER;");
+        executeStatement( $db, "ALTER TABLE Purchase_History ADD COLUMN ItemDetailsID INTEGER;");
+
+        executeStatement( $db, "ALTER TABLE Information ADD COLUMN SiteIncome INTEGER DEFAULT 0;");
+        executeStatement( $db, "ALTER TABLE Information ADD COLUMN SiteExpenses INTEGER DEFAULT 0;");
+        executeStatement( $db, "ALTER TABLE Information ADD COLUMN SitePayments INTEGER DEFAULT 0;");
+        executeStatement( $db, "ALTER TABLE Information ADD COLUMN SiteProfit INTEGER DEFAULT 0;");
+        executeStatement( $db, "ALTER TABLE Information ADD COLUMN SiteLoss INTEGER DEFAULT 0;");
+        executeStatement( $db, "ALTER TABLE Information ADD COLUMN FirstRebornDay TEXT;");
+        executeStatement( $db, "ALTER TABLE Item ADD COLUMN ItemIncome INTEGER DEFAULT 0;");
+        executeStatement( $db, "ALTER TABLE Item ADD COLUMN ItemExpenses INTEGER DEFAULT 0;");
+        executeStatement( $db, "ALTER TABLE Item ADD COLUMN ItemProfit INTEGER DEFAULT 0;");
+
+        error_log( "Updating tables..." );
+        executeStatement( $db, "UPDATE Inventory_History Set InventoryType = 'SITE PURCHASE' WHERE PurchaseID = -2;");
+        executeStatement( $db, "UPDATE Inventory_History Set InventoryType = 'MANUAL PURCHASE' WHERE (PurchaseID = -3 OR PurchaseID = -1) AND ShelfQuantity < ShelfQuantityBefore;");
+        executeStatement( $db, "UPDATE Inventory_History Set InventoryType = 'REFILL' WHERE (PurchaseID = -3 OR PurchaseID = -1) AND ShelfQuantity > ShelfQuantityBefore;");
+        executeStatement( $db, "UPDATE Inventory_History Set InventoryType = 'NO CHANGE' WHERE (PurchaseID = -3 OR PurchaseID = -1) AND ShelfQuantity = ShelfQuantityBefore AND BackstockQuantity = BackstockQuantityBefore;");
+        executeStatement( $db, "UPDATE Information Set FirstRebornDay = '2019-10-15 00:00:00'");
+
+        error_log( "Creating Item_Details..." );
+        createItemDetails( $db );
+        convertValueToItemInStock( $db );
+
     }
 
     function v6_3( $db ) {
@@ -152,12 +204,190 @@
     }
 
     function queryStatement( $db, $statement ) {
+        return queryStatementWithPrint( $db, $statement, true );
+    }
+
+    function queryStatementWithPrint( $db, $statement, $print ) {
         $start = time();
         $results = $db->query( $statement );
         $end = time();
         $totalTime = $end - $start;
-        printBox( "<div style='padding: 10px; color: #c2f9ff;'>Querying [$statement]</div> <div style='padding: 10px; color: #c2f9ff;'>Done! ($totalTime seconds)</div>" );
+        if( $print ) {
+            printBox("<div style='padding: 10px; color: #c2f9ff;'>Querying [$statement]</div> <div style='padding: 10px; color: #c2f9ff;'>Done! ($totalTime seconds)</div>");
+        }
         return $results;
+    }
+
+    function createItemDetails( $db ) {
+        // CREATE THEM
+        error_log( "-- Creating from Inventory_History" );
+        $tableResults = queryStatement($db, "select ItemID, Price from Inventory_History group by ItemID, Price;" );
+
+        $db->exec( "BEGIN;" );
+        while ($tableRow = $tableResults->fetchArray()) {
+            $price = $tableRow['Price'];
+            $itemID = $tableRow['ItemID'];
+
+            $updateQuery = "INSERT INTO Item_Details (Price, DiscountPrice, ItemID) VALUES($price, 0, $itemID)";
+            $db->exec( $updateQuery );
+        }
+
+        error_log( "-- Creating from Purchase_History" );
+        $tableResults = queryStatement($db, "select ItemID, Cost, DiscountCost from Purchase_History group by ItemID, Cost, DiscountCost;" );
+
+        while ($tableRow = $tableResults->fetchArray()) {
+            $price = $tableRow['Cost'];
+            $discountPrice = $tableRow['DiscountCost'];
+            $itemID = $tableRow['ItemID'];
+
+            if( $itemID == 4000 ) {
+                // For credit purchases
+                $discountPrice = 0;
+            }
+
+            $updateQuery = "INSERT INTO Item_Details (Price, DiscountPrice, ItemID) VALUES($price, $discountPrice, $itemID)";
+            $db->exec( $updateQuery );
+        }
+        $db->exec( "COMMIT;" );
+
+        $db->exec( "BEGIN;" );
+        // ASSIGN THEM
+        error_log( "-- Assigning Inventory_History" );
+        $tableResults = queryStatement($db, "select ID, ItemID, Price from Inventory_History;" );
+
+        while ($tableRow = $tableResults->fetchArray()) {
+            $price = $tableRow['Price'];
+            $itemID = $tableRow['ItemID'];
+            $id = $tableRow['ID'];
+
+            if( $id % 250 == 0 ) {
+                error_log("Updating Inventory_History [$id]" );
+            }
+
+            $itemDetailsResults = queryStatementWithPrint($db, "select ItemDetailsID from Item_Details WHERE Price = $price AND ItemID = $itemID AND DiscountPrice = 0;", false );
+            $itemDetailsID = $itemDetailsResults->fetchArray()['ItemDetailsID'];
+
+            executeStatementWithPrint( $db, "UPDATE Inventory_History SET ItemDetailsID = $itemDetailsID WHERE ID = $id", false );
+        }
+
+        error_log( "-- Assigning Purchase_History" );
+        $tableResults = queryStatement($db, "select ID, ItemID, Cost, DiscountCost from Purchase_History;" );
+
+        while ($tableRow = $tableResults->fetchArray()) {
+            $price = $tableRow['Cost'];
+            $discountPrice = $tableRow['DiscountCost'];
+            $itemID = $tableRow['ItemID'];
+            $id = $tableRow['ID'];
+
+            if( $itemID == 4000 ) {
+                // For credit purchases
+                $discountPrice = 0;
+            }
+
+            if( $id % 250 == 0 ) {
+                error_log("Updating Purchase_History [$id]" );
+            }
+
+            $itemDetailsResults = queryStatementWithPrint($db, "select ItemDetailsID from Item_Details WHERE Price = $price AND ItemID = $itemID AND DiscountPrice = $discountPrice;", false );
+            $itemDetailsID = $itemDetailsResults->fetchArray()['ItemDetailsID'];
+
+            executeStatementWithPrint( $db, "UPDATE Purchase_History SET ItemDetailsID = $itemDetailsID WHERE ID = $id", false );
+        }
+        $db->exec( "COMMIT;" );
+
+        // CHECK YOUR WORK
+        error_log( "-- Checking Inventory_History" );
+        $tableResults = queryStatement($db, "select h.ID, h.ItemID as HisID, h.Price as HisPrice, d.ItemID as DetID, d.Price as DetPrice from Inventory_History h JOIN Item_Details d ON h.ItemDetailsID = d.ItemDetailsID;" );
+
+        while ($tableRow = $tableResults->fetchArray()) {
+            $id = $tableRow['ID'];
+            $hisID = $tableRow['HisID'];
+            $hisPrice = $tableRow['HisPrice'];
+            $detID = $tableRow['DetID'];
+            $detPrice = $tableRow['DetPrice'];
+
+            if ($hisID != $detID) {
+                error_log(" ERROR MISMATCH - ID!! [$id] [$hisID] [$detID]");
+            }
+
+            if ($hisPrice != $detPrice) {
+                error_log(" ERROR MISMATCH - PRICE!! [$id] [$hisPrice] [$detPrice]");
+            }
+        }
+
+        error_log( "-- Checking Purchase_History" );
+        $tableResults = queryStatement($db, "select h.ID, h.ItemID as HisID, h.Cost as HisPrice, h.DiscountCost as HisDiscountPrice, d.ItemID as DetID, d.Price as DetPrice, d.DiscountPrice as DetDiscountPrice from Purchase_History h JOIN Item_Details d ON h.ItemDetailsID = d.ItemDetailsID;" );
+
+        while ($tableRow = $tableResults->fetchArray()) {
+            $id = $tableRow['ID'];
+            $hisID = $tableRow['HisID'];
+            $hisPrice = $tableRow['HisPrice'];
+            $hisDiscountPrice = $tableRow['HisDiscountPrice'];
+            $detID = $tableRow['DetID'];
+            $detPrice = $tableRow['DetPrice'];
+            $detDiscountPrice = $tableRow['DetDiscountPrice'];
+
+            if ($hisID != $detID) {
+                error_log(" ERROR MISMATCH - ID!! [$id] [$hisID] [$detID]");
+            }
+
+            if ($hisPrice != $detPrice) {
+                error_log(" ERROR MISMATCH - PRICE!! [$id] [$hisPrice] [$detPrice]");
+            }
+
+            if ($hisDiscountPrice != $detDiscountPrice) {
+                error_log(" ERROR MISMATCH - DISCOUNT PRICE!! [$id] [$hisDiscountPrice] [$detDiscountPrice]");
+            }
+        }
+
+        error_log( "-- DONE ITEM DETAILS CREATION" );
+    }
+
+    function convertValueToItemInStock( $db ) {
+        error_log("Converting quantity to item in stock" );
+
+        $tableResults = queryStatement($db, "SELECT ID, Name, ShelfQuantity, BackstockQuantity, (ShelfQuantity + BackstockQuantity) as TotalQuantity, (Price + DiscountPrice) as TotalPrice, DiscountPrice, Price from Item WHERE TotalPrice > 0 ORDER BY TotalQuantity DESC" );
+
+        $db->exec( "BEGIN;" );
+
+        while ($tableRow = $tableResults->fetchArray()) {
+            $id = $tableRow['ID'];
+            $itemName = $tableRow['Name'];
+            $shelfQuantity = $tableRow['ShelfQuantity'];
+            $backstockQuantity = $tableRow['BackstockQuantity'];
+            $discountPrice = $tableRow['DiscountPrice'];
+            $price = $tableRow['Price'];
+
+            $restockResults = queryStatement($db, "SELECT (Cost/NumberOfCans) as CostEach, Date from Restock WHERE ItemID = $id ORDER BY Date Desc" );
+            $firstRestockRow = $restockResults->fetchArray();
+            $retailPrice = round( $firstRestockRow['CostEach'] );
+            $restockDate = $firstRestockRow['Date'];
+
+            $itemDetailsQuery = "INSERT INTO Item_Details (ItemID, Price, DiscountPrice, RetailPrice) VALUES($id, $price, $discountPrice, $retailPrice)";
+            $db->exec( $itemDetailsQuery );
+            $itemDetailsID = $db->lastInsertRowID();
+
+            $lostMoney = "";
+
+            if( $discountPrice == 0 ) {
+                $discountPrice = $price;
+            }
+
+            if( $retailPrice > $discountPrice ) {
+                $lostMoney = "<br><br><b>LOST MONEY!!!!!</b>";
+            }
+
+            printBox( "Item $id [$itemName] - Shelf Quantity [$shelfQuantity] Backstock Quantity [$backstockQuantity]<br>Price: [$discountPrice]<br>RetailCost: [$retailPrice]<br>Date: [$restockDate] $lostMoney" );
+
+            $date = date('Y-m-d H:i:s');
+
+            addToShelfQuantity( $db, $shelfQuantity, $id, $itemDetailsID, "MIGRATION" );
+            addToBackstockQuantity( $db, $backstockQuantity, $id, $itemDetailsID, "MIGRATION" );
+        }
+
+        $db->exec( "COMMIT;" );
+
+        error_log("Converting quantity to item in stock - DONE!" );
     }
 
     function convertDollarsToWholeCents( $db, $tableName, $primaryID, ...$columnNames ) {

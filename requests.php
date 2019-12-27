@@ -82,13 +82,18 @@
     echo "</div>";
 
     echo "<div id= 'container'>";
-    drawTable($db, $isLoggedInAdmin, "Requests", "'Soda','Snack'");
-    drawTable($db, $isLoggedInAdmin, "Feature Requests", "'Feature'");
-    drawTable($db, $isLoggedInAdmin, "Bug Reports", "'Bug'");
+    drawTable($db, $isLoggedInAdmin, "Requests", [ "Soda", "Snack" ] );
+    drawTable($db, $isLoggedInAdmin, "Feature Requests", [ "Feature" ] );
+    drawTable($db, $isLoggedInAdmin, "Bug Reports", [ "Bug" ] );
     echo "</div>";
 
-    
-    function drawTable( $db, $isLoggedInAdmin, $title, $type ) {
+/**
+ * @param $db SQLite3
+ * @param $isLoggedInAdmin
+ * @param $title
+ * @param $type
+ */
+    function drawTable( $db, $isLoggedInAdmin, $title, $typeArray ) {
         // ------------------------------------
         // REQUESTS TABLE
         // ------------------------------------
@@ -131,15 +136,20 @@
         
         echo "</tr></thead>";
 
-        $requestsQuery = "SELECT r.ID, r.Priority, r.Completed, r.DateCompleted, u.FirstName, u.LastName, r.ItemName, r.ItemType, r.Date, r.Note  FROM REQUESTS r JOIN User u ON r.UserID = u.UserID WHERE r.ItemType in (" . $type . ") " .
+        $requestsQuery = "SELECT r.ID, r.Priority, r.Completed, r.DateCompleted, u.FirstName, u.LastName, r.ItemName, r.ItemType, r.Date, r.Note " .
+            "FROM REQUESTS r JOIN User u ON r.UserID = u.UserID " .
+            "WHERE r.ItemType in " . getPrepareStatementForInClause( count( $typeArray ) ) .
             "ORDER BY " .
             "CASE WHEN Completed == 0 OR Completed IS NULL THEN 1 ELSE 2 END ASC, " .
             "CASE WHEN Completed = 1 THEN DateCompleted ELSE " .
             "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '6' WHEN Priority = 'In Progress' THEN '5' WHEN Priority = 'Quick' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
             "END DESC," .
             "r.Date DESC";
-//        log_sql( "REQUESTS [$requestsQuery]" );
-        $results = $db->query( $requestsQuery);
+        $statement = $db->prepare( $requestsQuery );
+        bindStatementsForInClause( $statement, $typeArray );
+
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
             $completedMark = "&#9746;";
             $completedClass = "in_progress";
@@ -203,17 +213,17 @@
             
             echo "</td>";
             
-            echo "<td style='width:$column3Width%;'>" . $row['ItemName'] . "</td>";
+            echo "<td style='width:$column3Width%;'>" . strip_tags( $row['ItemName'] ) . "</td>";
             
             if( $title == "Requests" ) {
-                echo "<td class='hidden_mobile_column' style='width:$column4Width%;'>" . $row['ItemType'] . "</td>";
+                echo "<td class='hidden_mobile_column' style='width:$column4Width%;'>" . strip_tags ($row['ItemType'] ) . "</td>";
             }
             
             $fullName = $row['FirstName'] . " " . $row['LastName'];
             echo "<td class='hidden_mobile_column' style='width:$column5Width%;'>" . $fullName . "</td>";
             $date_object = DateTime::createFromFormat('Y-m-d H:i:s', $row['Date']);
             echo "<td class='hidden_mobile_column' style='width:$column6Width%;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "$dateCompleted</td>";
-            echo "<td class='hidden_mobile_column' style='width:$column7Width%; word-break:break-word;'>" . $row['Note'] . "</td>";
+            echo "<td class='hidden_mobile_column' style='width:$column7Width%; word-break:break-word;'>" . strip_tags( $row['Note'] ) . "</td>";
             echo "</tr>";
         }
         

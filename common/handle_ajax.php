@@ -2,6 +2,8 @@
     include(__DIR__ . "/../appendix.php" );
     include( SESSION_FUNCTIONS_PATH );
     include(UI_FUNCTIONS_PATH);
+    include(QUANTITY_FUNCTIONS_PATH);
+    include_once(ACTION_FUNCTIONS_PATH);
     include(SLACK_FUNCTIONS_PATH);
     include_once(LOG_FUNCTIONS_PATH);
 
@@ -24,35 +26,42 @@
         $nameQuery = "";
 
         if( $itemSearch != "" ) {
-            $nameQuery = " AND ( Name Like '%" . $itemSearch . "%' OR Alias Like '%" . $itemSearch . "%')";
+            $nameQuery = " AND ( Name Like :nameSearch OR Alias Like :aliasSearch)";
         }
         
-        $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses," .
-        "DateModified, ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate " .
-        "FROM Item WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockQuantity DESC, ShelfQuantity DESC";
+        $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, " . getQuantityQuery() .
+        ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
+        "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate " .
+        "FROM Item i WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockAmount DESC, ShelfAmount DESC";
         
         if( IsLoggedIn() ) {
             // Sort by user preference
             // This sort pretty much breaks them into 3 groups (bought ones at #1, discontinued at #3, the rest at #2) and sorts those 3,
             // then inside those groups it sorts by frequency, then shelf, then backstock
-            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, BackstockQuantity, ShelfQuantity, Price, TotalIncome, TotalExpenses, DateModified, " .
-            "ModifyType, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
+            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, " . getQuantityQuery() .
+            ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
+            "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
             " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate FROM Item i " .
-            "WHERE Type ='" . $itemType . "' " .$nameQuery . " AND Hidden != 1 " . 
-            "ORDER BY CASE WHEN Retired = 1 AND ShelfQuantity = 0 THEN '3' WHEN Frequency > 0 AND Retired = 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfQuantity DESC, BackstockQuantity DESC"; 
+            "WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 " .
+            "ORDER BY CASE WHEN Retired = 1 AND ShelfAmount = 0 THEN '3' WHEN Frequency > 0 AND Retired = 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfAmount DESC, BackstockAmount DESC";
         }
         
-        $results = $db->query($cardQuery);
-        
+        $statement = $db->prepare( $cardQuery );
+        $statement->bindValue( ":nameSearch", "%" .$itemSearch . "%" );
+        $statement->bindValue( ":aliasSearch", "%" .$itemSearch . "%" );
+        $statement->bindValue( ":itemType", $itemType );
+        $results = $statement->execute();
+
         //---------------------------------------
         // BUILD ITEM CARDS
         //---------------------------------------
         $columnNumber = 1;
         while ($row = $results->fetchArray()) {
-
+            $item_id = $row['ID'];
             $retired_item = $row['Retired'];
-            $cold_item = $row['ShelfQuantity'];
-            $warm_item = $row['BackstockQuantity'];
+
+            $shelfAmount = $row['ShelfAmount'];
+            $backstockAmount = $row['BackstockAmount'];
 
             $hideDiscontinued = true;
 
@@ -60,7 +69,7 @@
                 $hideDiscontinued = false;
             }
 
-            if( $retired_item == 1 && $hideDiscontinued && $cold_item == 0 ) {
+            if( $retired_item == 1 && $hideDiscontinued && $shelfAmount == 0 ) {
                 continue;
             }
 
@@ -68,7 +77,7 @@
             
             $outOfStock = $row['RefillTrigger'];
             $outOfStockReporter = $row['OutOfStockReporter'];
-            $item_id = $row['ID'];
+
             $item_name = $row['Name'];
             $price = $row['Price'];
             $originalPrice = $price;
@@ -119,7 +128,7 @@
                 $unitNamePlural = $row['UnitNamePlural'];
             }
             
-            $unitNameFinal = $cold_item > 1 ? $unitNamePlural : $unitName;
+            $unitNameFinal = $shelfAmount > 1 ? $unitNamePlural : $unitName;
             
             $amountLeft = "N/A";
             $amountClass = "";
@@ -129,7 +138,7 @@
             $lightRopeClass = "";
             
             if( $retired_item == 1) {
-                if($cold_item == 0) {
+                if($shelfAmount == 0) {
                     $amountLeft = "Discontinued";
                     $amountClass = "discontinued";
                     $statusClass = "post-module-discontinued";
@@ -137,23 +146,26 @@
                     $lightRopeClass = "class='dead'";
                 } else {
                     $amountClass = "discontinued-soon";
-                    $amountLeft = "<div><span>$cold_item</span> $unitNameFinal Left</div>" . 
+                    $amountLeft = "<div><span>$shelfAmount</span> $unitNameFinal Left</div>" .
                     "<div style='font-size: 0.8em; font-weight:bold; margin-top:5px; color:#ffe000'>(discontinued soon)</div>";
                 }
             } else {
-                if($cold_item == 0) {
+                if($shelfAmount == 0) {
                     $amountLeft = "SOLD OUT";
                     $amountClass = "sold-out";
                     $thumbnailClass = "sold-out";
                     $buttonClass = "disabled";
                 } else {
-                    $amountLeft = "<span>$cold_item</span> $unitNameFinal Left";
+                    $amountLeft = "<span>$shelfAmount</span> $unitNameFinal Left";
                 }
             }
             
-            echo "<input id='shelf_quantity_" . $item_id . "' type='hidden' value='" . $cold_item . "'/>";
+            echo "<input id='shelf_quantity_" . $item_id . "' type='hidden' value='" . $shelfAmount . "'/>";
             
-            $resultsPopularity = $db->query('SELECT ItemID, Date FROM Restock where ItemID = ' . $row['ID'] . ' ORDER BY Date DESC');
+            $statementPopularity = $db->prepare('SELECT ItemID, Date FROM Restock where ItemID = :itemID ORDER BY Date DESC');
+            $statementPopularity->bindValue( ":itemID", $row['ID'] );
+            $resultsPopularity = $statementPopularity->execute();
+
             $firstDate = "";
             $lastDate = "";
             $totalPurchases = 0;
@@ -202,9 +214,12 @@
                 $previewImage = "<img class='preview_zoom' style='width: 100px; height: 100px; padding-top:70px;' src='" . IMAGES_LINK . "no_image.png' />";
             }
 
-            $total_can_sold = $row['TotalCans'] - ( $row['BackstockQuantity'] + $row['ShelfQuantity'] );
+            $total_can_sold = $row['TotalCans'] - ( $backstockAmount + $shelfAmount );
             
-            $resultsDefect = $db->query("SELECT Sum(Amount) as 'TotalDefect' From Defectives where ItemID = ". $row['ID']);
+            $statementDefect = $db->prepare("SELECT Sum(Amount) as 'TotalDefect' From Defectives where ItemID = :itemID" );
+            $statementDefect->bindValue( ":itemID",  $row['ID'] );
+            $resultsDefect = $statementDefect->execute();
+
             $rowDefect = $resultsDefect->fetchArray();
             $totalDefects = $rowDefect['TotalDefect'];
             
@@ -221,8 +236,8 @@
             if( $outOfStock == "1" ) {
                 $reportType = "out of stock";
                 $reportClass = "out_of_stock";
-                if( $outOfStockReporter == "SodaBot" ) {
-                    if( $cold_item > 0 ) {
+                if( $outOfStockReporter == "StockBot" ) {
+                    if( $shelfAmount > 0 ) {
                         $reportType = "running low";
                         $reportClass = "running_low";
                     }
@@ -237,9 +252,13 @@
             echo "<span class='post-module $statusClass'>";
 //                 echo "<div class='snow'>";
                 echo "<div class='thumbnail thumbnail-$thumbnailClass'>";
-//                     echo "<img style='position:absolute; top:14px; right:17px; z-index:200;' src='" . IMAGES_LINK . "wreath.png'/>";
-                    echo "<div class='price'>";
-                    
+                     echo "<img style='position:absolute; top:14px; right:17px; z-index:200;' src='" . IMAGES_LINK . "wreath.png'/>";
+                     $smallPriceFont = "";
+
+                     if( substr( $priceDisplay, 0, 1 ) == "$" ) {
+                         $smallPriceFont = "style='font-size: 0.9em; padding:17.5px 0;'";
+                     }
+                    echo "<div $smallPriceFont class='price'>";
                         echo $priceDisplay;
                     echo "</div>";
                     echo $previewImage;
@@ -247,6 +266,19 @@
                 echo "</div>";
                 echo "<div class='post-content'>";
                     echo $reportButton;
+
+                    $lastRefilled = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateModified']);
+                    $now = new DateTime();
+
+                    $timeSinceLastRefill = $now->diff($lastRefilled);
+
+                    $minutesSinceLastRefill = ($timeSinceLastRefill->d * 24 * 60) + ($timeSinceLastRefill->h * 60) + $timeSinceLastRefill->i;
+
+                    if( $minutesSinceLastRefill <= 120 && $itemType == "Soda") {
+                        echo "<div style='position: absolute; right: 10px; top:-80px;'><img src='" . IMAGES_LINK . "thermometer.png' title='This item was added to the fridge $minutesSinceLastRefill minutes ago and might not be cold yet.'/></div>";
+
+                    }
+
                     echo "$outOfStockLabel";
                     echo "<div class='category category-$cardClass $amountClass'>$amountLeft</div>";
 
@@ -261,10 +293,10 @@
                         echo "<h1 class='sub_title'><u>Current Flavor:</u> <i>$currentFlavor</i></h1>";
                     }
 
-                    $income = $row['TotalIncome'];
-                    $expense = $row['TotalExpenses'];
-                    
-                    $profit = $income - $expense;
+                    $income = $row['ItemIncome'];
+                    $expense = $row['ItemExpenses'];
+                    $profit = $row['ItemProfit'];
+
                     $profitClass = $profit > 0 ? "income" : "expenses";
 
                     $actionsClass = "actions_no_stats";
@@ -324,204 +356,213 @@
                     }
                 echo "</div>"; //post-content
                 
-//                 echo "<ul style='top: 2px;' class='lightrope'>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-//                 "</ul>";
+                 echo "<ul style='top: 2px;' class='lightrope'>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+                 "</ul>";
                 
         echo "</span>"; //post-module
         }
     } 
     else if( $type == "ToggleRequestCompleted" ) {
         $requestID = $_POST['id'];
-        $results = $db->query("SELECT Completed FROM Requests WHERE ID =" . $requestID );
+        $statement = $db->prepare("SELECT Completed FROM Requests WHERE ID = :requestID" );
+        $statement->bindValue( ":requestID", $requestID );
+        $results = $statement->execute();
+
         $row = $results->fetchArray();
         
         if( $row['Completed'] == 1 ) {
-            $db->exec( "UPDATE Requests set Completed = 0 WHERE ID = " . $requestID );
+            $statement = $db->prepare( "UPDATE Requests set Completed = 0 WHERE ID = :requestID" );
+            $statement->bindValue( ":requestID", $requestID );
+            $statement->execute();
         } else {
-            $date = date('Y-m-d H:i:s');
-            $db->exec( "UPDATE Requests set Completed = 1, DateCompleted = '$date' WHERE ID = " . $requestID );
+            $statement = $db->prepare( "UPDATE Requests set Completed = 1, DateCompleted = :dateCompleted WHERE ID = :requestID" );
+            $statement->bindValue( ":requestID", $requestID );
+            $statement->bindValue( ":dateCompleted", date('Y-m-d H:i:s') );
+            $statement->execute();
         }
     }
     else if( $type == "ToggleRequestPriority" ) {
-        $requestID = $_POST['id'];
-        $priority = $_POST['priority'];
-        $db->exec( "UPDATE Requests set Priority = '$priority' WHERE ID = " . $requestID );
+        $statement = $db->prepare( "UPDATE Requests set Priority = :priority WHERE ID = :requestID" );
+        $statement->bindValue( ":requestID", $_POST['id'] );
+        $statement->bindValue( ":priority", $_POST['priority'] );
+        $statement->execute();
     }
     else if( $type == "CancelPurchase" ) {
-        $dailyAmountID = trim($_POST["DailyAmountID"]);
-        
-        $results = $db->query("SELECT u.FirstName, u.LastName, u.SlackID, p.Cost, p.DiscountCost, p.UserID, i.Type, i.Name, d.ItemID, d.BackstockQuantityBefore, d.BackstockQuantity, d.ShelfQuantityBefore, d.ShelfQuantity, d.Price from Daily_Amount d JOIN Item i on d.ItemID =  i.ID JOIN Purchase_History p on d.ID = p.DailyAmountID JOIN User u on p.UserID = u.UserID WHERE d.ID = $dailyAmountID");
+        $inventoryHistoryID = trim($_POST["DailyAmountID"]);
+
+        $statement = $db->prepare("SELECT u.FirstName, u.LastName, u.UserName, u.SlackID, p.ItemDetailsID, p.ItemID, p.UserID " .
+        "FROM Inventory_History d " .
+        "JOIN Purchase_History p on d.ID = p.DailyAmountID " .
+        "JOIN User u on p.UserID = u.UserID " .
+        "WHERE d.ID = :inventoryHistoryID" );
+        $statement->bindValue( ":inventoryHistoryID", $inventoryHistoryID );
+        $results = $statement->execute();
+
         $row = $results->fetchArray();
-        
+
         $date = date('Y-m-d H:i:s');
-        $itemID = $row['ItemID'];
-        $itemName = $row['Name'];
         $userID = $row['UserID'];
         $username = $row['FirstName'] . " " . $row['LastName'];
         $slackID = $row['SlackID'];
-        $itemType = $row['Type'];
-        $backstockBefore = $row['BackstockQuantityBefore'];
-        $backstockAfter= $row['BackstockQuantity'];
-        $shelfBefore = $row['ShelfQuantityBefore'];
-        $shelfAfter= $row['ShelfQuantity'];
-        $price= $row['Cost'];
-        $discountPrice= $row['DiscountCost'];
-        
-        $actualPrice = $discountPrice == 0.0 ? $price : $discountPrice;
-        
+        $username = $row['UserName'];
+
+        $itemDetailsID = $row['ItemDetailsID'];
+        $itemID = $row['ItemID'];
+
+        $db->exec("BEGIN;");
+
+        $itemDetailsObj = addToShelfQuantity( $db, 1, $itemID, $itemDetailsID, "CANCEL SITE PURCHASE" )[0];
+
+        $actualPrice = $itemDetailsObj->getSitePurchasePrice();
+        $price = $itemDetailsObj->getFullPrice();
+        $discountPrice = $itemDetailsObj->getDiscountPrice();
+
+        $itemType = $itemDetailsObj->getItemType();
+        $itemName = $itemDetailsObj->getItemName();
+
         $savings = $price - $discountPrice;
-        
-        $cancelDailySQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
-        log_sql("Cancel Daily Amount SQL: [" . $cancelDailySQL . "]" );
-        $db->exec( $cancelDailySQL );
-        
-        $cancelPurchaseSQL = "UPDATE Purchase_History SET Cancelled = 1 WHERE DailyAmountID = $dailyAmountID";
-        log_sql("Cancel SQL: [" . $cancelPurchaseSQL . "]" );
-        $db->exec( $cancelPurchaseSQL );
-        
-        $newIncome = addToValue( $db, "Item", "TotalIncome", $actualPrice, "where ID = $itemID", false );
-        $itemQuery = "UPDATE Item SET ShelfQuantity = ShelfQuantity + 1, TotalIncome = $newIncome, DateModified = '$date', ModifyType = 'Cancelled' where ID = $itemID";
-        log_sql("Item SQL: [" . $itemQuery . "]" );
-        $db->exec( $itemQuery );
-        
-        $newIncome = addToValue( $db, "Information", "Income", $actualPrice, "where ItemType = '$itemType'", false );
-        $infoQuery = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
-        log_sql("Info SQL: [" . $infoQuery . "]" );
-        $db->exec( $infoQuery );
-        
+
+
+        $statement = $db->prepare( "UPDATE Inventory_History SET Cancelled = 1 WHERE ID = :inventoryHistoryID" );
+        $statement->bindValue( ":inventoryHistoryID", $inventoryHistoryID );
+        $statement->execute();
+
+        $statement = $db->prepare( "UPDATE Purchase_History SET Cancelled = 1 WHERE DailyAmountID = :inventoryHistoryID" );
+        $statement->bindValue( ":inventoryHistoryID", $inventoryHistoryID );
+        $statement->execute();
+
+        $statement = $db->prepare( "UPDATE Item SET ItemIncome = ItemIncome - :actualPrice where ID = :itemID" );
+        $statement->bindValue( ":itemID", $itemID );
+        $statement->bindValue( ":actualPrice", $actualPrice );
+        $statement->execute();
+
+        $statement = $db->prepare( "UPDATE Information SET SiteIncome = SiteIncome - :actualPrice where ItemType = :itemType" );
+        $statement->bindValue( ":itemType", $itemType );
+        $statement->bindValue( ":actualPrice", $actualPrice );
+        $statement->execute();
+
         $typeOfBalance = $itemType . "Balance";
         $typeOfSavings = $itemType . "Savings";
-        
-        $newBalance = addToValue( $db, "User", $typeOfBalance, $actualPrice, "where UserID = $userID", false );
-        $newSavings = addToValue( $db, "User", $typeOfSavings, $savings, "where UserID = $userID", false );
-        $balanceUpdateQuery = "UPDATE User SET $typeOfBalance = $newBalance, $typeOfSavings = $newSavings where UserID = $userID";
 
-        log_sql("Balance Update SQL [" . $balanceUpdateQuery . "]" );
-        $db->exec( $balanceUpdateQuery );
-        
+        $statement = $db->prepare( "UPDATE User SET $typeOfBalance = $typeOfBalance - :actualPrice, $typeOfSavings = $typeOfSavings - :savings where UserID = :userID" );
+        $statement->bindValue( ":actualPrice", $actualPrice );
+        $statement->bindValue( ":savings", $savings );
+        $statement->bindValue( ":userID", $userID );
+        $statement->execute();
+
+        $db->exec("COMMIT;");
+
         $purchaseMessage = $itemName . " (+ " . getPriceDisplayWithDollars( $actualPrice ) . ")";
-        
+
         if( $slackID == "" ) {
             sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
         } else {
-            sendSlackMessageToUser($slackID,  $purchaseMessage , ":money_mouth_face:" , $itemType . "Stock - REFUND", "#3f5abb" );
+            sendSlackMessageToUser( $slackID,  $purchaseMessage , ":money_mouth_face:" , $itemType . "Stock - REFUND", "#3f5abb", $username );
         }
-        
+
         sendSlackMessageToMatt( "*(" . $username . ")*\n" . $purchaseMessage, ":money_mouth_face:", $itemType . "Stock - REFUND", "#3f5abb" );
+        // TODO MTM: Get rid of DateModified and ModifyType - never use it. Removing a column is hard. Create new temp table.
+
+
     }
     else if( $type == "CancelInventory" ) {
-        $dailyAmountID = trim($_POST["DailyAmountID"]);
-        
-        $results = $db->query("SELECT i.Type, d.ItemID, d.BackstockQuantityBefore, d.BackstockQuantity, d.ShelfQuantityBefore, d.ShelfQuantity, d.Price from Daily_Amount d JOIN Item i on d.ItemID =  i.ID WHERE d.ID = $dailyAmountID");
-        $row = $results->fetchArray();
-        
-        $date = date('Y-m-d H:i:s');
-        $itemID = $row['ItemID'];
-        $itemType = $row['Type'];
-        $backstockBefore = $row['BackstockQuantityBefore'];
-        $backstockAfter= $row['BackstockQuantity'];
-        $shelfBefore = $row['ShelfQuantityBefore'];
-        $shelfAfter= $row['ShelfQuantity'];
-        $price= $row['Price'];
-        
-        $quantityBefore = $backstockBefore + $shelfBefore;
-        $quantityAfter = $backstockAfter + $shelfAfter;
-        
-        $backstockDelta = $backstockBefore - $backstockAfter;
-        $shelfDelta = $shelfBefore - $shelfAfter;
-        
-        $income = ($quantityBefore - $quantityAfter) * $price;
-        
-        $cancelSQL = "UPDATE Daily_Amount SET Cancelled = 1 WHERE ID = $dailyAmountID";
-        log_sql("Cancel SQL: [" . $cancelSQL . "]" );
-        $db->exec( $cancelSQL );
-        
-        $newIncome = addToValue( $db, "Item", "TotalIncome", $income, "where ID = $itemID", false );
-        $itemSQL = "UPDATE Item SET TotalIncome = $newIncome, BackstockQuantity = BackstockQuantity + $backstockDelta, ShelfQuantity = ShelfQuantity + $shelfDelta, ModifyType = 'Cancelled', DateModified = '$date' where ID = $itemID";
-        log_sql("Item SQL: [" . $itemSQL . "]" );
-        $db->exec( $itemSQL );
-        
-        $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", false );
-        $infoSQL = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
-
-        log_sql("Info SQL: [" . $infoSQL . "]" );
-        $db->exec( $infoSQL );
+            // TODO MTM: Fix Cancel Inventory
+//        $dailyAmountID = trim($_POST["DailyAmountID"]);
+//
+//        $results = $db->query("SELECT i.Type, d.ItemID, d.BackstockQuantityBefore, d.BackstockQuantity, d.ShelfQuantityBefore, d.ShelfQuantity, d.Price, d.RetailCost, d.ItemDetailsID from Inventory_History d JOIN Item i on d.ItemID =  i.ID WHERE d.ID = $dailyAmountID");
+//        $row = $results->fetchArray();
+//
+//        $date = date('Y-m-d H:i:s');
+//        $itemID = $row['ItemID'];
+//        $itemType = $row['Type'];
+//        $backstockBefore = $row['BackstockQuantityBefore'];
+//        $backstockAfter= $row['BackstockQuantity'];
+//        $shelfBefore = $row['ShelfQuantityBefore'];
+//        $shelfAfter= $row['ShelfQuantity'];
+//        $price = $row['Price'];
+//        $itemDetailsID = $row['ItemDetailsID'];
+//
+//        $quantityBefore = $backstockBefore + $shelfBefore;
+//        $quantityAfter = $backstockAfter + $shelfAfter;
+//
+//        $backstockDelta = $backstockBefore - $backstockAfter;
+//        $shelfDelta = $shelfBefore - $shelfAfter;
+//
+//        $income = ($quantityBefore - $quantityAfter) * $price;
+//
+//        $cancelSQL = "UPDATE Inventory_History SET Cancelled = 1 WHERE ID = $dailyAmountID";
+//        log_sql("Cancel SQL: [" . $cancelSQL . "]" );
+//        $db->exec( $cancelSQL );
+//
+//        $newIncome = addToValue( $db, "Item", "TotalIncome", $income, "where ID = $itemID", false );
+//        $itemSQL = "UPDATE Item SET TotalIncome = $newIncome, ModifyType = 'Cancelled', DateModified = '$date' where ID = $itemID";
+//        log_sql("Item SQL: [" . $itemSQL . "]" );
+//        $db->exec( $itemSQL );
+//
+//        addToBackstockQuantity( $db, $backstockDelta, $itemID, $itemDetailsID, "CANCEL MANUAL PURCHASE" );
+//        addToShelfQuantity( $db, $shelfDelta, $itemID, $itemDetailsID, "CANCEL MANUAL PURCHASE" );
+//
+//        $newIncome = addToValue( $db, "Information", "Income", $income, "where ItemType = '$itemType'", false );
+//        $infoSQL = "UPDATE Information SET Income = $newIncome where ItemType = '$itemType'";
+//
+//        log_sql("Info SQL: [" . $infoSQL . "]" );
+//        $db->exec( $infoSQL );
     }
     else if( $type == "CancelRestock" ) {
         $restockID = trim($_POST["RestockID"]);
-        
-        $results = $db->query("SELECT r.Cost, r.ItemID, r.NumberOfCans, i.Type From Restock r JOIN Item i on r.ItemID = i.ID where RestockID = $restockID");
+
+        $statement = $db->prepare("SELECT r.Cost, r.ItemID, r.NumberOfCans, i.Type From Restock r JOIN Item i on r.ItemID = i.ID where RestockID = :restockID" );
+        $statement->bindValue( ":restockID", $restockID );
+        $results = $statement->execute();
+
         $row = $results->fetchArray();
-        
+
         $cost = $row['Cost'];
         $numberOfCans = $row['NumberOfCans'];
         $itemType = $row['Type'];
         $itemID = $row['ItemID'];
 
-        $cancelSQL = "UPDATE Restock SET Cancelled = 1 where RestockID = $restockID";
-        log_sql( "Cancel SQL [$cancelSQL]" );
-        $db->exec( $cancelSQL );
-        
-        $newTotalExpenses = addToValue( $db, "Item", "TotalExpenses", $cost, "where ID = $itemID", false );
-        $itemSQL = "UPDATE Item SET TotalExpenses = $newTotalExpenses, BackstockQuantity = BackstockQuantity - $numberOfCans, TotalCans = TotalCans - $numberOfCans where ID = $itemID";
-        log_sql( "Item SQL [$itemSQL]" );
-        $db->exec( $itemSQL );
-        
-        $newExpenses = addToValue( $db, "Information", "Expenses", $cost, "where ItemType = '$itemType'", false );
-        $infoSQL = "UPDATE Information SET Expenses = $newExpenses where ItemType = '$itemType'";
-        log_sql( "Info SQL [$infoSQL]" );
-        $db->exec( $infoSQL );
+        $db->exec( "BEGIN;" );
+
+        $statement = $db->prepare( "UPDATE Restock SET Cancelled = 1 where RestockID = :restockID" );
+        $statement->bindValue( ":restockID", $restockID );
+        $statement->execute();
+
+        removeFromBackstockQuantity( $db, $numberOfCans, $itemID, "CANCEL RESTOCK" );
+
+        $statement = $db->prepare( "UPDATE Item SET ItemExpenses = ItemExpenses - :cost, TotalCans = TotalCans - :numberOfUnits where ID = :itemID" );
+        $statement->bindValue( ":cost", $cost );
+        $statement->bindValue( ":numberOfUnits", $numberOfCans );
+        $statement->bindValue( ":itemID", $itemID );
+        $statement->execute();
+
+        $statement = $db->prepare( "UPDATE Information SET SiteExpenses = SiteExpenses - :cost where ItemType = :itemType" );
+        $statement->bindValue( ":cost", $cost );
+        $statement->bindValue( ":itemType", $itemType );
+        $statement->execute();
+
+        $db->exec( "COMMIT;" );
     }
     else if( $type == "CancelPayment" ) {
-        
         $paymentID = trim($_POST["PaymentID"]);
-        
-        $results = $db->query("SELECT UserID, Amount, ItemType From Payments where PaymentID = $paymentID");
-        $row = $results->fetchArray();
-        
-        $userID = $row['UserID'];
-        $amount = $row['Amount'];
-        $itemType = $row['ItemType'];
-        
-        $isUserPayment = $userID > 0;
-        
-        $cancelSQL = "Update Payments SET Cancelled = 1 WHERE PaymentID = $paymentID";
-        log_sql("Cancel [$cancelSQL]");
-        
-        $db->exec( $cancelSQL );
-    
-        if( $isUserPayment ) {
-            $balanceType = $itemType . "Balance";
-            
-            $newBalance = addToValue( $db, "User", $balanceType, $amount, "where UserID = $userID", true );
-            $balanceSQL = "UPDATE User SET $balanceType = " . $newBalance . " where UserID = $userID";
-            log_sql("UserBalance [$balanceSQL]");
-            $db->exec( $balanceSQL );
-        }
-    
-        $newProfit = addToValue( $db, "Information", "ProfitActual", $amount, "where ItemType = '$itemType'", false );
-        $infoSQL = "UPDATE Information SET ProfitActual = $newProfit where ItemType = '$itemType'";
-
-        log_sql("Info [$infoSQL]");
-        $db->exec( $infoSQL );
-        
-        $db->exec();
+        cancelPayment( $db, $paymentID );
     }
     else if( $type == "NotifyUserOfPayment" ) {
         $month = trim($_POST["month"]);
         $year = trim($_POST["year"]);
         $displayMonth = trim($_POST["displayMonth"]);
         
-        $results = $db->query("SELECT UserID, UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User" );
+        $statement = $db->prepare("SELECT UserID, UserName, UserName, SlackID, SodaBalance, SnackBalance, FirstName, LastName FROM User" );
+        $results = $statement->execute();
         log_debug( "Notifying Users of Payment..." );
         
         while ($row = $results->fetchArray()) {
@@ -530,6 +571,7 @@
             $userName = $row['UserName'];
             $slackID = $row['SlackID'];
             $userID = $row['UserID'];
+            $username = $row['UserName'];
             $name = $row["FirstName"] . " " . $row['LastName'];
 
 //            if( $userName != "mmiles" ) {
@@ -558,19 +600,23 @@
                         "*Total Balance Owed:* " . getPriceDisplayWithDollars( $totalBalance ) . "\n\n" .
                         "You can view more details on the <https://penguinore.net/purchase_history.php|Purchase/Payment History Page>. Have a great day! :grin:";
                 
-                sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a" );
+                sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a", $username );
             }
         }
     }
     else if( $type == "OutOfStockRequest" ) {
-        $itemID = $_POST['itemID'];
         $itemName = $_POST['itemName'];
-        $reporter = $_POST['reporter'];
-        $date = date('Y-m-d H:i:s', time());
-        $db->exec( "UPDATE Item set RefillTrigger = 1, OutOfStockDate = '$date', OutOfStockReporter = '$reporter' WHERE ID = $itemID" );
+        $reporter =  $_POST['reporter'];
+
+        $statement = $db->prepare( "UPDATE Item set RefillTrigger = 1, OutOfStockDate = :date, OutOfStockReporter = :reporter WHERE ID = :itemID" );
+        $statement->bindValue( ":date", date('Y-m-d H:i:s', time()) );
+        $statement->bindValue( ":reporter", $reporter );
+        $statement->bindValue( ":itemID", $_POST['itemID'] );
+        $statement->execute();
+
         sendSlackMessageToMatt( "*Item Name:* " . $itemName . "\n*Reporter:* " . $reporter, ":negative_squared_cross_mark:", "OUT OF STOCK REPORT", "#791414" );
     }
-    else if($type == "DrawCart" ) {
+    else if( $type == "DrawCart" ) {
         $itemQuantities = array();
         $itemPrices = array();
         $itemDiscountPrices = array();
@@ -583,7 +629,10 @@
 
         foreach ($itemsInCart as $itemID) {
             if (array_key_exists($itemID, $itemQuantities) === false) {
-                $results = $db->query("SELECT * FROM Item WHERE ID =" . $itemID);
+                $statement = $db->prepare("SELECT * FROM Item WHERE ID = :itemID");
+                $statement->bindValue( ":itemID",  $itemID );
+                $results = $statement->execute();
+
                 $row = $results->fetchArray();
                 $itemName = $row['Name'];
                 $itemPrice = $row['Price'];
@@ -745,24 +794,30 @@
 
         echo "</div>";
         echo "</form>";
-    } else if($type == "UpdateChecklist" )
-    {
+    } else if($type == "UpdateChecklist" ) {
         $itemID = $_POST['id'];
         $checklistType = $_POST['checklistType'];
         $isBought = 0;
 
-        $results = $db->query("SELECT IsBought, Name, Type, ShelfQuantity, BackstockQuantity, Retired FROM Item WHERE ID =" . $itemID );
+        $statement = $db->prepare("SELECT IsBought, Name, Type," . getQuantityQuery() . ",Retired FROM Item i WHERE ID = :itemID"  );
+        $statement->bindValue( ":itemID", $itemID );
+        $results = $statement->execute();
+
         $row = $results->fetchArray();
 
         if( $row['IsBought'] == 1 ) {
-            $db->exec( "UPDATE Item set IsBought = 0 WHERE ID = " . $itemID );
+            $statement = $db->prepare( "UPDATE Item set IsBought = 0 WHERE ID = :itemID" );
+            $statement->bindValue( ":itemID", $itemID );
+            $statement->execute();
             $isBought = 0;
         } else {
-            $db->exec( "UPDATE Item set IsBought = 1 WHERE ID = " . $itemID );
+            $statement = $db->prepare( "UPDATE Item set IsBought = 1 WHERE ID = :itemID" );
+            $statement->bindValue( ":itemID", $itemID );
+            $statement->execute();
             $isBought = 1;
         }
 
-        drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfQuantity'], $row['BackstockQuantity'], $row['Retired'], $checklistType );
+        drawCheckListRow( $isBought, $itemID, $row['Name'], $row['Type'], $row['ShelfAmount'], $row['BackstockAmount'], $row['Retired'], $checklistType, "" );
         die();
     }
 ?>

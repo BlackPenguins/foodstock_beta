@@ -1,4 +1,3 @@
-<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
@@ -41,7 +40,12 @@
         
         $rowClass = "odd";
         $number = 1;
-        $results = $db->query("SELECT ID, Type, Name, RefillTrigger, OutOfStockReporter, ImageURL, UnitName, UnitNamePlural, Date, DateModified, ModifyType, ChartColor, TotalCans, (BackstockQuantity + ShelfQuantity) as 'Total', Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden, (ShelfQuantity + BackstockQuantity) as Total FROM Item WHERE Retired = 0 AND Hidden != 1 ORDER BY Type DESC, RefillTrigger ASC, Total ASC");
+        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, OutOfStockReporter, ImageURL, UnitName, UnitNamePlural, Date, ChartColor, TotalCans, " . getQuantityQuery() . ", Price, " .
+            "DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden FROM Item i " .
+            "WHERE Retired = 0 AND Hidden != 1 " .
+            "ORDER BY Type DESC, RefillTrigger ASC, TotalAmount ASC");
+        $results = $statement->execute();
+
         while ($row = $results->fetchArray()) {
 
             $outOfStock = $row['RefillTrigger'];
@@ -65,7 +69,13 @@
             $STORE_PRICES_TABLE = "";
             $profitAtThisStore = false;
             
-            $resultsQuantity = $db->query("SELECT ItemID, CASE WHEN SalePrice IS NULL THEN RegularPrice/PackQuantity ELSE SalePrice/PackQuantity END CostEach, PackQuantity, Store, RegularPrice, SalePrice from Shopping_Guide WHERE ItemID = $item_id AND Store is NOT NULL ORDER BY CostEach");
+            $statementQuantity = $db->prepare("SELECT ItemID, CASE WHEN SalePrice IS NULL THEN RegularPrice/PackQuantity ELSE SalePrice/PackQuantity END CostEach, " .
+                "PackQuantity, Store, RegularPrice, SalePrice from Shopping_Guide " .
+                "WHERE ItemID = :itemID AND Store is NOT NULL " .
+                "ORDER BY CostEach");
+            $statementQuantity->bindValue( ":itemID", $item_id );
+            $resultsQuantity = $statementQuantity ->execute();
+
             $rowQuantity = $resultsQuantity->fetchArray();
             
             if( $rowQuantity !== false ) {
@@ -113,7 +123,7 @@
             echo "<div class='" . $row['Type'] . "_card card'>";
             echo "<div class='top_section'>";
             
-            $totalQuantity = $row['Total'];
+            $totalQuantity = $row['TotalAmount'];
             
             echo "<div style='height:220px;'>";
             
@@ -153,7 +163,10 @@
            
             
             
-            $resultsQuantity = $db->query("SELECT ItemID, PackQuantity from Shopping_Guide WHERE ItemID = $item_id AND Store is NULL");
+            $statementQuantity = $db->prepare("SELECT ItemID, PackQuantity from Shopping_Guide WHERE ItemID = :itemID AND Store is NULL");
+            $statementQuantity->bindValue( ":itemID", $item_id );
+            $resultsQuantity = $statementQuantity->execute();
+
             $rowQuantity = $resultsQuantity->fetchArray();
             
             if( $rowQuantity !== false ) {

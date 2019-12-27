@@ -2,6 +2,7 @@
     if(!function_exists('getDB')) {
         function getDB() {
             if (isTestServer()) {
+                // TODO MTM: Make sure automated testing only affect the unit_testing db
                 return __DIR__ . getSlash() . "test_db" . getSlash() . "item.db";
             } else {
                 return __DIR__ . getSlash() . "db" . getSlash() . "item.db";
@@ -54,7 +55,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_6_3.css" );
+        define( "CSS_LINK", "$subdomain/css/style_7_0.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
@@ -65,12 +66,14 @@
         define( "IMAGES_LINK", "$subdomain/images/" );
         
         define( "ADMIN_WEEKLY_AUDIT_LINK", "$subdomain/admin_x25/admin_weekly_audit_x25.php" );
+        define( "ADMIN_TESTING_LINK", "$subdomain/admin_x25/admin_testing_x25.php" );
         define( "ADMIN_AUDIT_REPORT_LINK", "$subdomain/admin_x25/admin_audit_x25.php" );
         define( "ADMIN_BOT_LINK", "$subdomain/admin_x25/admin_bot_x25.php" );
         define( "ADMIN_LINK", "$subdomain/admin_x25/admin_x25.php" );
         define( "ADMIN_DEFECTIVES_LINK", "$subdomain/admin_x25/admin_defectives_x25.php" );
         define( "ADMIN_INVENTORY_LINK", "$subdomain/admin_x25/admin_inventory_x25.php" );
         define( "ADMIN_ITEMS_LINK", "$subdomain/admin_x25/admin_items_x25.php" );
+        define( "ADMIN_ITEMS_IN_STOCK_LINK", "$subdomain/admin_x25/admin_items_in_stock_x25.php" );
         define( "ADMIN_PAYMENTS_LINK", "$subdomain/admin_x25/admin_payments_x25.php" );
         define( "ADMIN_RESTOCK_LINK", "$subdomain/admin_x25/admin_restock_x25.php" );
         define( "ADMIN_SHOPPING_GUIDE_LINK", "$subdomain/admin_x25/admin_shopping_guide_x25.php" );
@@ -93,6 +96,38 @@
     
     if( !defined("UI_FUNCTIONS_PATH")) {
         define( "UI_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "ui_functions.php" );
+    }
+
+    if( !defined("QUANTITY_FUNCTIONS_PATH")) {
+        define( "QUANTITY_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "quantity_functions.php" );
+    }
+
+    if( !defined("ACTION_FUNCTIONS_PATH")) {
+        define( "ACTION_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "action_functions.php" );
+    }
+
+    if( !defined("ITEM_OBJ")) {
+        define( "ITEM_OBJ", __DIR__ . $slash . "common" . $slash . "Item.php" );
+    }
+
+    if( !defined("AUDIT_OBJ")) {
+        define( "AUDIT_OBJ", __DIR__ . $slash . "common" . $slash . "AuditDetails.php" );
+    }
+
+    if( !defined("ITEM_COST_DETAILS_OBJ")) {
+        define( "ITEM_COST_DETAILS_OBJ", __DIR__ . $slash . "common" . $slash . "ItemCostDetails.php" );
+    }
+
+    if( !defined("USER_OBJ")) {
+        define( "USER_OBJ", __DIR__ . $slash . "common" . $slash . "User.php" );
+    }
+
+    if( !defined("TESTING_OBJ")) {
+        define( "TESTING_OBJ", __DIR__ . $slash . "common" . $slash . "Testing.php" );
+    }
+
+    if( !defined("TESTING_BASE_OBJ")) {
+        define( "TESTING_BASE_OBJ", __DIR__ . $slash . "common" . $slash . "TestingBase.php" );
     }
     
     if( !defined("SLACK_FUNCTIONS_PATH")) {

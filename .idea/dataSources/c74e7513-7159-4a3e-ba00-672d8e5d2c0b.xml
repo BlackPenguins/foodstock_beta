@@ -49,7 +49,6 @@
     </column>
     <index id="24" parent="6" name="Audit_AuditID_uindex">
       <ColNames>AuditID</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="25" parent="6" name="Audit_pk">
@@ -110,7 +109,6 @@
     <index id="38" parent="7" name="sqlite_autoindex_Daily_Amount_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>ID</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="39" parent="7">
@@ -329,7 +327,6 @@
     <index id="90" parent="11" name="sqlite_autoindex_Payments_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>PaymentID</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="91" parent="11">
@@ -383,7 +380,6 @@
     <index id="102" parent="12" name="sqlite_autoindex_Purchase_History_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>ID</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="103" parent="12">
@@ -466,7 +462,6 @@
     <index id="121" parent="14" name="sqlite_autoindex_Restock_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>RestockID</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="122" parent="14">
@@ -571,7 +566,6 @@
     <index id="146" parent="16" name="sqlite_autoindex_User_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>UserName</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="147" parent="16">
