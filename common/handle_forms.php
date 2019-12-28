@@ -21,13 +21,9 @@ $startTime = time();
 // HANDLE USER QUERIES
 // ------------------------------------
 if(isset($_POST['Purchase'])) {
-    if( $_SESSION['InactiveUser'] == true ) {
-        $userMessage = "You cannot purchase items when you are inactive.";
-    } else {
-        $itemsInCart = json_decode($_POST['items']);
-        $cashOnly = isset( $_POST['CashOnly'] );
-        $userMessage = purchaseItems( $db, false, $_SESSION['UserID'], $itemsInCart, $cashOnly );
-    }
+    $itemsInCart = json_decode($_POST['items']);
+    $cashOnly = isset( $_POST['CashOnly'] );
+    $userMessage = purchaseItems( $db, false, $_SESSION['UserID'], $itemsInCart, $cashOnly );
 
 } else if(isset($_POST['Preferences'])) {
     $userID = $_SESSION['UserID'];
@@ -201,7 +197,19 @@ if(isset($_POST['Purchase'])) {
     if( !IsAdminLoggedIn() ) {
         $userMessage = "YOU ARE NOT LOGGED IN AS ADMIN!";
     } else {
-        if(isset($_POST['AddItem'])) {
+        if(isset($_POST['KillSession'])) {
+            $sessionID = $_POST['SessionID'];
+
+            $sessionLocation = session_save_path();
+
+            if( $sessionLocation == "" ) {
+                $sessionLocation = sys_get_temp_dir();
+            }
+
+            $filepath = $sessionLocation . "/"  . $sessionID;
+            unlink( $filepath );
+            $userMessage = "Killed session at $filepath.";
+        } else if(isset($_POST['AddItem'])) {
             $userMessage = addItem( $db, $_POST["ItemName"], $_POST["ChartColor"], $_POST["CurrentPrice"], $_POST["CurrentDiscountPrice"], $_POST["ItemType"] );
         } else if(isset($_POST['EditItem'])) {
             $itemType = trim($_POST["ItemType"]);

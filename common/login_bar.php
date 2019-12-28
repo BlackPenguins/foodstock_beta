@@ -139,10 +139,22 @@
     }
 
     function DisplayLoggedIn($id, $isLoggedIn, $isLoggedInAdmin) {
-        if($isLoggedIn)
-        {
+        if($isLoggedIn) {
+            $inactiveUser = isset( $_SESSION['InactiveUser'] ) && $_SESSION['InactiveUser'] == 1;
+            $userColor = $inactiveUser ? "#ee3636" : "#FFFF00";
+
             echo "<span id='display_name_$id'>";
-            echo "Logged in: <b><span style='color:#FFFF00;'>[" . $_SESSION['UserName'] . "]" . ( $isLoggedInAdmin ? " - Administrator" : "" ) . "</span></b>";
+            echo "Logged in: <b><span style='color:$userColor;'>[" . $_SESSION['UserName'] . "]";
+
+            if( $isLoggedInAdmin ) {
+                echo " - Administrator";
+            }
+
+            if( $inactiveUser ) {
+                echo " - Inactive";
+            }
+
+            echo "</span></b>";
             echo "</span>";
             DisplayLoggedOutLink($id, $isLoggedIn);
         }

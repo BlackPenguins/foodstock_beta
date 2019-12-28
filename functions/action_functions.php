@@ -790,6 +790,11 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
         return;
     }
 
+    if( $userID == "" ) {
+        error_log( "Something is wrong. User tried purchasing with a null user ID." );
+        return "User ID is null. Contact Matt Miles!";
+    }
+
     $totalPrice = 0.0;
     $totalCredits = 0.0;
     $totalSavings = 0.0;
@@ -798,7 +803,7 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
     $purchaseMessage = "";
     $itemsOutOfStock = array();
 
-    $userQuery = "SELECT SlackID, UserName, FirstName, LastName, SnackBalance, SodaBalance, Credits FROM User WHERE UserID = :userID";
+    $userQuery = "SELECT SlackID, UserName, FirstName, LastName, SnackBalance, SodaBalance, Inactive, Credits FROM User WHERE UserID = :userID";
     $userStatement = $db->prepare( $userQuery );
     $userStatement->bindValue( ":userID", $userID );
     $userResults = $userStatement->execute();
@@ -812,6 +817,12 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
     $userName = $userRow['UserName'];
     $currentSodaBalance = $userRow['SodaBalance'];
     $currentSnackBalance = $userRow['SnackBalance'];
+    $inactiveUser = $userRow['Inactive'];
+    error_log("Inactive bought [$userID] $inactiveUser]" );
+
+    if( $inactiveUser == 1 ) {
+        return "You cannot purchase items while you are inactive!";
+    }
 
     $itemQuantityValidationArray = array();
     $itemQuantityValidationPassed = true;

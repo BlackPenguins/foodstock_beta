@@ -98,17 +98,20 @@
         // REQUESTS TABLE
         // ------------------------------------
         echo "<div class='rounded_header'><span id='$title' class='title'>$title</span>";
-        
-        echo "<span style='float:right; padding-right: 15px;'>";
-        if( $title == "Requests" ) {
-            echo "<button style='padding:5px; background:#b6b2e8;' id='request_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack or Soda</button>";
-        } else if( $title == "Feature Requests" ) {
-            echo "<button style='padding:5px; background:#b6b2e8;' id='request_feature_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Feature</button>";
-        } else {
-            echo "<button style='padding:5px; background:#b6b2e8;' id='report_bug_button' class='item_button ui-button ui-widget-content ui-corner-all'>Report Bug</button>";
+
+        if( IsLoggedIn() && !IsInactive() ) {
+            echo "<span style='float:right; padding-right: 15px;'>";
+            if ($title == "Requests") {
+                echo "<button style='padding:5px; background:#b6b2e8;' id='request_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack or Soda</button>";
+            } else if ($title == "Feature Requests") {
+                echo "<button style='padding:5px; background:#b6b2e8;' id='request_feature_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Feature</button>";
+            } else {
+                echo "<button style='padding:5px; background:#b6b2e8;' id='report_bug_button' class='item_button ui-button ui-widget-content ui-corner-all'>Report Bug</button>";
+            }
+
+            echo "</span>";
         }
-        
-        echo "</span>";
+
         echo "</div>";
         
         $column1Width = 2;

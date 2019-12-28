@@ -75,7 +75,8 @@
     echo "<input type='hidden' name='redirectURL' value='" . PREFERENCES_LINK . "'/><br>";
 
 
-    echo "<input class='ui-button' style='padding:10px; text-align:center; width:100%;' type='submit' name='Save_Preferences' value='Save Preferences'/><br>";
+    $disabledButton = IsInactive() ? " disabled " : "";
+    echo "<input class='ui-button' $disabledButton style='padding:10px; text-align:center; width:100%;' type='submit' name='Save_Preferences' value='Save Preferences'/><br>";
 
     echo "</fieldset>";
     echo "</form>";

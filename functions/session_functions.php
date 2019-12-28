@@ -130,6 +130,10 @@ function IsLoggedIn(){
     return isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'];
 }
 
+function IsInactive(){
+    return isset( $_SESSION['InactiveUser'] ) && $_SESSION['InactiveUser'] == 1;
+}
+
 function IsAdminLoggedIn(){
     return isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
 }

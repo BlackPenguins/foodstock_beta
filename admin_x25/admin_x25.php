@@ -5,7 +5,8 @@
     
     $url = ADMIN_LINK;
     include( HEADER_PATH );
-    
+
+
     echo "<span class='admin_box'>";
         // ------------------------------------
         // USER TABLE
@@ -112,12 +113,54 @@
             $filepath = $sessionLocation . "/"  . $sessionName;
 
             if ( strpos($sessionName, "sess_") === 0 ) { //This skips temp files that aren't sessions
-                $sessionName = str_replace("sess_", "", $sessionName);
+//                $sessionName = str_replace("sess_", "", $sessionName);
+
+                echo "<form id='kill_session_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+                echo "<input type='hidden' name='SessionID' value='$sessionName'/>";
+                echo "<input type='hidden' name='KillSession' value='KillSession'/>";
+                echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/>";
+                echo "<input style='padding:10px;' type='submit' name='Kill_Session' value='Kill Session'/>";
+                echo "</form>";
 
                 echo "<b>Session [$sessionName]</b><br>";
                 $fh = fopen($filepath, 'r') or die("File does not exist or you lack permission to open it");
                 $line = fgets($fh);
-                echo $line;
+                $pieces = explode( ";", $line );
+
+                foreach( $pieces as $piece ) {
+                    if( $piece == "" ) {
+                        continue;
+                    }
+
+                    $innerPieces = explode( ":", $piece );
+                    $keyAndType = $innerPieces[0];
+                    $keyAndTypePieces = explode( "|", $keyAndType );
+                    $key = $keyAndTypePieces[0];
+                    $type = $keyAndTypePieces[1];
+
+                    if( count( $innerPieces ) == 3 ){
+                         $typeLength = $innerPieces[1];
+                         $value = $innerPieces[2];
+                    } else {
+                         $value = $innerPieces[1];
+                    }
+
+                    $colorUsername = $key == "UserName" ? " style='color:#fdff7a' " : "";
+                    echo "<div $colorUsername>";
+                    echo "<b>$key</b>: ";
+
+                    if( $type == "b" ) {
+                        if( $value == 1 ) {
+                            echo "YES";
+                        } else {
+                            echo "NO";
+                        }
+                    } else {
+                        echo $value;
+                    }
+                    echo "</div>";
+                }
+//                echo $line;
                 fclose($fh);
                 echo "<hr>";
             }

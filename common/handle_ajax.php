@@ -227,7 +227,7 @@
             
             
             $reportButton = "";
-            if( $isLoggedIn && $outOfStock != "1" ) {
+            if( $isLoggedIn && !IsInactive() && $outOfStock != "1" ) {
                 $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
                 $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='" . IMAGES_LINK . "low.png' title='Report Item Out of Stock'/></div>";
             }
@@ -347,7 +347,7 @@
                         echo "</div>";
                     }
 
-                    if( IsLoggedIn() ) {
+                    if( IsLoggedIn() && !IsInactive() ) {
                         echo "<div class='$actionsClass'>";
                             echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ", \"$isMobile\")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
                             echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
