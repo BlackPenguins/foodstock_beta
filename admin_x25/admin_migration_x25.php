@@ -60,6 +60,9 @@
                 case "7.0":
                     v7_0($db);
                     break;
+                case "7.2":
+                    v7_2($db);
+                    break;
                 default:
                     echo "There is no migration for version [$version]!";
                     break;
@@ -93,6 +96,13 @@
         echo "</form>";
     }
 
+
+    function v7_2($db ){
+        error_log("Altering tables...");
+        executeStatement($db, "ALTER TABLE User ADD COLUMN IsVendor INTEGER DEFAULT 0;");
+        executeStatement($db, "ALTER TABLE Item ADD COLUMN VendorID INTEGER DEFAULT 0;");
+        executeStatement($db, "ALTER TABLE Payments ADD COLUMN VendorID INTEGER DEFAULT 0;");
+    }
 
     function v7_0($db ) {
         error_log( "Creating tables..." );

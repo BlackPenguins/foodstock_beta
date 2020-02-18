@@ -25,75 +25,140 @@
     }
 </script>
 <?php
-    // ------------------------------------
-    // REQUEST MODAL
-    // ------------------------------------
     $itemType_options = "";
     $itemType_options = $itemType_options . "<option value='Soda'>Soda</option>";
     $itemType_options = $itemType_options . "<option value='Snack'>Snack</option>";
     
-    $itemType_dropdown = "<select id='ItemTypeDropdown_Request' name='ItemTypeDropdown_Request' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$itemType_options</select>";
-        
-    echo "<div id='request_item' title='Request Item' style='display:none;'>";
-    echo "<form id='request_item_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<fieldset>";
-    echo "<label for='ItemTypeDropdown_Request'>Type</label>";
-    echo $itemType_dropdown;
-    echo "<label for='ItemName_Request'>Item</label>";
-    echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label for='Note'>Note</label>";
-    echo "<input type='text' name='Note_Request' class='text ui-widget-content ui-corner-all'/>";
-    
-    
+    $itemType_dropdown = "<select id='ItemTypeDropdown_Request' name='ItemTypeDropdown_Request' class='text ui-widget-content ui-corner-all'>$itemType_options</select>";
 
-    echo "<input type='hidden' name='Request' value='Request'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . REQUESTS_LINK . "'/><br>";
-
-    echo "</fieldset>";
-    echo "</form>";
-    echo "</div>";
-    
-    echo "<div id='request_feature' title='Request Feature' style='display:none;'>";
-    echo "<form id='request_feature_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<fieldset>";
-    echo "<label for='ItemName_Request'>Item</label>";
-    echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
-    
-    echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Feature'/><br>";
-    echo "<input type='hidden' name='Request' value='Request'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . REQUESTS_LINK . "'/><br>";
-    
-    echo "</fieldset>";
-    echo "</form>";
-    echo "</div>";
-    
-    echo "<div id='report_bug' title='Report Bug' style='display:none;'>";
-    echo "<form id='report_bug_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<fieldset>";
-    echo "<label for='ItemName_Request'>Item</label>";
-    echo "<input type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
-    
-    echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Bug'/><br>";
-    echo "<input type='hidden' name='Request' value='Request'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . REQUESTS_LINK . "'/><br>";
-    
-    echo "</fieldset>";
-    echo "</form>";
-    echo "</div>";
+    buildRequestItemModal( $itemType_dropdown );
+    buildRequestFeatureModal();
+    buildReportBugModal();
 
     echo "<div id= 'container'>";
-    drawTable($db, $isLoggedInAdmin, "Requests", [ "Soda", "Snack" ] );
-    drawTable($db, $isLoggedInAdmin, "Feature Requests", [ "Feature" ] );
-    drawTable($db, $isLoggedInAdmin, "Bug Reports", [ "Bug" ] );
+    drawTable($db, "Requests", [ "Soda", "Snack" ] );
+    drawTable($db, "Feature Requests", [ "Feature" ] );
+    drawTable($db, "Bug Reports", [ "Bug" ] );
     echo "</div>";
 
-/**
- * @param $db SQLite3
- * @param $isLoggedInAdmin
- * @param $title
- * @param $type
- */
-    function drawTable( $db, $isLoggedInAdmin, $title, $typeArray ) {
+    function buildReportBugModal() {
+        echo "<div id='report_bug_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar'>";
+        echo "Report Bug";
+        echo "<span id='report_bug_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='report_bug_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='ItemName_Request'>Details</label>";
+        echo "<input style='width:350px;' type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
+        echo "<span>The bug details</span>";
+        echo "</li>";
+
+        echo "<li class='buttons'>";
+        echo "<input style='padding:10px;' type='submit' name='Report_Bug_Submit' value='Report Bug'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Bug'/>";
+        echo "<input type='hidden' name='Request' value='Request'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . REQUESTS_LINK . "'/>";
+
+        echo "</ul>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+    }
+
+    function buildRequestFeatureModal() {
+        echo "<div id='request_feature_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar'>";
+        echo "Request Feature";
+        echo "<span id='request_feature_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='request_feature_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='ItemName_Request'>Details</label>";
+        echo "<input style='width:350px;' type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
+        echo "<span>The feature details</span>";
+        echo "</li>";
+
+        echo "<li class='buttons'>";
+        echo "<input style='padding:10px;' type='submit' name='Request_Feature_Submit' value='Request Feature'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='ItemTypeDropdown_Request' value='Feature'/>";
+        echo "<input type='hidden' name='Request' value='Request'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . REQUESTS_LINK . "'/>";
+
+        echo "</ul>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+    }
+
+    function buildRequestItemModal( $itemType_dropdown ) {
+        echo "<div id='request_item_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar'>";
+        echo "Request Item";
+        echo "<span id='request_item_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='request_item_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='ItemTypeDropdown_Request'>Type</label>";
+        echo $itemType_dropdown;
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='ItemName_Request'>Name</label>";
+        echo "<input style='width:350px;' type='text' name='ItemName_Request'/>";
+        echo "<span>The name of the item</span>";
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='Note_Request'>Notes</label>";
+        echo "<input style='width:350px;' type='text' name='Note_Request'/>";
+        echo "<span>Additional notes about the item</span>";
+        echo "</li>";
+
+        echo "<li class='buttons'>";
+        echo "<input style='padding:10px;' type='submit' name='Request_Item_Submit' value='Request Item'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='Request' value='Request'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . REQUESTS_LINK . "'/>";
+
+        echo "</ul>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+    }
+
+    /**
+     * @param $db SQLite3
+     * @param $title
+     * @param $type
+     */
+    function drawTable( $db, $title, $typeArray ) {
         // ------------------------------------
         // REQUESTS TABLE
         // ------------------------------------
@@ -174,7 +239,7 @@
             
             $onClick = "";
         
-            if( $isLoggedInAdmin ) {
+            if( IsAdminLoggedIn() ) {
                 $onClick = " onclick='toggleCompleted(" . $row['ID'] . ");'";
             }
         
@@ -201,7 +266,7 @@
             echo "<td class='hidden_mobile_column' style='width:$column2Width%; $priorityColor'>";
             
             
-            if( $isLoggedInAdmin && $row['Completed'] != 1 ) {
+            if( IsAdminLoggedIn() && $row['Completed'] != 1 ) {
                 echo "<select onchange='togglePriority(" . $row['ID'] . ", this.value);' id='Priority_Request' name='Priority_Request' class='text ui-widget-content ui-corner-all'>";
                 echo "<option " . ( $priority == ""  ? "selected" : "" ) . " value='Unassigned'>Unassigned</option>";
                 echo "<option " . ( $priority == "In Progress"  ? "selected" : "" ) . " value='In Progress'>In Progress</option>";
@@ -235,5 +300,11 @@
         echo "</div>";
     }
 ?>
+
+<script>
+    setupModal( "request_item" );
+    setupModal( "request_feature" );
+    setupModal( "report_bug" );
+</script>
 
 </body>

@@ -59,11 +59,11 @@ class ItemCostDetails extends TestingBase {
         // CREATE ITEMS
         $this->addSection("Adding " . $this->itemType . " Item");
 
-        $createItemResponse = addItem($this->db, $this->itemName, "FF3300", $this->itemPrice / 100.00, $this->itemDiscountPrice / 100.00, $this->itemType);
+        $createItemResponse = addItem($this->db, $this->itemName, $this->itemPrice / 100.00, $this->itemDiscountPrice / 100.00, $this->itemType);
 
         $this->assertText("$this->itemName Item Success", $createItemResponse, "Item \"$this->itemName\" added successfully.");
 
-        $createItemResponse = addItem($this->db, $this->itemName, "FF3300", $this->itemPrice / 100.00, $this->itemDiscountPrice / 100.00, $this->itemType);
+        $createItemResponse = addItem($this->db, $this->itemName, $this->itemPrice / 100.00, $this->itemDiscountPrice / 100.00, $this->itemType);
 
         $this->assertText("$this->itemType Item Already Exists", $createItemResponse, "Item \"$this->itemName\" already exists.");
 
@@ -198,7 +198,7 @@ class ItemCostDetails extends TestingBase {
         $addToShelf[]  = $refillQuantity;
 
 	    $this->addDatapoint( "Refilling Item [$this->itemID] with [$refillQuantity] quantity" );
-        refillItem( $this->db, $this->isHidingSlack(), $itemIDs, $addToShelf, true );
+        refillItem( $this->db, $this->isHidingSlack(), $itemIDs, $addToShelf, true, "TEST_DUDE" );
         $this->setInventoryHistory( $refillQuantity, "REFILL" );
 
         $this->shelfQuantity = $this->shelfQuantity + $refillQuantity;

@@ -7,9 +7,6 @@
 
     echo "<span class='admin_box'>";
 
-    // ------------------------------------
-    // INVENTORY MODAL - ALL ITEMS
-    // ------------------------------------
     echo "<div id='inventory_audit'>";
 
     echo "Money that is missing are missing items from the blue rows and it can be caused by:";

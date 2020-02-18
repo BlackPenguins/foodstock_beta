@@ -17,7 +17,7 @@
         // ITEM TABLE
         // ------------------------------------
 
-        echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>$shoppingTitle</span></span>";
+        echo "<span style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>$shoppingTitle</span></span>";
         
         $storeColors = array(
                 "Walmart" => "#4274f4",
@@ -40,7 +40,7 @@
         
         $rowClass = "odd";
         $number = 1;
-        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, OutOfStockReporter, ImageURL, UnitName, UnitNamePlural, Date, ChartColor, TotalCans, " . getQuantityQuery() . ", Price, " .
+        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, OutOfStockReporter, ImageURL, UnitName, UnitNamePlural, Date, TotalCans, " . getQuantityQuery() . ", Price, " .
             "DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden FROM Item i " .
             "WHERE Retired = 0 AND Hidden != 1 " .
             "ORDER BY Type DESC, RefillTrigger ASC, TotalAmount ASC");
@@ -201,4 +201,7 @@
     echo "</span>";
 ?>
 
+<script>
+    setupModal( "shopping" );
+</script>
 </body>

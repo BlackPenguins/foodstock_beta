@@ -51,10 +51,6 @@
         $('#end_date').datepicker({ dateFormat: 'yy-mm-dd' });
         
         <?php 
-            if(!$isMobile && $isLoggedIn) {
-                echo "loadUserModals();\n";
-            }
-            
             echo "$('#start_date').datepicker('setDate', '$startDate' );";
             echo "$('#end_date').datepicker('setDate', '$endDate' );";
         ?>
@@ -136,7 +132,7 @@ window.onload = function() {
             title: "Total Units Purchased" 
         },
         data: [ 
-        <?php  getData( $db, $itemsToShow, $isLoggedIn, $isLoggedInAdmin ); ?>
+        <?php  getData( $db, $itemsToShow ); ?>
         ] 
     });   
     
@@ -240,9 +236,9 @@ window.onload = function() {
                     $userName = $row['UserName'];
                     $anonName = $row['AnonName'];
                      
-                    if( $isLoggedIn && $userName == $_SESSION['UserName'] ) {
+                    if( IsLoggedIn() && $userName == $_SESSION['UserName'] ) {
                         $name = "(YOU)";
-                    } else if( !$isLoggedInAdmin ) {
+                    } else if( !IsAdminLoggedIn() ) {
                         $name = $anonName;
                     }
                     
@@ -300,10 +296,8 @@ window.onload = function() {
 /**
  * @param $db SQLite3
  * @param $itemsToShow
- * @param $isLoggedIn
- * @param $isLoggedInAdmin
  */
-    function getData( $db, $itemsToShow, $isLoggedIn, $isLoggedInAdmin ) {
+    function getData( $db, $itemsToShow ) {
         $query = "select COUNT(p.ID) as TotalItems, i.Name, p.ItemID, strftime(\"%m-%Y\", p.Date) as 'Time' " .
             "FROM Purchase_History p " .
             "JOIN Item i on p.ItemID =  i.ID " .
@@ -341,9 +335,9 @@ window.onload = function() {
                 $userName = $userRow['UserName'];
                 $anonName = $userRow['AnonName'];
                 
-                if( $isLoggedIn && $userName == $_SESSION['UserName'] ) {
+                if( IsLoggedIn() && $userName == $_SESSION['UserName'] ) {
                     $fullName = "(YOU)";
-                } else if( !$isLoggedInAdmin ) {
+                } else if( !IsAdminLoggedIn() ) {
                     $fullName = $anonName;
                 }
                 

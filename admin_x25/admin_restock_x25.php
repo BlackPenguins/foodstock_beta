@@ -26,11 +26,11 @@
 
 <?php
     echo "<span class='admin_box'>";
-        // ------------------------------------
-        // RESTOCK TABLE
-        // ------------------------------------
+        echo "<div class='rounded_header'><span class='title'>Restocks</span></div>";
+
+
         echo "<div class='center_piece'>";
-        echo "<span class='hidden_mobile_section'>Red = Lost Money on Purchase.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.</span>";
+        echo "<span class='hidden_mobile_section'>Red Text = Lost Money on Purchase.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Row = Discontinued.</span>";
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr class='table_header'>";
@@ -48,10 +48,17 @@
         
         $rowClass = "odd";
         $previousItem = "";
-        
+
+        $whereVendorIDClause = "";
+
+        if( IsVendor() ) {
+            $whereVendorIDClause = "WHERE VendorID = " .  $_SESSION['UserID'] . " ";
+        }
+
         $statement = $db->prepare("SELECT s.Name, r.RestockID, r.Cancelled, r.ItemID, r.Date, r.NumberOfCans, r.Cost, (r.Cost/r.NumberOfCans) as 'CostEach', s.Price, s.DiscountPrice, s.Retired " .
             "FROM Restock r " .
             "JOIN Item s ON r.itemID = s.id " .
+            $whereVendorIDClause .
             "ORDER BY r.Date DESC");
         $results = $statement->execute();
 
@@ -59,7 +66,7 @@
             $maxCostEach = "";
             if( $previousItem != "" && $previousItem != $row['Name'] ) {
                 if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
-                $maxCostEach = "font-weight:bold; font-size:1.1em;";
+//                $maxCostEach = "font-weight:bold; font-size:1.1em;";
             }
             
             if( $row['Retired'] == 1) {
@@ -74,10 +81,14 @@
             echo "<tr class='$rowClass'>";
 
             echo "<td class='button_cell hidden_mobile_column'>";
-            if( $cancelled !=  1 ) {
-                echo "<div onclick='cancelRestock($restockID, \"$name\");' class='nav_buttons nav_buttons_snack'>Cancel Restock</div>";
+            if( !IsAdminLoggedIn() ) {
+                echo "&nbsp;";
             } else {
-                echo "<div style='font-weight:bold; text-align:center;'>Cancelled</div>";
+                if ($cancelled != 1) {
+                    echo "<div onclick='cancelRestock($restockID, \"$name\");' class='nav_buttons nav_buttons_snack'>Cancel Restock</div>";
+                } else {
+                    echo "<div style='font-weight:bold; text-align:center;'>Cancelled</div>";
+                }
             }
             echo "</td>";
 

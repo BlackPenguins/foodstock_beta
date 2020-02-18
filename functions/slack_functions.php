@@ -6,9 +6,18 @@
     //     sendSlackMessagePOST( "@mmiles", $emoji, $botName, $slackMessage );
     }
     
-    function sendSlackMessageToUser( $slackID, $slackMessage, $emoji, $botName, $color, $username ) {
-        sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color, $username );
-    //     sendSlackMessagePOST( "@" . $slackID, $emoji, $botName, $slackMessage );
+    function sendSlackMessageToUser( $slackID, $slackMessage, $emoji, $botName, $color, $username, $notifyAdmin ) {
+        if( $slackID == "" ) {
+            sendSlackMessageToMatt( "Failed to send notification for [" . $username . "] user. Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!", "#bb3f3f" );
+        } else {
+            sendMessageToBot($slackID, $emoji, $botName, $slackMessage, $color, $username);
+
+            // Only send to admin if the message wasn't already be sent to him
+            // Avoid double slack messages
+            if( $notifyAdmin && $slackID != "U1FEGH4U9" ) {
+                sendSlackMessageToMatt( "*(" . $username . ")*\n$slackMessage", $emoji, $botName, $color );
+            }
+        }
     }
     
     function sendSlackMessageToRandom( $slackMessage, $emoji, $botName ) {
@@ -31,7 +40,6 @@
     function sendMessageToBot( $slackID, $emoji, $botName, $slackMessage, $color, $username ){
         if( isTestServer() ) {
             $slackMessage = "`[sent to $username]`\n" . $slackMessage;
-
             sendSlackMessageToNerdHerdTest($slackMessage, $emoji, $botName );
         } else {
 

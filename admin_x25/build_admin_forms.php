@@ -1,144 +1,175 @@
 <?php
     include(__DIR__ . "/../appendix.php" );
-    if(!$isLoggedIn) {
+    if( !IsLoggedIn() ) {
         return;
     }
 
     // I want the modals back in the mobile sites
     $hideForms = "style='display:none;'";
 
-    //    if( $url == ADMIN_SHOPPING_GUIDE_LINK ) {
-    //        $hideForms = "style='display:none;'";
-    //    } else {
-    //        $hideForms = "";
-    //    }
+    if( IsAdminLoggedIn() || IsVendor() ) {
+        buildShoppingModal( $db, $hideForms );
+        buildModalsForType($db, "Soda", $hideForms );
+        buildModalsForType($db, "Snack", $hideForms );
 
-    //     if( !$isMobile ) {
-    //             $hideForms = "";
-    //     }
+        // ADMIN ONLY - NO VENDORS
+        if( IsAdminLoggedIn() ) {
+            $statement = $db->prepare("SELECT FirstName, LastName, UserID, SlackID, Inactive, IsCoop, SodaBalance, SnackBalance, AnonName, IsVendor From User Order By FirstName Asc");
+            $results = $statement->execute();
 
-    // ------------------------------------
-    // SHOPPING MODAL - We want Nick to access this form
-    // ------------------------------------
-    // Build Item Dropdown
-    $statement = $db->prepare("SELECT ID, Name, Type " .
-        "FROM Item " .
-        "WHERE Hidden != 1 AND Retired != 1 " .
-        "ORDER BY type desc, name asc");
-    $results = $statement->execute();
+            $user_info = "";
 
-    $item_options = "";
-    $previousType = "";
-    while ($row = $results->fetchArray()) {
-        $item_id = $row['ID'];
-        $item_name = $row['Name'];
-        $item_type = $row['Type'];
-        
-        if( $item_type != $previousType ) {
-            $previousType = $item_type;
-            $item_options = $item_options . "<option disabled style='font-weight:bold; color: blue;' value='$previousType'>$previousType</option>";
-        }
-        
-        $item_options = $item_options . "<option value='" . $row['ID'] . "'>$item_name</option>";
-        
-    }
-    
-    $statement = $db->prepare("SELECT Store FROM Shopping_Guide Order by Date Desc LIMIT 1");
-    $results = $statement->execute();
+            $user_options = "";
+            $edit_user_options = "";
 
-    $lastStore = $results->fetchArray()['Store'];
-    
-    if( $lastStore == "" ) { $lastStore = "BestProfits"; }
-    
-    $shopping_item_dropdown = "<select id='ItemDropdown' name='ItemDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options</select>";
-    
-    $stores = array( "Walmart", "Costco", "BJs", "Target", "Aldi", "Wegmans", "PriceRite", "Tops", "BestProfits" );
-    $store_dropdown = "<select id='StoreDropdown' name='StoreDropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>";
-    
-    foreach( $stores as $store ) {
-        $selected = "";
-        if( $store == $lastStore ) {
-            $selected = "selected";
-        }
-        
-        
-        if( $store == "BestProfits" ) {
-            if( $isLoggedInAdmin ) {
-                $store_dropdown = $store_dropdown . "<option $selected value='BestProfits'>( BEST PROFITS )</option>";
+            while ($row = $results->fetchArray()) {
+                $fullName = $row['FirstName'] . " " . $row['LastName'];
+                $userID = $row['UserID'];
+                $slackID = $row['SlackID'];
+                $inactive = $row['Inactive'];
+                $isCoop = $row['IsCoop'];
+                $isVendor = $row['IsVendor'];
+                $anonName = $row['AnonName'];
+                $inactive_strikethrough = "";
+
+                if( $inactive == "1" ) {
+                    $inactive_strikethrough = " style='font-weight:bold; color:#9b0909'";
+                }
+
+                $edit_user_options = $edit_user_options . "<option $inactive_strikethrough value='$userID'>$fullName</option>";
+
+                $user_info = $user_info .
+                "<input type='hidden' id='User_SlackID_$userID' value='$slackID'/>" .
+                "<input type='hidden' id='User_AnonName_$userID' value='$anonName'/>" .
+                "<input type='hidden' id='User_Inactive_$userID' value='$inactive'/>" .
+                "<input type='hidden' id='User_IsCoop_$userID' value='$isCoop'/>" .
+                "<input type='hidden' id='User_IsVendor_$userID' value='$isVendor'/>";
             }
-        } else {
-            $store_dropdown = $store_dropdown ."<option $selected value='$store'>$store</option>";
+
+            $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' class='text ui-widget-content ui-corner-all'>$edit_user_options</select>";
+
+            buildPaymentModal( $user_info, $hideForms );
+            buildEditUserModal( $edit_user_dropdown, $hideForms );
+            buildCreditUserModal( $edit_user_dropdown, $hideForms );
         }
     }
-          
-    $store_dropdown = $store_dropdown ."</select>";
-    
-    echo "<div id='shopping' title='Add Shopping' $hideForms>";
-    echo "<form id='shopping_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<fieldset>";
-    echo "<label for='ItemDropdown'>Item</label>";
-    echo $shopping_item_dropdown;
-    echo "<label for='StoreDropdown'>Store</label>";
-    echo $store_dropdown;
-    echo "<label for='PackQuantity'>Pack Quantity</label>";
-    echo "<input style='font-size:1.8em;' type='tel' id='PackQuantity' name='PackQuantity' class='text ui-widget-content ui-corner-all'/>";
-    echo "<label style='display:none;' id='PriceLabel' for='Price'>Price</label>";
-    echo "<input style='display:none; font-size:1.8em;' type='tel' id='Price' name='Price' class='text ui-widget-content ui-corner-all'/>";
-    
-    echo "<div style='display:none;' id='PriceChoices' class='radio_status'>";
-    echo "<input class='radio' type='radio' id='RegularPrice' name='PriceType' value='regular' checked />";
-    echo "<label for='RegularPrice'>Regular Price</label>";
-    echo "<input class='radio' type='radio' id='SalePrice' name='PriceType' value='sale' />";
-    echo "<label for='SalePrice'>Sale Price</label>";
-    echo "</div>";
-    
-    echo "<input type='hidden' name='Shopping' value='Shopping'/><br>";
-    echo "<input type='hidden' name='Submitter' value='" . $_SESSION["UserName"] . "'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . ADMIN_CHECKLIST_LINK . "'/><br>";
-    
-//    echo "<input class='ui-button' style='padding:10px;' type='submit' name='Shopping_Submit' value='Add Shopping'/><br>";
-    
-    echo "</fieldset>";
-    echo "</form>";
-    echo "</div>";
 
-    if(!$isLoggedInAdmin) {
-        return;
-    }
-    
-    $statement = $db->prepare("SELECT FirstName, LastName, UserID, SlackID, Inactive, IsCoop, SodaBalance, SnackBalance, AnonName From User Order By FirstName Asc");
-    $results = $statement->execute();
+    /**
+     * @param $db SQLite3
+     * @param $hideForms
+     */
+    function buildShoppingModal( $db, $hideForms ) {
+        // Build Item Dropdown
+        $statement = $db->prepare("SELECT ID, Name, Type " .
+            "FROM Item " .
+            "WHERE Hidden != 1 AND Retired != 1 " .
+            "ORDER BY type desc, name asc");
+        $results = $statement->execute();
 
-    $user_info = "";
-    
-    $user_options = "";
-    $edit_user_options = "";
-     
-    while ($row = $results->fetchArray()) {
-        $fullName = $row['FirstName'] . " " . $row['LastName'];
-        $userID = $row['UserID'];
-        $slackID = $row['SlackID'];
-        $inactive = $row['Inactive'];
-        $isCoop = $row['IsCoop'];
-        $anonName = $row['AnonName'];
-        $inactive_strikethrough = "";
-        
-        if( $inactive == "1" ) {
-            $inactive_strikethrough = " style='font-weight:bold; color:#9b0909'";
+        $item_options = "";
+        $previousType = "";
+        while ($row = $results->fetchArray()) {
+            $item_id = $row['ID'];
+            $item_name = $row['Name'];
+            $item_type = $row['Type'];
+
+            if( $item_type != $previousType ) {
+                $previousType = $item_type;
+                $item_options = $item_options . "<option disabled style='font-weight:bold; color: blue;' value='$previousType'>$previousType</option>";
+            }
+
+            $item_options = $item_options . "<option value='" . $row['ID'] . "'>$item_name</option>";
         }
-        
-        $edit_user_options = $edit_user_options . "<option $inactive_strikethrough value='$userID'>$fullName</option>";
-        
-        $user_info = $user_info .
-        "<input type='hidden' id='User_SlackID_$userID' value='$slackID'/>" . 
-        "<input type='hidden' id='User_AnonName_$userID' value='$anonName'/>" . 
-        "<input type='hidden' id='User_Inactive_$userID' value='$inactive'/>" .
-        "<input type='hidden' id='User_IsCoop_$userID' value='$isCoop'/>";
+
+        $statement = $db->prepare("SELECT Store FROM Shopping_Guide Order by Date Desc LIMIT 1");
+        $results = $statement->execute();
+
+        $lastStore = $results->fetchArray()['Store'];
+
+        if( $lastStore == "" ) { $lastStore = "BestProfits"; }
+
+        $shopping_item_dropdown = "<select id='ItemDropdown' name='ItemDropdown'>$item_options</select>";
+
+        $stores = array( "Walmart", "Costco", "BJs", "Target", "Aldi", "Wegmans", "PriceRite", "Tops", "BestProfits" );
+        $store_dropdown = "<select id='StoreDropdown' name='StoreDropdown'>";
+
+        foreach( $stores as $store ) {
+            $selected = "";
+            if( $store == $lastStore ) {
+                $selected = "selected";
+            }
+
+            if( $store == "BestProfits" ) {
+                if( IsAdminLoggedIn() ) {
+                    $store_dropdown = $store_dropdown . "<option $selected value='BestProfits'>( BEST PROFITS )</option>";
+                }
+            } else {
+                $store_dropdown = $store_dropdown ."<option $selected value='$store'>$store</option>";
+            }
+        }
+
+        $store_dropdown = $store_dropdown ."</select>";
+
+        echo "<div id='shopping_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar'>";
+        echo "Add Shopping";
+        echo "<span id='shopping_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='payment_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='ItemDropdown'>Item</label>";
+        echo $shopping_item_dropdown;
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='StoreDropdown'>Store</label>";
+        echo $store_dropdown;
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='PackQuantity'>Pack Quantity</label>";
+        echo "<input type='tel' id='PackQuantity' name='PackQuantity'/>";
+        echo "</li>";
+
+        echo "<li class='PriceSection'>";
+        echo "<label id='PriceLabel' for='Price'>Price</label>";
+        echo "<input type='tel' id='Price' name='Price'/>";
+        echo "</li>";
+
+        echo "<li class='PriceSection'>";
+        echo "<div id='PriceChoices' class='radio_status'>";
+        echo "<input class='radio' type='radio' id='RegularPrice' name='PriceType' value='regular' checked />";
+        echo "<label for='RegularPrice'>Regular Price</label>";
+        echo "<input style='margin-left: 10px;' class='radio' type='radio' id='SalePrice' name='PriceType' value='sale' />";
+        echo "<label for='SalePrice'>Sale Price</label>";
+        echo "</div>";
+        echo "</li>";
+
+        echo "<li class='buttons'>";
+        echo "<input style='padding:10px;' type='submit' name='Shopping_Submit' value='Add Shopping'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='Shopping' value='Shopping'/>";
+        echo "<input type='hidden' name='Submitter' value='" . $_SESSION["UserName"] . "'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_CHECKLIST_LINK . "'/>";
+
+    //    echo "<input class='ui-button' style='padding:10px;' type='submit' name='Shopping_Submit' value='Add Shopping'/><br>";
+
+        echo "</ul>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
     }
-     
-    $edit_user_dropdown = "<select id='EditUserDropdown' name='EditUserDropdown' class='text ui-widget-content ui-corner-all'>$edit_user_options</select>";
-     
-    $method_dropdown = "<select id='MethodDropdown' name='MethodDropdown' class='text ui-widget-content ui-corner-all'>" .
+
+    function buildPaymentModal( $user_info, $hideForms ) {
+        $method_dropdown = "<select id='MethodDropdown' name='MethodDropdown' class='text ui-widget-content ui-corner-all'>" .
             "<option value='None'>None</option>" .
             "<option value='Venmo'>Venmo</option>" .
             "<option value='Square Cash'>Square Cash</option>" .
@@ -148,119 +179,199 @@
             "<option value='Google Pay'>Google Pay</option>" .
             "<option value='Other'>Other</option>" .
             "</select>";
-    
-    buildModalsForType($db, "Soda", $hideForms, $isMobile );
-    buildModalsForType($db, "Snack", $hideForms, $isMobile );
-    
-    // ------------------------------------
-    // PAYMENT MODAL
-    // ------------------------------------
-//     $dateObject = DateTime::createFromFormat( 'Y-m-d H:i:s', time() );
-//     $monthLabel = $dateObject->format('F Y');
-    
 
-    echo "<div id='payment' title='Add Payment' $hideForms>";
-    echo "<form id='payment_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<fieldset>";
+        echo "<div id='payment_modal' class='neptuneModal'>";
 
-    echo "<label for='UserID'>User</label>";
-    echo "<input type='hidden' id='UserID' name='UserID' value='-1'/>";
-    echo "<div style='margin-bottom: 20px; font-size: 1.5em;' id='UserIDLabel'></div>";
+        echo "<div class='neptuneModalContent'>";
 
-    echo "<label for='Month'>Payment Month</label>";
-    echo "<input type='hidden' id='Month' name='Month' value='-1'/>";
-    echo "<div style='margin-bottom: 20px; font-size: 1.5em;' id='MonthLabel'></div>";
+        echo "<div class='neptuneTitleBar'>";
+        echo "Add Payment";
+        echo "<span id='payment_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
 
-    echo "<label for='Method'>Method</label>";
-    echo $method_dropdown;
+        echo "<form class='neptuneForm' id='payment_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
 
-    echo "<label for='TotalAmount'>Payment Amount</label>";
-    echo "<input style='font-size:2em;' type='tel' id='TotalAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "<ul>";
 
-    echo "<input type='hidden' id='SodaUnpaid' value='-1'/>";
-    echo "<input type='hidden' id='SnackUnpaid' value='-1'/>";
+        echo "<li>";
+        echo "<label for='UserID'>User</label>";
+        echo "<input type='hidden' id='UserID' name='UserID' value='-1'/>";
+        echo "<div id='UserIDLabel'></div>";
+        echo "</li>";
 
-    echo "Payment for Soda: <input style='font-size:1em;' readonly type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
-    echo "Payment for Snack: <input style='font-size:1em;' readonly type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "<ul>";
 
-    echo $user_info;
-    echo "<input type='hidden' name='Payment' value='Payment'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . ADMIN_PAYMENTS_LINK . "'/><br>";
-    
-    echo "</fieldset>";
-    echo "</form>";
-    echo "</div>";
+        echo "<li>";
+        echo "<label for='Month'>Payment Month</label>";
+        echo "<input type='hidden' id='Month' name='Month' value='-1'/>";
+        echo "<div id='MonthLabel'></div>";
+        echo "</li>";
 
-    // ------------------------------------
-    // EDIT USER MODAL
-    // ------------------------------------
-    echo "<div id='edit_user' title='Edit User' $hideForms>";
-    echo "<form id='edit_user_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<label for='EditUserDropdown'>User</label>";
-    echo $edit_user_dropdown;
-    echo "<label for='SlackID'>Slack ID</label>";
-    echo "<input type='text' id='SlackID' name='SlackID' class='text ui-widget-content ui-corner-all'/>";
-    
-    echo "<label for='AnonName'>Anon Name</label>";
-    echo "<input type='text' id='AnonName' name='AnonName' class='text ui-widget-content ui-corner-all'/>";
-    
-    echo "<div style='padding:5px 0px;'>";
-        echo "<label style='display:inline;' for='Inactive'>Inactive:</label>";
-        echo "<input style='display:inline;' type='checkbox' id='Inactive' name='Inactive'/>";
-    echo "</div>";
-    
-    echo "<div style='padding:5px 0px;'>";
-    echo "<label style='display:inline;' for='IsCoop'>Co-op:</label>";
-    echo "<input style='display:inline;' type='checkbox' id='IsCoop' name='IsCoop'/>";
-    echo "</div>";
-    
-    echo "<div style='padding:5px 0px;'>";
-        echo "<label style='padding:5px 0px; display:inline;' for='ResetPassword'>Reset Password?</label>";
-        echo "<input style='display:inline;' type='checkbox' name='ResetPassword'/>";
-    echo "</div>";
-    
-    echo "<input type='hidden' name='EditUser' value='EditUser'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
-    
-    echo "</fieldset>";
-    echo "</form>";
-    echo "</div>";
+        echo "<li>";
+        echo "<label for='Method'>Method</label>";
+        echo $method_dropdown;
+        echo "</li>";
 
-    // ------------------------------------
-    // CREDIT USER MODAL
-    // ------------------------------------
-    echo "<div id='credit_user' title='Credit User' $hideForms>";
-    echo "<form id='credit_user_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-    echo "<label for='EditUserDropdown'>User</label>";
-    echo $edit_user_dropdown;
+        echo "<li>";
+        echo "<label for='TotalAmount'>Payment Amount</label>";
+        echo "<input type='tel' id='TotalAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "</li>";
 
-    echo "<label for='CreditAmount'>Credits</label>";
-    echo "<input type='text' id='CreditAmount' name='CreditAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "<input type='hidden' id='SodaUnpaid' value='-1'/>";
+        echo "<input type='hidden' id='SnackUnpaid' value='-1'/>";
 
-    echo "<div style='padding:5px 0px;'>";
-    echo "<label style='display:inline;' for='IsCoop'>Credits being Returned</label>";
-    echo "<input style='display:inline;' type='checkbox' id='ReturnCredits' name='ReturnCredits'/>";
-    echo "</div>";
+        echo "<li>";
+        echo "<label for='TotalAmount'>Payment for Soda</label>";
+        echo "<input style='color:#225aa4; font-weight:bold;' readonly type='tel' id='SodaAmount' name='SodaAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "</li>";
 
-    echo "<input type='hidden' name='CreditUser' value='EditUser'/><br>";
-    echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
+        echo "<li>";
+        echo "<label for='TotalAmount'>Payment for Snack</label>";
+        echo "<input style='color:#a42222; font-weight:bold;' readonly type='tel' id='SnackAmount' name='SnackAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "</li>";
 
-    echo "</fieldset>";
-    echo "</form>";
-    echo "</div>";
+        echo "<li class='buttons'>";
+        echo "<input style='padding:10px;' type='submit' name='Payment_Submit' value='Add Payment'/>";
+        echo "</li>";
 
+        echo $user_info;
+        echo "<input type='hidden' name='SodaCommission' id='SodaCommission'/>";
+        echo "<input type='hidden' name='SnackCommission' id='SnackCommission'/>";
+        echo "<input type='hidden' name='Payment' value='Payment'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_PAYMENTS_LINK . "'/>";
 
+        echo "</ul>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+    }
+
+    function buildEditUserModal( $edit_user_dropdown, $hideForms ) {
+        echo "<div id='edit_user_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar'>";
+        echo "Edit User";
+        echo "<span id='edit_user_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='edit_user_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='EditUserDropdown'>User</label>";
+        echo $edit_user_dropdown;
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='SlackID'>Slack ID</label>";
+        echo "<input type='text' id='SlackID' name='SlackID' class='text ui-widget-content ui-corner-all'/>";
+         echo "</li>";
+
+        echo "<li>";
+        echo "<label for='AnonName'>Anon Name</label>";
+        echo "<input type='text' id='AnonName' name='AnonName' class='text ui-widget-content ui-corner-all'/>";
+        echo "</li>";
+
+        echo "<div class='neptuneRow'>";
+            echo "<label style='display:inline;' for='Inactive'>Inactive:</label>";
+            echo "<input style='display:inline;' type='checkbox' id='Inactive' name='Inactive'/>";
+        echo "</div>";
+
+        echo "<div class='neptuneRow'>";
+            echo "<label style='display:inline;' for='IsCoop'>Co-op:</label>";
+            echo "<input style='display:inline;' type='checkbox' id='IsCoop' name='IsCoop'/>";
+        echo "</div>";
+
+        echo "<div class='neptuneRow'>";
+            echo "<label style='display:inline;' for='IsVendor'>Vendor:</label>";
+            echo "<input style='display:inline;' type='checkbox' id='IsVendor' name='IsVendor'/>";
+        echo "</div>";
+
+        echo "<div class='neptuneRow'>";
+            echo "<label style='padding:5px 0px; display:inline;' for='ResetPassword'>Reset Password?</label>";
+            echo "<input style='display:inline;' type='checkbox' name='ResetPassword'/>";
+        echo "</div>";
+
+        echo "<li class='buttons'>";
+        echo "<input style='padding:10px;' type='submit' name='Edit_User_Submit' value='Save User'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='EditUser' value='EditUser'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/>";
+
+        echo "</ul>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+    }
+
+    function buildCreditUserModal( $edit_user_dropdown, $hideForms ) {
+
+        echo "<div id='credit_user_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar'>";
+        echo "Credit User";
+        echo "<span id='credit_user_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='credit_user_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='EditUserDropdown'>User</label>";
+        echo $edit_user_dropdown;
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='CreditAmount'>Credits</label>";
+        echo "<input type='text' id='CreditAmount' name='CreditAmount' class='text ui-widget-content ui-corner-all'/>";
+        echo "</li>";
+
+        echo "<div class='neptuneRow'>";
+            echo "<label style='display:inline;' for='ReturnCredits'>Credits being Returned</label>";
+            echo "<input style='display:inline;' type='checkbox' id='ReturnCredits' name='ReturnCredits'/>";
+        echo "</div>";
+
+        echo "<li class='buttons'>";
+        echo "<input style='padding:10px;' type='submit' name='Credit_User_Submit' value='Credit User'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='CreditUser' value='EditUser'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/>";
+
+        echo "</ul>";
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+    }
     /**
      * @param $db SQLite3
      * @param $itemType
      * @param $hideForms
-     * @param $isMobile
      */
-    function buildModalsForType( $db, $itemType, $hideForms, $isMobile ) {
+    function buildModalsForType( $db, $itemType, $hideForms ) {
+
+        $redirectURL = ADMIN_LINK;
+
+        if( IsVendor() ) {
+            $redirectURL = VENDOR_LINK;
+        }
+
+        $andVendorIDClause = "";
+
+        if( IsVendor() ) {
+            $andVendorIDClause = " AND VendorID = " .  $_SESSION['UserID'];
+        }
         // Build Item Dropdown
-        $statement = $db->prepare("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate " .
+        $statement = $db->prepare("SELECT ID, Name, Price, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate " .
             "FROM Item " .
-            "WHERE Type = :itemType AND Hidden != 1 " .
+            "WHERE Type = :itemType AND Hidden != 1 $andVendorIDClause " .
             "ORDER BY retired asc, name asc");
         $statement->bindValue( ":itemType", $itemType );
         $results = $statement->execute();
@@ -274,7 +385,6 @@
             $item_price = $row['Price'];
             $item_discount_price = $row['DiscountPrice'];
             $item_retired = $row['Retired'];
-            $item_chart_color = $row['ChartColor'];
             $item_imageURL = $row['ImageURL'];
             $item_thumbURL = $row['ThumbURL'];
             $item_unit_name = $row['UnitName'];
@@ -307,50 +417,97 @@
             "<input type='hidden' id='Item_" . $itemType . "_Alias_$item_id' value='$item_alias'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_CurrentFlavor_$item_id' value='$item_currentFlavor'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_ExpirationDate_$item_id' value='$item_expiration_date'/>" .
-            "<input type='hidden' id='Item_" . $itemType . "_Retired_$item_id' value='$item_retired'/>" .
-            "<input type='hidden' id='Item_" . $itemType . "_ChartColor_$item_id' value='$item_chart_color'/>";
+            "<input type='hidden' id='Item_" . $itemType . "_Retired_$item_id' value='$item_retired'/>";
         }
-            
-        $edit_dropdown = "<select id='Edit" . $itemType . "Dropdown' name='Edit" . $itemType . "Dropdown' style='padding:5px; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options</select>";
-            
-        $restock_dropdown = "<select id='RestockDropdown' name='RestockDropdown' style='padding:5px; width:100%; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options_no_discontinued</select>";
-        
-        $defective_dropdown = "<select id='DefectiveDropdown' name='DefectiveDropdown' style='padding:5px; width:100%; margin-bottom:12px; font-size:2em;' class='text ui-widget-content ui-corner-all'>$item_options_no_discontinued</select>";
-            
-        
-        // ------------------------------------
-        // ADD ITEM MODAL
-        // ------------------------------------
-        echo "<div id='add_item_" . $itemType . "' class='fancy' title='Add " . $itemType . "' $hideForms>";
-        echo "<form id='add_item_" . $itemType . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        echo "<fieldset>";
-        echo "<label for='ItemName'>Name</label>";
-        echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='40'; name='ItemName' class='text ui-widget-content ui-corner-all'>";
-        echo "<label for='ChartColor'>Color</label>";
-        echo "<input name='ChartColor' class='color text ui-widget-content ui-corner-all'>";
 
-        echo "<label for='CurrentPrice'>Price</label>";
-        echo "<input type='tel' name='CurrentPrice' class='text ui-widget-content ui-corner-all'/>";
+        $isNoItems = $item_options == "";
+        $disabledNoItems = "";
 
-        echo "<label for='CurrentPrice'>Discount Price</label>";
-        echo "<input type='tel' name='CurrentDiscountPrice' class='text ui-widget-content ui-corner-all'/>";
-        
-        echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
-        echo "<input type='hidden' name='AddItem' value='AddItem'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
-        
-        if( $isMobile) {
-            echo "<input class='ui-button' style='padding:10px;' type='submit' name='Add_Food_" . $itemType .  "_Submit' value='Add " . $itemType . "'/><br>";
+        if( $isNoItems ) {
+            $item_options = "<option>No Items Available</option>";
+            $item_options_no_discontinued = "<option>No Items Available</option>";
+            $disabledNoItems = "disabled";
+
+            echo "<script>$(\"#Edit_Item_" . $itemType . "_Submit\").hide();</script>";
         }
-        echo "</fieldset>";
+
+        $edit_dropdown = "<select $disabledNoItems id='Edit" . $itemType . "Dropdown' name='Edit" . $itemType . "Dropdown' style='font-size:1em;'>$item_options</select>";
+            
+        $restock_dropdown = "<select $disabledNoItems id='RestockDropdown' name='RestockDropdown'>$item_options_no_discontinued</select>";
+
+
+        buildAddItemModal( $itemType, $redirectURL );
+        buildEditItemModal( $itemType, $edit_dropdown, $item_info, $redirectURL );
+        buildRestockItemModal( $itemType, $restock_dropdown, $redirectURL );
+        buildInventoryModal( $db, $itemType, $hideForms, $redirectURL );
+        buildRefillModal( $db, $itemType, $hideForms, $redirectURL );
+
+        if( IsAdminLoggedIn() ) {
+            buildDefectiveModal( $itemType, $item_options_no_discontinued, $hideForms );
+        }
+    }
+
+    function buildRestockItemModal( $itemType, $restock_dropdown, $redirectURL ) {
+        $itemTypeID = strtolower( $itemType );
+
+        echo "<div id='restock_item_" . $itemTypeID . "_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar $itemTypeID'>";
+        echo "Restock $itemType";
+        echo "<span id='restock_item_" . $itemTypeID . "_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='restock_item_" . $itemTypeID . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='ItemNameDropdown'>$itemType</label>";
+        echo $restock_dropdown;
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='NumberOfCans'>Number Of Units</label>";
+        echo "<input type='tel' autocomplete='off' name='NumberOfCans'/>";
+        echo "<span>Total number of items being restocked.</span>";
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='Cost'>Cost for Pack</label>";
+        echo "<input type='tel' autocomplete='off' name='Cost'/>";
+        echo "<span>Price of all items as a whole.</span>";
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='Multiplier'>Multiplier</label>";
+        echo "<input type='tel' autocomplete='off' name='Multiplier'/>";
+        echo "<span>Multiplies the price and the number of items.<br>For when you buy multiple packs of something for same price.</span>";
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='ExpDate'>Expiration Date</label>";
+        echo "<input type='text' autocomplete='off' name='ExpDate'/>";
+        echo "<span>The expiration date of the items.<br>Eventually will be used to determine when shelf items are going stale.</span>";
+        echo "</li>";
+
+        echo "<li class='buttons $itemTypeID'>";
+        echo "<input style='padding:10px;' type='submit' name='Restock_Item_" . $itemType .  "_Submit' value='Restock $itemType'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/>";
+        echo "<input type='hidden' name='Restock' value='Restock'/>";
+        echo "<input type='hidden' name='redirectURL' value='$redirectURL'/>";
+
+        echo "</ul>";
         echo "</form>";
         echo "</div>";
-        
-        // ------------------------------------
-        // EDIT ITEM MODAL
-        // ------------------------------------
+        echo "</div>";
+    }
+    function buildEditItemModal( $itemType, $edit_dropdown, $item_info, $redirectURL ) {
+        $itemTypeID = strtolower( $itemType );
+
         $editNameID = "EditItemName" . $itemType;
-        $editChartColorID = "EditChartColor" . $itemType;
         $editPriceID = "EditPrice" . $itemType;
         $editDiscountPriceID = "EditDiscountPrice" . $itemType;
         $editImageURLID = "EditImageURL" . $itemType;
@@ -363,175 +520,297 @@
         $editActiveID = "EditStatusActive" . $itemType;
         $editDiscontinuedID = "EditStatusDiscontinued" . $itemType;
         $editStatusID = "EditStatus" . $itemType;
-        
-        echo "<div id='edit_item_" . $itemType . "' class='fancy' title='Edit " . $itemType . "' $hideForms>";
-        echo "<form id='edit_item_" . $itemType . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        echo "<fieldset>";
+
+        echo "<div id='edit_item_" . $itemTypeID . "_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar $itemTypeID'>";
+        echo "Edit $itemType";
+        echo "<span id='edit_item_" . $itemTypeID . "_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='edit_item_" . $itemTypeID . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+        echo "<ul>";
+
+        echo "<table>";
+        echo "<tr>";
+
+        echo "<td>";
+        echo "<li>";
         echo "<label for='ItemNameDropdown'>" . $itemType . "</label>";
         echo $edit_dropdown;
+        echo "</li>";
+        echo "</td>";
+
+        echo "</tr>";
+
+        echo "<tr>";
+
+        echo "<td>";
+        echo "<li>";
         echo "<label for='ItemName'>Name</label>";
-        echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='30'; id='$editNameID' name='$editNameID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label for='ChartColor'>Color</label>";
-        echo "<input id='$editChartColorID' name='$editChartColorID' class='color text ui-widget-content ui-corner-all'>";
-        echo "<label for='CurrentPrice'>Price</label>";
-        echo "<input type='tel' id='$editPriceID' name='$editPriceID' class='text ui-widget-content ui-corner-all'/>";
-        echo "<label for='CurrentPrice'>Discount Price</label>";
-        echo "<input type='tel' id='$editDiscountPriceID' name='$editDiscountPriceID' class='text ui-widget-content ui-corner-all'/>";
+        echo "<input type='text' autocorrect='off' autocapitalize='off' maxlength='30' id='$editNameID' name='$editNameID'>";
+        echo "<span>Name of the product</span>";
+        echo "</li>";
+        echo "</td>";
 
-        echo "<label style='display:inline-block' for='ImageURL'>Image URL</label> <span style='color:#55a4ff' id='$editImageURLID'></span>";
-        echo "<input style='padding-bottom:20px;' name='uploadedImage' type='file' />";
-
-        echo "<label style='display:inline-block' for='ThumbURL'>Thumb URL</label> <span style='color:#55a4ff' id='$editThumbURLID'></span>";
-        echo "<input style='padding-bottom:20px;' name='uploadedThumb' type='file' />";
-
-        echo "<label for='UnitName'>Unit Name</label>";
-        echo "<input id='$editUnitNameID' name='$editUnitNameID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label for='UnitNamePlural'>Unit Name (plural)</label>";
-        echo "<input id='$editUnitNamePluralID' name='$editUnitNamePluralID' class='text ui-widget-content ui-corner-all'>";
+        echo "<td>";
+        echo "<li>";
         echo "<label for='Alias'>Alias</label>";
-        echo "<input id='$editAliasID' name='$editAliasID' class='text ui-widget-content ui-corner-all'>";
-        echo "<label for='ExpirationDate'>Expiration Date</label>";
-        echo "<input id='$editExpirationDateID' name='$editExpirationDateID' class='text ui-widget-content ui-corner-all'>";
-        echo "<div class='radio_status'>";
+        echo "<input type='text' id='$editAliasID' name='$editAliasID'>";
+        echo "<span>Comma separated list of names that will also show in search.</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "</tr>";
+
+        echo "<tr>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='CurrentPrice'>Price</label>";
+        echo "<input type='tel' id='$editPriceID' name='$editPriceID'>";
+        echo "<span>The full price if bought with money in the mugs</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='CurrentPrice'>Discount Price</label>";
+        echo "<input type='tel' id='$editDiscountPriceID' name='$editDiscountPriceID'>";
+        echo "<span>The discount price is bought through the site</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "</tr>";
+
+        echo "<tr>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='UnitName'>Unit Name</label>";
+        echo "<input type='text' id='$editUnitNameID' name='$editUnitNameID'>";
+        echo "<span>The unit used for the quantity display.</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='UnitNamePlural'>Unit Name (plural)</label>";
+        echo "<input type='text' id='$editUnitNamePluralID' name='$editUnitNamePluralID'>";
+        echo "<span>Because the english language sucks and plural isn't predictable.</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "</tr>";
+
+        echo "<tr>";
+
+        echo "<td>";
+        echo "<li>";
         echo "<label for='CurrentFlavor'>Current Flavor</label>";
-        echo "<input id='$editCurrentFlavorID' name='$editCurrentFlavorID' class='text ui-widget-content ui-corner-all'>";
+        echo "<input type='text' id='$editCurrentFlavorID' name='$editCurrentFlavorID'>";
+        echo "<span>The current flavor of the product.<br>So you don't need to create many items for the same item.</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='ExpirationDate'>Expiration Date</label>";
+        echo "<input type='text' id='$editExpirationDateID' name='$editExpirationDateID'>";
+        echo "<span>The date the item expires. (WIP)</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "</tr>";
+
+        echo "<tr>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='ImageURL'>Image URL</label>";
+        echo "<input name='uploadedImage' type='file' />";
+        echo "<div style='color:#55a4ff; padding: 5px 0px; font-size: 0.9em;' id='$editImageURLID'></div>";
+        echo "<span>The image used in the card.</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='ThumbURL'>Thumb URL</label>";
+        echo "<input name='uploadedThumb' type='file' />";
+        echo "<div style='color:#55a4ff; padding: 5px 0px; font-size: 0.9em;' id='$editThumbURLID'></div>";
+        echo "<span>The thumbnail image used in the shelf.</span>";
+        echo "</li>";
+        echo "</td>";
+
+        echo "</tr>";
+
+        echo "<tr>";
+
+        echo "<td colspan='2'>";
+        echo "<li>";
+        echo "<label style='display:inline-block' for='ThumbURL'>Status</label>";
+        echo "<div class='radio_status'>";
         echo "<input class='radio' type='radio' id='$editActiveID' name='$editStatusID' value='active' checked />";
         echo "<label for='$editActiveID'>Active</label>";
-        echo "<input class='radio' type='radio' id='$editDiscontinuedID' name='$editStatusID' value='discontinued' />";
+        echo "<input style='margin-left: 10px;' class='radio' type='radio' id='$editDiscontinuedID' name='$editStatusID' value='discontinued' />";
         echo "<label for='$editDiscontinuedID'>Discontinued</label>";
         echo "</div>";
-        
-        echo $item_info;
-        echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
-        echo "<input type='hidden' name='EditItem' value='EditItem'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
-        
-        if( $isMobile) {
-            echo "<input class='ui-button' style='padding:10px;' type='submit' name='Edit_Item_" . $itemType .  "_Submit' value='Edit " . $itemType . "'/><br>";
-        }
-        echo "</fieldset>";
-        echo "</form>";
-        echo "</div>";
-        
-        // ------------------------------------
-        // RESTOCK ITEM MODAL
-        // ------------------------------------
-        echo "<div style='width:775px; display:none;' id='restock_item_" . $itemType . "' title='Restock " . $itemType . "' $hideForms>";
-        echo "<form id='restock_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        echo "<label for='ItemNameDropdown'>" . $itemType . "</label>";
-        echo $restock_dropdown;
-        echo "<table>";
-        
-        echo "<tr>";
-        echo "<td>";
-        echo "<label for='NumberOfCans'>Number Of Units</label>";
+        echo "<span>Mark this discontinued when you won't be selling an item anymore. A warning will appear in the card.<br>Once sold out the item won't show anywhere in the site anymore.</span>";
+
+        echo "</li>";
         echo "</td>";
-        echo "<td>";
-        echo "<label for='Cost'>Cost for Pack</label>";
-        echo "</td>";
-        echo "<td>";
-        echo "<label for='Multiplier'>Multiplier</label>";
-        echo "</td>";
-        echo "</tr>";
-        
-        echo "<tr>";
-        echo "<td>";
-        echo "<input type='tel' style='font-size: 2em;' name='NumberOfCans' class='text ui-widget-content ui-corner-all'/>";
-        echo "</td>";
-        echo "<td>";
-        echo "<input type='tel' style='font-size: 2em; 'name='Cost' class='text ui-widget-content ui-corner-all'/>";
-        echo "</td>";
-        echo "<td>";
-        echo "<input type='tel' style='font-size: 2em; 'name='Multiplier' value='1' class='text ui-widget-content ui-corner-all'/>";
-        echo "</td>";
+
         echo "</tr>";
 
-        echo "<tr>";
-        echo "<td>";
-        echo "<label for='ExpDate'>Exp. Date</label>";
-        echo "</td>";
-        echo "<td colspan='2'>";
-        echo "<input type='text' style='font-size: 2em;' name='ExpDate' class='text ui-widget-content ui-corner-all'/>";
-        echo "</td>";
-        
         echo "</table>";
-        
-        $statement = $db->prepare("SELECT ID, Name, Price, Retired, ChartColor, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate " .
-            "FROM Item " .
-            "WHERE Type = :itemType AND Hidden != 1 " .
-            "ORDER BY name asc");
-        $statement->bindValue( ":itemType", $itemType );
-        $results = $statement->execute();
 
-        $item_options = "";
-        $item_options_no_discontinued = "";
-        $item_info = "";
-        while ($row = $results->fetchArray()) {
-            $item_id = $row['ID'];
-            $item_name = $row['Name'];
-        }
-        
-        echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/><br>";
-        echo "<input type='hidden' name='Restock' value='Restock'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
-        
-        if( $isMobile) {
-            echo "<input style='padding:10px;' type='submit' name='Restock_Item_" . $itemType .  "_Submit' value='Restock " . $itemType . "'/><br>";
-        }
+        echo "<li class='buttons $itemTypeID'>";
+        echo "<input style='padding:10px;' type='submit' name='Edit_Item_" . $itemType .  "_Submit' value='Edit $itemType'/>";
+        echo "</li>";
+
+        echo "</ul>";
+
+        echo $item_info;
+        echo "<input type='hidden' name='ItemType' value='$itemType'/>";
+        echo "<input type='hidden' name='EditItem' value='EditItem'/>";
+        echo "<input type='hidden' name='redirectURL' value='$redirectURL'/>";
+
         echo "</form>";
         echo "</div>";
-        
-        // ------------------------------------
-        // DEFECTIVES ITEM MODAL
-        // ------------------------------------
-        echo "<div id='defective_item_" . $itemType . "' title='Defective " . $itemType . "' $hideForms>";
-        echo "<form id='defective_item_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
-        echo "<label for='ItemNameDropdown'>" . $itemType . "</label>";
-        echo $defective_dropdown;
-        
-        echo "<label for='NumberOfUnits'>Number Of Units</label>";
-        echo "<input type='tel' style='font-size: 2em;' name='NumberOfUnits' class='text ui-widget-content ui-corner-all'/>";
-
-        echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/><br>";
-        echo "<input type='hidden' name='Defective' value='Defective'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_DEFECTIVES_LINK . "'/><br>";
-        
-        if( $isMobile) {
-            echo "<input style='padding:10px;' type='submit' name='Defective_Item_" . $itemType .  "_Submit' value='Defective " . $itemType . "'/><br>";
-        }
-        echo "</form>";
         echo "</div>";
-        
-        // ------------------------------------
-        // INVENTORY MODAL - ALL ITEMS
-        // ------------------------------------
-        buildInventoryModal( $db, $itemType, $hideForms, $isMobile );
-        buildRefillModal( $db, $itemType, $hideForms, $isMobile );
     }
 
+    function buildAddItemModal( $itemType, $redirectURL ) {
+        $itemTypeID = strtolower( $itemType );
+
+        echo "<div id='add_item_" . $itemTypeID . "_modal' class='neptuneModal'>";
+        echo "<div class='neptuneModalContent'>";
+
+
+        echo "<div class='neptuneTitleBar $itemTypeID'>";
+        echo "Add $itemType";
+        echo "<span id='add_item_" . $itemTypeID . "_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='add_item_" . $itemTypeID . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='ItemName'>Name</label>";
+        echo "<input type='text' autocomplete='off' name='ItemName' maxlength='40'/>";
+        echo "<span>Name of the product</span>";
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='CurrentPrice'>Price</label>";
+        echo "<input type='tel' autocomplete='off' name='CurrentPrice'/>";
+        echo "<span>The full price if bought with money in the mugs</span>";
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='CurrentPrice'>Discount Price</label>";
+        echo "<input type='tel' autocomplete='off' name='CurrentDiscountPrice'/>";
+        echo "<span>The discount price is bought through the site</span>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='ItemType' value='$itemType'/>";
+        echo "<input type='hidden' name='AddItem' value='AddItem'/>";
+        echo "<input type='hidden' name='redirectURL' value='$redirectURL'/>";
+
+        echo "<li class='buttons $itemTypeID'>";
+        echo "<input style='padding:10px;' type='submit' name='Add_Item_" . $itemType .  "_Submit' value='Add $itemType'/>";
+        echo "</li>";
+
+        echo "</ul>";
+        echo "</form>";
+
+        echo "</div>";
+        echo "</div>";
+    }
+
+    function buildDefectiveModal( $itemType, $item_options_no_discontinued, $hideForms ) {
+        $itemTypeID = strtolower( $itemType );
+
+        $defective_dropdown = "<select id='DefectiveDropdown' name='DefectiveDropdown'>$item_options_no_discontinued</select>";
+
+
+        echo "<div id='defective_item_" . $itemTypeID . "_modal' class='neptuneModal'>";
+
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar $itemTypeID'>";
+        echo "Defect $itemType";
+        echo "<span id='defective_item_" . $itemTypeID . "_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='defective_item_" . $itemTypeID . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<ul>";
+
+        echo "<li>";
+        echo "<label for='ItemNameDropdown'>$itemType</label>";
+        echo $defective_dropdown;
+        echo "</li>";
+
+        echo "<li>";
+        echo "<label for='NumberOfUnits'>Number of Units</label>";
+        echo "<input type='tel' name='NumberOfUnits' class='text ui-widget-content ui-corner-all'/>";
+        echo "</li>";
+
+        echo "<input type='hidden' name='ItemType' value='" . $itemType . "'/>";
+        echo "<input type='hidden' name='Defective' value='Defective'/>";
+        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_DEFECTIVES_LINK . "'/>";
+
+        echo "<li class='buttons $itemTypeID'>";
+        echo "<input style='padding:10px;' type='submit' name='Defective_Item_" . $itemType . "_Submit' value='Defect $itemType'/>";
+        echo "</li>";
+
+        echo "</form>";
+        echo "</div>";
+        echo "</div>";
+    }
     /**
      * @param $db SQLite3
      * @param $itemType
      * @param $hideForms
-     * @param $isMobile
      */
-    function buildRefillModal( $db, $itemType, $hideForms, $isMobile ) {
+    function buildRefillModal( $db, $itemType, $hideForms, $redirectURL ) {
+        $itemTypeID = strtolower( $itemType );
+
         $prefix = "refill";
         $label = "Refill";
 
-        echo "<div id='" . $prefix . "_" . $itemType . "' title='Enter $label' $hideForms>";
-        echo "<form id='" . $prefix . "_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+        echo "<div id='$prefix" . "_item_" . $itemTypeID . "_modal' class='neptuneModal'>";
 
-        echo "<table>";
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar $itemTypeID'>";
+        echo "Refill $itemType";
+        echo "<span id='refill_item_" . $itemTypeID . "_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='refill_item_" . $itemTypeID . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<table style='border-spacing: 10px;'>";
         echo "<tr>";
         echo "<th class='admin_header_column'>" . $itemType . "</th>";
         echo "<th class='admin_header_column'>Add to Shelf</th>";
+        echo "<th class='admin_header_column'>&nbsp;</th>";
         echo "<th class='admin_header_column'>Shelf Quantity</th>";
         echo "<th class='admin_header_column'>Backstock Quantity</th></tr>";
 
+        $andVendorIDClause = "";
+
+        if( IsVendor() ) {
+            $andVendorIDClause = " AND VendorID = " .  $_SESSION['UserID'];
+        }
+
         $statement = $db->prepare("SELECT Name," . getQuantityQuery() . ",ID FROM Item i " .
-            "WHERE Hidden != 1 AND Type = :itemType AND TotalAmount > 0 " .
-            "ORDER BY ShelfAmount DESC, Name asc, Retired");
+            "WHERE Hidden != 1 AND Type = :itemType AND TotalAmount > 0 $andVendorIDClause " .
+            "ORDER BY ShelfAmount ASC, Name asc, Retired");
         $statement->bindValue( ":itemType", $itemType );
         $results = $statement->execute();
 
@@ -542,11 +821,12 @@
             $shelfquantity = $row['ShelfAmount'];
             $item_id = $row['ID'];
             echo "<tr>";
-            echo "<td class='admin_header_column'><b>$item_name</b></td>";
             echo "<input type='hidden' id='item_$item_id' name='RefillItemID[]' value='$item_id'/>";
-            echo "<td><input type='tel' onClick='this.select();' tabindex=$tabIndex id='RefillAddToShelf_$item_id' value='0' name='RefillAddToShelf[]' class='text ui-corner-all'/></td>";
-            echo "<td><input type='tel' readonly onClick='this.select();' tabindex=0 id='RefillShelfQuantity_$item_id' value='$shelfquantity' name='RefillShelfQuantity[]' class='text ui-corner-all'/></td>";
-            echo "<td><input type='tel' readonly tabindex=0 id='RefillBackstockQuantity_$item_id' value='$backstockquantity' name='RefillBackstockQuantity[]' class='text  ui-corner-all'/></td>";
+            echo "<td class='neptuneRowLabel'>$item_name</td>";
+            echo "<td class='neptuneRowInput'><input autocomplete='off' type='tel' onClick='this.select();' tabindex=$tabIndex id='RefillAddToShelf_$item_id' value='0' name='RefillAddToShelf[]'/></td>";
+            echo "<td style='width: 20px;'>&nbsp;</td>";
+            echo "<td><input type='tel' readonly onClick='this.select();' tabindex=0 id='RefillShelfQuantity_$item_id' value='$shelfquantity' name='RefillShelfQuantity[]' class='fakeInput text ui-corner-all'/></td>";
+            echo "<td><input type='tel' readonly tabindex=0 id='RefillBackstockQuantity_$item_id' value='$backstockquantity' name='RefillBackstockQuantity[]' class='fakeInput text ui-corner-all'/></td>";
             echo "</tr>";
 
             $tabIndex++;
@@ -569,7 +849,14 @@
                         echo "$('#RefillBackstockQuantity_$item_id').val(newBackstockQuantity);";
                         echo "$('#RefillShelfQuantity_$item_id').val(newShelfQuantity);";
 
-                        echo "$('#RefillBackstockQuantity_$item_id').css('background-color', '#ff9b9b');";
+                        echo "if(newBackstockQuantity == 0) {";
+                            echo "$('#RefillBackstockQuantity_$item_id').css('background-color', '#3d3d3d');";
+                            echo "$('#RefillBackstockQuantity_$item_id').css('color', '#ffffff');";
+                            echo "$('#RefillBackstockQuantity_$item_id').css('border', '#9a2929 solid 2px');";
+                        echo "} else {";
+                            echo "$('#RefillBackstockQuantity_$item_id').css('background-color', '#ff9b9b');";
+                        echo "}";
+
                         echo "$('#RefillShelfQuantity_$item_id').css('background-color', '#a6ff9b');";
 
                         // Dont wan't to think changing from 6 to 7 will increase by 1, it will increase 7 again
@@ -586,17 +873,24 @@
             echo "</script>";
         }
         echo "</table>";
-        echo "<input style='display:inline-block;' type='checkbox' id='SendToSlack' checked name='SendToSlack'/> Send to Slack";
 
-        echo "<input type='hidden' name='$label' value='Refill'/><br>";
-        echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
+        echo "<div class='neptuneRow'>";
+        echo "<input style='display:inline-block;' type='checkbox' id='SendToSlack' name='SendToSlack'/> Notify #random Channel";
+        echo "</div>";
 
+        echo "<ul>";
+        echo "<li class='buttons $itemTypeID'>";
+        echo "<input style='padding:10px;' type='submit' name='Refill_Item_" . $itemType .  "_Submit' value='Refill $itemType'/>";
+        echo "</li>";
+        echo "</ul>";
 
-        if( $isMobile) {
-            echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Refill'/><br>";
-        }
+        echo "<input type='hidden' name='Refiller' value='" . $_SESSION['FirstName'] ."'/>";
+        echo "<input type='hidden' name='$label' value='Refill'/>";
+        echo "<input type='hidden' name='ItemType' value='$itemType'/>";
+        echo "<input type='hidden' name='redirectURL' value='$redirectURL'/>";
+
         echo "</form>";
+        echo "</div>";
         echo "</div>";
     }
 
@@ -604,23 +898,38 @@
      * @param $db SQLite3
      * @param $itemType
      * @param $hideForms
-     * @param $isMobile
      */
-    function buildInventoryModal( $db, $itemType, $hideForms, $isMobile ) {
+    function buildInventoryModal( $db, $itemType, $hideForms, $redirectURL ) {
+        $itemTypeID = strtolower( $itemType );
+
         $prefix = "inventory";
         $label = "Inventory";
 
-        echo "<div id='" . $prefix . "_" . $itemType . "' title='Enter $label' $hideForms>";
-        echo "<form id='" . $prefix . "_" . $itemType . "_form' class='fancy' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+        echo "<div id='$prefix" . "_item_" . $itemTypeID . "_modal' class='neptuneModal'>";
 
-        echo "<table>";
+        echo "<div class='neptuneModalContent'>";
+
+        echo "<div class='neptuneTitleBar $itemTypeID'>";
+        echo "Inventory $itemType";
+        echo "<span id='inventory_item_" . $itemTypeID . "_close_button' class='neptuneModalClose'>&times;</span>";
+        echo "</div>";
+
+        echo "<form class='neptuneForm' id='" . $prefix . "_" . $itemTypeID . "_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
+
+        echo "<table style='border-spacing: 10px;'>";
         echo "<tr>";
         echo "<th class='admin_header_column'>" . $itemType . "</th>";
         echo "<th class='admin_header_column'>Shelf Quantity</th>";
         echo "<th class='admin_header_column'>Backstock Quantity</th></tr>";
 
+        $andVendorIDClause = "";
+
+        if( IsVendor() ) {
+            $andVendorIDClause = " AND VendorID = " .  $_SESSION['UserID'];
+        }
+
         $statement = $db->prepare("SELECT Name," . getQuantityQuery() . ",ID FROM Item i " .
-            "WHERE Hidden != 1 AND Type = :itemType AND TotalAmount > 0 " .
+            "WHERE Hidden != 1 AND Type = :itemType AND TotalAmount > 0 $andVendorIDClause " .
             "ORDER BY ShelfAmount DESC, Name asc, Retired");
         $statement->bindValue( ":itemType", $itemType );
         $results = $statement->execute();
@@ -632,11 +941,11 @@
             $shelfquantity = $row['ShelfAmount'];
             $item_id = $row['ID'];
             echo "<tr>";
-            echo "<td class='admin_header_column'><b>$item_name</b></td>";
             echo "<input type='hidden' id='item_$item_id' name='ItemID[]' value='$item_id'/>";
-            echo "<td><input type='tel' onClick='this.select();' tabindex=0 id='ShelfQuantity_$item_id' value='$shelfquantity' name='ShelfQuantity[]' class='text ui-corner-all'/>";
-            echo "<input type='hidden' id='ShelfQuantityOriginal_$item_id' value='$shelfquantity'/></td>";
-            echo "<td><input type='tel' disabled tabindex=0 id='BackstockQuantity_$item_id' value='$backstockquantity' name='BackstockQuantity[]' class='text  ui-corner-all'/></td>";
+            echo "<input type='hidden' id='ShelfQuantityOriginal_$item_id' value='$shelfquantity'/>";
+            echo "<td class='neptuneRowLabel'>$item_name</td>";
+            echo "<td class='neptuneRowInput'><input autocomplete='off' type='tel' onClick='this.select();' tabindex=0 id='ShelfQuantity_$item_id' value='$shelfquantity' name='ShelfQuantity[]' class='text ui-corner-all'/>";
+            echo "<td><input type='tel' disabled tabindex=0 id='BackstockQuantity_$item_id' value='$backstockquantity' name='BackstockQuantity[]' class='fakeInput text ui-corner-all'/></td>";
             echo "</tr>";
 
             $tabIndex++;
@@ -660,20 +969,27 @@
             echo "</script>";
         }
         echo "</table>";
-        echo "<div style='margin-top: 10px;'>";
-        echo "Audit Amount: <input type='tel' style='width:30%;' id='AuditAmount' name='AuditAmount' class='text ui-corner-all'/>";
-        echo "</div>";
 
-
-        echo "<input type='hidden' name='$label' value='$label'/><br>";
-        echo "<input type='hidden' name='ItemType' value='$itemType'/><br>";
-        echo "<input type='hidden' name='redirectURL' value='" . ADMIN_LINK . "'/><br>";
-
-
-        if( $isMobile) {
-            echo "<input style='padding:10px;' type='submit' name='Update_Item_" . $itemType .  "_Submit' value='Add $label'/><br>";
+        if( !IsVendor() ) {
+            echo "<li>";
+            echo "<label for='AuditAmount'>Audit Amount</label>";
+            echo "<input type='tel' autocomplete='off' name='AuditAmount'/>";
+            echo "<span>The amount of money in the mug.</span>";
+            echo "</li>";
         }
+
+        echo "<input type='hidden' name='$label' value='$label'/>";
+        echo "<input type='hidden' name='ItemType' value='$itemType'/>";
+        echo "<input type='hidden' name='redirectURL' value='$redirectURL'/>";
+
+        echo "<ul>";
+        echo "<li class='buttons $itemTypeID'>";
+        echo "<input style='padding:10px;' type='submit' name='Inventory_Item_" . $itemType .  "_Submit' value='Inventory $itemType'/>";
+        echo "</li>";
+        echo "</ul>";
+
         echo "</form>";
+        echo "</div>";
         echo "</div>";
     }
 ?>
@@ -712,9 +1028,8 @@ function setItemInfo( type ) {
     var itemCurrentFlavor = $('#Item_' + type + '_CurrentFlavor_' + itemID).val();
     var itemExpirationDate = $('#Item_' + type + '_ExpirationDate_' + itemID).val();
     var itemThumbURL = $('#Item_' + type + '_ThumbURL_' + itemID).val();
-    var itemChartColor = $('#Item_' + type + '_ChartColor_' + itemID).val();
     var itemRetired = $('#Item_' + type + '_Retired_' + itemID).val();
-    console.log("Item ID: " +  itemID + " " + itemName + " " + itemPrice+ " " + itemChartColor + " " + itemRetired);
+    console.log("Item ID: " +  itemID + " " + itemName + " " + itemPrice+ " " + itemRetired);
     
     $("#EditItemName" + type).val(itemName);
     $("#EditPrice" + type).val(itemPrice);
@@ -726,8 +1041,7 @@ function setItemInfo( type ) {
     $("#EditAlias" + type).val(itemAlias);
     $("#EditCurrentFlavor" + type).val(itemCurrentFlavor);
     $("#EditExpirationDate" + type).val(itemExpirationDate);
-    $("#EditChartColor + type").val(itemChartColor);
-    
+
     if( itemRetired == 0 ) {
         $("#EditStatusActive" + type).prop("checked", true);
         $("#EditStatusDiscontinued" + type).prop("checked", false);
@@ -743,7 +1057,8 @@ function setUserInfo() {
     var anonName = $('#User_AnonName_' + userID).val();
     var inactive = $('#User_Inactive_' + userID).val();
     var isCoop = $('#User_IsCoop_' + userID).val();
-    
+    var isVendor = $('#User_IsVendor_' + userID).val();
+
     $("#SlackID").val(slackID);
     $("#AnonName").val(anonName);
     
@@ -757,6 +1072,12 @@ function setUserInfo() {
         $("#IsCoop").prop("checked", false);
     } else {
         $("#IsCoop").prop("checked", true);
+    }
+
+    if( isVendor == 0 ) {
+        $("#IsVendor").prop("checked", false);
+    } else {
+        $("#IsVendor").prop("checked", true);
     }
 }
 
@@ -799,17 +1120,9 @@ function updateStoreOptions() {
     var store = $('#StoreDropdown').val();
 
     if( store == "BestProfits" ) {
-        $("#Price").hide();
-        $("#PriceLabel").hide();
-        $("#PriceChoices").hide();
-        $("#RegularPrice").hide();
-        $("#SalePrice").hide();
+        $(".PriceSection").hide();
     } else {
-        $("#Price").show();
-        $("#PriceLabel").show();
-        $("#PriceChoices").show();
-        $("#RegularPrice").show();
-        $("#SalePrice").show();
+        $(".PriceSection").show();
     }
     console.log("Store [" + store + "]" );
 }

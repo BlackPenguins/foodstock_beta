@@ -1,47 +1,6 @@
 <?php
 include(__DIR__ . "/../appendix.php" );
 
-function DisplayPaymentMethods() {
-    echo "<div style='margin:0px 15px; padding:5px;'>";
-    echo "<div style='background-color: #bd7949; padding:5px; border-top: 3px solid #000; border-right: 3px solid #000; border-left: 3px solid #000; border-bottom: 2px solid #000; '>";
-    echo "<span style='vertical-align:top; font-weight:bold;'>Supported Payment Methods:</span>"; 
-    echo "</div>";
-    
-    echo "<div style='padding: 10px; display:flex; align-items:stretch; font-weight:bold; background-color: #d89465; border-right: 3px solid #000; border-left: 3px solid #000; border-bottom: 3px solid #000;'>";
-    
-    $flexCSS = "padding:5px; border: 2px dashed #c16a2c; display:flex; align-items:center; margin:0px 10px;";
-    echo "<span style='$flexCSS'>";
-    echo "<img style='width:34px; margin-right:5px;' title='Square Cash App' src='" . IMAGES_LINK . "square_cash.png'/> \$mtm4440";
-    echo "</span>";
-    
-    echo "<span style='$flexCSS'>";
-    echo "<img style='width:35px; margin-right:5px;' title='Venmo App' src='" . IMAGES_LINK . "venmo.png'/> @Matt-Miles-17";
-    echo "</span>";
-    
-    echo "<span style='$flexCSS'>";
-    echo "<img style='width:37px; margin-right:5px;' title=\"Seriously needed a hover-text for this?  It's PayPal.\" src='" . IMAGES_LINK . "paypal.png'/> lightwave365@yahoo.com";
-    echo "</span>";
-    
-    echo "<span style='$flexCSS'>";
-    echo "<img style='width:30px; margin-right:5px;' title='Send through Facebook' src='" . IMAGES_LINK . "facebook.png'/>  mattmiles17";
-    echo "</span>";
-    
-    echo "<span style='$flexCSS'>";
-    echo "<img style='width:30px; margin-right:5px;' title='Cash in Hand' src='" . IMAGES_LINK . "cash_in_hand.png'/> Location: My Cube";
-    echo "</span>";
-    
-    echo "<span style='$flexCSS'>";
-    echo "<img style='width:30px; margin-right:5px;' title='Google Pay' src='" . IMAGES_LINK . "google_pay.jpg'/>mtm4440@g.rit.edu";
-    echo "</span>";
-    
-    echo "<span style='$flexCSS font-size:0.7em;'>";
-    echo "Or you can suggest something else - be a trendsetter.";
-    echo "</span>";
-    
-    echo "</div>";
-    echo "</div>";
-}
-
 function DisplayAgoTime( $dateBefore, $dateNow ) {
     $date_object = new DateTime();
 
@@ -252,7 +211,7 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
         }
     }
     
-    $sodaQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL";
+    $sodaQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL AND VendorID = 0";
     $sodaStatement = $db->prepare( $sodaQuery );
     $sodaStatement->bindValue( ":userID", $userID );
     $sodaStatement->bindValue( ":monthLabel", $monthLabel );
@@ -261,7 +220,7 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
 
     $sodaTotalPaid = $sodaResults->fetchArray()['TotalAmount'];
     
-    $snackQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL";
+    $snackQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL AND VendorID = 0";
     $snackStatement = $db->prepare( $snackQuery );
     $snackStatement->bindValue( ":userID", $userID );
     $snackStatement->bindValue( ":monthLabel", $monthLabel );

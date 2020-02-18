@@ -1,14 +1,18 @@
 <?php 
     include(__DIR__ . "/../appendix.php" );
-    DisplayNav($db, $isLoggedIn, $isLoggedInAdmin, $url);
+    DisplayNav($db, $url);
 
     echo "</div>";
 
-    function DisplayNav($db, $isLoggedIn, $isLoggedInAdmin, $url) {
+    /**
+     * @param $db SQLite3
+     * @param $url
+     */
+    function DisplayNav($db, $url) {
         $noMobileSupport = "<span class='unsupported_mobile'>(no mobile support yet)</span>";
         echo "<div id='navigation_bar'>";
 
-        if( $isLoggedInAdmin ) {
+        if( IsAdminLoggedIn() ) {
             echo "<span id='hamburger_admin' onclick='openNavAdmin();'>";
 
             echo "<svg style='width:26px; height: 26px;' aria-hidden='true' focusable='false' role='presentation' viewBox='0 0 26 26'>";
@@ -27,7 +31,7 @@
             echo "</span>";
         }
 
-        DisplayLoggedIn("mobile", $isLoggedIn, $isLoggedInAdmin);
+        DisplayLoggedIn("mobile" );
 
         echo "<span id='hamburger' onclick='openNav();'>";
 
@@ -53,7 +57,7 @@
         echo "<li><a style='text-decoration:none;' href='" . SODASTOCK_LINK . "'><span class='nav_buttons nav_buttons_soda'>Soda Home</span></a></li>";
         echo "<li><a style='text-decoration:none;' href='" . SNACKSTOCK_LINK . "'><span class='nav_buttons nav_buttons_snack'>Snack Home</span></a></li>";
 
-        if(!$isLoggedIn) {
+        if(!IsLoggedIn()) {
             $results = $db->query("SELECT Count(*) as Active, Sum(SnackSavings) as TotalSnackSavings, Sum(SodaSavings) as TotalSodaSavings FROM User WHERE SnackBalance != 0.0 OR SodaBalance != 0");
             $row = $results->fetchArray();
             $totalActiveUsers = $row['Active'];
@@ -79,8 +83,12 @@
             }
             echo "<li><a style='text-decoration:none;' href='" . STATS_LINK . "'><span class='nav_buttons nav_buttons_stats'>Graphs $noMobileSupport</span></a><li>";
 
-            if( $isLoggedInAdmin ) {
+            if( IsAdminLoggedIn() ) {
                 echo "<li><a style='text-decoration:none;' href='" . ADMIN_LINK . "'><span class='nav_buttons nav_buttons_admin'>Administration</span></a><li>";
+            }
+
+            if( IsVendor() ) {
+                echo "<li><a style='text-decoration:none;' href='" . VENDOR_LINK . "'><span class='nav_buttons nav_buttons_admin'>Vendor HQ</span></a><li>";
             }
 
             echo "<li><a style='text-decoration:none;' href='" . PREFERENCES_LINK . "'><span class='nav_buttons nav_buttons_preferences'>Preferences</span></a></li>";
@@ -100,7 +108,7 @@
 
             echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_billing'>Balance: " .  getPriceDisplayWithDollars( $totalBalance ) . "$noMobileSupport</span></a><li>";
 
-            if( $isLoggedInAdmin ) {
+            if( IsAdminLoggedIn() ) {
                 $refillCount = getRefillCount($db);
                 $restockCount =  getRestockCount($db);
                 $refillText = "";
@@ -125,28 +133,27 @@
         }
         echo "</ul>";
 
-        DisplayLoggedInUser($isLoggedIn, $isLoggedInAdmin, $url);
+        DisplayLoggedInUser($url);
 
         echo "</nav>";
     }
 
-    function DisplayLoggedInUser($isLoggedIn, $isLoggedInAdmin, $url) {
+    function DisplayLoggedInUser($url) {
 
         echo "<span id='credentials_box'>";
-        DisplayLoggedIn("desktop", $isLoggedIn, $isLoggedInAdmin);
-        DisplayLoginForm($isLoggedIn, $url);
+        DisplayLoggedIn("desktop" );
+        DisplayLoginForm($url);
         echo "</span>";
     }
 
-    function DisplayLoggedIn($id, $isLoggedIn, $isLoggedInAdmin) {
-        if($isLoggedIn) {
+    function DisplayLoggedIn($id) {
+        if(IsLoggedIn()) {
             $inactiveUser = isset( $_SESSION['InactiveUser'] ) && $_SESSION['InactiveUser'] == 1;
             $userColor = $inactiveUser ? "#ee3636" : "#FFFF00";
-
             echo "<span id='display_name_$id'>";
             echo "Logged in: <b><span style='color:$userColor;'>[" . $_SESSION['UserName'] . "]";
 
-            if( $isLoggedInAdmin ) {
+            if( IsAdminLoggedIn() ) {
                 echo " - Administrator";
             }
 
@@ -156,11 +163,11 @@
 
             echo "</span></b>";
             echo "</span>";
-            DisplayLoggedOutLink($id, $isLoggedIn);
+            DisplayLoggedOutLink($id);
         }
     }
-    function DisplayLoginForm($isLoggedIn, $url) {
-        if(!$isLoggedIn) {
+    function DisplayLoginForm($url) {
+        if(!IsLoggedIn()) {
             //PHP_SELF = this current php page name (take you back to the current page)
             echo "<form style='margin:0px 5px; padding:0px;' action='$url' method='post' accept-charset='UTF-8'>";
 
@@ -180,8 +187,8 @@
         }
     }
 
-    function DisplayLoggedOutLink($id, $isLoggedIn) {
-        if($isLoggedIn) {
+    function DisplayLoggedOutLink($id) {
+        if(IsLoggedIn()) {
             echo "<span id='logout_link_$id' title='" . $_SESSION['SlackID'] . "' style='padding:0px 10px 0px 10px;'>";
             echo "<b><a style='color:white;' href='" . LOGOUT_LINK . "'>[Logout]</a></b>";
             echo "</span>";

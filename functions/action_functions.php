@@ -4,15 +4,14 @@ include(AUDIT_OBJ);
 /**
  * @param $db SQLite3
  * @param $name
- * @param $chartColor
  * @param $price
  * @param $itemType
  * @return string
  */
-function addItem( $db, $name, $chartColor, $price, $discountPrice, $itemType ) {
+function addItem( $db, $name, $price, $discountPrice, $itemType ) {
     $name = trim($name);
     $date = date('Y-m-d H:i:s');
-    $chartColor = trim($chartColor);
+    error_log( "Price[$price] Discount[$discountPrice]" );
     $price = convertDecimalToWholeCents( trim( $price ) );
     $discountPrice = convertDecimalToWholeCents( trim( $discountPrice ) );
     $itemType = trim( $itemType );
@@ -28,16 +27,25 @@ function addItem( $db, $name, $chartColor, $price, $discountPrice, $itemType ) {
     if( $numOfExistingItems > 0 ) {
         return "Item \"$name\" already exists.";
     } else {
-        $statement = $db->prepare( "INSERT INTO Item (Name, Date, ChartColor, TotalCans, Price, DiscountPrice, TotalIncome, TotalExpenses, Type, RefillTrigger, RestockTrigger, IsBought) VALUES " .
-            "( :name, :date, :chartColor, 0, :price, :discountPrice, 0.00, 0.00, :itemType, 0, 0, 0)" );
+        $statement = $db->prepare( "INSERT INTO Item (Name, Date, ChartColor, TotalCans, Price, DiscountPrice, TotalIncome, TotalExpenses, Type, RefillTrigger, RestockTrigger, IsBought, VendorID) VALUES " .
+            "( :name, :date, :chartColor, 0, :price, :discountPrice, 0.00, 0.00, :itemType, 0, 0, 0, :vendorID)" );
 
         $statement->bindValue( ":name", $name );
         $statement->bindValue( ":date", $date );
-        $statement->bindValue( ":chartColor", $chartColor );
+        $statement->bindValue( ":chartColor", "ABCDEF" );
         $statement->bindValue( ":price", $price );
         $statement->bindValue( ":discountPrice", $discountPrice );
         $statement->bindValue( ":itemType", $itemType );
+
+        if( IsVendor() ) {
+            $statement->bindValue(":vendorID", $_SESSION['UserID'] );
+        } else {
+            $statement->bindValue(":vendorID", 0 );
+        }
+
         $statement->execute();
+
+        sendSlackMessageToMatt("*Item Name:* $name\n*Price:* $price\n*Discount Price:* $discountPrice\n*Type:* $itemType", ":heavy_plus_sign:", "NEW ITEM", "#b7ab1a");
 
         return "Item \"$name\" added successfully.";
     }
@@ -48,11 +56,10 @@ function addItem( $db, $name, $chartColor, $price, $discountPrice, $itemType ) {
  * @param $itemType
  * @param $itemID
  * @param $name
- * @param $chartColor
  * @param $price
  * @param $discountPrice
  */
-function editItem( $db, $itemID, $name, $chartColor, $price, $discountPrice, $unitName, $unitNamePlural, $alias, $currentFlavor, $status, $expirationDate ) {
+function editItem( $db, $itemID, $name, $price, $discountPrice, $unitName, $unitNamePlural, $alias, $currentFlavor, $status, $expirationDate ) {
 
     $retired = $status == "active" ? 0 : 1;
 
@@ -153,7 +160,7 @@ function editItem( $db, $itemID, $name, $chartColor, $price, $discountPrice, $un
         "UnitName = :unitName, UnitNamePlural = :unitNamePlural, Alias = :alias, CurrentFlavor = :currentFlavor, ExpirationDate = :expirationDate where ID = :itemID" );
 
     $statement->bindValue( ":name", $name );
-    $statement->bindValue( ":chartColor", $chartColor );
+    $statement->bindValue( ":chartColor", "ABCDEF" );
     $statement->bindValue( ":price", $price );
     $statement->bindValue( ":discountPrice", $discountPrice );
     $statement->bindValue( ":retired", $retired );
@@ -166,6 +173,8 @@ function editItem( $db, $itemID, $name, $chartColor, $price, $discountPrice, $un
     $statement->bindValue( ":targetImageFileName", $targetImageFileName, SQLITE3_TEXT );
     $statement->bindValue( ":targetThumbFileName", $targetThumbFileName, SQLITE3_TEXT );
     $statement->execute();
+
+    sendSlackMessageToMatt("*Item Name:* $name\n*Price:* $price\n*Discount Price:* $discountPrice\n*Flavor:* $currentFlavor\n*Alias:* $alias", ":pencil:", "EDIT ITEM", "#b7ab1a");
 
     return "Item \"$name\" edited successfully.";
 }
@@ -180,7 +189,7 @@ function editItem( $db, $itemID, $name, $chartColor, $price, $discountPrice, $un
  * @param $isCoop
  * @return string
  */
-function editUser( $db, $userID, $slackID, $anonName, $inactive, $resetPassword, $isCoop ) {
+function editUser( $db, $userID, $slackID, $anonName, $inactive, $resetPassword, $isCoop, $isVendor ) {
     $uniqueID = uniqid();
     $userMessage = "";
 
@@ -194,12 +203,13 @@ function editUser( $db, $userID, $slackID, $anonName, $inactive, $resetPassword,
         $userMessage .= "Password for user was reset to \"$uniqueID\". ";
     }
 
-    $statement = $db->prepare( "UPDATE User SET SlackID=:slackID, AnonName=:anonName, $resetPasswordQuery Inactive = :inactive, IsCoop = :isCoop where UserID = :userID" );
+    $statement = $db->prepare( "UPDATE User SET SlackID=:slackID, AnonName=:anonName, $resetPasswordQuery Inactive = :inactive, IsCoop = :isCoop, IsVendor = :isVendor where UserID = :userID" );
 
     $statement->bindValue( ":slackID", $slackID );
     $statement->bindValue( ":anonName", strip_tags( $anonName ) );
     $statement->bindValue( ":inactive", $inactive );
     $statement->bindValue( ":isCoop", $isCoop );
+    $statement->bindValue( ":isVendor", $isVendor );
     $statement->bindValue( ":userID", $userID );
     $statement->bindValue( ":randomPassword", $randomPassword );
     $statement->execute();
@@ -207,6 +217,95 @@ function editUser( $db, $userID, $slackID, $anonName, $inactive, $resetPassword,
     return $userMessage . "User edited successfully.";
 }
 
+/**
+ * @param $db SQLite3
+ * @param $vendorID
+ * @param $paymentMonth
+ * @param $sodaAmount
+ * @param $snackAmount
+ * @param $note
+ * @param $method
+ */
+function makeCommission( $db, $vendorID, $paymentMonth, $sodaAmount, $snackAmount, $note, $method, $sodaCommission, $snackCommission ) {
+    log_payment( "Incoming paycheck for User [$vendorID] Month [$paymentMonth] Snack[$snackAmount] Soda[$sodaAmount]" );
+
+    if( $vendorID > 0 ) {
+        log_payment( "User paycheck found for [$vendorID]" );
+        $statement = $db->prepare("SELECT SlackID, UserName, FirstName, LastName From User where UserID = :userID");
+        $statement->bindValue( ":userID", $vendorID );
+        $results = $statement->execute();
+
+        $row = $results->fetchArray();
+        $slackID = $row['SlackID'];
+        $name = $row['FirstName'] . " " . $row['LastName'];
+        $username = $row['UserName'];
+
+        $amount = $sodaAmount + $snackAmount;
+
+        $paymentMessage = "Your paycheck of *" . getPriceDisplayWithDollars( $amount ) ."* was received through $method for $paymentMonth.";
+
+        sendSlackMessageToUser( $slackID,  $paymentMessage, ":heavy_dollar_sign:", "PAYCHECK RECEIVED", "#127b3c", $username, true );
+
+        $date = date('Y-m-d H:i:s');
+
+        // DEV: Changing this code? Change the payment code for Auditing as well (above)
+        $db->exec("BEGIN;");
+
+        $stmt=$db->prepare("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment, VendorID) VALUES ".
+            "(:userID, :method, :sodaAmount, :date, :note, 'Soda', :paymentMonth, :vendorID)");
+        $stmt->bindValue(':userID', $vendorID );
+        $stmt->bindValue(':method', $method );
+        $stmt->bindValue(':sodaAmount', $sodaAmount );
+        $stmt->bindValue(':date', $date );
+        $stmt->bindValue(':note', $note );
+        $stmt->bindValue(':paymentMonth', $paymentMonth );
+        $stmt->bindValue(':vendorID', $vendorID );
+        $stmt->execute();
+
+        $stmt=$db->prepare("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment, VendorID) VALUES " .
+            "(:userID, :method, :snackAmount, :date, :note, 'Snack', :paymentMonth, :vendorID)");
+        $stmt->bindValue(':userID', $vendorID );
+        $stmt->bindValue(':method', $method );
+        $stmt->bindValue(':snackAmount', $snackAmount );
+        $stmt->bindValue(':date', $date );
+        $stmt->bindValue(':note', $note );
+        $stmt->bindValue(':paymentMonth', $paymentMonth );
+        $stmt->bindValue(':vendorID', $vendorID );
+        $stmt->execute();
+
+        $stmt=$db->prepare("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment, VendorID) VALUES ".
+            "(0, :method, :sodaAmount, :date, :note, 'Soda', :paymentMonth, :vendorID)");
+        $stmt->bindValue(':method', $method );
+        $stmt->bindValue(':sodaAmount', $sodaCommission );
+        $stmt->bindValue(':date', $date );
+        $stmt->bindValue(':note', "Commission from $vendorID" );
+        $stmt->bindValue(':paymentMonth', $paymentMonth );
+        $stmt->bindValue(':vendorID', $vendorID );
+        $stmt->execute();
+
+        $stmt=$db->prepare("INSERT INTO Payments (UserID, Method, Amount, Date, Note, ItemType, MonthForPayment, VendorID) VALUES " .
+            "(0, :method, :snackAmount, :date, :note, 'Snack', :paymentMonth, :vendorID)");
+        $stmt->bindValue(':method', $method );
+        $stmt->bindValue(':snackAmount', $snackCommission );
+        $stmt->bindValue(':date', $date );
+        $stmt->bindValue(':note', "Commission from $vendorID" );
+        $stmt->bindValue(':paymentMonth', $paymentMonth );
+        $stmt->bindValue(':vendorID', $vendorID );
+        $stmt->execute();
+
+        $stmt=$db->prepare("UPDATE Information SET SitePayments = SitePayments + :sodaAmount, SiteProfit = SiteProfit + :sodaAmount where ItemType = 'Soda'");
+        $stmt->bindValue(':sodaAmount', $sodaCommission );
+        $stmt->execute();
+
+        $stmt=$db->prepare("UPDATE Information SET SitePayments = SitePayments + :snackAmount, SiteProfit = SiteProfit + :snackAmount where ItemType = 'Snack'");
+        $stmt->bindValue(':snackAmount', $snackCommission );
+        $stmt->execute();
+
+        $db->exec("COMMIT;");
+
+        return "Paycheck added successfully.";
+    }
+}
 /**
  * @param $db SQLite3
  * @param $userID
@@ -255,13 +354,7 @@ function makePayment( $db, $userID, $paymentMonth, $sodaAmount, $snackAmount, $n
         $paymentMessage = "Your payment with $method was received for $paymentMonth.\n\n" .
         "Your Current Balance: *" . getPriceDisplayWithDollars( $newTotalBalance ) . "*       (*" . getPriceDisplayWithDollars( $balance ) . "* original balance  -  *" . getPriceDisplayWithDollars( $amount ) . "* payment)";
 
-        if( $slackID == "" ) {
-            sendSlackMessageToMatt( "Failed to send notification for " . $name . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!", "#bb3f3f");
-        } else {
-            sendSlackMessageToUser( $slackID,  $paymentMessage, ":dollar:", "PAYMENT RECEIVED", "#127b3c", $username );
-        }
-
-        sendSlackMessageToMatt( "*(" . strtoupper($name) . ")*\n$paymentMessage", ":dollar:", "PAYMENT RECEIVED", "#127b3c" );
+        sendSlackMessageToUser( $slackID,  $paymentMessage, ":dollar:", "PAYMENT RECEIVED", "#127b3c", $username, true );
 
         $date = date('Y-m-d H:i:s');
 
@@ -380,6 +473,8 @@ function restockItem( $db, $itemID, $quantity, $multiplier, $retailCost, $itemTy
 
     $db->exec("COMMIT;");
 
+    sendSlackMessageToMatt("*Item ID:* $itemID\n*Quantity:* $quantity\n*Cost:* $retailCost\n*Multiplier:* $multiplier", ":truck:", "RESTOCK ITEM", "#b7ab1a");
+
     return "Restocked successfully.";
 }
 
@@ -389,7 +484,7 @@ function restockItem( $db, $itemID, $quantity, $multiplier, $retailCost, $itemTy
  * @param $addToShelf_all
  * @param $sendToSlack
  */
-function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack ) {
+function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack, $refiller ) {
 
     benchmark_start( "REFILL" );
     $date = date('Y-m-d H:i:s');
@@ -517,7 +612,13 @@ function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack ) 
     if( !$isTest && $slackMessageItems != "" && $sendToSlack == true) {
         $slackMessage = $slackMessageItems ."\n\nVisit <https://penguinore.net$page|Foodstock> to see the prices and inventory of all snacks & sodas.";
 
-        sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - REFILL" );
+        if( $refiller != "Matt" ) {
+            $refillLabel = "REFILLED BY " . strtoupper($refiller);
+        } else {
+            $refillLabel = "REFILL";
+        }
+
+        sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - $refillLabel" );
 
         $subscribeStatement = $db->prepare("SELECT SlackID, UserName FROM User where SubscribeRestocks = 1" );
         $subscribeResults = $subscribeStatement->execute();
@@ -525,7 +626,7 @@ function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack ) 
         while( $row = $subscribeResults->fetchArray() ) {
             $slackIDToNotify = $row['SlackID'];
             $username = $row['UserName'];
-            sendSlackMessageToUser( $slackIDToNotify, $slackMessage, $emoji, $itemType. "Stock - REFILL", "#000000", $username );
+            sendSlackMessageToUser( $slackIDToNotify, $slackMessage, $emoji, $itemType. "Stock - $refillLabel", "#000000", $username, false );
         }
     }
     benchmark_stop( "REFILL" );
@@ -705,6 +806,8 @@ function inventoryItem( $db, $itemID_all, $removeFromShelf_all, $auditAmount, $i
 
     $db->exec("COMMIT;");
 
+    sendSlackMessageToMatt(count( $itemID_all ) . " items", ":card_file_box:", "INVENTORY ITEM", "#b7ab1a");
+
     return "Inventory was successful for " . count($itemID_all) . " items. $auditMessage";
 }
 
@@ -765,12 +868,7 @@ function creditUser( $db, $isTest, $userID, $creditAmountInDecimal, $returnCredi
         $userMessage = $userMessage . "User credited successfully with " . getPriceDisplayWithDollars($creditAmountWholeCents);
 
         if( !$isTest ) {
-            if ($slackID == "") {
-                sendSlackMessageToMatt("Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", "FoodStock - ERROR!!", "#bb3f3f");
-            } else {
-                sendSlackMessageToUser($slackID, $creditMessage, ":label:", "FoodStock - CREDITS", "#3f5abb", $username);
-                sendSlackMessageToMatt("*(" . strtoupper($name) . ")*\n" . $creditMessage, ":label:", "FoodStock - CREDITS", "#3f5abb");
-            }
+            sendSlackMessageToUser($slackID, $creditMessage, ":label:", "FoodStock - CREDITS", "#3f5abb", $username, true);
         }
     }
 
@@ -855,11 +953,13 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
     log_payment( "=======================================================================" );
     log_payment("START ItemType: [$itemType] Count: [" . count( $itemsInCart ) . "] Credits: [$creditsLeftOfUser]" );
 
+    $vendorsToNotify = array();
+
     // TODO MTM: This is a bit slow with 25 purchased items
     if( $itemQuantityValidationPassed ) {
         foreach ($itemsInCart as $itemID) {
             $startTimeItem = time();
-            $itemQuery = "SELECT i.Name," . getQuantityQuery() . " FROM Item i WHERE ID = :itemID";
+            $itemQuery = "SELECT u.UserID, u.SlackID, i.Name," . getQuantityQuery() . " FROM Item i LEFT JOIN User u ON i.VendorID = u.UserID WHERE ID = :itemID";
             log_sql("ITEM QUERY [$itemQuery]");
             $statement = $db->prepare($itemQuery);
             $statement->bindValue( ":itemID", $itemID );
@@ -871,6 +971,8 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
             $itemName = $row['Name'];
             $shelfQuantity = $row['ShelfAmount'];
             $backstockQuantity = $row['BackstockAmount'];
+            $vendorSlackID = $row['SlackID'];
+            $vendorID = $row['UserID'];
 
             if ($shelfQuantity - 1 <= -1) {
                 $errors .= "Welp, this should never happen. Validation should have caught this. Item Name: " . $itemName;
@@ -922,7 +1024,10 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
                         log_payment("All Credits. Credits Left: [$totalPrice]" );
                     }
                 } else {
-                    $totalPrice += $itemPrice;
+                    // Dont charge vendor for their own products
+                    if( $vendorID != $userID ) {
+                        $totalPrice += $itemPrice;
+                    }
                 }
 
                 $itemProfit += ($itemPrice - $retailCostPerItem);
@@ -946,21 +1051,30 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
                 $inventoryHistoryID = $db->lastInsertRowID();
 
                 $db->exec( "BEGIN;" );
-                $statement = $db->prepare( "UPDATE Item SET ItemIncome = ItemIncome + :itemPrice, ItemProfit = ItemProfit + :itemProfit where ID = :itemID" );
 
-                $statement->bindValue(":itemPrice", $itemPrice );
-                $statement->bindValue(":itemProfit", $itemProfit );
-                $statement->bindValue(":itemID", $itemID );
+                $statement = $db->prepare("UPDATE Item SET ItemIncome = ItemIncome + :itemPrice, ItemProfit = ItemProfit + :itemProfit where ID = :itemID");
 
-                $statement->execute();
-
-                $statement = $db->prepare( "UPDATE Information SET SiteIncome = SiteIncome + :itemPrice, SiteProfit = SiteProfit + :itemProfit where ItemType = :itemType" );
-
-                $statement->bindValue(":itemPrice", $itemPrice );
-                $statement->bindValue(":itemProfit", $itemProfit );
-                $statement->bindValue(":itemType", $itemType );
+                $statement->bindValue(":itemPrice", $itemPrice);
+                $statement->bindValue(":itemProfit", $itemProfit);
+                $statement->bindValue(":itemID", $itemID);
 
                 $statement->execute();
+
+                if( $vendorSlackID == "" ) {
+                    // Only update site income for non-vendor items
+                    $statement = $db->prepare("UPDATE Information SET SiteIncome = SiteIncome + :itemPrice, SiteProfit = SiteProfit + :itemProfit where ItemType = :itemType");
+
+                    $statement->bindValue(":itemPrice", $itemPrice);
+                    $statement->bindValue(":itemProfit", $itemProfit);
+                    $statement->bindValue(":itemType", $itemType);
+
+                    $statement->execute();
+                } else {
+                    // Add vendor to notify list
+                    if( !in_array( $vendorSlackID, $vendorsToNotify ) ) {
+                        $vendorsToNotify[] = $vendorSlackID;
+                    }
+                }
 
 
                 $statement = $db->prepare( "INSERT Into Purchase_History (UserID, ItemID, Date, CashOnly, DailyAmountID, UseCredits, ItemDetailsID) VALUES " .
@@ -1029,14 +1143,22 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
             $purchaseMessage = $purchaseMessage . "*THIS PURCHASE WAS CASH-ONLY*\n";
         }
 
+        // Notify admin about purchase
+        if( !in_array( "U1FEGH4U9", $vendorsToNotify ) ) {
+            $vendorsToNotify[] = "U1FEGH4U9";
+        }
+
         if( !$isTest ) {
-            if ($slackID == "") {
-                sendSlackMessageToMatt("Failed to send notification for $userName. Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f");
-            } else {
-                sendSlackMessageToUser($slackID, $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb", $userName);
+            // Send receipts to the admin and vendors
+            foreach( $vendorsToNotify as $vendorSlackID ) {
+                sendSlackMessageToUser($vendorSlackID, "*(" . strtoupper("$firstName $lastName") . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb", $vendorSlackID );
             }
 
-            sendSlackMessageToMatt("*(" . strtoupper("$firstName $lastName") . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb");
+            sendSlackMessageToUser($slackID, $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb", $userName );
+
+            $_SESSION["SodaBalance"] = $currentSodaBalance;
+            $_SESSION["SnackBalance"] = $currentSnackBalance;
+            $_SESSION['PurchaseCompleted'] = 1;
 
             if (count($itemsOutOfStock) > 0) {
                 foreach ($itemsOutOfStock as $item) {
@@ -1044,10 +1166,6 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
                     sendSlackMessageToMatt("*Item Name:* " . $item . "\n*Buyer:* " . "$firstName $lastName", ":negative_squared_cross_mark:", "OUT OF STOCK BY PURCHASE", "#791414");
                 }
             }
-
-            $_SESSION["SodaBalance"] = $currentSodaBalance;
-            $_SESSION["SnackBalance"] = $currentSnackBalance;
-            $_SESSION['PurchaseCompleted'] = 1;
         }
 
         return "Purchase Completed";

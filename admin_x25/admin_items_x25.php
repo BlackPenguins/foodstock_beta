@@ -7,15 +7,12 @@
     include( HEADER_PATH );
     
     echo "<span class='admin_box'>";
-        // ------------------------------------
-        // ITEM TABLE
-        // ------------------------------------
-        echo "<div class='rounded_header'><span class='title'>Item Inventory</span></div>";
+        echo "<div class='rounded_header'><span class='title'>Item Information</span></div>";
         
         echo "<div class='center_piece'>";
         echo "<div style='margin-right: 20px;'><a href = 'admin_download_csv_x25.php'>Download Inventory Spreadsheet</a></div>";
 
-        echo "<div class='hidden_mobile_section'>Black = Sold Out.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Discounted price = Yellow.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Rows = Discontinued.</div>";
+        echo "<div class='hidden_mobile_section'>Black Row = Sold Out.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Yellow Cell = Discounted price.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Red Row = Discontinued.</div>";
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr>";
@@ -25,7 +22,6 @@
         echo "<th class='admin_header_column' align='left'>Price per Unit</th>";
         echo "<th class='admin_header_column' align='left'>Discount Price per Unit</th>";
         echo "<th class='hidden_mobile_column admin_header_column' align='left'>Date Created</th>";
-        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Chart Color</th>";
         echo "<th class='admin_header_column' align='left'>Shelf Quantity</th>";
         echo "<th class='admin_header_column' align='left'>Backstock Quantity</th>";
         echo "<th class='hidden_mobile_column admin_header_column' align='left'>Total Units Bought</th>";
@@ -36,9 +32,15 @@
         echo "</tr></thead>";
         
         $rowClass = "";
-        
-        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, Date, ChartColor, TotalCans, " . getQuantityQuery() .
-            ",Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden FROM Item i WHERE Hidden != 1 ORDER BY Retired, Type DESC, TotalAmount DESC");
+
+        $andVendorIDClause = "";
+
+        if( IsVendor() ) {
+            $andVendorIDClause = " AND VendorID = " .  $_SESSION['UserID'];
+        }
+
+        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, Date, TotalCans, " . getQuantityQuery() .
+            ",Price, DiscountPrice, ItemIncome, ItemExpenses, Retired, Hidden FROM Item i WHERE Hidden != 1 $andVendorIDClause ORDER BY Retired, Type DESC, TotalAmount DESC");
         $results = $statement->execute();
 
         while ($row = $results->fetchArray()) {
@@ -69,12 +71,11 @@
             echo "<td $colorPrice>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
             echo "<td $colorDiscount>" . getPriceDisplayWithDollars( $row['DiscountPrice'] ) . "</td>";
             echo "<td class='hidden_mobile_column'>" . $row['Date'] . "</td>";
-            echo "<td class='hidden_mobile_column'>" . $row['ChartColor'] . "</td>";
             echo "<td>" . $row['ShelfAmount'] . "</td>";
             echo "<td>" . $row['BackstockAmount'] . "</td>";
             echo "<td class='hidden_mobile_column'>" . $row['TotalCans'] . "</td>";
-            echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['TotalIncome'] ) . "</td>";
-            echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['TotalExpenses'] ) . "</td>";
+            echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['ItemIncome'] ) . "</td>";
+            echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['ItemExpenses'] ) . "</td>";
             echo "<td class='hidden_mobile_column'>". ( $isDiscontinued ? ( "YES" ) : ( "NO" ) ) . "</td>";
             echo "</tr>";
         }

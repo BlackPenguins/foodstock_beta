@@ -156,6 +156,8 @@
            }
         });
     }
+
+    setupModal( "shopping" );
 </script>
 
 </body>

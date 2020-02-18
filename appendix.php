@@ -30,12 +30,16 @@
 
     if(!function_exists('isTestServer')) {
         function isTestServer() {
-            return $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.234" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
+            return $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.20" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
         }
     }
 
     if( !defined("CREDIT_ID")) {
         define("CREDIT_ID", 4000);
+    }
+
+    if( !defined("COMMISSION_PERCENTAGE")) {
+        define("COMMISSION_PERCENTAGE", 0.10);
     }
 
     date_default_timezone_set('America/New_York');
@@ -55,11 +59,12 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_7_0.css" );
+        define( "CSS_LINK", "$subdomain/css/style_7_2.css" );
+        define( "MOBILE_CSS_LINK", "$subdomain/css/mobile_7_2.css" );
         define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
         
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
-        define( "LOAD_MODALS_LINK", "$subdomain/scripts/load_modals.js" );
+        define( "SETUP_MODALS_LINK", "$subdomain/scripts/setup_modals.js" );
         
         define( "PREVIEW_IMAGES_NORMAL", "$subdomain/preview_images/normal/" );
         define( "PREVIEW_IMAGES_THUMBS", "$subdomain/preview_images/thumbnails/" );
@@ -92,6 +97,8 @@
         define( "SNACKSTOCK_LINK", "$subdomain/snackstock.php" );
         define( "SODASTOCK_LINK", "$subdomain/sodastock.php" );
         define( "STATS_LINK", "$subdomain/stats.php" );
+
+        define( "VENDOR_LINK", "$subdomain/vendor_x82.php" );
     }
     
     if( !defined("UI_FUNCTIONS_PATH")) {
@@ -129,6 +136,26 @@
     if( !defined("TESTING_BASE_OBJ")) {
         define( "TESTING_BASE_OBJ", __DIR__ . $slash . "common" . $slash . "TestingBase.php" );
     }
+
+    if( !defined("MONTHLY_LAYOUT_BASE_OBJ")) {
+        define( "MONTHLY_LAYOUT_BASE_OBJ", __DIR__ . $slash . "common" . $slash . "MonthlyLayout.php" );
+    }
+
+    if( !defined("PURCHASE_HISTORY_OBJ")) {
+        define( "PURCHASE_HISTORY_OBJ", __DIR__ . $slash . "common" . $slash . "PurchaseHistoryObj.php" );
+    }
+
+    if( !defined("PURCHASE_MONTH_OBJ")) {
+        define( "PURCHASE_MONTH_OBJ", __DIR__ . $slash . "common" . $slash . "PurchaseMonthObj.php" );
+    }
+
+    if( !defined("PURCHASE_HISTORY_LAYOUT_BASE_OBJ")) {
+        define( "PURCHASE_HISTORY_LAYOUT_BASE_OBJ", __DIR__ . $slash . "common" . $slash . "PurchaseHistoryLayout.php" );
+    }
+
+    if( !defined("VENDOR_HISTORY_LAYOUT_BASE_OBJ")) {
+        define( "VENDOR_HISTORY_LAYOUT_BASE_OBJ", __DIR__ . $slash . "common" . $slash . "VendorHistoryLayout.php" );
+    }
     
     if( !defined("SLACK_FUNCTIONS_PATH")) {
         define( "SLACK_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "slack_functions.php" );
@@ -138,10 +165,6 @@
         define( "LOG_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "log_functions.php" );
     }
     
-    if( !defined("MOBILE_DETECTION_PATH")) {
-        define( "MOBILE_DETECTION_PATH", __DIR__ . $slash . "functions" . $slash . "mobile_detection.php" );
-    }
-    
     if( !defined("SESSION_FUNCTIONS_PATH")) {
         define( "SESSION_FUNCTIONS_PATH", __DIR__ .$slash . "functions" . $slash . "session_functions.php" );
     }
@@ -149,7 +172,7 @@
     if( !defined("HANDLE_FORMS_PATH")) {
         define( "HANDLE_FORMS_PATH", __DIR__ .$slash . "common" . $slash . "handle_forms.php" );
     }
-    
+
     if( !defined("BUILD_ADMIN_FORMS_PATH")) {
         define( "BUILD_ADMIN_FORMS_PATH", __DIR__ . $slash . "admin_x25" . $slash . "build_admin_forms.php" );
     }
