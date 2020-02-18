@@ -40,11 +40,11 @@
     
     <?php 
     echo "<span class='admin_box'>";
-        // ------------------------------------
-        // INVENTORY TABLE
-        // ------------------------------------
+        echo "<div class='rounded_header'><span class='title'>Inventory & Purchases</span></div>";
+
+
         echo "<div class='center_piece'>";
-        echo "<span class='hidden_mobile_section'>Yellow = Inventory.&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Blue = Refill.</span>";
+        echo "<span class='hidden_mobile_section'>Yellow Row = Inventory (purchases from mugs).&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Blue Row = Refill (stocking the cabinet)</span>";
         echo "<div class='rounded_table_no_border'>";
         echo "<table>";
         echo "<thead><tr>";
@@ -52,21 +52,28 @@
         echo "<th class='admin_header_column' align='left'>Item</th>";
         echo "<th class='admin_header_column' align='left'>User Name</th>";
         echo "<th class='admin_header_column' align='left'>Date</th>";
-        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Shelf Quantity</th>";
-        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Backstock Quantity</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Shelf Adjustment</th>";
+        echo "<th class='hidden_mobile_column admin_header_column' align='left'>Backstock Adjustment</th>";
         echo "<th class='hidden_mobile_column admin_header_column' align='left'>Price</th>";
         
         echo "</tr></thead>";
         
         $rowClass = "odd_manual";
         $previousDate = "";
-        
-        $statement = $db->prepare("SELECT p.CashOnly, i.Name, u.FirstName, u.LastName, r.Cancelled, r.ID, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.ShelfQuantityBefore, r.ShelfQuantity, r.Price " .
+
+        $andVendorIDClause = "";
+
+        if( IsVendor() ) {
+            $andVendorIDClause = " AND VendorID = " .  $_SESSION['UserID'];
+        }
+
+        $statement = $db->prepare("SELECT p.CashOnly, i.Name, u.FirstName, u.LastName, r.Cancelled, r.ID, r.Date, r.BackstockQuantityBefore, r.BackstockQuantity, r.ShelfQuantityBefore, r.ShelfQuantity, d.Price, d.DiscountPrice " .
             "FROM Inventory_History r ".
             "JOIN Item i ON r.itemID = i.id " .
             "LEFT JOIN Purchase_History p ON r.ID = p.DailyAmountID " .
             "LEFT JOIN User u on p.UserID = u.UserID " .
-            "WHERE r.Date >= date('now','-2 months') " .
+            "LEFT JOIN Item_Details d on r.ItemDetailsID = d.ItemDetailsID " .
+            "WHERE r.Date >= date('now','-2 months') $andVendorIDClause " .
             "ORDER BY r.Date DESC");
         $results = $statement->execute();
 
@@ -95,12 +102,15 @@
             $shelfQuantityDelta = ( $shelfQuantityAfter - $shelfQuantityBefore );
             $backstockQuantityDelta = ( $backstockQuantityAfter - $backstockQuantityBefore );
             
-            
+
+            $priceLabel = getPriceDisplayWithDollars( $row['DiscountPrice'] );
             if( $shelfQuantityDelta != 0 || $backstockQuantityDelta != 0 ) {
                 if( $shelfQuantityDelta == ($backstockQuantityDelta * -1 ) ) {
                     $rowClass = "restock_row";
+                    $priceLabel = "&nbsp;";
                 } else if( trim($name) == "" ) {
                     $rowClass = "refill_row";
+                    $priceLabel = getPriceDisplayWithDollars( $row['Price'] );
                 }
                 
                 echo "<tr class='$rowClass'>";
@@ -125,11 +135,15 @@
                 if( $cashOnly == 1 ) {
                     echo "Cash Only";
                 } else if( $cancelled != 1 ) {
-                    if( trim($name) == "" ) {
-                        echo "<div onclick='cancelInventory($dailyAmountID, \"$itemName\");' class='nav_buttons nav_buttons_snack'>Cancel Inventory</div>";
+                     if( !IsAdminLoggedIn() ) {
+                        echo "&nbsp;";
                     } else {
-                        echo "<div onclick='cancelPurchase($dailyAmountID, \"$name - $itemName\");' class='nav_buttons nav_buttons_billing'>Cancel Purchase</div>";
-                    }
+                         if (trim($name) == "") {
+                             echo "<div onclick='cancelInventory($dailyAmountID, \"$itemName\");' class='nav_buttons nav_buttons_snack'>Cancel Inventory</div>";
+                         } else {
+                             echo "<div onclick='cancelPurchase($dailyAmountID, \"$name - $itemName\");' class='nav_buttons nav_buttons_billing'>Cancel Purchase</div>";
+                         }
+                     }
                 } else {
                     if( trim($name) == "" ) {
                         echo "<div style='font-weight:bold; text-align:center;'>Inventory Cancelled</div>";
@@ -144,7 +158,7 @@
                 echo "<td>" . $date_object->format('m/d/Y  [h:i:s A]')."</td>";
                 echo "<td class='hidden_mobile_column'>" . $shelfQuantityDisplay . "</td>";
                 echo "<td class='hidden_mobile_column'>" . $backstockQuantityDisplay . "</td>";
-                echo "<td class='hidden_mobile_column'>" . getPriceDisplayWithDollars( $row['Price'] ) . "</td>";
+                echo "<td class='hidden_mobile_column'>" . $priceLabel . "</td>";
                 echo "</tr>";
             }
             

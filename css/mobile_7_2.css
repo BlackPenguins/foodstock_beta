@@ -1,0 +1,314 @@
+@media screen and (max-width : 760px){
+
+    #top_stat_container,
+    #bottom_stat_container {
+        display: none;
+    }
+
+    #change_log_container {
+        display: none;
+    }
+
+    #shelf_container {
+       display: none;
+    }
+
+    .soda_body {
+        display: inline-table;
+    }
+
+    .snack_body {
+        display: inline-table;
+    }
+
+    #session_container {
+        display: none;
+    }
+
+    .unsupported_mobile {
+        display: block;
+    }
+
+    .hidden_mobile_column {
+        display: none;
+    }
+
+    .hidden_mobile_section {
+        display: none;
+    }
+
+    #display_name_mobile {
+        display: block;
+        float: left;
+        margin-left: 10px;
+        margin-top: 7px;
+    }
+
+    #display_name_desktop{
+        display: none;
+    }
+
+    #logout_link_mobile{
+        display: none;
+    }
+
+    #logout_link_desktop{
+        margin-top: 20px;
+        display: block;
+    }
+
+    #register_box {
+        display: block;
+        border-bottom: none;
+        padding: 20px;
+    }
+
+    #credentials_box {
+        float: none;
+        margin-top: 10px;
+    }
+
+    #username_box {
+        display: block;
+        margin: 10px;
+    }
+
+    #username_input{
+        width: 70%;
+        font-size: 1.4em;
+    }
+
+    #password_box {
+        display: block;
+        margin: 10px;
+    }
+
+    #password_input{
+        width: 70%;
+        font-size: 1.4em;
+    }
+
+    #login_button {
+        font-size: 1.4em;
+    }
+
+    #close {
+        display: none;
+        float: right;
+    }
+
+    .post-module {
+        margin: 30px 0px;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        width: 100%;
+    }
+
+    .rounded_table, .rounded_table_no_border {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    .rounded_header {
+        padding: 10px;
+    }
+
+    .total_details_box {
+        display: block;
+        float: none;
+    }
+
+    body {
+        overflow-x: hidden !important;
+    }
+
+
+    /*Make dropdown links appear inline*/
+    #nav > ul {
+        margin: 0px 0px;
+        padding-inline-start: 0px;
+    }
+
+    #nav_admin > ul  {
+        margin: 0px 0px 40px 0px;
+        padding-inline-start: 0px;
+    }
+
+
+    /*Create vertical spacing*/
+    #nav > li,
+    #nav_admin > li {
+        margin-bottom: 1px;
+    }
+
+
+    /*Make all menu links full width*/
+    #nav > ul li,
+    #nav > li a,
+    #nav_admin > ul li,
+    #nav_admin > li a {
+        width: 100%;
+    }
+
+    #nav {
+        left: 100%;
+
+        -webkit-transition: 300ms ease all;
+        transition: 300ms ease all;
+
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+
+        -webkit-transform: translate3d(100%, 0, 0);
+        transform: translate3d(100%, 0, 0);
+    }
+
+    #nav_admin {
+        right: 0%;
+
+        -webkit-transition: 300ms ease all;
+        transition: 300ms ease all;
+
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
+    }
+
+    #nav, #nav_admin {
+        width: 100%;
+        height: 150%;
+        position: fixed;
+        top: 44px;
+        background: #2e2e4c;
+        z-index: 1000;
+    }
+
+    #nav.open-nav {
+        -webkit-transition: 300ms ease all;
+        transition: 300ms ease all;
+
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
+    }
+
+    #nav_admin.open-nav-admin {
+        -webkit-transition: 300ms ease all;
+        transition: 300ms ease all;
+
+        -webkit-transform: translateX(0%);
+        transform: translateX(0%);
+
+        -webkit-transform: translate3d(0%, 0, 0);
+        transform: translate3d(0%, 0, 0);
+    }
+
+    .nav_buttons {
+        display: block;
+        margin: 0px;
+        border-bottom: none;
+        padding: 20px;
+        translateY: -100%;
+    }
+
+    #container {
+        margin: 45px 0px 0px 0px;
+    }
+
+    #container_squisher {
+        margin: 45px 20px 0px 20px;
+    }
+
+    #navigation_bar {
+        position: fixed;
+    }
+
+    #hamburger, #hamburger_admin {
+        display: block;
+    }
+    #nav_admin .hide_from_modal {
+        display: none;
+    }
+
+    #nav_admin .nav_buttons {
+        padding: 10px;
+    }
+
+    .admin_box {
+        width:100%;
+        display:inline-block;
+        border: 0px;
+        top: 45px;
+        /* The login bar is static, so we need to bump pages down 45 px in moble*/
+        position: absolute;
+    }
+
+    .admin_side_nav, .admin_side_nav_not_admin_page {
+        width:0%;
+        padding: 0px;
+        background-color:#4d544e;
+        display: block;
+    }
+
+    .rounded_table_no_border {
+        width: 100%;
+        margin: 10px;
+        overflow: auto;
+    }
+
+    .admin_header_column {
+        font-size: 0.6em !important;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .rounded_table td:first-child {
+        padding-left: 10px;
+    }
+
+    #help_text_mobile {
+        display: inline-block;
+    }
+
+    #help_text {
+        display: none;
+    }
+
+    #preferences_form {
+        margin: 0 auto;
+        width: 90%;
+    }
+
+    #notification {
+        font-size: 0.9em;
+        line-height: 1.5;
+    }
+
+    #notification {
+        display: inline-block;
+        -webkit-transform: translateY(-200px) !important;
+        -webkit-animation: slideDownMobile 5.0s 1.0s 1 ease forwards !important;
+        -moz-transform:    translateY(-200px) !important;
+        -moz-animation:    slideDownMobile 5.0s 1.0s 1 ease forwards !important;
+    }
+
+    @-webkit-keyframes slideDownMobile {
+        0%, 100% { -webkit-transform: translateY(-200px); }
+        10%, 90% { -webkit-transform: translateY(0px); }
+    }
+
+    @-moz-keyframes slideDownMobile {
+        0%, 100% { -moz-transform: translateY(-200px); }
+        10%, 90% { -moz-transform: translateY(0px); }
+    }
+
+    #close-notification {
+        float:none;
+        display: block;
+        text-align: center;
+        margin: 10px;
+    }
+}

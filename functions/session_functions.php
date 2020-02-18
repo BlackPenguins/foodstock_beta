@@ -20,6 +20,7 @@ function Login($db) {
         $_SESSION['SnackBalance'] = $row['SnackBalance'];
         $_SESSION['Credits'] = $row['Credits'];
         $_SESSION['InactiveUser'] = $row['Inactive'] == 1;
+        $_SESSION['IsVendor'] = $row['IsVendor'] == 1;
         log_debug( "Recached SlackID [" . $_SESSION['SlackID'] . "] for [" . $_SESSION['UserName'] . "]" );
         return;
     }
@@ -82,6 +83,7 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $showTrending = $row['ShowTrending'];
 
         $inactiveUser = $row['Inactive'] == 1;
+        $isVendor = $row['IsVendor'] == 1;
         log_debug("Logging in with [$username] UserID[$userID] Soda[$sodaBalance] Snack[$snackBalance]");
         $_SESSION['LoggedIn'] = true;
         $_SESSION['UserName'] = $username;
@@ -93,6 +95,7 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $_SESSION['Credits'] = $credits;
         $_SESSION['SlackID'] = $slackID;
         $_SESSION['InactiveUser'] = $inactiveUser;
+        $_SESSION['IsVendor'] = $isVendor;
 
         $_SESSION['AnonName'] = $anonName;
         $_SESSION['ShowDiscontinued'] = $showDiscontinued;
@@ -132,6 +135,10 @@ function IsLoggedIn(){
 
 function IsAdminLoggedIn(){
     return isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
+}
+
+function IsVendor(){
+    return isset( $_SESSION['IsVendor'] ) && $_SESSION['IsVendor'];
 }
 
 /**

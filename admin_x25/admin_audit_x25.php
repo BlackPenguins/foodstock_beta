@@ -8,7 +8,7 @@
         // ------------------------------------
         // ITEM TABLE
         // ------------------------------------
-        echo "<span class='soda_popout' style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Item Inventory</span></span>";
+        echo "<span  style='display:inline-block; margin-left: 10px; width:100%; margin-top:15px; padding:5px;'><span style='font-size:26px;'>Item Inventory</span></span>";
         echo "<table style='font-size:12; border-collapse:collapse; width:100%; margin-bottom: 20px; margin-left: 10px;'>";
         echo "<thead><tr class='table_header'>";
         echo "<th align='left'>ID</th>";
@@ -36,7 +36,7 @@
         
         $allExpenses = 0.0;
         $allExpensesCard = 0.0;
-        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, Date, ChartColor, TotalCans, " . getQuantityQuery() .
+        $statement = $db->prepare("SELECT ID, Type, Name, RefillTrigger, Date, TotalCans, " . getQuantityQuery() .
             ",Price, DiscountPrice, TotalIncome, TotalExpenses, Retired, Hidden " .
             "FROM Item i " .
             "WHERE hidden != 1 " .

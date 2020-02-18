@@ -17,13 +17,14 @@
         $startCoops = false;
         $startInactives = false;
         
-        $statement = $db->prepare("SELECT u.SodaBalance, u.SnackBalance, u.Credits, u.UserID, u.UserName, u.AnonName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.DateCreated, u.InActive, u.IsCoop " .
+        $statement = $db->prepare("SELECT u.SodaBalance, u.SnackBalance, u.Credits, u.UserID, u.UserName, u.AnonName, u.SlackID, u.FirstName, u.LastName, u.PhoneNumber, u.DateCreated, u.InActive, u.IsCoop, u.IsVendor " .
           "FROM User u " .
           "ORDER BY u.Inactive asc, u.IsCoop, lower(u.FirstName) ASC");
         $results = $statement->execute();
 
         while ($row = $results->fetchArray()) {
             $isCoop = $row['IsCoop'] == 1;
+            $isVendor = $row['IsVendor'] == 1;
             $isInactive = $row['Inactive'] == 1;
             
             if( $isInactive ) {
@@ -71,6 +72,11 @@
 
 
             $purchaseHistoryURL = "<a href='" . PURCHASE_HISTORY_LINK . "?name=" . $fullName . "&userid=" . $row['UserID'] . "'>" .  getPriceDisplayWithDollars($totalBalance ) . "</a>";
+            $vendorHistoryURL = "NO";
+
+            if( $isVendor ) {
+                $vendorHistoryURL = "<a href='" . VENDOR_LINK . "?name=" . $fullName . "&userid=" . $row['UserID'] . "'>YES</a>";
+            }
 
             $balanceColor = "";
 
@@ -84,6 +90,7 @@
             echo "<td class='hidden_mobile_column'>" . $row['AnonName'] . "</td>";
             echo "<td class='hidden_mobile_column'>" . $row['SlackID'] . "</td>";
             echo "<td class='hidden_mobile_column'>" . $phoneNumber . "</td>";
+            echo "<td class='hidden_mobile_column'>" .  $vendorHistoryURL . "</td>";
             echo "<td class='hidden_mobile_column'>" . $date_object->format('m/d/Y  [h:i:s A]') . "</td>";
             echo "<td $creditColor>" .  getPriceDisplayWithDollars( $totalCredits ) . "</td>";
             echo "<td style='padding:5px; $balanceColor border:1px #000 solid;'>" . $purchaseHistoryURL . "</td>";
@@ -96,6 +103,7 @@
         echo "</div>";
         echo "</div>";
 
+        echo "<div class='session_container'>";
         echo "<div class='rounded_header'><span id='Sessions' class='title'>SESSIONS</span></div>";
 
         $sessionLocation = session_save_path();
@@ -122,7 +130,7 @@
                 echo "<hr>";
             }
         }
-
+        echo "</div>";
         echo "</span>";
     echo "</span>";
     
@@ -139,6 +147,7 @@
         echo "<th class='admin_header_column hidden_mobile_column'>Anon Name</th>";
         echo "<th class='admin_header_column hidden_mobile_column'>Slack ID</th>";
         echo "<th class='admin_header_column hidden_mobile_column'>Phone Number</th>";
+        echo "<th class='admin_header_column hidden_mobile_column'>Vendor</th>";
         echo "<th class='admin_header_column hidden_mobile_column'>Date Created</th>";
         echo "<th class='admin_header_column'>Credits</th>";
         echo "<th class='admin_header_column'>Balance</th>";

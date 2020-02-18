@@ -20,7 +20,6 @@
         $itemType = $_POST['itemType'];
         $className = $_POST['className'];
         $location = $_POST['location'];
-        $isMobile = $_POST['isMobile'];
         $itemSearch = $_POST['itemSearch'];
         
         $nameQuery = "";
@@ -29,19 +28,25 @@
             $nameQuery = " AND ( Name Like :nameSearch OR Alias Like :aliasSearch)";
         }
         
-        $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, " . getQuantityQuery() .
+        $cardQuery = "SELECT ID, Name, Date, TotalCans, " . getQuantityQuery() .
         ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
-        "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate " .
-        "FROM Item i WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 ORDER BY Retired, BackstockAmount DESC, ShelfAmount DESC";
+        "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate, u.FirstName " .
+        "FROM Item i " .
+        "LEFT JOIN User u ON i.VendorID = u.UserID " .
+        "WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 " .
+        "ORDER BY Retired, BackstockAmount DESC, ShelfAmount DESC";
+
         
         if( IsLoggedIn() ) {
             // Sort by user preference
             // This sort pretty much breaks them into 3 groups (bought ones at #1, discontinued at #3, the rest at #2) and sorts those 3,
             // then inside those groups it sorts by frequency, then shelf, then backstock
-            $cardQuery = "SELECT ID, Name, Date, ChartColor, TotalCans, " . getQuantityQuery() .
+            $cardQuery = "SELECT ID, VendorID, Name, Date, TotalCans, " . getQuantityQuery() .
             ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
             "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
-            " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate FROM Item i " .
+            " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate, u.FirstName " .
+            "FROM Item i " .
+            "LEFT JOIN User u ON i.VendorID = u.UserID " .
             "WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 " .
             "ORDER BY CASE WHEN Retired = 1 AND ShelfAmount = 0 THEN '3' WHEN Frequency > 0 AND Retired = 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfAmount DESC, BackstockAmount DESC";
         }
@@ -73,19 +78,19 @@
                 continue;
             }
 
-            $isLoggedIn = IsLoggedIn();
-            
             $outOfStock = $row['RefillTrigger'];
             $outOfStockReporter = $row['OutOfStockReporter'];
 
             $item_name = $row['Name'];
+            $supplierName = $row['FirstName'];
+
             $price = $row['Price'];
             $originalPrice = $price;
             $discountPrice = $row['DiscountPrice'];
             $imageURL = $row['ImageURL'];
             $hasDiscount = false;
             
-            if( $isLoggedIn && $discountPrice != "" ) {
+            if( IsLoggedIn() && $discountPrice != "" ) {
                 $price = $discountPrice;
                 $hasDiscount = true;
             }
@@ -111,14 +116,14 @@
 
             $priceDisplay = "";
             
-            if( $isLoggedIn && $hasDiscount == true ) {
+            if( IsLoggedIn() && $hasDiscount == true ) {
                 $priceDisplay = getPriceDisplayWithSymbol ( $discountPrice );
             } else {
                 $priceDisplay = getPriceDisplayWithSymbol( $price );
             }
             
-            $unitName = "[UNKNOWN]";
-            $unitNamePlural = "[UNKNOWN]";
+            $unitName = "item";
+            $unitNamePlural = "items";
             
             if( $row['UnitName'] != "" ) {
                 $unitName = $row['UnitName'];
@@ -227,7 +232,7 @@
             
             
             $reportButton = "";
-            if( $isLoggedIn && $outOfStock != "1" ) {
+            if( IsLoggedIn() && $outOfStock != "1" ) {
                 $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
                 $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='" . IMAGES_LINK . "low.png' title='Report Item Out of Stock'/></div>";
             }
@@ -252,7 +257,7 @@
             echo "<span class='post-module $statusClass'>";
 //                 echo "<div class='snow'>";
                 echo "<div class='thumbnail thumbnail-$thumbnailClass'>";
-                     echo "<img style='position:absolute; top:14px; right:17px; z-index:200;' src='" . IMAGES_LINK . "wreath.png'/>";
+//                     echo "<img style='position:absolute; top:14px; right:17px; z-index:200;' src='" . IMAGES_LINK . "wreath.png'/>";
                      $smallPriceFont = "";
 
                      if( substr( $priceDisplay, 0, 1 ) == "$" ) {
@@ -267,20 +272,25 @@
                 echo "<div class='post-content'>";
                     echo $reportButton;
 
-                    $lastRefilled = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateModified']);
-                    $now = new DateTime();
+                    if( $row['DateModified'] != null ) {
+                        $lastRefilled = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateModified']);
+                        $now = new DateTime();
 
-                    $timeSinceLastRefill = $now->diff($lastRefilled);
+                        $timeSinceLastRefill = $now->diff($lastRefilled);
 
-                    $minutesSinceLastRefill = ($timeSinceLastRefill->d * 24 * 60) + ($timeSinceLastRefill->h * 60) + $timeSinceLastRefill->i;
+                        $minutesSinceLastRefill = ($timeSinceLastRefill->d * 24 * 60) + ($timeSinceLastRefill->h * 60) + $timeSinceLastRefill->i;
 
-                    if( $minutesSinceLastRefill <= 120 && $itemType == "Soda") {
-                        echo "<div style='position: absolute; right: 10px; top:-80px;'><img src='" . IMAGES_LINK . "thermometer.png' title='This item was added to the fridge $minutesSinceLastRefill minutes ago and might not be cold yet.'/></div>";
-
+                        if ($minutesSinceLastRefill <= 120 && $itemType == "Soda") {
+                            echo "<div style='position: absolute; right: 10px; top:-80px;'><img src='" . IMAGES_LINK . "thermometer.png' title='This item was added to the fridge $minutesSinceLastRefill minutes ago and might not be cold yet.'/></div>";
+                        }
                     }
 
                     echo "$outOfStockLabel";
                     echo "<div class='category category-$cardClass $amountClass'>$amountLeft</div>";
+
+                    if( $supplierName != "" ) {
+                        echo "<div title='This item is being sold by $supplierName through FoodStock' class='supplier'>Sold by $supplierName</div>";
+                    }
 
                     if( $christianInTheHouse ) {
                         echo "<h1 class='title'>Fun-Size Babe Ruths</h1>";
@@ -349,24 +359,26 @@
 
                     if( IsLoggedIn() ) {
                         echo "<div class='$actionsClass'>";
-                            echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ", \"$isMobile\")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
+                            echo "<button id='add_button_" .  $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ")' style='float:right;' class='btn btn-$buttonClass' title='Add item(s)'>Add</button>";
                             echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
-                            echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ", \"$isMobile\")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
+                            echo "<button id='remove_button_" .  $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ")' style='float:left;' class='btn btn-$buttonClass' title='Remove item(s)'>Remove</button>";
                         echo "</div>"; //actions
                     }
                 echo "</div>"; //post-content
-                
-                 echo "<ul style='top: 2px;' class='lightrope'>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
-                 "</ul>";
+
+                echo "<div>Something</div>";
+
+//                echo "<ul style='top: 2px;' class='lightrope'>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "<li $lightRopeClass title='Break Me!' onclick=\"breakBulb(this);\"></li>" .
+//                 "</ul>";
                 
         echo "</span>"; //post-module
         }
@@ -463,13 +475,7 @@
 
         $purchaseMessage = $itemName . " (+ " . getPriceDisplayWithDollars( $actualPrice ) . ")";
 
-        if( $slackID == "" ) {
-            sendSlackMessageToMatt( "Failed to send notification for " . $username . ". Create a SlackID!", ":no_entry:", $itemType . "Stock - ERROR!!", "#bb3f3f" );
-        } else {
-            sendSlackMessageToUser( $slackID,  $purchaseMessage , ":money_mouth_face:" , $itemType . "Stock - REFUND", "#3f5abb", $username );
-        }
-
-        sendSlackMessageToMatt( "*(" . $username . ")*\n" . $purchaseMessage, ":money_mouth_face:", $itemType . "Stock - REFUND", "#3f5abb" );
+        sendSlackMessageToUser( $slackID,  $purchaseMessage , ":money_mouth_face:" , $itemType . "Stock - REFUND", "#3f5abb", $username, true );
         // TODO MTM: Get rid of DateModified and ModifyType - never use it. Removing a column is hard. Create new temp table.
 
 
@@ -600,7 +606,7 @@
                         "*Total Balance Owed:* " . getPriceDisplayWithDollars( $totalBalance ) . "\n\n" .
                         "You can view more details on the <https://penguinore.net/purchase_history.php|Purchase/Payment History Page>. Have a great day! :grin:";
                 
-                sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a", $username );
+                sendSlackMessageToUser( $slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a", $username, false );
             }
         }
     }
@@ -625,7 +631,6 @@
 
         $itemsInCart = json_decode($_POST['items']);
         $url = $_POST['url'];
-        $isMobile = $_POST['isMobile'];
 
         foreach ($itemsInCart as $itemID) {
             if (array_key_exists($itemID, $itemQuantities) === false) {
@@ -727,22 +732,14 @@
 
             echo "</tr>";
         }
+        echo "</table>";
 
-        $firstColSpan = "<td colspan='2'>&nbsp;</td> ";
-        $secondColSpan = "";
 
-        if ($isMobile) {
-            $firstColSpan = "";
-            $secondColSpan = "colspan='3'";
-        }
-
-        echo "<tr>";
-        echo $firstColSpan;
-        echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:25px 20px;'>";
+        echo "<div style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:25px 20px;'>";
         echo "<span>&bigstar; Savings: </span>";
         echo "<span style='color:#1aa7d4;'>" . getPriceDisplayWithDollars($totalSavings) . "</span>";
-        echo "</td>";
-        echo "</tr>";
+        echo "</div>";
+
 
         $totalStrikeout = "";
 
@@ -750,25 +747,19 @@
             $totalStrikeout = "text-decoration: line-through; opacity: 0.40;";
         }
 
-        echo "<tr class='hide_with_cash_only'>";
-        echo $firstColSpan;
-        echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px; $totalStrikeout'>";
+        echo "<div class='hide_with_cash_only' style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px; $totalStrikeout'>";
         echo "<span>Total ($totalQuantity items): </span>";
         echo "<span style='color:#31961f;'>" . getPriceDisplayWithDollars($totalPrice) . "</span>";
-        echo "</td>";
-        echo "</tr>";
+        echo "</div>";
 
         if ($creditsUsed > 0) {
-            echo "<tr class='hide_with_cash_only'>";
-            echo $firstColSpan;
-            echo "<td $secondColSpan style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px;'>";
+            echo "<div class='hide_with_cash_only' style='color:#000000; font-weight:bold; font-size:1.5em; text-align:right; padding:0px 20px;'>";
             echo "<span>Credits Used: </span>";
             echo "<span style='color:#ceaf0d;'>" . getPriceDisplayWithDollars($creditsUsed) . "</span>";
-            echo "</td>";
-            echo "</tr>";
+            echo "</div>";
         }
 
-        echo "</table>";
+
 
         echo "<form style='margin-top:20px;' id='add_item_form' enctype='multipart/form-data' action='" . HANDLE_FORMS_LINK . "' method='POST'>";
         echo "<input type='hidden' name='items' value='" . json_encode($itemsInCart) . "'/>";
@@ -776,8 +767,7 @@
         echo "<input type='hidden' name='redirectURL' value='$url'/>";
         echo "<div>";
 
-        $rightSide = $isMobile ? "" : "style='margin-left:75%;'";
-        echo "<div $rightSide>";
+        echo "<div>";
 
         echo "<div style='text-align:right;'>";
         echo "<button class='quantity_button quantity_button_purchase' title='Purchase'>PURCHASE</button>";

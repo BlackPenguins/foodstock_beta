@@ -5,25 +5,10 @@
     
     $url = ADMIN_PAYMENTS_LINK;
     include( HEADER_PATH );
+    echo "<script src='" . SETUP_MODALS_LINK . "'></script>";
 ?>
 
 <script type="text/javascript">
-    function openPaymentModal( user, userID, month, method, sodaAmount, snackAmount ) {
-        $('#payment').dialog('open');
-        $('#UserIDLabel').html(user);
-        $('#UserID').val(userID);
-        $('#Month').val(month);
-        $('#MonthLabel').html(month);
-        $('#SodaAmount').val(sodaAmount);
-        $('#SnackAmount').val(snackAmount);
-        $('#SodaUnpaid').val(sodaAmount);
-        $('#SnackUnpaid').val(snackAmount);
-
-        $totalAmount = ( sodaAmount + snackAmount ).toFixed( 2 );
-        console.log("So [" + sodaAmount + "] Sn [" + snackAmount + "] Tot [" + $totalAmount + "]" );
-        $('#TotalAmount').val($totalAmount);
-    }
-
     function notifyUsersOfPayments( month, year, displayMonth ) {
         $isAlert = confirm('Are you sure that you want to notify all users about their balances?');
         
@@ -218,7 +203,7 @@
             $totalBalanceColor = "background-color:#fdff7a;";
         }
 
-        $onclick = "openPaymentModal(\"$userFullName\", \"$userID\", \"$monthLabel\", \"None\", " . getPriceDisplayWithDecimals( $sodaTotalUnpaid ) . ", " . getPriceDisplayWithDecimals( $snackTotalUnpaid ) . ");";
+        $onclick = "openPaymentModal(\"$userFullName\", \"$userID\", \"$monthLabel\", \"None\", " . getPriceDisplayWithDecimals( $sodaTotalUnpaid ) . ", " . getPriceDisplayWithDecimals( $snackTotalUnpaid ) . ", 0, 0);";
         
         return "<td style='padding:5px; $totalBalanceColor border:1px #000 solid; cursor:pointer;'>"
                 . "<div onclick='$onclick' style='width:100%'>"
