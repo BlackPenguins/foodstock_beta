@@ -620,7 +620,7 @@ function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack, $
 
         sendSlackMessageToRandom($slackMessage, $emoji, $itemType. "Stock - $refillLabel" );
 
-        $subscribeStatement = $db->prepare("SELECT SlackID, UserName FROM User where SubscribeRestocks = 1" );
+        $subscribeStatement = $db->prepare("SELECT SlackID, UserName FROM User where SubscribeRestocks = 1 AND Inactive != 1" );
         $subscribeResults = $subscribeStatement->execute();
 
         while( $row = $subscribeResults->fetchArray() ) {
@@ -916,7 +916,6 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
     $currentSodaBalance = $userRow['SodaBalance'];
     $currentSnackBalance = $userRow['SnackBalance'];
     $inactiveUser = $userRow['Inactive'];
-    error_log("Inactive bought [$userID] $inactiveUser]" );
 
     if( $inactiveUser == 1 ) {
         return "You cannot purchase items while you are inactive!";
@@ -1136,11 +1135,12 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
             $purchaseMessage = $purchaseMessage . "*Total Price:* " . getPriceDisplayWithDollars($totalPrice) . "\n";
         }
 
+        $balanceMessage = "";
         if (!$cashOnly) {
             $totalBalance = $currentSodaBalance + $currentSnackBalance;
-            $purchaseMessage = $purchaseMessage . "*Your Balance:* " . getPriceDisplayWithDollars($totalBalance) . "\n";
+            $balanceMessage = "*Your Balance:* " . getPriceDisplayWithDollars($totalBalance) . "\n";
         } else {
-            $purchaseMessage = $purchaseMessage . "*THIS PURCHASE WAS CASH-ONLY*\n";
+            $balanceMessage = "*THIS PURCHASE WAS CASH-ONLY*\n";
         }
 
         // Notify admin about purchase
@@ -1151,10 +1151,12 @@ function purchaseItems( $db, $isTest, $userID, $itemsInCart, $cashOnly )
         if( !$isTest ) {
             // Send receipts to the admin and vendors
             foreach( $vendorsToNotify as $vendorSlackID ) {
-                sendSlackMessageToUser($vendorSlackID, "*(" . strtoupper("$firstName $lastName") . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb", $vendorSlackID );
+                // Send to vendors
+                sendSlackMessageToUser($vendorSlackID, "*(" . strtoupper("$firstName $lastName") . ")*\n" . $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb", $vendorSlackID, false );
             }
 
-            sendSlackMessageToUser($slackID, $purchaseMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb", $userName );
+            // Send to the user
+            sendSlackMessageToUser($slackID, $purchaseMessage . $balanceMessage, ":shopping_trolley:", $itemType . "Stock - RECEIPT", "#3f5abb", $userName, false );
 
             $_SESSION["SodaBalance"] = $currentSodaBalance;
             $_SESSION["SnackBalance"] = $currentSnackBalance;

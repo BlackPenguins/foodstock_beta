@@ -29,7 +29,7 @@
     }
 
     $itemNamesToShow = "";
-    $db = new SQLite3( getDB() );
+    $db = getDB();
 
     $statQuery = "SELECT Name FROM Item WHERE ID in " . getPrepareStatementForInClause( count( $itemsToShow ) ) . " Order BY Type DESC, NAME ASC";
     $statStatment = $db->prepare( $statQuery );

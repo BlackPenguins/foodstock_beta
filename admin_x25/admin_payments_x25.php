@@ -47,7 +47,7 @@
     echo "<span class='admin_box'>";
 
     echo "<span class='hidden_mobile_section' id='users'>";
-        echo "<div class='rounded_header'><span class='title'>User Payments</span></div>";
+        echo "<div class='page_header'><span class='title'>User Payments</span></div>";
         echo "<table style='font-size:12px; border-collapse:collapse; width:100%; margin-left: 10px;'>";
         echo "<thead><tr class='table_header'>";
         echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
@@ -190,6 +190,10 @@
         $currentMonthSnackTotal = $totalArray['SnackTotal'];
         $currentMonthTotal = $currentMonthSodaTotal + $currentMonthSnackTotal;
 
+        $currentMonthSodaCreditTotal = $totalArray['SodaCreditTotal'];
+        $currentMonthSnackCreditTotal = $totalArray['SnackCreditTotal'];
+        $currentMonthCreditTotal = $currentMonthSodaCreditTotal + $currentMonthSnackCreditTotal;
+
         $sodaTotalPaid = $totalArray['SodaPaid'];
         $snackTotalPaid = $totalArray['SnackPaid'];
 
@@ -198,22 +202,36 @@
         $totalUnpaid = $sodaTotalUnpaid + $snackTotalUnpaid;
         
         $totalBalanceColor = "";
-        
+        $monthHadBalance = "";
+        $creditAmountDisplay = "";
+
         if( $totalUnpaid != 0.0 ) {
             $totalBalanceColor = "background-color:#fdff7a;";
+        } else if( $currentMonthTotal > 0 ) {
+            $monthHadBalance = "color: #edff58";
+        }
+
+        if( $currentMonthCreditTotal > 0 ) {
+            $creditsColor = "#ffffff";
+            if( $totalUnpaid != 0.0 ) {
+                $creditsColor = "#000000";
+            }
+            $creditAmountDisplay = "<div style='padding:5px; font-size: 0.9em; text-align: center; color: $creditsColor'>"
+                . "Total Credits:<br>". getPriceDisplayWithDollars( $currentMonthCreditTotal )
+                . "</div>";
         }
 
         $onclick = "openPaymentModal(\"$userFullName\", \"$userID\", \"$monthLabel\", \"None\", " . getPriceDisplayWithDecimals( $sodaTotalUnpaid ) . ", " . getPriceDisplayWithDecimals( $snackTotalUnpaid ) . ", 0, 0);";
-        
+
         return "<td style='padding:5px; $totalBalanceColor border:1px #000 solid; cursor:pointer;'>"
                 . "<div onclick='$onclick' style='width:100%'>"
                 . "<div style='padding:5px; border: 1px dashed #000; font-size: 1.1em; margin: 0px 20px; font-weight: bold; text-align: center;'>"
                 . "Owed: ". getPriceDisplayWithDollars( $totalUnpaid )
                 . "</div>"
 
-                . "<div style='padding:5px; margin-top: 30px; font-size: 0.9em; text-align: center;'>"
-                . "Total Amount: ". getPriceDisplayWithDollars( $currentMonthTotal )
-                . "</div>"
+                . "<div style='padding:5px; margin-top: 30px; font-size: 0.9em; text-align: center; $monthHadBalance'>"
+                . "Total Amount:<br>". getPriceDisplayWithDollars( $currentMonthTotal )
+                . "</div>" . $creditAmountDisplay
                 . "</td>";
     }
 ?>

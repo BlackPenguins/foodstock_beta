@@ -79,7 +79,7 @@
             $rowQuantity = $resultsQuantity->fetchArray();
             
             if( $rowQuantity !== false ) {
-                $STORE_PRICES_TABLE .= "<div title='Quantity in Stock' class='shopping_guide_container' style='font-size:0.9em; padding:10px; margin:10px;'>";
+                $STORE_PRICES_TABLE .= "<div title='Quantity in Stock' class='shopping_container'>";
                 $STORE_PRICES_TABLE .= "<b>Store Prices</b>";
             
                 $STORE_PRICES_TABLE .= "<table class='bordered_table' style=font-size:0.7em;'>";
@@ -155,10 +155,10 @@
             }
             
             if($totalQuantity == 0) {
-                echo "<div class='no_item circle' style='padding:10px; color:#FF3838'><img width='15px' src='" . IMAGES_LINK . "none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
+                echo "<div class='shopping_quantity_sold_out_box circle' style='padding:10px; color:#FF3838'><img width='15px' src='" . IMAGES_LINK . "none.png' title='Item sold out!'/>&nbsp;SOLD OUT</div>";
             } else {
                 $unitNameFinal = $totalQuantity > 1 ? $unitNamePlural : $unitName;
-                echo "<div title='Quantity in Stock' class='cold_item' style='padding:10px; margin:5px 0px;'>$totalQuantity $unitNameFinal</div>";
+                echo "<div title='Quantity in Stock' class='shopping_quantity_box' style='padding:10px; margin:5px 0px;'>$totalQuantity $unitNameFinal</div>";
             }
            
             
@@ -171,7 +171,7 @@
             
             if( $rowQuantity !== false ) {
                 
-                echo "<div title='Quantity in Stock' class='shopping_guide_container' style='font-size:0.8em; padding:10px;'>";
+                echo "<div title='Quantity in Stock' class='shopping_container'>";
                 echo "<b>Best Profits</b>";
                 
                 echo "<table class='bordered_table' style=font-size:0.7em;'>";

@@ -1,7 +1,7 @@
 <?php
 include(__DIR__ . "/../appendix.php" );
-$db = new SQLite3( getDB() );
-if (!$db) die ("DB is missing");
+$db = getDB();
+
 
 
 include( SESSION_FUNCTIONS_PATH );

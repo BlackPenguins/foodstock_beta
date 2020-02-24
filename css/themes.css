@@ -1,0 +1,347 @@
+/******************************************************************************************************************
+   REGULAR
+*******************************************************************************************************************/
+
+.soda_body {
+    background-color:#5c82af;
+}
+.snack_body {
+    background-color:#9e514d;
+}
+.soda_body .card_block .thumbnail {
+    background: #212a67;
+}
+.snack_body .card_block .thumbnail {
+    background: #672121;
+}
+.soda_body .card_block .quantity_box {
+    background: #3c69e7;
+    color: #FFFFFF;
+}
+.snack_body .card_block .quantity_box {
+	background: #e74c3c;
+    color: #FFFFFF;
+}
+.soda_body .quantity_button {
+    border: 1px solid #272e52;
+    color: #064984;
+}
+.snack_body .quantity_button {
+    border: 1px solid #522727;
+    color: #961818;
+}
+.soda_body .quantity_button:hover {
+    background: #3b587b;
+    color: #fff;
+}
+.snack_body .quantity_button:hover {
+    background: #7b3e3b;
+    color: #fff;
+}
+.soda_body .stat_box {
+    background-color:#0b233a;
+    color: #497886;
+}
+.snack_body .stat_box {
+    background-color:#3a0b0f;
+    color: #b67d52;
+}
+.soda_body .version_box {
+    background-color: #091528;
+    color: #265a78;
+    font-size: 1.0em;
+}
+.snack_body .version_box {
+    background-color: #28090c;
+    color: #864949;
+    font-size: 1.0em;
+}
+.nav_buttons_soda:hover {
+    background-color: #4fa9de;
+}
+.nav_buttons_soda {
+    background-color: #247eb3;
+    border: solid 2px #023b5d;
+}
+.nav_buttons_snack:hover {
+    background-color: #dc5c5c;
+}
+.nav_buttons_snack {
+    background-color: #b32424;
+    border: solid 2px #5d0202;
+}
+
+/******************************************************************************************************************
+   ST PATRICKS DAY
+*******************************************************************************************************************/
+
+.patricks_soda_body {
+    background-color: #afa86c;
+}
+.patricks_snack_body {
+    background-color: #5f9e73;
+}
+.patricks_soda_body .card_block .thumbnail {
+    background: #67662d;
+}
+.patricks_snack_body .card_block .thumbnail {
+    background: #3f6744;
+}
+.patricks_soda_body .card_block .quantity_box {
+    background: #a4a933;
+    color: #FFFFFF;
+}
+.patricks_snack_body .card_block .quantity_box {
+	background: #42a948;
+    color: #FFFFFF;
+}
+.patricks_soda_body .quantity_button {
+    border: 1px solid #272e52;
+    color: #83840e;
+}
+.patricks_snack_body .quantity_button {
+    border: 1px solid #522727;
+    color: #109612;
+}
+.patricks_soda_body .quantity_button:hover {
+    background: #797b2c;
+    color: #fff;
+}
+.patricks_snack_body .quantity_button:hover {
+    background: #3b7b41;
+    color: #fff;
+}
+.patricks_soda_body .stat_box {
+    background-color: #393a0c;
+    color: #b1b149;
+}
+.patricks_snack_body .stat_box {
+    background-color: #073a0b;
+    color: #61b65c;
+}
+.patricks_soda_body .version_box {
+    background-color: #28280a;
+    color: #767825;
+    font-size: 1.0em;
+}
+.patricks_snack_body .version_box {
+    background-color: #09280d;
+    color: #4f8650;
+    font-size: 1.0em;
+}
+.patricks_nav_buttons_soda:hover {
+    background-color: #dede5a;
+}
+.patricks_nav_buttons_soda {
+    background-color: #b3b334;
+    border: solid 2px #5d5d0a;
+}
+.patricks_nav_buttons_snack:hover {
+    background-color: #74dc73;
+}
+.patricks_nav_buttons_snack {
+    background-color: #2ab335;
+    border: solid 2px #065d0f;
+}
+
+/******************************************************************************************************************
+   APRIL FOOLS
+*******************************************************************************************************************/
+
+.fools_soda_body {
+    background-color: #af7596;
+}
+.fools_snack_body {
+    background-color: #419b9e;
+}
+.fools_soda_body .card_block .thumbnail {
+    animation-name: fools_cards;
+    animation-duration: 4s;
+    animation-iteration-count: infinite;
+}
+.fools_snack_body .card_block .thumbnail {
+    animation-name: fools_cards;
+    animation-duration: 4s;
+    animation-iteration-count: infinite;
+}
+.fools_soda_body .card_block .quantity_box {
+    background: #d6672d;
+    color: #FFFFFF;
+}
+.fools_snack_body .card_block .quantity_box {
+	background: #461d82;
+    color: #FFFFFF;
+}
+.fools_snack_body .quantity_box .quantity_text, .fools_soda_body .quantity_box .quantity_text {
+    animation: yup_this_annoying_blinking_crap 0.3s linear infinite;
+}
+.fools_soda_body .quantity_button {
+    border: 1px solid #272e52;
+    color: #831a84;
+}
+.fools_snack_body .quantity_button {
+    border: 1px solid #522727;
+    color: #229496;
+}
+.fools_soda_body .quantity_button:hover {
+    background: #7b3379;
+    color: #fff;
+}
+.fools_snack_body .quantity_button:hover {
+    background: #3d727b;
+    color: #fff;
+}
+.fools_soda_body .stat_box {
+    background-color: #3a1a35;
+    color: #10ff48;
+}
+.fools_snack_body .stat_box {
+    background-color: #ffffff;
+    color: #940000;
+}
+.fools_soda_body .version_box {
+    background-color: #270d28;
+    color: #783277;
+    font-size: 1.0em;
+}
+.fools_snack_body .version_box {
+    background-color: #0d2228;
+    color: #2e7e86;
+    font-size: 1.0em;
+}
+.fools_nav_buttons_soda:hover {
+    background-color: #de53d6;
+}
+.fools_nav_buttons_soda {
+    background-color: #b34ab1;
+    border: solid 2px #5b235d;
+}
+.fools_nav_buttons_snack:hover {
+    background-color: #7edbdc;
+}
+.fools_nav_buttons_snack {
+    background-color: #3bafb3;
+    border: solid 2px #065d0f;
+}
+@keyframes yup_this_annoying_blinking_crap {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes fools_cards {
+    12.5% {
+        background-color: #ff7b82;
+    }
+    25% {
+        background-color: #FFA500;
+    }
+    37.5% {
+        background-color: #FFFF00;
+    }
+    50% {
+        background-color: #7FFF00;
+    }
+    62.5% {
+        background-color: #00FFFF;
+    }
+    75% {
+        background-color: #7385ff;
+    }
+    87.5% {
+        background-color: #bf80cc;
+    }
+    100% {
+        background-color: #ff83bb;
+    }
+}
+.fools_soda_body .card_block:hover .thumbnail .preview_zoom, .fools_snack_body .card_block:hover .thumbnail .preview_zoom {
+    -webkit-transform: scale(0.05, 2);
+    -moz-transform: scale(0.05, 2);
+    transform: scale(0.05, 2) rotate(90deg);
+}
+.fools_price {
+    z-index:4000 !important;
+    cursor: pointer;
+    color: #ff8787 !important;
+    background-color: #000000 !important;
+    border: 2px solid #6d0004 !important;
+}
+.fools_price:hover {
+   opacity: 0.0;
+    transition: opacity .55s ease-in-out;
+    -moz-transition: opacity .55s ease-in-out;
+    -webkit-transition: opacity .55s ease-in-out;
+}
+
+/******************************************************************************************************************
+   CHRISTMAS
+*******************************************************************************************************************/
+
+.xmas_soda_body {
+    background-color: #5f9e73;
+}
+.xmas_snack_body {
+    background-color:#9e514d;
+}
+.xmas_soda_body .card_block .thumbnail {
+    background: #3f6744;
+}
+.xmas_snack_body .card_block .thumbnail {
+    background: #672121;
+}
+.xmas_soda_body .card_block .quantity_box {
+    background: #42a948;
+    color: #FFFFFF;
+}
+.xmas_snack_body .card_block .quantity_box {
+	background: #e74c3c;
+    color: #FFFFFF;
+}
+.xmas_soda_body .quantity_button {
+    border: 1px solid #522727;
+    color: #109612;
+}
+.xmas_snack_body .quantity_button {
+    border: 1px solid #522727;
+    color: #961818;
+}
+.xmas_soda_body .quantity_button:hover {
+    background: #3b7b41;
+    color: #fff;
+}
+.xmas_snack_body .quantity_button:hover {
+    background: #7b3e3b;
+    color: #fff;
+}
+.xmas_soda_body .stat_box {
+    background-color: #073a0b;
+    color: #61b65c;
+}
+.xmas_snack_body .stat_box {
+    background-color:#3a0b0f;
+    color: #b67d52;
+}
+.xmas_soda_body .version_box {
+    background-color: #09280d;
+    color: #4f8650;
+    font-size: 1.0em;
+}
+.xmas_snack_body .version_box {
+    background-color: #28090c;
+    color: #864949;
+    font-size: 1.0em;
+}
+.xmas_nav_buttons_soda:hover {
+    background-color: #74dc73;
+}
+.xmas_nav_buttons_soda {
+    background-color: #2ab335;
+    border: solid 2px #065d0f;
+}
+.xmas_nav_buttons_snack:hover {
+    background-color: #dc5c5c;
+}
+.xmas_nav_buttons_snack {
+    background-color: #b32424;
+    border: solid 2px #5d0202;
+}

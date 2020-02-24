@@ -7,7 +7,7 @@
     include( HEADER_PATH );
     
     echo "<span class='admin_box'>";
-        echo "<div class='rounded_header'><span class='title'>Item Information</span></div>";
+        echo "<div class='page_header'><span class='title'>Item Information</span></div>";
         
         echo "<div class='center_piece'>";
         echo "<div style='margin-right: 20px;'><a href = 'admin_download_csv_x25.php'>Download Inventory Spreadsheet</a></div>";

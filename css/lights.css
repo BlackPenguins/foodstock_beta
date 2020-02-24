@@ -112,6 +112,10 @@ body {
   margin-left: -40px;
 }
 
+.card_block_discontinued .lightrope {
+  display: none;
+}
+
 <!-- GREEN -->
 @-webkit-keyframes flash-1 {
   0%, 100% {

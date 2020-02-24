@@ -46,7 +46,7 @@ class MonthlyLayout {
 
         echo "<div id= 'container'>";
 
-        echo "<div style='height:55px; position: relative;' class='rounded_header'>";
+        echo "<div style='height:55px; position: relative;' class='page_header'>";
 
         echo "<div style='position:absolute; top: 0; left: 0; padding: 5px 20px;' class='title'>";
         echo $this->getHeader( $name );
@@ -258,8 +258,10 @@ class MonthlyLayout {
                 if ( IsAdminLoggedIn() || $this->isVendor() ) {
                     $retailPrice = $purchaseHistoryRow->retailCost;
                     $profit = $cost - $retailPrice;
+
+                    $profitDisplay = $retailPrice == 0 ? "N/A" : getPriceDisplayWithDollars($profit);
                     echo "<td>" . getPriceDisplayWithDollars($retailPrice) . "</td>";
-                    echo "<td>" . getPriceDisplayWithDollars($profit) . "</td>";
+                    echo "<td>$profitDisplay</td>";
                 }
                 echo "</tr>";
             }
@@ -389,7 +391,7 @@ class MonthlyLayout {
             }
 
             if( $totalOwedCommission != 0 ) {
-                $owedLabel .= "<br>Unpaid Commission: " . getPriceDisplayWithDollars( $totalOwedCommission );
+                $owedLabel .= "<br>Unpaid Commission: " . getPriceDisplayWithDollars( round( $totalOwedCommission ) );
             }
         }
 
@@ -439,8 +441,8 @@ class MonthlyLayout {
         $snackCommissionLeft = 0;
 
         if( $this->isVendor() ) {
-            $totalSodaCommission = $currentMonthSodaTotal * COMMISSION_PERCENTAGE;
-            $totalSnackCommission = $currentMonthSnackTotal * COMMISSION_PERCENTAGE;
+            $totalSodaCommission = round( $currentMonthSodaTotal * COMMISSION_PERCENTAGE );
+            $totalSnackCommission = round( $currentMonthSnackTotal * COMMISSION_PERCENTAGE );
 
             $sodaVendorLeft = $currentMonthSodaTotal -  $totalPaidSoda - $totalSodaCommission;
             $snackVendorLeft = $currentMonthSnackTotal - $totalPaidSnack - $totalSnackCommission;
@@ -452,7 +454,7 @@ class MonthlyLayout {
 //             echo "Total [$currentMonthSnackTotal] Payment [$totalPaidSnack] Commission of Total [$totalSnackCommission] = Left [$snackVendorLeft]<br>";
 
             echo "<td $selectedCellStyle>";
-            echo getPriceDisplayWithDollars($commissionForMatt);
+            echo getPriceDisplayWithDollars( round( $commissionForMatt ) );
 
             if( $currentMonthLink == $selectedMonthLink) {
                 echo "<hr>";

@@ -53,9 +53,12 @@
         echo "<nav id='nav' role='navigation'>";
         echo "<ul>";
 
+        $sodaButtonClass = getHolidayClass( "nav_buttons_soda" );
+        $snackButtonClass = getHolidayClass( "nav_buttons_snack" );
+
         echo "<li><a style='text-decoration:none;' href='" . HELP_LINK . "'><span class='nav_buttons nav_buttons_help'><span id='help_text'>?</span><span id='help_text_mobile'>Help</span></span></a></li>";
-        echo "<li><a style='text-decoration:none;' href='" . SODASTOCK_LINK . "'><span class='nav_buttons nav_buttons_soda'>Soda Home</span></a></li>";
-        echo "<li><a style='text-decoration:none;' href='" . SNACKSTOCK_LINK . "'><span class='nav_buttons nav_buttons_snack'>Snack Home</span></a></li>";
+        echo "<li><a style='text-decoration:none;' href='" . SODASTOCK_LINK . "'><span class='nav_buttons $sodaButtonClass'>Soda Home</span></a></li>";
+        echo "<li><a style='text-decoration:none;' href='" . SNACKSTOCK_LINK . "'><span class='nav_buttons $snackButtonClass'>Snack Home</span></a></li>";
 
         if(!IsLoggedIn()) {
             $results = $db->query("SELECT Count(*) as Active, Sum(SnackSavings) as TotalSnackSavings, Sum(SodaSavings) as TotalSodaSavings FROM User WHERE SnackBalance != 0.0 OR SodaBalance != 0");
@@ -106,7 +109,9 @@
                 echo "<li><a style='text-decoration:none; $creditsGreyedOut' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_admin'>Credits: " . getPriceDisplayWithDollars($credits) . "$noMobileSupport</span></a><li>";
             }
 
-            echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_billing'>Balance: " .  getPriceDisplayWithDollars( $totalBalance ) . "$noMobileSupport</span></a><li>";
+            $balanceLabel = getHolidayBalanceLabel();
+
+            echo "<li><a style='text-decoration:none;' href='" . PURCHASE_HISTORY_LINK . "'><span class='nav_buttons nav_buttons_billing'>$balanceLabel: " .  getPriceDisplayWithDollars( $totalBalance ) . "$noMobileSupport</span></a><li>";
 
             if( IsAdminLoggedIn() ) {
                 $refillCount = getRefillCount($db);
@@ -152,6 +157,8 @@
             $userColor = $inactiveUser ? "#ee3636" : "#FFFF00";
             echo "<span id='display_name_$id'>";
             echo "Logged in: <b><span style='color:$userColor;'>[" . $_SESSION['UserName'] . "]";
+
+            printHolidayUserSuffix();
 
             if( IsAdminLoggedIn() ) {
                 echo " - Administrator";

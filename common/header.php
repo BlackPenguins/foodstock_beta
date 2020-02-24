@@ -8,9 +8,11 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 
 <?php
+    include_once(HOLIDAY_FUNCTIONS_PATH);
     echo "<link rel='stylesheet' type='text/css' href='" . CSS_LINK . "'/>";
     echo "<link rel='stylesheet' type='text/css' href='" . MOBILE_CSS_LINK . "'/>";
-    echo "<link rel='stylesheet' type='text/css' href='" . CSS_LIGHTS_LINK . "'/>";
+    echo "<link rel='stylesheet' type='text/css' href='" . LIGHTS_CSS_LINK . "'/>";
+    echo "<link rel='stylesheet' type='text/css' href='" . THEMES_CSS_LINK . "'/>";
 
     //-----------------------------------------------------
     // PAGE SPECIFIC INFORMATION
@@ -18,7 +20,7 @@
     $titleName = "SodaStock";
     $isAdminPage = false;
     $isSharedAdminVendorPage = false;
-    $bodyClass = "soda_body";
+    $bodyClass = getHolidayClass( "soda_body" );
 
     switch( $url ) {
         case ADMIN_AUDIT_REPORT_LINK:
@@ -108,7 +110,7 @@
             $isAdminPage = false;
             $titleName = "SnackStock";
             $trackingName = "SnackStock";
-            $bodyClass = "snack_body";
+            $bodyClass = getHolidayClass( "snack_body" );
             break;
         case PURCHASE_HISTORY_LINK:
             $isAdminPage = false;
@@ -155,9 +157,8 @@
     include_once( QUANTITY_FUNCTIONS_PATH );
     include_once( SLACK_FUNCTIONS_PATH );
 
-    $db = new SQLite3( getDB() );
-    if (!$db) die ($error);
-        
+    $db = getDB();
+
     date_default_timezone_set('America/New_York');
        
     if( $isAdminPage && isset($_GET['Proxy_x25'])) {

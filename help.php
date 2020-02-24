@@ -7,14 +7,14 @@
 ?>
 
 <div id='container'>
-    <div class='rounded_header'><span  class='title'>New Users / History</span></div>
+    <div class='page_header'><span  class='title'>New Users / History</span></div>
     <div class='center_piece'>
     <div style='background-color: #c8e2ff; margin: 10px 20px; padding:15px; border: 1px solid #000000;' >
         Welcome to Sodastock! I sell both soda and snacks, available for everyone that works at RSA. Rick S. supplied the soda and then left the company in 2014. I took over several months later with selling the soda. Mike P. supplied the snacks and then passed the duty over to me in 2018. How it originally worked was people would drop money into the mugs in the cabinet or above the fridge and they would take what they want. I had been building this website for my own personal use to keep track of the inventory. It started as a Google Sheet, then became a very rough php project on my work computer, and has evolved into an entire purchasing and inventory system hosted on Vultr (so there is no downtime and it can be accessed outside of RSA when I am restocking items at the store). The massive revamp of the site happened in March 2018 when some co-ops said it would be easier for them if they could buy through the website and a tab would be kept for them. So I opened the site to all users and built a way for people to purchase through the website.
     </div>
     </div>
 
-    <div class='rounded_header'><span  class='title'>How Does it Work?</span></div>
+    <div class='page_header'><span  class='title'>How Does it Work?</span></div>
     <div class='center_piece'>
     <div style='background-color: #c8e2ff; margin: 10px 20px; padding:15px; border: 1px solid #000000;' >
             <ol>
@@ -29,14 +29,14 @@
     </div>
     </div>
 
-    <div class='rounded_header'><span  class='title'>Why Do This?</span></div>
+    <div class='page_header'><span  class='title'>Why Do This?</span></div>
     <div class='center_piece'>
         <div style='background-color: #c8e2ff; margin: 10px 20px; padding:15px; border: 1px solid #000000;' >
             Many people don't like to carry cash on them so this offers an alternative that is easier to them. Almost everyone appears to have some way to pay online whether it be Venmo, PayPal, or any other cash app so paying off a balance is as easy as a click of a button. It benefits me because as you use the site you are updating the inventory of the items yourself so there is less work for me. And because of that I'll know when things are sold out faster than if I manually counted everything myself. As an incentive to use the site you'll notice that <b>there are cheaper prices if you buy through the site.</b>
         </div>
     </div>
 
-    <div class='rounded_header'><span  class='title'>Pages</span></div>
+    <div class='page_header'><span  class='title'>Pages</span></div>
     <div class='center_piece'>
         <div style='background-color: #c8e2ff; margin: 10px 20px; padding:15px; border: 1px solid #000000;' >
             Let's go through the various pages at the top of the page:<br>
@@ -78,14 +78,14 @@
         </div>
     </div>
 
-    <div class='rounded_header'><span  class='title'>Cash-Only</span></div>
+    <div class='page_header'><span  class='title'>Cash-Only</span></div>
     <div class='center_piece'>
         <div style='background-color: #c8e2ff; margin: 10px 20px; padding:15px; border: 1px solid #000000;' >
             One co-op said they wanted to still pay with change in the mug but they wanted to keep track through the site and still get the discounted price. The cash-only checkbox in the cart does just this. You check the box if you already dropped money in the mug and it will add it to your purchase history, decrement the quantity, but NOT add it to your balance.
         </div>
     </div>
 
-    <div class='rounded_header'><span  class='title'>5 Minute Reminder</span></div>
+    <div class='page_header'><span  class='title'>5 Minute Reminder</span></div>
     <div class='center_piece'>
         <div style='background-color: #c8e2ff; margin: 10px 20px; padding:15px; border: 1px solid #000000;' >
             I have been losing money for a while and it might be because people are taking items but forgetting to buy it from the site afterwards. A lot can happen between grabbing something and getting back to your desk so it's understandable. I built in a pop-up message that appears after five minutes of being idle on the site without buying anything to help remind you to purchase your item. Now you can open the site, grab the item, and if you get back to your desk after five minutes there will be a reminder waiting for you.

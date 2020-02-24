@@ -59,7 +59,7 @@ class PurchaseHistoryLayout extends MonthlyLayout {
 
         echo  "<div style='position:absolute; top: 0; right: 0;' class='total_details_box'><b>Total Soda Spent:</b> ". getPriceDisplayWithDollars( $totalSodaBalance ) . "&nbsp;&nbsp;|&nbsp;&nbsp;<b>Total Soda Savings:</b> " . getPriceDisplayWithDollars( $totalSodaSavings ) . "</div>";
         echo "<div style='position:absolute; bottom: 0; right: 0;' class='total_details_box'><b>Total Snack Spent:</b> ". getPriceDisplayWithDollars( $totalSnackBalance ) . "&nbsp;&nbsp;|&nbsp;&nbsp;<b>Total Snack Savings:</b> " . getPriceDisplayWithDollars( $totalSnackSavings ) . "</div>";
-
+        printPurchaseHistorySubtitle();
     }
 
     function DisplayPaymentMethods() {

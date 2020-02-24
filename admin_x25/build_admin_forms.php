@@ -443,7 +443,7 @@
         buildRefillModal( $db, $itemType, $hideForms, $redirectURL );
 
         if( IsAdminLoggedIn() ) {
-            buildDefectiveModal( $itemType, $item_options_no_discontinued, $hideForms );
+            buildDefectiveModal( $itemType, $item_options, $hideForms );
         }
     }
 
@@ -930,7 +930,7 @@
 
         $statement = $db->prepare("SELECT Name," . getQuantityQuery() . ",ID FROM Item i " .
             "WHERE Hidden != 1 AND Type = :itemType AND TotalAmount > 0 $andVendorIDClause " .
-            "ORDER BY ShelfAmount DESC, Name asc, Retired");
+            "ORDER BY Name asc, Retired");
         $statement->bindValue( ":itemType", $itemType );
         $results = $statement->execute();
 

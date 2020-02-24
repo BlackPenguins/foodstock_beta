@@ -161,6 +161,9 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     $currentMonthSodaTotal = 0.0;
     $currentMonthSnackTotal = 0.0;
 
+    $currentMonthSodaCreditTotal = 0.0;
+    $currentMonthSnackCreditTotal = 0.0;
+
     $query = "SELECT i.Name, i.Type, p.Cost as LegacyPrice, p.CashOnly, p.UseCredits, p.DiscountCost as LegacyDiscountPrice, p.Date, p.UserID, p.ItemDetailsID, d.Price, d.DiscountPrice " .
         "FROM Purchase_History p " .
         "JOIN Item i on p.itemID = i.ID " .
@@ -178,6 +181,7 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     while ($row = $results->fetchArray()) {
 
         $itemDetailsID =  $row['ItemDetailsID'];
+        $itemType =  $row['Type'];
 
         $discountCost = $row['LegacyDiscountPrice'];
         $fullCost = $row['LegacyPrice'];
@@ -196,17 +200,24 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
         // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
         if( $row['CashOnly'] != 1 ) {
 
-            $finalCost = $cost;
+            $creditsUsed = $row["UseCredits"];
+            $finalCostNotIncludingCredits = $cost;
 
             // Purchases that used credits might affect what was actually for balance
-            if( $row['UseCredits'] > 0 ) {
-                $finalCost -= $row["UseCredits"];
+            if( $creditsUsed > 0 ) {
+                $finalCostNotIncludingCredits -= $creditsUsed;
+
+                if( $itemType == "Snack" ) {
+                    $currentMonthSnackCreditTotal += $creditsUsed;
+                } else if( $itemType == "Soda" ) {
+                    $currentMonthSodaCreditTotal += $creditsUsed;
+                }
             }
 
-            if( $row['Type'] == "Snack" ) {
-                $currentMonthSnackTotal += $finalCost;
-            } else if( $row['Type'] == "Soda" ) {
-                $currentMonthSodaTotal += $finalCost;
+            if( $itemType == "Snack" ) {
+                $currentMonthSnackTotal += $finalCostNotIncludingCredits;
+            } else if($itemType == "Soda" ) {
+                $currentMonthSodaTotal += $finalCostNotIncludingCredits;
             }
         }
     }
@@ -232,6 +243,8 @@ function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
     $returnArray = array();
     $returnArray['SodaTotal'] = $currentMonthSodaTotal;
     $returnArray['SnackTotal'] = $currentMonthSnackTotal;
+    $returnArray['SodaCreditTotal'] = $currentMonthSodaCreditTotal;
+    $returnArray['SnackCreditTotal'] = $currentMonthSnackCreditTotal;
     $returnArray['SodaPaid'] = $sodaTotalPaid;
     $returnArray['SnackPaid'] = $snackTotalPaid;
 
@@ -314,5 +327,350 @@ function drawCheckListRow( $isBought, $itemID, $itemName, $itemType, $shelfQuant
     echo "<td style='color:$typeColor'>$shelfQuantity</td>";
     echo "<td style='color:$typeColor'>$backstockQuantity</td>";
 
+}
+
+/**
+ * @param $db SQLite3
+ * @param $itemType
+ * @param $itemSearch
+ * @throws Exception
+ */
+function buildCardArea( $db, $itemType, $itemSearch ) {
+//    error_log("Entering with [$itemType][$itemSearch]" );
+    $nameQuery = "";
+
+    if( $itemSearch != "" ) {
+        $nameQuery = " AND ( Name Like :nameSearch OR Alias Like :aliasSearch)";
+    }
+
+    $cardQuery = "SELECT ID, Name, Date, TotalCans, " . getQuantityQuery() .
+    ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
+    "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate, u.FirstName " .
+    "FROM Item i " .
+    "LEFT JOIN User u ON i.VendorID = u.UserID " .
+    "WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 " .
+    "ORDER BY Retired, BackstockAmount DESC, ShelfAmount DESC";
+
+
+    if( IsLoggedIn() ) {
+        // Sort by user preference
+        // This sort pretty much breaks them into 3 groups (bought ones at #1, discontinued at #3, the rest at #2) and sorts those 3,
+        // then inside those groups it sorts by frequency, then shelf, then backstock
+        $cardQuery = "SELECT ID, VendorID, Name, Date, TotalCans, " . getQuantityQuery() .
+        ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
+        "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
+        " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate, u.FirstName " .
+        "FROM Item i " .
+        "LEFT JOIN User u ON i.VendorID = u.UserID " .
+        "WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 " .
+        "ORDER BY CASE WHEN Retired = 1 AND ShelfAmount = 0 THEN '3' WHEN Frequency > 0 AND Retired = 0 THEN '1'  ELSE '2' END ASC, Frequency DESC, ShelfAmount DESC, BackstockAmount DESC";
+    }
+
+    $statement = $db->prepare( $cardQuery );
+    $statement->bindValue( ":nameSearch", "%" .$itemSearch . "%" );
+    $statement->bindValue( ":aliasSearch", "%" .$itemSearch . "%" );
+    $statement->bindValue( ":itemType", $itemType );
+    $results = $statement->execute();
+
+    //---------------------------------------
+    // BUILD ITEM CARDS
+    //---------------------------------------
+    $columnNumber = 1;
+    while ($row = $results->fetchArray()) {
+        $item_id = $row['ID'];
+        $retired_item = $row['Retired'];
+
+        $shelfAmount = $row['ShelfAmount'];
+        $backstockAmount = $row['BackstockAmount'];
+
+        $hideDiscontinued = true;
+
+        if (isset($_SESSION['ShowDiscontinued']) && $_SESSION['ShowDiscontinued'] != 0) {
+            $hideDiscontinued = false;
+        }
+
+        if ($retired_item == 1 && $hideDiscontinued && $shelfAmount == 0) {
+            continue;
+        }
+
+        $outOfStock = $row['RefillTrigger'];
+        $outOfStockReporter = $row['OutOfStockReporter'];
+
+        $item_name = $row['Name'];
+        $supplierName = $row['FirstName'];
+
+        $price = $row['Price'];
+        $originalPrice = $price;
+        $discountPrice = $row['DiscountPrice'];
+        $imageURL = $row['ImageURL'];
+        $hasDiscount = false;
+
+        if (IsLoggedIn() && $discountPrice != "") {
+            $price = $discountPrice;
+            $hasDiscount = true;
+        }
+
+        $price_color = "#FFFFFF";
+        $price_background_color = "#025F00";
+
+        // On sale - YELLOW
+        if ($price < 50) {
+            $price_color = "#000000";
+            $price_background_color = "#FFD500";
+            // Expensive - RED
+        } else if ($price > 100) {
+            $price_color = "#FFFFFF";
+            $price_background_color = "#5f0000";
+        }
+
+        $priceDisplay = "";
+
+        if (IsLoggedIn() && $hasDiscount == true) {
+            $priceDisplay = getPriceDisplayWithSymbol($discountPrice);
+        } else {
+            $priceDisplay = getPriceDisplayWithSymbol($price);
+        }
+
+        $unitName = "item";
+        $unitNamePlural = "items";
+
+        if ($row['UnitName'] != "") {
+            $unitName = $row['UnitName'];
+        }
+
+        if ($row['UnitNamePlural'] != "") {
+            $unitNamePlural = $row['UnitNamePlural'];
+        }
+
+        $unitNameFinal = $shelfAmount > 1 ? $unitNamePlural : $unitName;
+
+        $amountLeft = "N/A";
+        $quantityBoxClass = "";
+        $statusClass = "";
+        $thumbnailSoldOutClass = "";
+        $buttonClass = "";
+        $refilledClass = "";
+
+        $justRefilled = false;
+
+        if ($row['DateModified'] != null) {
+            $lastRefilled = DateTime::createFromFormat('Y-m-d H:i:s', $row['DateModified']);
+            $now = new DateTime();
+
+            $timeSinceLastRefill = $now->diff($lastRefilled);
+
+            $minutesSinceLastRefill = ($timeSinceLastRefill->d * 24 * 60) + ($timeSinceLastRefill->h * 60) + $timeSinceLastRefill->i;
+
+            $justRefilled = $minutesSinceLastRefill <= 120 && $itemType == "Soda";
+        }
+
+        if ($justRefilled) {
+            $refilledClass = "refilled";
+        }
+
+        if ($retired_item == 1) {
+            if ($shelfAmount == 0) {
+                $amountLeft = "Discontinued";
+                $quantityBoxClass = "quantity_box_discontinued";
+                $statusClass = "card_block_discontinued";
+                $buttonClass = "quantity_button_disabled";
+            } else {
+                $quantityBoxClass = "quantity_box_discontinued_soon";
+                $amountLeft = "<div><span>$shelfAmount</span> $unitNameFinal Left</div>" .
+                    "<div style='font-size: 0.8em; font-weight:bold; margin-top:5px; color:#ffe000'>(discontinued soon)</div>";
+            }
+        } else {
+            if ($shelfAmount == 0) {
+                $amountLeft = "SOLD OUT";
+                $quantityBoxClass = "quantity_box_sold_out";
+                $thumbnailSoldOutClass = "thumbnail_sold_out";
+                $buttonClass = "quantity_button_disabled";
+            } else {
+                $amountLeft = "<span>$shelfAmount</span> $unitNameFinal Left";
+            }
+        }
+
+        echo "<input id='shelf_quantity_" . $item_id . "' type='hidden' value='" . $shelfAmount . "'/>";
+
+        $statementPopularity = $db->prepare('SELECT ItemID, Date FROM Restock where ItemID = :itemID ORDER BY Date DESC');
+        $statementPopularity->bindValue(":itemID", $row['ID']);
+        $resultsPopularity = $statementPopularity->execute();
+
+        $firstDate = "";
+        $lastDate = "";
+        $totalPurchases = 0;
+        while ($rowPopularity = $resultsPopularity->fetchArray()) {
+            if ($firstDate == "") {
+                $firstDate = $rowPopularity[1];
+            }
+            $lastDate = $rowPopularity[1];
+            $totalPurchases++;
+        }
+
+        $date_before = DateTime::createFromFormat('Y-m-d H:i:s', $firstDate);
+        $date_after = DateTime::createFromFormat('Y-m-d H:i:s', $lastDate);
+
+        $days_ago = 0;
+
+        if ($firstDate != "" && $lastDate != "") {
+            if ($firstDate == $lastDate) {
+                $date_after = new DateTime();
+            }
+
+            $time_since = $date_before->diff($date_after);
+            $days_ago = $time_since->format('%a');
+        }
+
+        $frequencyBought = "0";
+        $purchaseDayInterval = "N/A";
+
+        if (isset($row['Frequency'])) {
+            $frequencyBought = $row['Frequency'];
+        }
+
+        if ($totalPurchases > 0) {
+            $purchaseDayInterval = round($days_ago / $totalPurchases);
+        }
+
+        $previewImage = "";
+
+
+        if ($imageURL != "") {
+            $previewImage = "<img class='preview_zoom' src='" . PREVIEW_IMAGES_NORMAL . $imageURL . "' />";
+        } else {
+            $previewImage = "<img class='preview_zoom' style='width: 100px; height: 100px; padding-top:70px;' src='" . IMAGES_LINK . "no_image.png' />";
+        }
+
+        $total_can_sold = $row['TotalCans'] - ($backstockAmount + $shelfAmount);
+
+        $statementDefect = $db->prepare("SELECT Sum(Amount) as 'TotalDefect' From Defectives where ItemID = :itemID");
+        $statementDefect->bindValue(":itemID", $row['ID']);
+        $resultsDefect = $statementDefect->execute();
+
+        $rowDefect = $resultsDefect->fetchArray();
+        $totalDefects = $rowDefect['TotalDefect'];
+
+        $total_can_sold = $total_can_sold - $totalDefects;
+
+
+        $reportButton = "";
+        if (IsLoggedIn() && !IsInactive() && $outOfStock != "1") {
+            $userName = $_SESSION['FirstName'] . " " . $_SESSION['LastName'];
+            $reportButton = "<div style='position: absolute; right: 10px; top:-42px; cursor:pointer;' onclick='reportItemOutOfStock(\"$userName\"," . $row['ID'] . ",\"" . $row['Name'] . "\")'><img src='" . IMAGES_LINK . "low.png' title='Report Item Out of Stock'/></div>";
+        }
+
+        $outOfStockLabel = "";
+        if ($outOfStock == "1") {
+            $reportType = "out of stock";
+            $reportClass = "out_of_stock";
+            if ($outOfStockReporter == "StockBot") {
+                if ($shelfAmount > 0) {
+                    $reportType = "running low";
+                    $reportClass = "running_low";
+                }
+            }
+
+            $outOfStockLabel = "<div class='report-label $reportClass'>Reported as $reportType by " . $outOfStockReporter . "!</div>";
+        }
+
+        // ------------------
+        // BUILD THE CARD
+        // ------------------
+        echo "<span class='card_block $statusClass $refilledClass'>";
+//                 echo "<div class='snow'>";
+        echo "<div class='thumbnail $thumbnailSoldOutClass'>";
+        printHolidayPriceIcon($priceDisplay);
+        echo $previewImage;
+        echo "</div>";
+        echo "<div class='post-content'>";
+        echo $reportButton;
+
+        if ($justRefilled) {
+            echo "<div style='position: absolute; right: 10px; top:-80px;'><img src='" . IMAGES_LINK . "thermometer.png' title='This item was added to the fridge $minutesSinceLastRefill minutes ago and might not be cold yet.'/></div>";
+        }
+
+        echo "$outOfStockLabel";
+        echo "<div class='quantity_box $quantityBoxClass'><span class='quantity_text'>$amountLeft</span></div>";
+
+        if ($supplierName != "") {
+            echo "<div title='This item is being sold by $supplierName through FoodStock' class='supplier'>Sold by $supplierName</div>";
+        }
+
+        echo "<h1 class='title'>" . getHolidayItemName($row['Name']) . "</h1>";
+
+        $currentFlavor = $row['CurrentFlavor'];
+        if ($currentFlavor != "") {
+            echo "<h1 class='sub_title'><u>Current Flavor:</u> <i>$currentFlavor</i></h1>";
+        }
+
+        $income = $row['ItemIncome'];
+        $expense = $row['ItemExpenses'];
+        $profit = $row['ItemProfit'];
+
+        $profitClass = $profit > 0 ? "income" : "expenses";
+
+        $actionsClass = "actions_no_stats";
+
+        $showItemStats = true;
+        if (isset($_SESSION['ShowShelf']) && $_SESSION['ShowItemStats'] == 0) {
+            $showItemStats = false;
+        }
+
+        if ($showItemStats) {
+            $actionsClass = "actions";
+
+            if (IsAdminLoggedIn()) {
+
+                echo "<div class='stats'>";
+                echo "<span class='box box-expenses' title='Total Expenses'>";
+                echo "<span class='value'>" . getPriceDisplayWithDollars($expense) . "</span>";
+                echo "<span class='parameter'>Expenses</span>";
+                echo "</span>";
+
+                echo "<span style='border: 2px solid #000;' class='box box-$profitClass' title='Total Profit'>";
+                echo "<span class='value'>" . getPriceDisplayWithDollars($profit) . "</span>";
+                echo "<span class='parameter'>Profit</span>";
+                echo "</span>";
+
+                echo "<span class='box box-income' title='Total Income'>";
+                echo "<span class='value'>" . getPriceDisplayWithDollars($income) . "</span>";
+                echo "<span class='parameter'>Income</span>";
+                echo "</span>";
+                echo "</div>";
+            }
+
+            echo "<div class='stats'>";
+            echo "<span class='box box-$profitClass' title='You have bought this x times.'>";
+            echo "<span class='value'>$frequencyBought</span>";
+            echo "<span class='parameter'>Purchases</span>";
+            echo "</span>";
+
+            echo "<span class='box box-$profitClass' title='Restocked every x days.'>";
+            echo "<span class='value'>$purchaseDayInterval</span>";
+            echo "<span class='parameter'>Days</span>";
+            echo "</span>";
+
+            echo "<span class='box box-$profitClass' title='Total of x units sold.'>";
+            echo "<span class='value'>$total_can_sold</span>";
+            echo "<span class='parameter'>Total Sold</span>";
+            echo "</span>";
+            echo "</div>";
+        }
+
+        if (IsLoggedIn() && !IsInactive()) {
+            echo "<div class='$actionsClass'>";
+            echo "<button id='add_button_" . $row['ID'] . "' onclick='addItemToCart(" . $row['ID'] . ")' style='float:right;' class='quantity_button $buttonClass' title='Add item(s)'>Add</button>";
+            echo "<span style='float:right;' class='quantity' id='quantity_holder_" . $row['ID'] . "'>0</span>";
+            echo "<button id='remove_button_" . $row['ID'] . "' onclick='removeItemFromCart(" . $row['ID'] . ")' style='float:left;' class='quantity_button_disabled quantity_button' title='Remove item(s)'>Remove</button>";
+            echo "</div>"; //actions
+        }
+        echo "</div>"; //post-content
+
+        echo "<div>Something</div>";
+
+        printHolidayLights();
+
+        echo "</span>"; //card_block
+    }
 }
 ?>

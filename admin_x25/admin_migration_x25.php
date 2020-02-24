@@ -22,8 +22,7 @@
     include(UI_FUNCTIONS_PATH);
     include(QUANTITY_FUNCTIONS_PATH);
 
-    $db = new SQLite3( getDB() );
-    if (!$db) die ($error);
+    $db = getDB();
 
     $testMigration = false;
 
@@ -82,7 +81,7 @@
         }
 
     } else {
-        echo "<div style='margin: 0 auto;' class='fancy'>";
+        echo "<div style='margin: 0 auto;' class='inline_form'>";
         echo "<form style='width:400px; margin: 0 auto;' id='add_item_form' enctype='multipart/form-data' action='" . ADMIN_MIGRATION_LINK . "' method='POST'>";
 
         echo "<label for='VersionNumber'>Version</label>";

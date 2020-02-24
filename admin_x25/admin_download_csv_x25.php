@@ -1,8 +1,7 @@
 <?php
 include(__DIR__ . "/../appendix.php" );
 
-$db = new SQLite3( getDB() );
-if (!$db) die ($error);
+$db = getDB();
 
 include_once(QUANTITY_FUNCTIONS_PATH);
 
@@ -40,5 +39,7 @@ fputcsv($output, array('Date'));
 foreach( $csvLines as $csvLine ) {
     fputcsv($output, $csvLine);
 }
+
+fputcsv($output, array('MUG AMOUNT') );
 
 fclose( $output );

@@ -26,7 +26,7 @@
 
 <?php
     echo "<span class='admin_box'>";
-        echo "<div class='rounded_header'><span class='title'>Restocks</span></div>";
+        echo "<div class='page_header'><span class='title'>Restocks</span></div>";
 
 
         echo "<div class='center_piece'>";

@@ -3,6 +3,7 @@
     
     $url = REQUESTS_LINK;
     include( HEADER_PATH );
+    include_once( HOLIDAY_FUNCTIONS_PATH );
 //    include_once( LOG_FUNCTIONS_PATH );
 ?>
 
@@ -57,7 +58,7 @@
 
         echo "<li>";
         echo "<label for='ItemName_Request'>Details</label>";
-        echo "<input style='width:350px;' type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
+        echo "<textarea cols='50' rows='5' name='ItemName_Request'></textarea>";
         echo "<span>The bug details</span>";
         echo "</li>";
 
@@ -91,7 +92,7 @@
 
         echo "<li>";
         echo "<label for='ItemName_Request'>Details</label>";
-        echo "<input style='width:350px;' type='text' name='ItemName_Request' class='text ui-widget-content ui-corner-all'/>";
+        echo "<textarea cols='50' rows='5' name='ItemName_Request'></textarea>";
         echo "<span>The feature details</span>";
         echo "</li>";
 
@@ -136,7 +137,7 @@
 
         echo "<li>";
         echo "<label for='Note_Request'>Notes</label>";
-        echo "<input style='width:350px;' type='text' name='Note_Request'/>";
+        echo "<textarea cols='50' rows='2' name='Note_Request'></textarea>";
         echo "<span>Additional notes about the item</span>";
         echo "</li>";
 
@@ -162,16 +163,16 @@
         // ------------------------------------
         // REQUESTS TABLE
         // ------------------------------------
-        echo "<div class='rounded_header'><span id='$title' class='title'>$title</span>";
+        echo "<div class='page_header'><span id='$title' class='title'>$title</span>";
 
         if( IsLoggedIn() && !IsInactive() ) {
             echo "<span style='float:right; padding-right: 15px;'>";
             if ($title == "Requests") {
-                echo "<button style='padding:5px; background:#b6b2e8;' id='request_item_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Snack or Soda</button>";
+                echo "<button style='padding:5px; background:#b6b2e8;' id='request_item_button' class='ui-button ui-widget-content ui-corner-all'>Request Snack or Soda</button>";
             } else if ($title == "Feature Requests") {
-                echo "<button style='padding:5px; background:#b6b2e8;' id='request_feature_button' class='item_button ui-button ui-widget-content ui-corner-all'>Request Feature</button>";
+                echo "<button style='padding:5px; background:#b6b2e8;' id='request_feature_button' class='ui-button ui-widget-content ui-corner-all'>Request Feature</button>";
             } else {
-                echo "<button style='padding:5px; background:#b6b2e8;' id='report_bug_button' class='item_button ui-button ui-widget-content ui-corner-all'>Report Bug</button>";
+                echo "<button style='padding:5px; background:#b6b2e8;' id='report_bug_button' class='ui-button ui-widget-content ui-corner-all'>Report Bug</button>";
             }
 
             echo "</span>";
@@ -281,7 +282,7 @@
             
             echo "</td>";
             
-            echo "<td style='width:$column3Width%;'>" . strip_tags( $row['ItemName'] ) . "</td>";
+            echo "<td style='width:$column3Width%;'>" . getHolidayRequestItemName( strip_tags( $row['ItemName'] ) ) . "</td>";
             
             if( $title == "Requests" ) {
                 echo "<td class='hidden_mobile_column' style='width:$column4Width%;'>" . strip_tags ($row['ItemType'] ) . "</td>";

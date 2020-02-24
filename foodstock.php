@@ -5,18 +5,17 @@ include( "appendix.php" );
 
 function main( $url, $itemType, $className, $location ) {
     include( HEADER_PATH );
+    include_once( UI_FUNCTIONS_PATH );
 ?>
 
 <script>
     var itemsInCart = [];
     
-    function updateCardArea(itemTypeValue, classNameValue, locationValue, itemSearchValue) {
+    function updateCardArea(itemTypeValue, itemSearchValue) {
         console.log("Updating Card Area with [" + itemSearchValue + "]...");
         $.post("<?php echo AJAX_LINK; ?>", { 
                 type:'CardArea',
                 itemType:itemTypeValue,
-                className:classNameValue,
-                location:locationValue,
                 itemSearch:itemSearchValue,
             },function(data) {
                 $('#card_area').html(data);
@@ -59,13 +58,11 @@ function main( $url, $itemType, $className, $location ) {
 
 
         if( newQuantity == 1 ) {
-            $('#remove_button_' + itemID).removeClass('btn-disabled');
-            $('#remove_button_' + itemID).addClass('btn- <? echo $itemType; ?>');
+            $('#remove_button_' + itemID).removeClass('quantity_button_disabled');
         }
 
         if( newQuantity == maxQuantity ) {
-            $('#add_button_' + itemID).addClass('btn-disabled');
-            $('#add_button_' + itemID).removeClass('btn- <? echo $itemType; ?>');
+            $('#add_button_' + itemID).addClass('quantity_button_disabled');
         }
         
         $.post("<?php echo AJAX_LINK; ?>", { 
@@ -99,13 +96,11 @@ function main( $url, $itemType, $className, $location ) {
         $('#quantity_holder_' + itemID).html( newQuantity );
 
         if( newQuantity == 0 ) {
-            $('#remove_button_' + itemID).addClass('btn-disabled');
-            $('#remove_button_' + itemID).removeClass('btn- <? echo $itemType; ?>');
+            $('#remove_button_' + itemID).addClass('quantity_button_disabled');
         }
 
         if( newQuantity == maxQuantity - 1 ) {
-            $('#add_button_' + itemID).removeClass('btn-disabled');
-            $('#add_button_' + itemID).addClass('btn- <? echo $itemType; ?>');
+            $('#add_button_' + itemID).removeClass('quantity_button_disabled');
         }
         
         $.post("<?php echo AJAX_LINK; ?>", { 
@@ -173,9 +168,9 @@ $results = $statement->execute();
 // BUILD TOP SECTION STATS
 //---------------------------------------
 
-$version = "7.2";
+$version = getHolidayVersion( "7.3" );
 $versionString = "Version $version";
-$versionDateString = "(Feb 17th, 2020)";
+$versionDateString = "(Feb 23rd, 2020)";
 
 $row = $results->fetchArray();
 $siteIncome = $row['SiteIncome']; // The amount of money that SHOULD be coming in
@@ -224,7 +219,9 @@ if(  !IsLoggedIn() || $_SESSION['ShowTrending'] == 1 ) {
     $trendingStatement = $db->prepare("SELECT p.itemID, i.Name, count(p.ItemID) as Amount, max(p.Date), i.Type, i.ImageURL " .
         "FROM Purchase_History p " .
         "JOIN Item i on p.ItemID = i.ID " .
-        "WHERE p.Date > :startTrendingHour and p.Date < :stopTrendingHour and i.Type = :itemType group by p.ItemID order by count(p.itemID) desc");
+        "WHERE p.Date > :startTrendingHour and p.Date < :stopTrendingHour and i.Type = :itemType " .
+        "GROUP BY p.ItemID " .
+        "ORDER BY count(p.itemID) desc, MAX(p.Date) desc ");
     $trendingStatement->bindValue( ":startTrendingHour", date('Y-m-d' ) . " 00:00:00" );
     $trendingStatement->bindValue( ":stopTrendingHour", date('Y-m-d' ) . " 23:59:59" );
     $trendingStatement->bindValue( ":itemType", $itemType );
@@ -366,10 +363,10 @@ if( $itemType != "Snack" && $showShelf ) {
     echo "</div>";
 }
 
-echo "<input placeholder='Search Items' autofocus type='text' style='padding:5px; border-radius:20px; font-size:1.6em;' onkeyup= \"updateCardArea('$itemType', '$className', '$location', this.value );\"/>";
+echo "<input placeholder='Search Items' autofocus type='text' style='padding:5px; border-radius:20px; font-size:1.6em;' onkeyup= \"updateCardArea('$itemType', this.value );\"/>";
 
 echo "<div id='card_area'>";
-echo "<script>updateCardArea('$itemType', '$className', '$location', '' );</script>";
+buildCardArea( $db, $itemType, "" );
 echo "</div>";
 
 
@@ -425,21 +422,31 @@ echo "<div style='clear:both;'></div>";
 $milestoneClass= "background-color: #f1ff1a; padding:5px; margin: 20px 0px; border:solid 3px #8c8e1d;";
 
 echo "<div id='change_log_container'>";
-echo "<div id='change_log' class='rounded_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span> | <span style='$bugClass'>Bug Fixes in Orange</span>)</span></span></div>";
+echo "<div id='change_log' class='page_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span> | <span style='$bugClass'>Bug Fixes in Orange</span>)</span></span></div>";
 echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
 
+DisplayUpdate("Feb 23, 2020 (7.3)", $itemType, array(
+    DisplayItem("request", "Automatic themes are in place (St Patricks Day, April Fools, Christmas). And more are coming (4th of July, Halloween, Birthdays)"),
+    DisplayItem("request", "Warm sodas are now indicated with a red border along with the temperature icon."),
+    DisplayItem("request", "Made 'Register' link more obvious with green text and underline (Ask by Mike B)."),
+    DisplayItem("request", "No longer loading the cards via JS on load. Prevents that 'page jump' you saw as the JS did the replace (Ask by Nick)."),
+    DisplayItem("request", "Changed text inputs to textareas for request modals."),
+    DisplayItem("request", "If two items are both the current most selling with the same amount, the most recent will show in trending."),
+    DisplayItem("db", "Increased database timeout to 15 seconds to prevent database locked errors."),
+    DisplayItem("bug", "Fixed rounding issues with Vendor HQ (Ask by Nick)."),
+    DisplayItem("bug", "No longer showing the user's total balance in the receipts sent to the vendors (Ask by Nick)."),
+    DisplayItem("bug", "Discontinued items are shown in defect modal now."),
+    DisplayItem("bug", "Restock messages are no longer sent to inactive users."),
+    DisplayItem("none", "More reorganization of the CSS."),
+    DisplayItem("none", "Reused style of preferences form for register form - consistency and CSS reuse."),
+    DisplayItem("admin", "In Payments page color the total amounts yellow if greater than zero. Added total credits to explain straight zero amounts for months."),
+    DisplayItem("admin", "Ordered inventory modal items by alphabetic order to match spreadsheet."),
+    DisplayItem("admin", "On purchase history hide profit if retail cost is $0 (before the retail cost tracking)."),
+    DisplayItem("admin", "Added 'Mug Total' to bottom of inventory spreadsheet."),
+) );
 
-
-// Lunch
-
-
-// CREDIT: https://icons8.com/icon/2270/crown - CDN77
-// https://i2kplay.com/icon-new/
-
-// <div>Icons made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-
-DisplayUpdate("Feb 17, 2019 (7.2)", $itemType, array(
+DisplayUpdate("Feb 17, 2020 (7.2)", $itemType, array(
     DisplayItem("request", "Foodstock has its first employee! The vendor HQ allows others to add/replenish/sell items through foodstock while giving a small commission to me. Permissions were rewritten to show admin pages for vendors. New side navigation for vendor. Vendor seller shown in cards and purchase history."),
     DisplayItem("none", "New modal styles with help-text."),
     DisplayItem("none", "Removed goal bar - fridge was bought by Santa (it was probably RSA)."),

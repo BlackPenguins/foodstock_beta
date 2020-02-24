@@ -28,7 +28,7 @@
             "Tops" => "#167cb7"
         );
 
-        echo "<div class='rounded_header'><span class='title'>$title</span></div>";
+        echo "<div class='page_header'><span class='title'>$title</span></div>";
 
         if( $checklistType == "RestockTrigger" ) {
             echo "<span id='shopping_button' class='nav_buttons nav_buttons_admin'>Add Shopping Guide</span>";

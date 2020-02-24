@@ -105,7 +105,7 @@
         echo "</div>";
 
         echo "<div class='session_container'>";
-        echo "<div class='rounded_header'><span id='Sessions' class='title'>SESSIONS</span></div>";
+        echo "<div class='page_header'><span id='Sessions' class='title'>SESSIONS</span></div>";
 
         $sessionLocation = session_save_path();
 
@@ -178,7 +178,7 @@
     echo "</span>";
     
     function openTable( $tableLabel ) {
-        echo "<div class='rounded_header'><span id='$tableLabel' class='title'>$tableLabel</span></div>";
+        echo "<div class='page_header'><span id='$tableLabel' class='title'>$tableLabel</span></div>";
         
         echo "<div class='center_piece'>";
         echo "<div class='rounded_table'>";

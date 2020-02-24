@@ -1,12 +1,24 @@
 <?php
     if(!function_exists('getDB')) {
+
+        /**
+         * @return SQLite3 $db
+         */
         function getDB() {
             if (isTestServer()) {
-                // TODO MTM: Make sure automated testing only affect the unit_testing db
-                return __DIR__ . getSlash() . "test_db" . getSlash() . "item.db";
+                $dbPath = __DIR__ . getSlash() . "test_db" . getSlash() . "item.db";
             } else {
-                return __DIR__ . getSlash() . "db" . getSlash() . "item.db";
+                $dbPath = __DIR__ . getSlash() . "db" . getSlash() . "item.db";
             }
+
+            $db = new SQLite3( $dbPath );
+
+            // Wait 15 seconds before showing database locked error
+            $db->busyTimeout( 15000 );
+
+            if (!$db) die ( "DB failed to load: " . $db->lastErrorMsg() );
+
+            return $db;
         }
     }
 
@@ -59,10 +71,11 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_7_2.css" );
-        define( "MOBILE_CSS_LINK", "$subdomain/css/mobile_7_2.css" );
-        define( "CSS_LIGHTS_LINK", "$subdomain/css/lights.css" );
-        
+        define( "CSS_LINK", "$subdomain/css/style_7_3.css" );
+        define( "MOBILE_CSS_LINK", "$subdomain/css/mobile_7_3.css" );
+        define( "LIGHTS_CSS_LINK", "$subdomain/css/lights.css" );
+        define( "THEMES_CSS_LINK", "$subdomain/css/themes.css" );
+
         define( "JS_COLOR_LINK", "$subdomain/scripts/jscolor.js" );
         define( "SETUP_MODALS_LINK", "$subdomain/scripts/setup_modals.js" );
         
@@ -111,6 +124,10 @@
 
     if( !defined("ACTION_FUNCTIONS_PATH")) {
         define( "ACTION_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "action_functions.php" );
+    }
+
+    if( !defined("HOLIDAY_FUNCTIONS_PATH")) {
+        define( "HOLIDAY_FUNCTIONS_PATH", __DIR__ . $slash . "functions" . $slash . "holiday_functions.php" );
     }
 
     if( !defined("ITEM_OBJ")) {
@@ -171,6 +188,10 @@
 
     if( !defined("HANDLE_FORMS_PATH")) {
         define( "HANDLE_FORMS_PATH", __DIR__ .$slash . "common" . $slash . "handle_forms.php" );
+    }
+
+    if( !defined("HANDLE_AJAX_PATH")) {
+        define( "HANDLE_AJAX_PATH", __DIR__ .$slash . "common" . $slash . "handle_ajax.php" );
     }
 
     if( !defined("BUILD_ADMIN_FORMS_PATH")) {

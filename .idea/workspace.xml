@@ -2,52 +2,41 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="689aff09-6fde-4fe3-8395-18d5bd8ab907" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/common/MonthlyLayout.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/PurchaseHistoryLayout.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/PurchaseHistoryObj.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/PurchaseMonthObj.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/VendorHistoryLayout.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/css/mobile_7_2.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lunch/lunch_spots_admin.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lunch/style_7_2.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/setup_modals.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vendor_x82.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/themes.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/functions/holiday_functions.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin_x25/admin_audit_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_audit_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_checklist_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_checklist_x25.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin_x25/admin_download_csv_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_download_csv_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_inventory_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_inventory_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_items_in_stock_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_items_in_stock_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_items_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_items_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_migration_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_migration_x25.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin_x25/admin_nav_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_nav_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_payments_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_payments_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_restock_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_restock_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_shopping_guide_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_shopping_guide_x25.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin_x25/admin_weekly_audit_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_weekly_audit_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/admin_x25.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/admin_x25.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_x25/build_admin_forms.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin_x25/build_admin_forms.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/appendix.php" beforeDir="false" afterPath="$PROJECT_DIR$/appendix.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/ItemCostDetails.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/ItemCostDetails.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/MonthlyLayout.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/MonthlyLayout.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/PurchaseHistoryLayout.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/PurchaseHistoryLayout.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/handle_ajax.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/handle_ajax.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/handle_forms.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/handle_forms.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/header.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/header.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/login_bar.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/login_bar.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/css/style_7_0.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/style_7_2.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/css/style_locator.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/css/lights.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/lights.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/css/mobile_7_2.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/mobile_7_3.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/css/style_7_2.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/style_7_3.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/foodstock.php" beforeDir="false" afterPath="$PROJECT_DIR$/foodstock.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions/action_functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/functions/action_functions.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/mobile_detection.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/session_functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/functions/session_functions.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/slack_functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/functions/slack_functions.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions/ui_functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/functions/ui_functions.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lunch/lunch_spots.php" beforeDir="false" afterPath="$PROJECT_DIR$/lunch/lunch_spots.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output.diff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/purchase_history.php" beforeDir="false" afterPath="$PROJECT_DIR$/purchase_history.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/help.php" beforeDir="false" afterPath="$PROJECT_DIR$/help.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packServer.bat" beforeDir="false" afterPath="$PROJECT_DIR$/packServer.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packed_server.zip" beforeDir="false" afterPath="$PROJECT_DIR$/packed_server.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preferences.php" beforeDir="false" afterPath="$PROJECT_DIR$/preferences.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/register.php" beforeDir="false" afterPath="$PROJECT_DIR$/register.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requests.php" beforeDir="false" afterPath="$PROJECT_DIR$/requests.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/load_modals.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/stats.php" beforeDir="false" afterPath="$PROJECT_DIR$/stats.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_db/item.db" beforeDir="false" afterPath="$PROJECT_DIR$/test_db/item.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_db/item_unit_testing.db" beforeDir="false" afterPath="$PROJECT_DIR$/test_db/item_unit_testing.db" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -93,54 +82,88 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/VendorHistoryLayout.php">
+        <entry file="file://$PROJECT_DIR$/admin_x25/build_admin_forms.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="9" column="33" lean-forward="true" selection-start-line="9" selection-start-column="33" selection-end-line="9" selection-end-column="33" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/functions/action_functions.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="275">
-              <caret line="38" selection-start-line="38" selection-end-line="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/handle_forms.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="311" column="39" selection-start-line="311" selection-start-column="39" selection-end-line="311" selection-end-column="39" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/functions/ui_functions.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="138">
-              <caret line="88" column="35" selection-start-line="88" selection-start-column="9" selection-end-line="88" selection-end-column="35" />
+            <state relative-caret-position="145">
+              <caret line="376" column="41" selection-start-line="376" selection-start-column="41" selection-end-line="376" selection-end-column="41" />
               <folding>
+                <element signature="n#style#0;n#option#0;n#!!top" expanded="true" />
+                <element signature="e#59#66#1" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="e#58#65#1" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="e#60#67#1" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="e#62#69#1" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
+                <element signature="e#32#38#1" expanded="true" />
                 <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="e#25#31#1" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/common/handle_ajax.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="77">
+              <caret line="20" column="39" selection-start-line="20" selection-start-column="39" selection-end-line="20" selection-end-column="39" />
+              <folding>
+                <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+                <element signature="e#38#44#1" expanded="true" />
+                <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#tr#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="e#6#15#0" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/foodstock.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="442" column="173" selection-start-line="442" selection-start-column="173" selection-end-line="442" selection-end-column="173" />
+            <state relative-caret-position="95">
+              <caret line="429" column="155" selection-start-line="429" selection-start-column="155" selection-end-line="429" selection-end-column="155" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="e#156#162#1" expanded="true" />
@@ -258,56 +281,77 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/ItemCostDetails.php">
+        <entry file="file://$PROJECT_DIR$/appendix.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="172">
-              <caret line="200" column="94" selection-start-line="200" selection-start-column="94" selection-end-line="200" selection-end-column="94" />
+            <state relative-caret-position="128">
+              <caret line="74" column="61" selection-start-line="74" selection-start-column="61" selection-end-line="74" selection-end-column="61" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/Item.php">
+        <entry file="file://$PROJECT_DIR$/css/mobile_7_3.css">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/themes.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-316">
-              <caret line="23" column="20" selection-start-line="23" selection-start-column="20" selection-end-line="23" selection-end-column="20" />
-              <folding>
-                <element signature="e#6#87#0#PHP" expanded="true" />
-              </folding>
+            <state relative-caret-position="265">
+              <caret line="342" column="1" lean-forward="true" selection-start-line="342" selection-start-column="1" selection-end-line="342" selection-end-column="1" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/TestingBase.php">
+        <entry file="file://$PROJECT_DIR$/css/style_7_3.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="339">
-              <caret line="118" column="19" selection-start-line="118" selection-start-column="19" selection-end-line="118" selection-end-column="19" />
+            <state relative-caret-position="129">
+              <caret line="1522" column="1" lean-forward="true" selection-start-line="1522" selection-start-column="1" selection-end-line="1522" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/common/header.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="203">
+              <caret line="14" column="74" selection-start-line="14" selection-start-column="74" selection-end-line="14" selection-end-column="74" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/functions/ui_functions.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="128">
+              <caret line="337" column="22" selection-start-line="337" selection-start-column="9" selection-end-line="337" selection-end-column="22" />
               <folding>
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/Testing.php">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/functions/holiday_functions.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="52" selection-start-line="52" selection-end-line="52" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/User.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-24">
-              <caret line="38" column="20" selection-start-line="38" selection-start-column="20" selection-end-line="38" selection-end-column="20" />
+            <state relative-caret-position="357">
+              <caret line="93" column="50" selection-start-line="93" selection-start-column="50" selection-end-line="93" selection-end-column="50" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#ul#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -316,29 +360,12 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Items page with $0.00</find>
-      <find>session_con</find>
-      <find>dont charge</find>
-      <find>dont cha</find>
-      <find>$refillTrigger</find>
-      <find>mobile</find>
-      <find>name in card and purchas</find>
-      <find>7.0</find>
-      <find>openPayme</find>
-      <find>payments</find>
-      <find>insert into pay</find>
-      <find>IsVendor</find>
-      <find>PAYMENTS</find>
-      <find>cash-only</find>
-      <find>totalowe</find>
-      <find>sendSlackMessageToUser</find>
       <find>isvendor</find>
       <find>supplied by</find>
       <find>for soda</find>
       <find>restock</find>
       <find>payment</find>
       <find>getpay</find>
-      <find>7.2</find>
       <find>sodas</find>
       <find>openpaymentmo</find>
       <find>addItem</find>
@@ -346,6 +373,23 @@
       <find>slackID !=</find>
       <find>refillItem</find>
       <find>todo mtm</find>
+      <find>retail</find>
+      <find>serious</find>
+      <find>$className</find>
+      <find>buildCardArea</find>
+      <find>$location</find>
+      <find>cardarea</find>
+      <find>7.2</find>
+      <find>location</find>
+      <find>classnam</find>
+      <find>updateCardArea</find>
+      <find>defect</find>
+      <find>mobile_7</find>
+      <find>MOBILE_CSS_LINK</find>
+      <find>CSS_LIGHTS_LINK</find>
+      <find>ajax</find>
+      <find>version_color</find>
+      <find>7.3</find>
     </findStrings>
     <replaceStrings>
       <replace>'</replace>
@@ -366,6 +410,7 @@
       <replace>details.</replace>
       <replace>&quot;COMMIT;&quot;</replace>
       <replace>&amp;#10142;</replace>
+      <replace>fools_</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -374,9 +419,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/index.php" />
-        <option value="$PROJECT_DIR$/sodastock_home/snackstock.php" />
-        <option value="$PROJECT_DIR$/sodastock_home/sodastock.php" />
         <option value="$PROJECT_DIR$/scripts/load_modals.js" />
         <option value="$PROJECT_DIR$/lunch/lunch_location.php" />
         <option value="$PROJECT_DIR$/lunch/lunch_index.php" />
@@ -390,7 +432,6 @@
         <option value="$PROJECT_DIR$/common/AuditDetails" />
         <option value="$PROJECT_DIR$/functions/log_functions.php" />
         <option value="$PROJECT_DIR$/preferences.php" />
-        <option value="$PROJECT_DIR$/common/header.php" />
         <option value="$PROJECT_DIR$/functions/session_functions.php" />
         <option value="$PROJECT_DIR$/functions/quantity_functions.php" />
         <option value="$PROJECT_DIR$/admin_x25/admin_weekly_audit_x25.php" />
@@ -409,22 +450,26 @@
         <option value="$PROJECT_DIR$/admin_x25/admin_download_csv_x25.php" />
         <option value="$PROJECT_DIR$/admin_x25/admin_items_x25.php" />
         <option value="$PROJECT_DIR$/css/style_6_3.css" />
-        <option value="$PROJECT_DIR$/appendix.php" />
         <option value="$PROJECT_DIR$/admin_x25/admin_items_in_stock_x25.php" />
         <option value="$PROJECT_DIR$/admin_x25/admin_nav_x25.php" />
         <option value="$PROJECT_DIR$/common/login_bar.php" />
         <option value="$PROJECT_DIR$/admin_x25/admin_migration_x25.php" />
-        <option value="$PROJECT_DIR$/common/handle_ajax.php" />
         <option value="$PROJECT_DIR$/common/handle_forms.php" />
         <option value="$PROJECT_DIR$/functions/slack_functions.php" />
         <option value="$PROJECT_DIR$/common/MonthlyLayout.php" />
         <option value="$PROJECT_DIR$/common/PurchaseHistoryLayout.php" />
         <option value="$PROJECT_DIR$/common/VendorHistoryLayout.php" />
-        <option value="$PROJECT_DIR$/functions/ui_functions.php" />
         <option value="$PROJECT_DIR$/functions/action_functions.php" />
         <option value="$PROJECT_DIR$/common/ItemCostDetails.php" />
         <option value="$PROJECT_DIR$/common/Testing.php" />
+        <option value="$PROJECT_DIR$/functions/ui_functions.php" />
+        <option value="$PROJECT_DIR$/common/handle_ajax.php" />
+        <option value="$PROJECT_DIR$/common/header.php" />
+        <option value="$PROJECT_DIR$/appendix.php" />
+        <option value="$PROJECT_DIR$/css/themes.css" />
+        <option value="$PROJECT_DIR$/css/style_7_3.css" />
         <option value="$PROJECT_DIR$/foodstock.php" />
+        <option value="$PROJECT_DIR$/functions/holiday_functions.php" />
       </list>
     </option>
   </component>
@@ -585,7 +630,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="656301000" />
+    <option name="totallyTimeSpent" value="658613000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -595,7 +640,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.3846154" />
+      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.42036837" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32936078" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -619,24 +664,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/lunch/lunch_spots.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1156">
-          <caret line="68" selection-start-line="68" selection-end-line="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/AuditDetails.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="23" column="5" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="5" />
-          <folding>
-            <element signature="e#6#87#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/something.txt" />
     <entry file="file://$PROJECT_DIR$/something2.txt" />
     <entry file="file://$PROJECT_DIR$/functions/log_functions.php">
       <provider selected="true" editor-type-id="text-editor">
@@ -824,16 +851,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/common/header.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="137" column="28" selection-start-line="137" selection-start-column="23" selection-end-line="137" selection-end-column="28" />
-          <folding>
-            <element signature="n#style#0;n#body#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/admin_x25/admin_download_csv_x25.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -875,61 +892,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="129">
           <caret line="75" column="13" selection-start-line="75" selection-start-column="13" selection-end-line="75" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin_x25/build_admin_forms.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="868" column="68" selection-start-line="868" selection-start-column="68" selection-end-line="868" selection-end-column="68" />
-          <folding>
-            <element signature="n#style#0;n#option#0;n#!!top" expanded="true" />
-            <element signature="e#59#66#1" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="e#58#65#1" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="e#60#67#1" expanded="true" />
-            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="e#62#69#1" expanded="true" />
-            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
-            <element signature="e#32#38#1" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="e#25#31#1" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/appendix.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="40" column="44" selection-start-line="40" selection-start-column="44" selection-end-line="40" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/style_7_2.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="580">
-          <caret line="455" column="18" selection-start-line="455" selection-start-column="18" selection-end-line="455" selection-end-column="18" />
         </state>
       </provider>
     </entry>
@@ -1028,42 +990,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/common/handle_ajax.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="622" column="8" selection-start-line="622" selection-start-column="8" selection-end-line="622" selection-end-column="8" />
-          <folding>
-            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="e#38#44#1" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#tr#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="e#6#15#0" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/common/PurchaseHistoryLayout.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="318">
@@ -1095,46 +1021,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/common/MonthlyLayout.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="591" selection-start-line="591" selection-end-line="591" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="e#43#49#1" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="e#4#10#1" expanded="true" />
-            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
-            <element signature="e#4#10#1" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/admin_x25/admin_payments_x25.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="155">
-          <caret line="186" column="34" selection-start-line="186" selection-start-column="34" selection-end-line="186" selection-end-column="34" />
+        <state relative-caret-position="297">
+          <caret line="218" column="119" selection-start-line="218" selection-start-column="119" selection-end-line="218" selection-end-column="119" />
           <folding>
             <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
@@ -1144,25 +1034,12 @@
             <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
             <element signature="e#66#72#1" expanded="true" />
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#td#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#td#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#div#0;n#td#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/functions/ui_functions.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="88" column="35" selection-start-line="88" selection-start-column="9" selection-end-line="88" selection-end-column="35" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#td#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1176,15 +1053,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/functions/action_functions.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="38" selection-start-line="38" selection-end-line="38" />
+        <state relative-caret-position="135">
+          <caret line="1142" column="29" selection-start-line="1142" selection-start-column="29" selection-end-line="1142" selection-end-column="29" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/common/handle_forms.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="311" column="39" selection-start-line="311" selection-start-column="39" selection-end-line="311" selection-end-column="39" />
+        <state relative-caret-position="153">
+          <caret line="102" column="26" selection-start-line="102" selection-start-column="26" selection-end-line="102" selection-end-column="26" />
         </state>
       </provider>
     </entry>
@@ -1233,10 +1110,169 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/common/MonthlyLayout.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="257" column="63" selection-start-line="257" selection-start-column="63" selection-end-line="257" selection-end-column="63" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="e#43#49#1" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="e#43#49#1" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="e#43#49#1" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/functions/ui_functions.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="337" column="22" selection-start-line="337" selection-start-column="9" selection-end-line="337" selection-end-column="22" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/handle_ajax.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="20" column="39" selection-start-line="20" selection-start-column="39" selection-end-line="20" selection-end-column="39" />
+          <folding>
+            <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="e#38#44#1" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#tr#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="e#6#15#0" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin_x25/build_admin_forms.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="145">
+          <caret line="376" column="41" selection-start-line="376" selection-start-column="41" selection-end-line="376" selection-end-column="41" />
+          <folding>
+            <element signature="n#style#0;n#option#0;n#!!top" expanded="true" />
+            <element signature="e#59#66#1" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="e#58#65#1" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="e#60#67#1" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="e#62#69#1" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
+            <element signature="e#32#38#1" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#!!top" expanded="true" />
+            <element signature="e#25#31#1" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/header.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="14" column="74" selection-start-line="14" selection-start-column="74" selection-end-line="14" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/appendix.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="74" column="61" selection-start-line="74" selection-start-column="61" selection-end-line="74" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/mobile_7_3.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/themes.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="265">
+          <caret line="342" column="1" lean-forward="true" selection-start-line="342" selection-start-column="1" selection-end-line="342" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/style_7_3.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="129">
+          <caret line="1522" column="1" lean-forward="true" selection-start-line="1522" selection-start-column="1" selection-end-line="1522" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/foodstock.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="442" column="173" selection-start-line="442" selection-start-column="173" selection-end-line="442" selection-end-column="173" />
+        <state relative-caret-position="95">
+          <caret line="429" column="155" selection-start-line="429" selection-start-column="155" selection-end-line="429" selection-end-column="155" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
             <element signature="e#156#162#1" expanded="true" />
@@ -1348,6 +1384,19 @@
             <element signature="n#style#0;n#li#31;n#ul#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#li#33;n#ul#0;n#!!top" expanded="true" />
             <element signature="e#9#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/functions/holiday_functions.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="93" column="50" selection-start-line="93" selection-start-column="50" selection-end-line="93" selection-end-column="50" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#ul#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
