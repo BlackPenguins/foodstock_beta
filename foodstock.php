@@ -168,9 +168,9 @@ $results = $statement->execute();
 // BUILD TOP SECTION STATS
 //---------------------------------------
 
-$version = getHolidayVersion( "7.3" );
+$version = getHolidayVersion( "7.4" );
 $versionString = "Version $version";
-$versionDateString = "(Feb 23rd, 2020)";
+$versionDateString = "(Mar 1, 2020)";
 
 $row = $results->fetchArray();
 $siteIncome = $row['SiteIncome']; // The amount of money that SHOULD be coming in
@@ -425,6 +425,10 @@ echo "<div id='change_log_container'>";
 echo "<div id='change_log' class='page_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span> | <span style='$bugClass'>Bug Fixes in Orange</span>)</span></span></div>";
 echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
+
+DisplayUpdate("Mar 1, 2020 (7.4)", $itemType, array(
+    DisplayItem("request", "Added tags - little images that display in corner of items for 'New', 'Clearance', 'Limited Time', 'Seasonal'."),
+) );
 
 DisplayUpdate("Feb 23, 2020 (7.3)", $itemType, array(
     DisplayItem("request", "Automatic themes are in place (St Patricks Day, April Fools, Christmas). And more are coming (4th of July, Halloween, Birthdays)"),

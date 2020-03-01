@@ -62,6 +62,9 @@
                 case "7.2":
                     v7_2($db);
                     break;
+                case "7.4":
+                    v7_4($db);
+                    break;
                 default:
                     echo "There is no migration for version [$version]!";
                     break;
@@ -95,6 +98,11 @@
         echo "</form>";
     }
 
+
+    function v7_4($db ){
+        error_log("Altering tables...");
+        executeStatement($db, "ALTER TABLE Item ADD COLUMN Tag TEXT;");
+    }
 
     function v7_2($db ){
         error_log("Altering tables...");

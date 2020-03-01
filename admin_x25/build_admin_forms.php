@@ -369,7 +369,7 @@
             $andVendorIDClause = " AND VendorID = " .  $_SESSION['UserID'];
         }
         // Build Item Dropdown
-        $statement = $db->prepare("SELECT ID, Name, Price, Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate " .
+        $statement = $db->prepare("SELECT ID, Name, Price, Retired, ImageURL, ThumbURL, UnitName, Tag, UnitNamePlural, DiscountPrice, Alias, CurrentFlavor, ExpirationDate " .
             "FROM Item " .
             "WHERE Type = :itemType AND Hidden != 1 $andVendorIDClause " .
             "ORDER BY retired asc, name asc");
@@ -392,6 +392,7 @@
             $item_alias = $row['Alias'];
             $item_currentFlavor = $row['CurrentFlavor'];
             $item_expiration_date= $row['ExpirationDate'];
+            $item_tag= $row['Tag'];
             if(strlen($item_name) > 30) {
                 $item_name = substr($item_name, 0, 30)."...";
             }
@@ -414,6 +415,7 @@
             "<input type='hidden' id='Item_" . $itemType . "_ThumbURL_$item_id' value='$item_thumbURL'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_UnitName_$item_id' value='$item_unit_name'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_UnitNamePlural_$item_id' value='$item_unit_name_plural'/>" .
+            "<input type='hidden' id='Item_" . $itemType . "_Tag_$item_id' value='$item_tag'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_Alias_$item_id' value='$item_alias'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_CurrentFlavor_$item_id' value='$item_currentFlavor'/>" .
             "<input type='hidden' id='Item_" . $itemType . "_ExpirationDate_$item_id' value='$item_expiration_date'/>" .
@@ -514,12 +516,21 @@
         $editThumbURLID = "EditThumbURL" . $itemType;
         $editUnitNameID = "EditUnitName" . $itemType;
         $editUnitNamePluralID = "EditUnitNamePlural" . $itemType;
+        $editTag = "EditTag" . $itemType;
         $editAliasID = "EditAlias" . $itemType;
         $editCurrentFlavorID = "EditCurrentFlavor" . $itemType;
         $editExpirationDateID = "EditExpirationDate" . $itemType;
         $editActiveID = "EditStatusActive" . $itemType;
         $editDiscontinuedID = "EditStatusDiscontinued" . $itemType;
         $editStatusID = "EditStatus" . $itemType;
+
+        $tagDropdown = "<select id='$editTag' name='$editTag' class='text ui-widget-content ui-corner-all'>" .
+            "<option value=''>None</option>" .
+            "<option value='New'>New</option>" .
+            "<option value='LimitedTimeOnly'>Limited Time Only</option>" .
+            "<option value='Clearance'>Clearance</option>" .
+            "<option value='Seasonal'>Seasonal Item</option>" .
+            "</select>";
 
         echo "<div id='edit_item_" . $itemTypeID . "_modal' class='neptuneModal'>";
 
@@ -649,17 +660,27 @@
 
         echo "<tr>";
 
-        echo "<td colspan='2'>";
+        echo "<td colspan='1'>";
         echo "<li>";
         echo "<label style='display:inline-block' for='ThumbURL'>Status</label>";
         echo "<div class='radio_status'>";
+        echo "<div style='display: inline-block;'>";
         echo "<input class='radio' type='radio' id='$editActiveID' name='$editStatusID' value='active' checked />";
         echo "<label for='$editActiveID'>Active</label>";
         echo "<input style='margin-left: 10px;' class='radio' type='radio' id='$editDiscontinuedID' name='$editStatusID' value='discontinued' />";
         echo "<label for='$editDiscontinuedID'>Discontinued</label>";
         echo "</div>";
-        echo "<span>Mark this discontinued when you won't be selling an item anymore. A warning will appear in the card.<br>Once sold out the item won't show anywhere in the site anymore.</span>";
+        echo "</div>";
+        echo "<span>Mark this discontinued when you won't be selling an item anymore.<br>A warning will appear in the card.<br>Once sold out the item won't show anywhere in the site anymore.</span>";
 
+        echo "</li>";
+        echo "</td>";
+
+        echo "<td>";
+        echo "<li>";
+        echo "<label for='Tag'>Tag</label>";
+        echo  $tagDropdown;
+        echo "<span>The tag displayed in the top left of the card.</span>";
         echo "</li>";
         echo "</td>";
 
@@ -1024,6 +1045,7 @@ function setItemInfo( type ) {
     var itemImageURL = $('#Item_' + type + '_ImageURL_' + itemID).val();
     var itemUnitName = $('#Item_' + type + '_UnitName_' + itemID).val();
     var itemUnitNamePlural = $('#Item_' + type + '_UnitNamePlural_' + itemID).val();
+    var itemTag = $('#Item_' + type + '_Tag_' + itemID).val();
     var itemAlias = $('#Item_' + type + '_Alias_' + itemID).val();
     var itemCurrentFlavor = $('#Item_' + type + '_CurrentFlavor_' + itemID).val();
     var itemExpirationDate = $('#Item_' + type + '_ExpirationDate_' + itemID).val();
@@ -1038,6 +1060,7 @@ function setItemInfo( type ) {
     $("#EditThumbURL" + type).html("(" + itemThumbURL + ")");
     $("#EditUnitName" + type).val(itemUnitName);
     $("#EditUnitNamePlural" + type).val(itemUnitNamePlural);
+    $("#EditTag" + type).val(itemTag);
     $("#EditAlias" + type).val(itemAlias);
     $("#EditCurrentFlavor" + type).val(itemCurrentFlavor);
     $("#EditExpirationDate" + type).val(itemExpirationDate);

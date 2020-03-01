@@ -71,7 +71,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_7_3.css" );
+        define( "CSS_LINK", "$subdomain/css/style_7_4.css" );
         define( "MOBILE_CSS_LINK", "$subdomain/css/mobile_7_3.css" );
         define( "LIGHTS_CSS_LINK", "$subdomain/css/lights.css" );
         define( "THEMES_CSS_LINK", "$subdomain/css/themes.css" );

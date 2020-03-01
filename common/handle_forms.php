@@ -287,12 +287,13 @@ if( !$hasPermission ) {
         $discountPrice = convertDecimalToWholeCents(trim($_POST["EditDiscountPrice" . $itemType]));
         $unitName = trim($_POST["EditUnitName" . $itemType]);
         $unitNamePlural = trim($_POST["EditUnitNamePlural" . $itemType]);
+        $tag = trim($_POST["EditTag" . $itemType]);
         $alias = trim($_POST["EditAlias" . $itemType]);
         $currentFlavor = trim($_POST["EditCurrentFlavor" . $itemType]);
         $status = trim($_POST["EditStatus" . $itemType]);
         $expirationDate = trim($_POST["EditExpirationDate" . $itemType]);
 
-        $userMessage = editItem($db, $itemID, $name, $price, $discountPrice, $unitName, $unitNamePlural, $alias, $currentFlavor, $status, $expirationDate);
+        $userMessage = editItem($db, $itemID, $name, $price, $discountPrice, $unitName, $unitNamePlural, $alias, $currentFlavor, $status, $expirationDate, $tag);
     } else if (isset($_POST['Restock'])) {
         $itemID = trim($_POST["RestockDropdown"]);
         $itemType = trim($_POST["ItemType"]);

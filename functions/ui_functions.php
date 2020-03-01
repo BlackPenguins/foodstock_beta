@@ -345,7 +345,7 @@ function buildCardArea( $db, $itemType, $itemSearch ) {
 
     $cardQuery = "SELECT ID, Name, Date, TotalCans, " . getQuantityQuery() .
     ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
-    "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate, u.FirstName " .
+    "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, Tag, OutOfStockDate, u.FirstName " .
     "FROM Item i " .
     "LEFT JOIN User u ON i.VendorID = u.UserID " .
     "WHERE Type = :itemType " .$nameQuery . " AND Hidden != 1 " .
@@ -358,7 +358,7 @@ function buildCardArea( $db, $itemType, $itemSearch ) {
         // then inside those groups it sorts by frequency, then shelf, then backstock
         $cardQuery = "SELECT ID, VendorID, Name, Date, TotalCans, " . getQuantityQuery() .
         ",Price, ItemIncome, ItemExpenses, ItemProfit, DateModified, " .
-        "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
+        "Retired, ImageURL, ThumbURL, UnitName, UnitNamePlural, Tag,  (SELECT count(*) FROM Purchase_History p WHERE p.UserID = " . $_SESSION["UserID"] .
         " AND p.ItemID = i.ID AND p.Cancelled IS NULL) as Frequency, DiscountPrice, CurrentFlavor, RefillTrigger, OutOfStockReporter, OutOfStockDate, u.FirstName " .
         "FROM Item i " .
         "LEFT JOIN User u ON i.VendorID = u.UserID " .
@@ -398,6 +398,7 @@ function buildCardArea( $db, $itemType, $itemSearch ) {
 
         $item_name = $row['Name'];
         $supplierName = $row['FirstName'];
+        $tag = $row['Tag'];
 
         $price = $row['Price'];
         $originalPrice = $price;
@@ -582,6 +583,26 @@ function buildCardArea( $db, $itemType, $itemSearch ) {
         printHolidayPriceIcon($priceDisplay);
         echo $previewImage;
         echo "</div>";
+
+        if( $tag != "" ) {
+            echo "<div class='tag'>";
+            switch( $tag ) {
+                case "New";
+                    echo "<img src='" . IMAGES_LINK . "new.png'/>";
+                    break;
+                case "Clearance";
+                    echo "<img src='" . IMAGES_LINK . "clearance.png'/>";
+                    break;
+                case "LimitedTimeOnly";
+                    echo "<img src='" . IMAGES_LINK . "limited.png'/>";
+                    break;
+                case "Seasonal";
+                    echo "<img src='" . IMAGES_LINK . "seasonal.png'/>";
+                    break;
+            }
+            echo "</div>";
+        }
+
         echo "<div class='post-content'>";
         echo $reportButton;
 

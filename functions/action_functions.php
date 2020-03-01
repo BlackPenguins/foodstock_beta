@@ -59,7 +59,7 @@ function addItem( $db, $name, $price, $discountPrice, $itemType ) {
  * @param $price
  * @param $discountPrice
  */
-function editItem( $db, $itemID, $name, $price, $discountPrice, $unitName, $unitNamePlural, $alias, $currentFlavor, $status, $expirationDate ) {
+function editItem( $db, $itemID, $name, $price, $discountPrice, $unitName, $unitNamePlural, $alias, $currentFlavor, $status, $expirationDate, $tag ) {
 
     $retired = $status == "active" ? 0 : 1;
 
@@ -157,7 +157,7 @@ function editItem( $db, $itemID, $name, $price, $discountPrice, $unitName, $unit
     }
     // TODO MTM: Remove Exp Date from Item, we have it in Restock
     $statement = $db->prepare( "UPDATE Item SET Name=:name, ChartColor=:chartColor, Price = :price, DiscountPrice = :discountPrice, Retired = :retired $updateImageURL $updateThumbURL, " .
-        "UnitName = :unitName, UnitNamePlural = :unitNamePlural, Alias = :alias, CurrentFlavor = :currentFlavor, ExpirationDate = :expirationDate where ID = :itemID" );
+        "UnitName = :unitName, UnitNamePlural = :unitNamePlural, Alias = :alias, CurrentFlavor = :currentFlavor, ExpirationDate = :expirationDate, Tag = :tag where ID = :itemID" );
 
     $statement->bindValue( ":name", $name );
     $statement->bindValue( ":chartColor", "ABCDEF" );
@@ -166,6 +166,7 @@ function editItem( $db, $itemID, $name, $price, $discountPrice, $unitName, $unit
     $statement->bindValue( ":retired", $retired );
     $statement->bindValue( ":unitName", $unitName );
     $statement->bindValue( ":unitNamePlural", $unitNamePlural );
+    $statement->bindValue( ":tag", $tag );
     $statement->bindValue( ":alias", $alias );
     $statement->bindValue( ":currentFlavor", $currentFlavor );
     $statement->bindValue( ":expirationDate", $expirationDate );
@@ -508,9 +509,10 @@ function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack, $
             $itemUnits = "N/A";
             $itemUnitsPlural = "N/A";
             $currentFlavor = "N/A";
+            $tag = "";
 
             benchmark_start("Refill - Get Quantity $itemID");
-            $statement = $db->prepare("SELECT i.ID," . getQuantityQuery() . ",i.Price, i.Name, i.Type, i.UnitName, i.UnitNamePlural, i.CurrentFlavor FROM Item i WHERE i.ID = :itemID");
+            $statement = $db->prepare("SELECT i.ID," . getQuantityQuery() . ",i.Price, i.Name, i.Type, i.Tag, i.UnitName, i.UnitNamePlural, i.CurrentFlavor FROM Item i WHERE i.ID = :itemID");
             $statement->bindValue( ":itemID", $itemID );
             $results = $statement->execute();
 
@@ -523,6 +525,7 @@ function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack, $
                 $itemUnits = $row['UnitName'];
                 $itemUnitsPlural = $row['UnitNamePlural'];
                 $currentFlavor = $row['CurrentFlavor'];
+                $tag = $row['Tag'];
 
                 if ($currentFlavor != "") {
                     $currentFlavor = "[" . $currentFlavor . "] ";
@@ -540,7 +543,8 @@ function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack, $
             //New item was added to the fridge
             $priceDisplay = getPriceDisplayWithEnglish($price);
 
-            $slackMessageItems = $slackMessageItems . "*" . $itemName . " $currentFlavor:* " . $shelfQuantityBefore . " " .
+            $newTag = $tag == "New" ? "[NEW] " : "";
+            $slackMessageItems = $slackMessageItems . "*" . $newTag . $itemName . " $currentFlavor:* " . $shelfQuantityBefore . " " .
                 ($shelfQuantityBefore == 1 ? $itemUnits : $itemUnitsPlural) .
                 " --> *" . $newShelfQuantity . " " .
                 ($newShelfQuantity == 1 ? $itemUnits : $itemUnitsPlural) . "*    ($priceDisplay)\n";
