@@ -420,6 +420,12 @@ echo "<div id='change_log' class='page_header'><span class='title'>Change Log <s
 echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
 
+DisplayUpdate("Feb 25, 2023 (7.8)", $itemType, array(
+    DisplayItem("none", "Added DOT_ENV."),
+    DisplayItem("none", "Corrected 7.6 notes"),
+    DisplayItem("none", "Building server with GIT."),
+) );
+
 DisplayUpdate("Feb 11, 2023 (7.7)", $itemType, array(
     DisplayItem("none", "Getting ready for the relaunch - clearing all prices."),
     DisplayItem("none", "Removed the goal meter."),
@@ -428,18 +434,18 @@ DisplayUpdate("Feb 11, 2023 (7.7)", $itemType, array(
 
 DisplayUpdate("Aug 30, 2020 (7.6)", $itemType, array(
     DisplayItem("none", "Ability to hide completed requests in User Preferences."),
-    DisplayItem("none", "Users are notified about their payments across all months now. Cleaner tables giving the full picture"),
+    DisplayItem("none", "Users are notified about their payments across all months now. Cleaner tables giving the full picture."),
     DisplayItem("none", "Matt it notified about all payments as well."),
-    DisplayItem("none", "Ability to remind single user of payments."),
+    DisplayItem("none", "Ability to remind single user of about payment."),
     DisplayItem("none", "Division of graph into date and item stats (BROKEN)."),
     DisplayItem("none", "New centralized tools for calculating payments."),
-    DisplayItem("none", "New User and Info messages and system error messages to mimic webcrd, let's be honest."),
-    DisplayItem("none", "Correct moeny format in Add and Edit slack notificatios. And restock."),
+    DisplayItem("none", "New User and Info messages and system error messages that mimic WebCRD basically."),
+    DisplayItem("none", "Correct money format in Add and Edit slack notifications. And restock."),
     DisplayItem("none", "Listing of items inventoried in slack notification and correct number inventoried in user message."),
     DisplayItem("none", "Stats default start - 3 months ago not a year"),
-    DisplayItem("none", "Stats full screen graphs. Don't hide months with no data - the quaratine. Show the gaps."),
-    DisplayItem("none", "Stats total income and purchse per day. Not by month."),
-    DisplayItem("none", "CAPTCHA and disabled."),
+    DisplayItem("none", "Stats full screen graphs. Don't hide months with no data - like the quarantine. Show the gaps."),
+    DisplayItem("none", "Stats total income and purchase per day. Not by month."),
+    DisplayItem("none", "Added CAPTCHA to prevent bot sign-ups. Also all accounts start as disabled after registration."),
 ) );
 
 DisplayUpdate("Mar 20, 2020 (7.5)", $itemType, array(

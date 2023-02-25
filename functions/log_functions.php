@@ -75,16 +75,7 @@
     }
 
     function getLogDirectory( $directory ) {
-
-        if( isTestServer() ) {
-            $baseDirectory = "D:\\Apache Software Foundation\\Apache2.4\\logs\\";
-            $separator = "\\";
-        } else {
-            $baseDirectory = "/var/log/php-fpm/";
-            $separator = "/";
-        }
-
-        $completeDirectory = $baseDirectory . $directory . $separator;
+        $completeDirectory = $_ENV['LOG_DIRECTORY'] . $directory . $_ENV['SEPARATOR'];
 
         if( !is_dir( $completeDirectory ) ) {
             mkdir( $completeDirectory );

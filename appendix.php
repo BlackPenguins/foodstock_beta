@@ -1,16 +1,17 @@
 <?php
+    // SETTING UP DOT_ENV
+    require __DIR__ . '\vendor\autoload.php';
+
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+
     if(!function_exists('getDB')) {
 
         /**
          * @return SQLite3 $db
          */
         function getDB() {
-            if (isTestServer()) {
-                $dbPath = __DIR__ . getSlash() . "test_db" . getSlash() . "item.db";
-            } else {
-                $dbPath = __DIR__ . getSlash() . "db" . getSlash() . "item.db";
-            }
-
+            $dbPath = __DIR__ . $_ENV['DB_PATH'];
             $db = new SQLite3( $dbPath );
 
             // Wait 15 seconds before showing database locked error
@@ -24,25 +25,7 @@
 
     if(!function_exists('getTestDB')) {
         function getTestDB() {
-            if (isTestServer()) {
-                return __DIR__ . getSlash() . "test_db" . getSlash() . "item_unit_testing.db";
-            }
-        }
-    }
-
-    if(!function_exists('getSlash')) {
-        function getSlash() {
-            if (isTestServer()) {
-                return "\\";
-            } else {
-                return "/";
-            }
-        }
-    }
-
-    if(!function_exists('isTestServer')) {
-        function isTestServer() {
-            return $_SERVER['SERVER_ADDR'] == "::1" || $_SERVER['SERVER_ADDR'] == "72.225.38.26" || $_SERVER['SERVER_ADDR'] == "192.168.86.20" || $_SERVER['SERVER_ADDR'] == "192.168.86.34";
+            return __DIR__ . $_ENV['TEST_DB_PATH'];
         }
     }
 
@@ -55,21 +38,12 @@
     }
 
     date_default_timezone_set('America/New_York');
-    $isTestServer = isTestServer();
-    
+
     // LINKS ARE CLIENT SIDE - THEY USE THE URL (links, scripts, css)p
     // PATHS ARE SERVER SIDE - THEY USE THE COMPUTER LOCATION (includes, db)
-    $slash = getSlash();
-    $subdomain = "";
+    $slash = $_ENV['SEPARATOR'];
+    $subdomain = $_ENV['SUBDOMAIN'];
 
-    if( $isTestServer ) {
-//         log_debug("TEST SERVER WAS FOUND - USING FOODSTOCK_BETA PATHS." );
-        $subdomain = "/foodstock_beta";
-    } else if( strpos( $_SERVER['PHP_SELF'], "staging_x27" ) !== false ) {
-        error_log("STAGING SERVER WAS FOUND - USING STAGING_X27 PATHS." );
-        $subdomain = "/staging_x27";
-    }
-    
     if( !defined("CSS_LINK")) {
         define( "CSS_LINK", "$subdomain/css/style_7_5.css" );
         define( "MOBILE_CSS_LINK", "$subdomain/css/mobile_7_3.css" );

@@ -1,6 +1,7 @@
-test_db
-.idea
+test_db/*
+.idea/*
 test_db/item.db
 test_db/item_unit_testing.db
 .idea/workspace.xml
 .env
+.env.production
