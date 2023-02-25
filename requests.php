@@ -211,7 +211,7 @@
             "ORDER BY " .
             "CASE WHEN Completed == 0 OR Completed IS NULL THEN 1 ELSE 2 END ASC, " .
             "CASE WHEN Completed = 1 THEN DateCompleted ELSE " .
-            "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '6' WHEN Priority = 'In Progress' THEN '5' WHEN Priority = 'Quick' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
+            "CASE WHEN Priority = '' OR Priority = 'Unassigned' THEN '7' WHEN Priority = 'In Progress' THEN '6' WHEN Priority = 'Next Release' THEN '5' WHEN Priority = 'Quick' THEN '4' WHEN Priority = 'High' THEN '3' WHEN Priority = 'Medium' THEN '2' ELSE '1' END " .
             "END DESC," .
             "r.Date DESC";
         $statement = $db->prepare( $requestsQuery );
@@ -226,6 +226,9 @@
             $dateCompleted = "";
         
             if( $row['Completed'] == 1 ) {
+                if( $_SESSION['HideCompletedRequests'] == 1 ) {
+                    continue;
+                }
                 $completedMark = "&#9745;";
                 $completedClass = "completed";
                 $completedMarkColor = "#0b562d";
@@ -251,8 +254,10 @@
             $priorityColor = "";
 
             if( $row['Completed'] != 1 ) {
-                if ($priority == "In Progress") {
-                    $priorityColor = "background-color:#e5b2ff;";
+                if ($priority == "Next Release") {
+                    $priorityColor = "background-color:#b2e3ff;";
+                } else if ($priority == "In Progress") {
+                    $priorityColor = "background-color:#7cffa4;";
                 } else if ($priority == "Quick") {
                     $priorityColor = "background-color:#ffe567;";
                 } else if ($priority == "High") {
@@ -270,6 +275,7 @@
             if( IsAdminLoggedIn() && $row['Completed'] != 1 ) {
                 echo "<select onchange='togglePriority(" . $row['ID'] . ", this.value);' id='Priority_Request' name='Priority_Request' class='text ui-widget-content ui-corner-all'>";
                 echo "<option " . ( $priority == ""  ? "selected" : "" ) . " value='Unassigned'>Unassigned</option>";
+                echo "<option " . ( $priority == "Next Release"  ? "selected" : "" ) . " value='Next Release'>Next Release</option>";
                 echo "<option " . ( $priority == "In Progress"  ? "selected" : "" ) . " value='In Progress'>In Progress</option>";
                 echo "<option " . ( $priority == "Quick"  ? "selected" : "" ) . " value='Quick'>Quick</option>";
                 echo "<option " . ( $priority == "High"  ? "selected" : "" ) . " value='High'>High</option>";
@@ -277,7 +283,7 @@
                 echo "<option " . ( $priority == "Low"  ? "selected" : "" ) . " value='Low'>Low</option>";
                 echo "</select>";
             } else {
-                echo $priority;
+                echo "&nbsp;";
             }
             
             echo "</td>";
@@ -294,6 +300,15 @@
             echo "<td class='hidden_mobile_column' style='width:$column6Width%;'>" . $date_object->format('m/d/Y  [h:i:s A]') . "$dateCompleted</td>";
             echo "<td class='hidden_mobile_column' style='width:$column7Width%; word-break:break-word;'>" . strip_tags( $row['Note'] ) . "</td>";
             echo "</tr>";
+        }
+
+        if( $_SESSION['HideCompletedRequests'] == 1 ) {
+            $numCols = 6;
+            if( $title == "Requests" ) {
+                $numCols++;
+            }
+
+            echo "<tr class='hidden_mobile_column completed'><td colspan='$numCols' style='text-align:center;'>Completed requests have been hidden. You can change this in <i>Preferences</i>.</td></tr>";
         }
         
         echo "</table>";

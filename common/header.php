@@ -4,7 +4,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 
-<link rel="stylesheet" type="text/css" href="colorPicker.css"/>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 
 <?php
@@ -140,6 +139,10 @@
             $isAdminPage = false;
             $titleName = "Stats";
             break;
+        case ITEM_STATS_LINK:
+            $isAdminPage = false;
+            $titleName = "Item Stats";
+            break;
         case VENDOR_LINK:
             $isAdminPage = true;
             $isSharedAdminVendorPage = true;
@@ -169,7 +172,7 @@
     }
 
     if( $isAdminPage && !IsAdminLoggedIn() && !$isSharedAdminVendorPage ) {
-        $_SESSION['UserMessage'] = "You are not an admin! SHAME! Redirecting you home...";
+        SetUserErrorMessage( "You are not an admin! SHAME! Redirecting you home..." );
         header( "Location:" . SODASTOCK_LINK );
         die();
     }
@@ -197,8 +200,8 @@
     include(LOGIN_BAR_PATH);
     
     TrackVisit($db, $trackingName);
-    
-    DisplayUserMessage();
+
+    DisplayMessages();
     
     // For these pages display the Admin sidebar
     if ( IsAdminLoggedIn() || IsVendor() ) {

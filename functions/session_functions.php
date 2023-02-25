@@ -81,6 +81,7 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $showShelf = $row['ShowShelf'];
         $subscribeRestocks = $row['SubscribeRestocks'];
         $showTrending = $row['ShowTrending'];
+        $hideCompletedRequests = $row['HideCompletedRequests'];
 
         $inactiveUser = $row['Inactive'] == 1;
         $isVendor = $row['IsVendor'] == 1;
@@ -105,28 +106,78 @@ function LoginWithProxy($db, $isProxy, $username, $password_sha1) {
         $_SESSION['ShowShelf'] = $showShelf;
         $_SESSION['SubscribeRestocks'] = $subscribeRestocks;
         $_SESSION['ShowTrending'] = $showTrending;
+        $_SESSION['HideCompletedRequests'] = $hideCompletedRequests;
 
         $_SESSION['IsAdmin'] = $username == 'mmiles';
     } else {
         $_SESSION['LoggedIn'] = false;
         $_SESSION['UserName'] = null;
 
-        $_SESSION['UserMessage'] = "Incorrect Password";
+        $_SESSION['InfoMessage'] = "Incorrect Password";
     }
 }
 
-function DisplayUserMessage() {
-    
-    
-    if( isset( $_SESSION['UserMessage'])) {
-        echo "<div id='notification'>";
-        echo $_SESSION['UserMessage'];
-        echo "<button onclick='$(\"#notification\").hide();' id='close-notification'>Close Messages</button>";
-        echo "</div>";
-        
-//         echo "<script>alert('" . $_SESSION['UserMessage'] . "');</script>";
-        unset( $_SESSION['UserMessage'] );
+function SetInfoMessage( $message ) {
+    SetMessage( "InfoMessage", $message );
+}
+
+function SetUserErrorMessage( $message ) {
+    SetMessage( "UserErrorMessage", $message );
+}
+
+function SetSystemErrorMessage( $message ) {
+    SetMessage( "SystemErrorMessage", $message );
+}
+
+function SetMessage( $messageType, $message ) {
+    if( isset( $_SESSION[$messageType] ) ) {
+        $currentArray = $_SESSION[$messageType];
+        $currentArray[] = $message;
+        $_SESSION[$messageType] = $currentArray;
+    } else {
+        $newArray = array();
+        $newArray[] = $message;
+        $_SESSION[$messageType] = $newArray;
     }
+}
+
+function DisplayMessages() {
+    echo "<div class='notification'>";
+    $hasInfoMessages = DisplayMessage( "InfoMessage", "info" );
+    $hasUserErrorMessages = DisplayMessage( "UserErrorMessage", "userError" );
+    $hasSystemErrorMessages = DisplayMessage( "SystemErrorMessage", "systemError" );
+
+    if( $hasInfoMessages || $hasUserErrorMessages || $hasSystemErrorMessages ) {
+        echo "<button onclick='$(\".notification\").hide();' id='close-notification'>Close Messages</button>";
+        echo "<script>setTimeout( function() { $('.notification').toggle('slide', { direction: 'up' }, 1000) }, 3000 );</script>";
+    }
+
+    echo "</div>";
+}
+
+function DisplayMessage( $messageType, $messageClass ) {
+    if( isset( $_SESSION[$messageType])) {
+        foreach( $_SESSION[$messageType] as $key => $value ) {
+            echo "<div class='$messageClass'>";
+            echo $value;
+            echo "</div>";
+        }
+        unset( $_SESSION[$messageType] );
+        return TRUE;
+    }
+    return FALSE;
+}
+
+function GetMessage( $messageType ) {
+    if( isset( $_SESSION[$messageType])) {
+        $retValue = "";
+        foreach( $_SESSION[$messageType] as $key => $value ) {
+            $retValue .= $value;
+        }
+        unset( $_SESSION[$messageType] );
+        return $retValue;
+    }
+    return "NOTHING WAS SET";
 }
 
 function IsLoggedIn(){

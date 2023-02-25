@@ -5,21 +5,35 @@
     
     $url = ADMIN_PAYMENTS_LINK;
     include( HEADER_PATH );
+    include PURCHASE_MONTH_OBJ;
+    include USER_PAYMENT_PROFILE;
     echo "<script src='" . SETUP_MODALS_LINK . "'></script>";
 ?>
 
 <script type="text/javascript">
-    function notifyUsersOfPayments( month, year, displayMonth ) {
+    function notifyUsersOfPayments() {
         $isAlert = confirm('Are you sure that you want to notify all users about their balances?');
         
         if ( $isAlert ) {
             alert("Notified all users.");
 
             $.post("<?php echo AJAX_LINK; ?>", { 
-                type:'NotifyUserOfPayment',
-                month:month,
-                year:year,
-                displayMonth:displayMonth,
+                type:'NotifyAllUsersOfPayment',
+            },function(data) {
+                // Do nothing right now
+            });
+        }
+    }
+
+    function notifySingleUserOfPayments( userID ) {
+        $isAlert = confirm('Are you sure that you want to notify this user about their balances?');
+
+        if ( $isAlert ) {
+            alert("Notified user.");
+
+            $.post("<?php echo AJAX_LINK; ?>", {
+                type:'NotifySingleUserOfPayment',
+                userID, userID
             },function(data) {
                 // Do nothing right now
             });
@@ -50,14 +64,14 @@
         echo "<div class='page_header'><span class='title'>User Payments</span></div>";
         echo "<table style='font-size:12px; border-collapse:collapse; width:100%; margin-left: 10px;'>";
         echo "<thead><tr class='table_header'>";
-        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name</th>";
+        echo "<th style='padding:5px; border:1px #000 solid;' align='left'>Name <button onClick='notifyUsersOfPayments()'>Notify All</button></th>";
         
-        $monthsMaxAgo = 12;
+        $monthsMaxAgo = 60;
         
         for( $monthsAgo = 0; $monthsAgo <= $monthsMaxAgo; $monthsAgo++ ) {
             
-            $month = date('m', getDateOfPreviousMonth( $monthsAgo ) );
-            $year = date('Y', getDateOfPreviousMonth( $monthsAgo ) );
+            $month = date('m', UserPaymentProfile::getDateOfPreviousMonth( $monthsAgo ) );
+            $year = date('Y', UserPaymentProfile::getDateOfPreviousMonth( $monthsAgo ) );
             
             $monthDate = new DateTime();
             $monthDate->setDate($year, $month, 1 );
@@ -66,7 +80,7 @@
             
             echo "<th style='padding:5px; font-size:1.4em; border:1px #000 solid;' valign='middle' align='left'>";
             echo "<div style='font-size: 0.9em; text-align:center;'>$displayMonth</div>";
-            echo "<div style='text-align:center;'><button onClick='notifyUsersOfPayments(\"$month\", \"$year\", \"$displayMonth\")'>Notify All</button></div>";
+            echo "<div style='text-align:center;'></div>";
             echo "</th>";
         }
         echo "</tr></thead>";
@@ -87,20 +101,18 @@
             $fullName = $row['FirstName'] . " " . $row['LastName'];
             $userID = $row['UserID'];
             
-            echo "<td style='padding:5px; border:1px #000 solid;'>" . $fullName . "</td>";
-           
-            for( $monthsAgo = 0; $monthsAgo <= $monthsMaxAgo; $monthsAgo++ ) {
-                $month = date('m', getDateOfPreviousMonth( $monthsAgo ) );
-                $year = date('Y', getDateOfPreviousMonth( $monthsAgo ) );
-                
-                $monthDate = new DateTime();
-                $monthDate->setDate($year, $month, 1 );
-                
-                $monthLabel = $monthDate->format( 'F Y' );
-                
-                echo displayMonthForUser( $db, $fullName, $userID, $month, $year, $monthLabel );
+            echo "<td style='padding:5px; border:1px #000 solid;'>$fullName<br>" .
+                "<div style='text-align:center;'><button onClick='notifySingleUserOfPayments( $userID )'>Remind</button></div>" .
+                "</td>";
+
+
+            $userProfile = new UserPaymentProfile();
+            $userProfile->storePastYearPayments( $db, $userID, $monthsMaxAgo );
+
+            foreach( $userProfile->getMonths() as $purchaseMonth ) {
+                echo displayMonthForUser($db, $fullName, $userID, $purchaseMonth );
             }
-            
+
             echo "</tr>";
             if( $rowClass == "odd" ) { $rowClass = "even"; } else { $rowClass = "odd"; }
         }
@@ -131,7 +143,6 @@
         $statement = $db->prepare("SELECT p.PaymentID, u.FirstName, u.LastName, p.Cancelled, p.Method, p.Amount, p.Date, p.Note, p.ItemType, p.MonthForPayment " .
             "FROM Payments p " .
             "LEFT JOIN User u on p.UserID = u.UserID " .
-            "WHERE p.Date >= date('now','-12 months') " .
             "ORDER BY p.Date DESC" );
         $results = $statement->execute();
 
@@ -178,28 +189,23 @@
         echo "</div>";
     echo "</span>";
     
-    function getDateOfPreviousMonth( $xMonthsAgo ) {
-        $today = date('F Y');
-        return strtotime( '-' . $xMonthsAgo . ' months', strtotime( $today ) );
-    }
-    
-    function displayMonthForUser( $db, $userFullName, $userID, $monthNumber, $year, $monthLabel ) {
-        $totalArray = getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel );
-        
-        $currentMonthSodaTotal = $totalArray['SodaTotal'];
-        $currentMonthSnackTotal = $totalArray['SnackTotal'];
-        $currentMonthTotal = $currentMonthSodaTotal + $currentMonthSnackTotal;
+    /**
+     * @param $db
+     * @param $userFullName
+     * @param $userID
+     * @param $purchaseMonth PurchaseMonthObj
+     * @return string
+     */
+    function displayMonthForUser( $db, $userFullName, $userID, $purchaseMonth ) {
 
-        $currentMonthSodaCreditTotal = $totalArray['SodaCreditTotal'];
-        $currentMonthSnackCreditTotal = $totalArray['SnackCreditTotal'];
-        $currentMonthCreditTotal = $currentMonthSodaCreditTotal + $currentMonthSnackCreditTotal;
+        $currentMonthTotal = $purchaseMonth->getTotal();
+        $currentMonthCreditTotal = $purchaseMonth->getTotalCredit();
 
-        $sodaTotalPaid = $totalArray['SodaPaid'];
-        $snackTotalPaid = $totalArray['SnackPaid'];
+        $sodaTotalUnpaid = $purchaseMonth->getSodaUnpaid();
+        $snackTotalUnpaid = $purchaseMonth->getSnackUnpaid();
+        $totalUnpaid = $purchaseMonth->getTotalUnpaid();
 
-        $sodaTotalUnpaid = $currentMonthSodaTotal - $sodaTotalPaid;
-        $snackTotalUnpaid = $currentMonthSnackTotal - $snackTotalPaid;
-        $totalUnpaid = $sodaTotalUnpaid + $snackTotalUnpaid;
+        $monthLabel = $purchaseMonth->monthLabel;
         
         $totalBalanceColor = "";
         $monthHadBalance = "";

@@ -6,7 +6,7 @@
     $url = STATS_LINK;
     
     // Start Date - 1 Year Ago
-    $startDate =  date('Y-m-d', strtotime( '-1 year', time() ) );
+    $startDate =  date('Y-m-d', strtotime( '-3 month', time() ) );
     
     // End Date - Today
     $endDate = date('Y-m-d');
@@ -19,31 +19,13 @@
         $endDate = $_POST['end_date'];
     }
     
-    $itemsToShow = [29,42,119];
-    
-    if(isset($_POST['submit_items'])){
-        if(!empty($_POST['Item'])){
-            // Loop to store and display values of individual checked checkbox.
-            $itemsToShow = $_POST['Item'];
-        }
-    }
-
-    $itemNamesToShow = "";
     $db = getDB();
 
-    $statQuery = "SELECT Name FROM Item WHERE ID in " . getPrepareStatementForInClause( count( $itemsToShow ) ) . " Order BY Type DESC, NAME ASC";
-    $statStatment = $db->prepare( $statQuery );
-    bindStatementsForInClause( $statStatment, $itemsToShow );
-    $results = $statStatment->execute();
-
-    while ($row = $results->fetchArray()) {
-        $itemNamesToShow .= $row['Name'] . ",";
-    }
-    
-    $trackingName = "Stats - $startDate : $endDate [$itemNamesToShow]";
+    $trackingName = "Stats (Date) - $startDate : $endDate";
 
     include( HEADER_PATH );
 ?>
+
 <script type="text/javascript">
     $( document ).ready( function() {
 
@@ -54,87 +36,98 @@
             echo "$('#start_date').datepicker('setDate', '$startDate' );";
             echo "$('#end_date').datepicker('setDate', '$endDate' );";
         ?>
-
-        // top soda purchases
-        // top snack purchases
-        // top count purchase
-        // your own ideas
-        // sold per day 
     });
 </script>
+
 <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script> 
 </head>
 
 <?php
-    echo "<div style='padding: 10px; background-color:#d07a30; border-bottom: 3px solid #000;'>";
-    echo "<h1>Have an idea for a chart/graph? Let me know, I'll make it.</h1>";
-    echo "<form enctype='multipart/form-data' action='" . STATS_LINK . "' method='POST' style='background-color:#b9b9b9; border:2px solid #000; padding:20px;' >";
-    
-    $statement = $db->prepare( "SELECT ID, Name, Retired FROM Item WHERE Hidden != :hidden Order BY Type DESC, NAME ASC" );
-    $statement->bindValue( ":hidden", 1 );
-    $results =$statement->execute();
-    
-    //--------------------------------------------------------
-    //--------------------------------------------------LAURIE DOESNT USE THE SITE THERE IS MISSING INFORMATION!!
-    
-    echo "<table>";
-    $itemCountInRow = 0;
-    echo "<tr>";
-    while ($row = $results->fetchArray()) {
-        
-        $itemName = $row['Name'];
-        $itemID = $row['ID'];
-        $isRetired = $row['Retired'] == 1;
-        $fontStyle = $isRetired ? "style='font-weight:bold; color:#962222'" : "";
-        echo "<td><input type='checkbox' class='item_checkbox' name='Item[]' value='$itemID'><span $fontStyle>$itemName</span></input></td>";
-        
-        $itemCountInRow++;
-        if( $itemCountInRow == 7 ) {
-            $itemCountInRow = 0;
-            echo "</tr><tr>";
-        }
-    }
-    echo "</table>";
-    
-    echo "<input type='submit' name='submit_items' value='Graph Items'/>";
-    echo "<div style='margin-top: 10px;'>";
-    echo "<input id='checkAll' type='checkbox' name='CheckAll'>Check All Items</input>";
-    echo "</div>";
-    echo "</form>";
+    echo "<div style='padding: 10px; background-color:#d0b530; border-bottom: 3px solid #000;'>";
+    echo "<div style='height: 90px;'>";
+    $startDateFormatted = DateTime::createFromFormat('Y-m-d', $startDate );
+    $startDateFormatted = $startDateFormatted->format('M jS, Y');
+    $endDateFormatted = DateTime::createFromFormat('Y-m-d', $endDate );
+    $endDateFormatted = $endDateFormatted->format('M jS, Y');
 
-    echo "<div id='purchasesPerMonth' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
-    
-    log_debug("Stats - Start Date [$startDate] End Date [$endDate]");
-    
-    echo "<form enctype='multipart/form-data' action='" . STATS_LINK . "' method='POST' style='background-color:#b9b9b9; border:2px solid #000; padding:20px; margin-top:30px;'>";
-    echo "Start Date: <input autocomplete='off' type='text' name='start_date' id='start_date'>";
-    echo "End Date: <input autocomplete='off' type='text' name='end_date' id='end_date'>";
-    echo "<input type='submit' value='Give me Statistics!'/>";
+    echo "<span style='font-size: 2em;'>Showing <b>$startDateFormatted</b> to <b>$endDateFormatted</b></span>";
+    echo "<form enctype='multipart/form-data' action='" . STATS_LINK . "' method='POST' style='background-color:#ffe566; border:2px solid #000; padding:5px; display:inline; float:right;'>";
+
+    echo "<table>";
+
+    echo "<tr>";
+    echo "<td>Start Date:</td>";
+    echo "<td><input autocomplete='off' type='text' name='start_date' id='start_date'></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td>End Date:</td>";
+    echo "<td><input autocomplete='off' type='text' name='end_date' id='end_date'></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td colspan='2' style='text-align: center; padding: 5px;'><input type='submit' value='Give me Statistics!'/></td>";
+    echo "</tr>";
+
+    echo "</table>";
+
     echo "</form>";
-    
+    echo "</div>";
+
+    echo "<div class='graph_container' id='totalPurchasesPerDay'></div>";
+    echo "<div class='graph_container' id='totalIncomePerDay'></div>";
+    echo "<div class='graph_container' id='topSnacks'></div>";
+    echo "<div class='graph_container' id='topUsers'></div>";
+    echo "</div>";
+
     ?>
     
 <script type="text/javascript">
-
-$("#checkAll").change(function(){
-    var status = $(this).is(":checked") ? true : false;
-    console.log("Changing to [" + status  + "]" );
-    $(".item_checkbox").prop("checked",status);
-});
-
 window.onload = function() {
 
-    $("#purchasesPerMonth").CanvasJSChart({ 
-        title: { 
-            text: "Purchases per Month" 
-        }, 
-        axisY: { 
-            title: "Total Units Purchased" 
+    $("#totalPurchasesPerDay").CanvasJSChart({
+        title: {
+            text: "Total Purchases per Day"
         },
-        data: [ 
-        <?php  getData( $db, $itemsToShow ); ?>
-        ] 
-    });   
+        axisY: {
+            title: "Units Purchased"
+        },
+        axisX:{
+            interval: 5,
+            intervalType: "day",
+        },
+        data: [
+            {
+                type: 'line',
+                yValueFormatString: '$#,###.00',
+                dataPoints: [
+                    <?php  getTotalUnitsPerDay( $db, $startDate, $endDate, "UNITS" ); ?>
+                ]
+            }
+        ]
+    });
+
+    $("#totalIncomePerDay").CanvasJSChart({
+        title: {
+            text: "Total Income per Day"
+        },
+        axisY: {
+            title: "Income"
+        },
+        axisX:{
+            interval: 5,
+            intervalType: "day",
+        },
+        data: [
+            {
+                type: 'line',
+                yValueFormatString: '$#,###.00',
+                dataPoints: [
+                    <?php  getTotalUnitsPerDay($db, $startDate, $endDate, "INCOME"); ?>
+                ]
+            }
+        ]
+    });
     
     $("#topSnacks").CanvasJSChart({ 
         title: { 
@@ -142,47 +135,18 @@ window.onload = function() {
         }, 
         axisY: { 
             title: "Total Cost Purchased" 
-        }, 
-        data: [ 
-        { 
-            type: "bar", 
-            toolTipContent: "{label}: {y}",
-            xValueFormatString: "$#,###.00",
-            yValueFormatString: "$#,###.00",
-            dataPoints: [ 
-
-                <?php
-                $totalPurchasesTotalQuery = "SELECT count(p.itemid) as 'count', " .
-                    "sum(CASE " .
-                    "WHEN d.DiscountPrice IS NOT NULL AND d.DiscountPrice > 0 THEN d.DiscountPrice ".
-                    "WHEN d.Price IS NOT NULL THEN d.Price " .
-                    "WHEN p.DiscountCost IS NOT NULL AND p.DiscountCost > 0 THEN p.DiscountCost " .
-                    "WHEN p.Cost IS NOT NULL THEN p.Cost ".
-                    "ELSE 99999 END) as 'totalCost', " . // Make a bug very obvious if its not these cases
-                    "p.itemid, i.name as 'name', i.type as 'type' " .
-                    "FROM Purchase_History p " .
-                    "JOIN Item i on p.itemid = i.id  " .
-                    "LEFT JOIN Item_Details d on p.ItemDetailsID = d.ItemDetailsID  " .
-                    "WHERE p.Date BETWEEN :startDate AND :endDate AND p.Cancelled is NULL " .
-                    "GROUP BY p.itemid " .
-                    "ORDER BY totalcost asc";
-                $statement = $db->prepare( $totalPurchasesTotalQuery );
-                $statement->bindValue( ":startDate", $startDate );
-                $statement->bindValue( ":endDate", $endDate );
-                $results = $statement->execute();
-
-                    while ($row = $results->fetchArray()) {
-                        $itemName = $row['name'];
-                        $count = $row['count'];
-                        $totalCost = getPriceDisplayWithDecimals( $row['totalCost'] );
-                        $itemType = $row['type'];
-                          
-                        echo "{ label: '$itemName ($count units)', y: $totalCost  }, ";
-                    }
-                ?>
-            ] 
-        } 
-        ] 
+        },
+        data: [
+            {
+                type: 'bar',
+                toolTipContent: '{label}: {y}',
+                xValueFormatString: '$#,###.00',
+                yValueFormatString: '$#,###.00',
+                dataPoints: [
+                    <?php  getTotalUnitsPurchased($db, $startDate, $endDate); ?>
+                ]
+            }
+        ]
     });   
     
     $("#topUsers").CanvasJSChart({ 
@@ -198,175 +162,179 @@ window.onload = function() {
             horizontalAlign: "right" 
         }, 
         data: [ 
-        { 
-            type: "pie", 
-            showInLegend: true, 
-            toolTipContent: "{label} (#percent%) <br/> {y}", 
-            indexLabel: "{y}", 
-            yValueFormatString: "$#,###.00",
-            dataPoints: [ 
-
-            <?php
-//                  $anonNames = ['Rabbit', 'Koala', 'Panda', 'Cat', 'Dog', 'Mouse', 'Porcupine', 'Monkey', 'Giraffe', 'Dolphin', 'Jaguar', 'Seal', 'Deer', 'Penguin', 'Lamb', 'Owl', 'Kangaroo', 'Fox', 'Hamster', 'Lion' ];
-                $anonCount = 0;
-                $totalPurchasesByUserQuery = "SELECT u.UserName, u.AnonName, u.FirstName, u.LastName, " .
-                "sum(CASE " .
-                    "WHEN d.DiscountPrice IS NOT NULL AND d.DiscountPrice > 0 THEN d.DiscountPrice ".
-                    "WHEN d.Price IS NOT NULL THEN d.Price " .
-                    "WHEN p.DiscountCost IS NOT NULL AND p.DiscountCost > 0 THEN p.DiscountCost " .
-                    "WHEN p.Cost IS NOT NULL THEN p.Cost ".
-                    "ELSE 99999 END) as 'TheTotal', " . // Make a bug very obvious if its not these cases
-                "p.userID " .
-                "FROM Purchase_History p " .
-                "JOIN User u on p.UserID = u.UserID " .
-                "LEFT JOIN Item_Details d ON p.ItemDetailsID = d.ItemDetailsID  " .
-                "WHERE p.cancelled is null and p.Date BETWEEN :startDate AND :endDate " .
-                "GROUP BY u.UserID " .
-                "ORDER BY TheTotal";
-                $totalPurchasesByUserStatement = $db->prepare( $totalPurchasesByUserQuery );
-                $totalPurchasesByUserStatement->bindValue( ":endDate", $endDate );
-                $totalPurchasesByUserStatement->bindValue( ":startDate", $startDate );
-                $results = $totalPurchasesByUserStatement->execute();
-
-                log_sql( "Total Purchases SQL: [$totalPurchasesByUserQuery]" );
-                 
-                while ($row = $results->fetchArray()) {
-                    $name = $row['FirstName'] . " " . $row['LastName'];
-                    $total = getPriceDisplayWithDecimals( $row['TheTotal'] );
-                    $userName = $row['UserName'];
-                    $anonName = $row['AnonName'];
-                     
-                    if( IsLoggedIn() && $userName == $_SESSION['UserName'] ) {
-                        $name = "(YOU)";
-                    } else if( !IsAdminLoggedIn() ) {
-                        $name = $anonName;
-                    }
-                    
-                    echo "{ label: '$name',  y: $total, legendText: '$name'}, ";
-                }
-            ?>
-            ] 
-        } 
+            {
+                type: "pie",
+                showInLegend: true,
+                toolTipContent: "{label} (#percent%) <br/> {y}",
+                indexLabel: "{y}",
+                yValueFormatString: "$#,###.00",
+                dataPoints: [
+                    <?php getPurchasesByUser( $db, $startDate, $endDate ); ?>
+                ]
+            }
         ] 
     }); 
 } 
-</script> 
+</script>
+</body>
+
 <?php
-    echo "<div id='topSnacks' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
-    echo "<div id='topUsers' style='margin-bottom:10px; padding:10px; width: 900px; height: 500px'></div>";
-
-    echo "<div class='center_piece'>";
-    echo "This table shows when an item was last bought. Red rows are already discontinued. Used to determine which items to discontinue.";
-    echo "<div class='rounded_table'>";
-    echo "<table>";
-    echo "<thead><tr class='table_header'>";
-    echo "<th>Item</th>";
-    echo "<th>Last Bought</th>";
-    echo "</tr>";
-
-    $current_date = new DateTime();
-    $lastPurchaseByItemQuery = "select max(d.Date) as LastBought, i.Name as ItemName, i.Retired as Discontinued " .
-     "FROM Inventory_History d " .
-     "JOIN Item i on d.ItemID = i.ID ".
-     "WHERE d.ItemID in " . getPrepareStatementForInClause( count( $itemsToShow ) ) . " and d.ShelfQuantityBefore > d.ShelfQuantity " .
-     "GROUP BY d.ItemID " .
-     "ORDER BY LastBought ASC";
-    $lastPurchaseByItemStatement = $db->prepare( $lastPurchaseByItemQuery );
-    bindStatementsForInClause( $lastPurchaseByItemStatement, $itemsToShow );
-    $lastPurchaseByItemResults = $lastPurchaseByItemStatement->execute();
-
-    while ($lastPurchaseByItemRow = $lastPurchaseByItemResults->fetchArray()) {
-        $itemName = $lastPurchaseByItemRow['ItemName'];
-        $lastBought = $lastPurchaseByItemRow['LastBought'];
-        $isDiscontinued = $lastPurchaseByItemRow['Discontinued'] == 1;
-        $rowStyle = $isDiscontinued ? "class='discontinued_row'" : "";
-        echo "<tr $rowStyle>";
-        echo "<td>$itemName</td>";
-        echo "<td>$lastBought (" . DisplayAgoTime($lastBought, $current_date) . ")</td>";
-        echo "</tr>";
-    }
-    echo "</table>";
-    echo "</div>";
-
-
-//     getData( $db, $itemsToShow, $isLoggedIn, $isLoggedInAdmin );
-    echo "</div>";
-
-
-/**
- * @param $db SQLite3
- * @param $itemsToShow
- */
-    function getData( $db, $itemsToShow ) {
-        $query = "select COUNT(p.ID) as TotalItems, i.Name, p.ItemID, strftime(\"%m-%Y\", p.Date) as 'Time' " .
+    /**
+     * @param $db SQLite3
+     * @param $startDate
+     * @param $endDate
+     */
+    function getTotalUnitsPurchased( $db, $startDate, $endDate ) {
+        $totalPurchasesTotalQuery = "SELECT count(p.itemid) as 'count', " .
+            "sum(CASE " .
+            "WHEN d.DiscountPrice IS NOT NULL AND d.DiscountPrice > 0 THEN d.DiscountPrice ".
+            "WHEN d.Price IS NOT NULL THEN d.Price " .
+            "WHEN p.DiscountCost IS NOT NULL AND p.DiscountCost > 0 THEN p.DiscountCost " .
+            "WHEN p.Cost IS NOT NULL THEN p.Cost ".
+            "ELSE 99999 END) as 'totalCost', " . // Make a bug very obvious if its not these cases
+            "p.itemid, i.name as 'name', i.type as 'type' " .
             "FROM Purchase_History p " .
-            "JOIN Item i on p.ItemID =  i.ID " .
-            "WHERE p.ItemID in " . getPrepareStatementForInClause( count( $itemsToShow ) ) .
-            "GROUP BY strftime(\"%m-%Y\", p.Date), p.ItemID " .
-            "ORDER BY p.ItemID, p.Date ASC";
-        $statement = $db->prepare( $query );
-        bindStatementsForInClause( $statement, $itemsToShow );
+            "JOIN Item i on p.itemid = i.id  " .
+            "LEFT JOIN Item_Details d on p.ItemDetailsID = d.ItemDetailsID  " .
+            "WHERE p.Date BETWEEN :startDate AND :endDate AND p.Cancelled is NULL " .
+            "GROUP BY p.itemid " .
+            "ORDER BY totalcost asc";
+        $statement = $db->prepare( $totalPurchasesTotalQuery );
+        $statement->bindValue( ":startDate", $startDate );
+        $statement->bindValue( ":endDate", $endDate );
         $results = $statement->execute();
 
-        $currentItem = -1;
+        while ($row = $results->fetchArray()) {
+            $itemName = $row['name'];
+            $count = $row['count'];
+            $totalCost = getPriceDisplayWithDecimals( $row['totalCost'] );
+
+            echo "{ label: '$itemName ($count units)', y: $totalCost  }, ";
+        }
+    }
+    /**
+     * @param $db SQLite3
+     * @param $itemsToShow
+     */
+    function getTotalUnitsPerDay($db, $startDate, $endDate, $type ) {
+        $query = "select COUNT(p.ID) as TotalItems, SUM(i.discountprice) as TotalIncome, strftime(\"%m-%d-%Y\", p.Date) as 'Time' " .
+            "FROM Purchase_History p " .
+            "JOIN Item_Details i ON p.itemDetailsID = i.itemDetailsID " .
+            "WHERE p.Date BETWEEN :startDate AND :endDate AND p.Cancelled is NULL " .
+            "GROUP BY strftime(\"%m-%d-%Y\", p.Date) " .
+            "ORDER BY p.Date ASC";
+        $statement = $db->prepare( $query );
+        $statement->bindValue( ":startDate", $startDate );
+        $statement->bindValue( ":endDate", $endDate );
+        $results = $statement->execute();
+
+
+        $totalItemsPerDay = array();
+
         while ($row = $results->fetchArray()) {
             $totalItems = $row['TotalItems'];
-            $name = $row['Name'];
+            $totalIncome = $row['TotalIncome'];
             $time = $row['Time'];
-            $itemID = $row['ItemID'];
-            
+
             $splitDate = explode('-', $time );
             $month = $splitDate[0];
-            $year = $splitDate[1];
-            
-            $userQuery = "select u.FirstName, u.LastName, u.UserName, u.AnonName, count(u.UserName) as UserCount " .
-                "FROM Purchase_History p " .
-                "JOIN User u ON p.userID = u.UserID " .
-                "WHERE p.ItemID = :itemID AND strftime(\"%m-%Y\", p.Date) = :monthYear GROUP BY u.UserName;";
-            $userStatement = $db->prepare( $userQuery );
-            $userStatement->bindValue( ":itemID", $itemID );
-            $userStatement->bindValue( ":monthYear", $month . "-" . $year );
-            $userResults = $userStatement->execute();
+            $day = $splitDate[1];
+            $year = $splitDate[2];
 
-            $hoverInfo = "";
-            while ($userRow = $userResults->fetchArray()) {
-                $fullName = $userRow['FirstName'] . " " . $userRow['LastName'];
-                $userCount = $userRow['UserCount'];
-                $userName = $userRow['UserName'];
-                $anonName = $userRow['AnonName'];
-                
-                if( IsLoggedIn() && $userName == $_SESSION['UserName'] ) {
-                    $fullName = "(YOU)";
-                } else if( !IsAdminLoggedIn() ) {
-                    $fullName = $anonName;
-                }
-                
-                $hoverInfo = $hoverInfo . "$fullName: $userCount units<br>";
+            $dayKey = "$year, $month, $day";
+            if( $type == "UNITS" ) {
+                $totalItemsPerDay[$dayKey] = $totalItems;
+                error_log("Add Units [$dayKey] [$totalItems]");
+            } else if( $type == "INCOME" ) {
+                $totalIncome = getPriceDisplayWithDecimals( $totalIncome );
+                $totalItemsPerDay[$dayKey] = $totalIncome;
+                error_log("Add Income [$dayKey] [$totalIncome]");
             }
-
-            if( $currentItem == -1 || $currentItem != $itemID ) {
-                
-                if( $currentItem != -1 ) {
-                    // Close the previous one
-                    echo "]},\n";
-                }
-                
-                echo "{" .
-                        "type: 'line'," .
-                        "showInLegend: true," .
-                        "name: '$name'," .
-                        "dataPoints: [";
-                
-                $currentItem = $itemID;
-            }
-            
-            
-            echo " { x: new Date($year, ($month - 1), 1), y: $totalItems, toolTipContent: \"<u><b>{name}:</u> {y} total units</b><br>$hoverInfo\" }, \n";
         }
-        
-        // Close the final one
-        echo "]},\n";
+
+        $begin = new DateTime( $startDate );
+        $end = new DateTime( $endDate );
+
+        $interval = DateInterval::createFromDateString('1 day');
+        $period = new DatePeriod($begin, $interval, $end);
+
+        foreach ($period as $dt) {
+            $year = $dt->format("Y");
+            $month = $dt->format("m");
+            $day = $dt->format("d");
+            $dayOfWeek = $dt->format("D");
+            $tooltipFormat = $dt->format("m/d/Y");
+
+            $dayKey = "$year, $month, $day";
+
+            $totalItems = 0;
+            if( array_key_exists( $dayKey, $totalItemsPerDay ) ) {
+                $totalItems = $totalItemsPerDay[$dayKey];
+            }
+
+            if( ( $dayOfWeek == "Sun" || $dayOfWeek == "Sat" ) && $totalItems == 0 ) {
+                continue;
+            }
+
+            $month = $month - 1;
+
+            if( $month <= 9 ) {
+                $month = "0$month";
+            }
+
+            $dayKey = "$year, $month, $day";
+            $tooltipValue = "";
+
+            if( $type == "INCOME" ) {
+                $tooltipValue = "$" . $totalItems;
+            } else if( $type == "UNITS" ) {
+                $tooltipValue =  $totalItems . " purchases";
+            }
+
+            echo " { x: new Date($dayKey), y: $totalItems, toolTipContent:'$tooltipFormat: <b>$tooltipValue</b>' }, \n";
+        }
+    }
+
+    /**
+     * @param $db SQLite3
+     * @param $startDate
+     * @param $endDate
+     */
+    function getPurchasesByUser($db, $startDate, $endDate ) {
+        $totalPurchasesByUserQuery = "SELECT u.UserName, u.AnonName, u.FirstName, u.LastName, " .
+            "sum(CASE " .
+                "WHEN d.DiscountPrice IS NOT NULL AND d.DiscountPrice > 0 THEN d.DiscountPrice ".
+                "WHEN d.Price IS NOT NULL THEN d.Price " .
+                "WHEN p.DiscountCost IS NOT NULL AND p.DiscountCost > 0 THEN p.DiscountCost " .
+                "WHEN p.Cost IS NOT NULL THEN p.Cost ".
+                "ELSE 99999 END) as 'TheTotal', " . // Make a bug very obvious if its not these cases
+            "p.userID " .
+            "FROM Purchase_History p " .
+            "JOIN User u on p.UserID = u.UserID " .
+            "LEFT JOIN Item_Details d ON p.ItemDetailsID = d.ItemDetailsID  " .
+            "WHERE p.cancelled is null and p.Date BETWEEN :startDate AND :endDate " .
+            "GROUP BY u.UserID " .
+            "ORDER BY TheTotal";
+        $totalPurchasesByUserStatement = $db->prepare( $totalPurchasesByUserQuery );
+        $totalPurchasesByUserStatement->bindValue( ":endDate", $endDate );
+        $totalPurchasesByUserStatement->bindValue( ":startDate", $startDate );
+        $results = $totalPurchasesByUserStatement->execute();
+
+        log_sql( "Total Purchases SQL: [$totalPurchasesByUserQuery]" );
+
+        while ($row = $results->fetchArray()) {
+            $name = $row['FirstName'] . " " . $row['LastName'];
+            $total = getPriceDisplayWithDecimals( $row['TheTotal'] );
+            $userName = $row['UserName'];
+            $anonName = $row['AnonName'];
+
+            if( IsLoggedIn() && $userName == $_SESSION['UserName'] ) {
+                $name = "(YOU)";
+            } else if( !IsAdminLoggedIn() ) {
+                $name = $anonName;
+            }
+
+            echo "{ label: '$name',  y: $total, legendText: '$name'}, ";
+        }
     }
 ?>
-
-</body>

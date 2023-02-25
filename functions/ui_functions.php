@@ -138,122 +138,6 @@ function DisplayShelfCan($itemID, $item_name, $thumbURL) {
 
 /**
  * @param $db SQLite3
- * @param $userID
- * @param $monthNumber
- * @param $year
- * @param $monthLabel
- * @return array
- */
-function getTotalsForUser( $db, $userID, $monthNumber, $year, $monthLabel ) {
-    $startDate = $year . "-" . $monthNumber . "-01";
-    
-    if( $monthNumber == 12) {
-        $monthNumber = 1;
-        $year++;
-    } else {
-        $monthNumber++;
-    }
-    
-    if( $monthNumber < 10 ) { $monthNumber = "0" . $monthNumber; }
-    
-    $endDate = $year . "-" . $monthNumber . "-01";
-    
-    $currentMonthSodaTotal = 0.0;
-    $currentMonthSnackTotal = 0.0;
-
-    $currentMonthSodaCreditTotal = 0.0;
-    $currentMonthSnackCreditTotal = 0.0;
-
-    $query = "SELECT i.Name, i.Type, p.Cost as LegacyPrice, p.CashOnly, p.UseCredits, p.DiscountCost as LegacyDiscountPrice, p.Date, p.UserID, p.ItemDetailsID, d.Price, d.DiscountPrice " .
-        "FROM Purchase_History p " .
-        "JOIN Item i on p.itemID = i.ID " .
-        "LEFT JOIN Item_Details d on p.ItemDetailsID = d.ItemDetailsID " .
-        "WHERE p.UserID = :userID AND p.Date >= :startDate AND p.Date < :endDate AND p.Cancelled IS NULL " .
-        "ORDER BY p.Date DESC";
-
-    log_sql( "Payment Month: [$query]" );
-    $statement = $db->prepare( $query );
-    $statement->bindValue( ":userID", $userID );
-    $statement->bindValue( ":startDate", $startDate );
-    $statement->bindValue( ":endDate", $endDate );
-    $results = $statement->execute();
-
-    while ($row = $results->fetchArray()) {
-
-        $itemDetailsID =  $row['ItemDetailsID'];
-        $itemType =  $row['Type'];
-
-        $discountCost = $row['LegacyDiscountPrice'];
-        $fullCost = $row['LegacyPrice'];
-
-        if( $itemDetailsID != null ) {
-            $discountCost = $row['DiscountPrice'];
-            $fullCost = $row['Price'];
-        }
-
-        if( $discountCost != "" && $discountCost != 0 ) {
-            $cost = $discountCost;
-        } else {
-            $cost = $fullCost;
-        }
-        
-        // Only purchases that WERE NOT cash-only go towards the total - because they already paid in cash
-        if( $row['CashOnly'] != 1 ) {
-
-            $creditsUsed = $row["UseCredits"];
-            $finalCostNotIncludingCredits = $cost;
-
-            // Purchases that used credits might affect what was actually for balance
-            if( $creditsUsed > 0 ) {
-                $finalCostNotIncludingCredits -= $creditsUsed;
-
-                if( $itemType == "Snack" ) {
-                    $currentMonthSnackCreditTotal += $creditsUsed;
-                } else if( $itemType == "Soda" ) {
-                    $currentMonthSodaCreditTotal += $creditsUsed;
-                }
-            }
-
-            if( $itemType == "Snack" ) {
-                $currentMonthSnackTotal += $finalCostNotIncludingCredits;
-            } else if($itemType == "Soda" ) {
-                $currentMonthSodaTotal += $finalCostNotIncludingCredits;
-            }
-        }
-    }
-    
-    $sodaQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL AND VendorID = 0";
-    $sodaStatement = $db->prepare( $sodaQuery );
-    $sodaStatement->bindValue( ":userID", $userID );
-    $sodaStatement->bindValue( ":monthLabel", $monthLabel );
-    $sodaStatement->bindValue( ":itemType", "Soda" );
-    $sodaResults = $sodaStatement->execute();
-
-    $sodaTotalPaid = $sodaResults->fetchArray()['TotalAmount'];
-    
-    $snackQuery = "SELECT Sum(Amount) as 'TotalAmount' FROM Payments WHERE UserID = :userID AND MonthForPayment = :monthLabel AND ItemType= :itemType AND Cancelled IS NULL AND VendorID = 0";
-    $snackStatement = $db->prepare( $snackQuery );
-    $snackStatement->bindValue( ":userID", $userID );
-    $snackStatement->bindValue( ":monthLabel", $monthLabel );
-    $snackStatement->bindValue( ":itemType", "Snack" );
-    $snackResults = $snackStatement->execute();
-
-    $snackTotalPaid = $snackResults->fetchArray()['TotalAmount'];
-    
-    $returnArray = array();
-    $returnArray['SodaTotal'] = $currentMonthSodaTotal;
-    $returnArray['SnackTotal'] = $currentMonthSnackTotal;
-    $returnArray['SodaCreditTotal'] = $currentMonthSodaCreditTotal;
-    $returnArray['SnackCreditTotal'] = $currentMonthSnackCreditTotal;
-    $returnArray['SodaPaid'] = $sodaTotalPaid;
-    $returnArray['SnackPaid'] = $snackTotalPaid;
-
-    log_debug( "Month [$monthLabel] User [$userID] Soda Total [$currentMonthSodaTotal] Snack Total [$currentMonthSnackTotal] Soda Paid: [$sodaTotalPaid] Snack Paid[$snackTotalPaid]" );
-    return $returnArray;
-}
-
-/**
- * @param $db SQLite3
  * @param $checklistType
  * @param $selectType
  * @return mixed
@@ -584,6 +468,8 @@ function buildCardArea( $db, $itemType, $itemSearch ) {
         echo $previewImage;
         echo "</div>";
 
+        printHolidayBanner();
+
         if( $tag != "" ) {
             echo "<div class='tag'>";
             switch( $tag ) {
@@ -607,7 +493,7 @@ function buildCardArea( $db, $itemType, $itemSearch ) {
         echo $reportButton;
 
         if ($justRefilled) {
-            echo "<div style='position: absolute; right: 10px; top:-80px;'><img src='" . IMAGES_LINK . "thermometer.png' title='This item was added to the fridge $minutesSinceLastRefill minutes ago and might not be cold yet.'/></div>";
+            echo "<div style='position: absolute; right: 10px; top:-80px; z-index: 5000;'><img src='" . IMAGES_LINK . "thermometer.png' title='This item was added to the fridge $minutesSinceLastRefill minutes ago and might not be cold yet.'/></div>";
         }
 
         echo "$outOfStockLabel";

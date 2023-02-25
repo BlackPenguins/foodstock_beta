@@ -168,9 +168,9 @@ $results = $statement->execute();
 // BUILD TOP SECTION STATS
 //---------------------------------------
 
-$version = getHolidayVersion( "7.4" );
+$version = getHolidayVersion( "7.7" );
 $versionString = "Version $version";
-$versionDateString = "(Mar 1, 2020)";
+$versionDateString = "(Feb 11, 2023)";
 
 $row = $results->fetchArray();
 $siteIncome = $row['SiteIncome']; // The amount of money that SHOULD be coming in
@@ -267,14 +267,14 @@ if(  !IsLoggedIn() || $_SESSION['ShowTrending'] == 1 ) {
 
     echo "<div style='font-size: 0.9em; padding-bottom: 10px; border-bottom: 1px solid #000000;'><span style='font-weight: bold; white-space: nowrap;'>Profit per Day: </span>$" . round($profitPerDay, 2) . "</div>";
 
-    if( IsAdminLoggedIn() ) {
-        echo "<div style='font-size: 0.9em; padding-top: 5px; margin-top: 5px; padding-bottom: 5px;'><span style='font-weight: bold;'>Mini Fridge Goal: </span>$189.99</div>";
-
-        echo "<div class='goal_meter'>";
-        echo "<span class='goal_bar' style='width: $percentageComplete%'><span class='goal_bar' style='color: #000000; font-weight: bold; font-size: 0.8em; display:block; margin-top: 4px;'></span></span>";
-        echo "<span class='goal_banner'>" . getPriceDisplayWithDollars($siteProfitForAllTypes) . "</span>";
-        echo "</div>";
-    }
+//    if( IsAdminLoggedIn() ) {
+//        echo "<div style='font-size: 0.9em; padding-top: 5px; margin-top: 5px; padding-bottom: 5px;'><span style='font-weight: bold;'>Mini Fridge Goal: </span>$189.99</div>";
+//
+//        echo "<div class='goal_meter'>";
+//        echo "<span class='goal_bar' style='width: $percentageComplete%'><span class='goal_bar' style='color: #000000; font-weight: bold; font-size: 0.8em; display:block; margin-top: 4px;'></span></span>";
+//        echo "<span class='goal_banner'>" . getPriceDisplayWithDollars($siteProfitForAllTypes) . "</span>";
+//        echo "</div>";
+//    }
 
     echo "</div>";
     echo "</span>";
@@ -286,13 +286,7 @@ if(  !IsLoggedIn() || $_SESSION['ShowTrending'] == 1 ) {
     echo "$newIcon <a onclick='setVersionCookie(\"" . $version . "\");' href='#change_log'>$versionString</a>&nbsp;&nbsp;$versionDateString";
     echo "</span>";
 
-    echo "<div style='display:flex; align-items:center;'>";
-    echo "<img width='40px' src='" . IMAGES_LINK . "sale.png'/>&nbsp;Discounted prices are only available when you buy through the site.";
-    echo "</div>";
-
-    echo "<div style='display:flex; align-items:center;'>";
-    echo "<img width='40px' src='" . IMAGES_LINK . "handle_with_care.png'/>&nbsp;Remember to pick up your product first and have it physically in your hand before you buy on the website to avoid buying something that was recently all bought out by someone else.";
-    echo "</div>";
+    getHolidayHeader();
 
     echo "</td>";
 }
@@ -308,7 +302,7 @@ echo "<div id= 'container_squisher'>";
 if( isset( $_SESSION['PurchaseCompleted'] ) ) {
     unset( $_SESSION['PurchaseCompleted'] );
 } else if( IsLoggedIn() ) {
-    echo "<script>startReminderTimer();</script>";
+//    echo "<script>startReminderTimer();</script>";
 }
 
 
@@ -425,6 +419,35 @@ echo "<div id='change_log_container'>";
 echo "<div id='change_log' class='page_header'><span class='title'>Change Log <span style='font-size: 0.7em; margin-left: 20px;'>(<span style='$requestClass'>Requests in Purple</span> | <span style='$adminClass'>Admin Changes in Red</span> | <span style='$dbClass'>Database and Server Changes in Green</span> | <span style='$bugClass'>Bug Fixes in Orange</span>)</span></span></div>";
 echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
+
+DisplayUpdate("Feb 11, 2023 (7.7)", $itemType, array(
+    DisplayItem("none", "Getting ready for the relaunch - clearing all prices."),
+    DisplayItem("none", "Removed the goal meter."),
+    DisplayItem("none", "Applied update 7.6 as well that never made it to production because of covid."),
+) );
+
+DisplayUpdate("Aug 30, 2020 (7.6)", $itemType, array(
+    DisplayItem("none", "Ability to hide completed requests in User Preferences."),
+    DisplayItem("none", "Users are notified about their payments across all months now. Cleaner tables giving the full picture"),
+    DisplayItem("none", "Matt it notified about all payments as well."),
+    DisplayItem("none", "Ability to remind single user of payments."),
+    DisplayItem("none", "Division of graph into date and item stats (BROKEN)."),
+    DisplayItem("none", "New centralized tools for calculating payments."),
+    DisplayItem("none", "New User and Info messages and system error messages to mimic webcrd, let's be honest."),
+    DisplayItem("none", "Correct moeny format in Add and Edit slack notificatios. And restock."),
+    DisplayItem("none", "Listing of items inventoried in slack notification and correct number inventoried in user message."),
+    DisplayItem("none", "Stats default start - 3 months ago not a year"),
+    DisplayItem("none", "Stats full screen graphs. Don't hide months with no data - the quaratine. Show the gaps."),
+    DisplayItem("none", "Stats total income and purchse per day. Not by month."),
+    DisplayItem("none", "CAPTCHA and disabled."),
+) );
+
+DisplayUpdate("Mar 20, 2020 (7.5)", $itemType, array(
+    DisplayItem("none", "Multiplier for restock items for vendors is now defaulted to 1."),
+    DisplayItem("none", "Added Coronavirus PSA."),
+    DisplayItem("none", "Added 'Next Release' to dropdown of requests page or better planning."),
+    DisplayItem("none", "Preparation for April Fools theme - that no one will see now :( "),
+) );
 
 DisplayUpdate("Mar 1, 2020 (7.4)", $itemType, array(
     DisplayItem("request", "Added tags - little images that display in corner of items for 'New', 'Clearance', 'Limited Time', 'Seasonal'."),

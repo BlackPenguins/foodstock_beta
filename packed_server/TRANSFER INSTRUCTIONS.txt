@@ -1,0 +1,4 @@
+run packServer.bat
+copy packed_server.zip over to transfer_x27 directory on Vultr
+run unpackServer.sh on Vultr
+run possible migration via migration.php?version=4.8

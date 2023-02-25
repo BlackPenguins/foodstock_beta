@@ -483,7 +483,7 @@
 
         echo "<li>";
         echo "<label for='Multiplier'>Multiplier</label>";
-        echo "<input type='tel' autocomplete='off' name='Multiplier'/>";
+        echo "<input type='tel' autocomplete='off' name='Multiplier' value='1'/>";
         echo "<span>Multiplies the price and the number of items.<br>For when you buy multiple packs of something for same price.</span>";
         echo "</li>";
 

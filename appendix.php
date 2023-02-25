@@ -57,7 +57,7 @@
     date_default_timezone_set('America/New_York');
     $isTestServer = isTestServer();
     
-    // LINKS ARE CLIENT SIDE - THEY USE THE URL (links, scripts, css)
+    // LINKS ARE CLIENT SIDE - THEY USE THE URL (links, scripts, css)p
     // PATHS ARE SERVER SIDE - THEY USE THE COMPUTER LOCATION (includes, db)
     $slash = getSlash();
     $subdomain = "";
@@ -71,7 +71,7 @@
     }
     
     if( !defined("CSS_LINK")) {
-        define( "CSS_LINK", "$subdomain/css/style_7_4.css" );
+        define( "CSS_LINK", "$subdomain/css/style_7_5.css" );
         define( "MOBILE_CSS_LINK", "$subdomain/css/mobile_7_3.css" );
         define( "LIGHTS_CSS_LINK", "$subdomain/css/lights.css" );
         define( "THEMES_CSS_LINK", "$subdomain/css/themes.css" );
@@ -110,6 +110,7 @@
         define( "SNACKSTOCK_LINK", "$subdomain/snackstock.php" );
         define( "SODASTOCK_LINK", "$subdomain/sodastock.php" );
         define( "STATS_LINK", "$subdomain/stats.php" );
+        define( "ITEM_STATS_LINK", "$subdomain/item_stats.php" );
 
         define( "VENDOR_LINK", "$subdomain/vendor_x82.php" );
     }
@@ -164,6 +165,10 @@
 
     if( !defined("PURCHASE_MONTH_OBJ")) {
         define( "PURCHASE_MONTH_OBJ", __DIR__ . $slash . "common" . $slash . "PurchaseMonthObj.php" );
+    }
+
+    if( !defined("USER_PAYMENT_PROFILE")) {
+        define( "USER_PAYMENT_PROFILE", __DIR__ . $slash . "common" . $slash . "UserPaymentProfile.php" );
     }
 
     if( !defined("PURCHASE_HISTORY_LAYOUT_BASE_OBJ")) {
