@@ -168,9 +168,9 @@ $results = $statement->execute();
 // BUILD TOP SECTION STATS
 //---------------------------------------
 
-$version = getHolidayVersion( "7.7" );
+$version = getHolidayVersion( "7.8" );
 $versionString = "Version $version";
-$versionDateString = "(Feb 11, 2023)";
+$versionDateString = "(Feb 25, 2023)";
 
 $row = $results->fetchArray();
 $siteIncome = $row['SiteIncome']; // The amount of money that SHOULD be coming in
@@ -201,7 +201,7 @@ if( $itemType == "Snack" ) {
     $logoFile = "snack_logo.jpg";
 }
 echo "<td style='padding: 0px;' class='stat_box'>";
-echo "<img style='height: 29%;' src='" . IMAGES_LINK . "$logoFile'/>";
+echo "<img style='height: 130px;' src='" . IMAGES_LINK . "$logoFile'/>";
 echo "</td>";
 
 $newIcon = "";
@@ -421,9 +421,11 @@ echo "<ul style='margin:0px 40px 0px 0px; list-style-type: none;'>";
 
 
 DisplayUpdate("Feb 25, 2023 (7.8)", $itemType, array(
-    DisplayItem("none", "Added DOT_ENV."),
+    DisplayItem("none", "Added DOT_ENV to hide security tokens."),
     DisplayItem("none", "Corrected 7.6 notes"),
     DisplayItem("none", "Building server with GIT."),
+    DisplayItem("none", "Redirects FINALLY work. So you can just do <a href='https://penguinore.net/foodstock/snack'>https://penguinore.net/foodstock/snack</a> now."),
+    DisplayItem("none", "Reduced logo size."),
 ) );
 
 DisplayUpdate("Feb 11, 2023 (7.7)", $itemType, array(

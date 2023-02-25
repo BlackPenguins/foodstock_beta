@@ -487,7 +487,7 @@
                        "|      Month      |    Soda Total   |   Snack Total   |   Total Owed    |\n" .
                        " ================= ================= ================= ================= \n" .
                     $monthTableRows . "```\n" .
-                    "You can view more details on the <https://penguinore.net/purchase_history.php|Purchase/Payment History Page>. Have a great day! :grin:";
+                    "You can view more details on the <https://penguinore.net/foodstock/purchase_history.php|Purchase/Payment History Page>. Have a great day! :grin:";
 
                 sendSlackMessageToUser($slackID, $slackMessage, ":credit:", "FoodStock Collection Agency", "#ff7a7a", $name, false);
 

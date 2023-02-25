@@ -620,15 +620,15 @@ function refillItem( $db, $isTest, $itemID_all, $addToShelf_all, $sendToSlack, $
     }
 
     $emoji = ":soda:";
-    $page = SODASTOCK_LINK;
+    $page = "soda";
 
     if( $itemType == "Snack" ) {
         $emoji = ":cookie:";
-        $page = SNACKSTOCK_LINK;
+        $page = "snack";
     }
 
     if( !$isTest && $slackMessageItems != "" && $sendToSlack == true) {
-        $slackMessage = $slackMessageItems ."\n\nVisit <https://penguinore.net$page|Foodstock> to see the prices and inventory of all snacks & sodas.";
+        $slackMessage = $slackMessageItems ."\n\nVisit <https://penguinore.net/foodstock/$page|Foodstock> to see the prices and inventory of all snacks & sodas.";
 
         if( $refiller != "Matt" ) {
             $refillLabel = "REFILLED BY " . strtoupper($refiller);
